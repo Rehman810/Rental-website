@@ -1,0 +1,19 @@
+@font-face {
+  font-family: "Airbnb";
+  src: url("./assets/fonts/Airbnb/AirbnbCereal_W_Lt.otf") format("woff2"),
+}
+
+@font-face {
+  font-family: "AirbnbBold";
+  src: url("./assets/fonts/Airbnb/AirbnbCereal_W_Bd.otf") format("woff2"),
+}
+
+*{
+  margin: 0;
+  padding: 0;
+  font-family: Airbnb !important;
+}
+
+.airbnbBold{
+  font-family: AirbnbBold !important;
+}

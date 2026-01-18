@@ -1,0 +1,30 @@
+{
+  "support": {
+    "support": "Destek",
+    "helpCenter": "Yardım Merkezi",
+    "airCover": "Air Cover",
+    "antiDiscrimination": "Ayrımcılıkla Mücadele",
+    "disabilitySupport": "Engelli Desteği",
+    "cancellationOptions": "İptal Seçenekleri",
+    "reportNeighborhoodConcern": "Mahalle Endişesini Bildir"
+  },
+  "Hosting": {
+    "hosting": "Konaklama",
+    "airbnbYourHome": "Evini ThePakbnb'ye Aç",
+    "airCoverForHosts": "Ev Sahipleri İçin AirCover",
+    "hostingResources": "Konaklama Kaynakları",
+    "CommunityForum": "Topluluk Forumu",
+    "hostingResponsibly": "Sorumlu Konaklama",
+    "airbnbFriendlyApartments": "ThePakbnb Dostu Daireler",
+    "joinAFreeHostingClass": "Ücretsiz Konaklama Eğitimi Katıl",
+    "findACoHost": "Bir Konuk Ev Sahibi Bul"
+  },
+  "Airbnb": {
+    "newsroom": "Haber Odası",
+    "newFeatures": "Yeni Özellikler",
+    "careers": "Kariyerler",
+    "investors": "Yatırımcılar",
+    "giftCards": "Hediye Kartları",
+    "airbnbOrgEmergencyStays": "ThePakbnb.Org Acil Konaklamalar"
+  }
+}

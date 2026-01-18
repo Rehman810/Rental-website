@@ -82,6 +82,7 @@ export const bookingController = {
         currency: "usd",
         automatic_payment_methods: { enabled: true },
         application_fee_amount: platformFeeCents,
+        capture_method: "manual",
         transfer_data: {
           destination: host.stripeAccountId,
         },
@@ -116,49 +117,58 @@ export const bookingController = {
 
       const temporaryBooking = await TemporaryBooking.findById(bookingId);
       if (!temporaryBooking) {
-        return res.status(404).json({ message: 'Booking not found.' });
+        return res.status(404).json({ message: "Booking not found." });
       }
+
       const { listingId, startDate, endDate, userId, paymentIntentId } = temporaryBooking;
+
       const existingConfirmedBooking = await ConfirmedBooking.findOne({
         listingId,
-        $or: [
-          { startDate: { $lte: new Date(endDate) }, endDate: { $gte: new Date(startDate) } },
-        ],
+        $or: [{ startDate: { $lte: new Date(endDate) }, endDate: { $gte: new Date(startDate) } }],
       });
+
       if (existingConfirmedBooking) {
-        return res.status(400).json({ message: 'Dates already confirmed for another booking.' });
+        return res.status(400).json({ message: "Dates already confirmed for another booking." });
       }
+
       const paymentIntent = await stripeClient.paymentIntents.retrieve(paymentIntentId);
 
-      if (paymentIntent.status === 'requires_confirmation') {
-        const confirmedPaymentIntent = await stripeClient.paymentIntents.confirm(paymentIntentId, {
-          payment_method: paymentIntent.payment_method,
-          return_url: 'http://localhost:4000/',
+      if (paymentIntent.status === "requires_capture") {
+        const capturedIntent = await stripeClient.paymentIntents.capture(paymentIntentId);
 
-        });
-
-        if (confirmedPaymentIntent.status === 'succeeded') {
-          const confirmedBooking = await ConfirmedBooking.create({
-            userId,
-            listingId,
-            startDate,
-            endDate,
-            guestCapacity: temporaryBooking.guestCapacity,
-            totalPrice: temporaryBooking.totalPrice,
+        if (capturedIntent.status !== "succeeded") {
+          return res.status(400).json({
+            message: "Payment capture failed.",
+            status: capturedIntent.status,
           });
-
-          await TemporaryBooking.findByIdAndDelete(bookingId);
-
-          res.status(201).json({ message: 'Booking confirmed.', confirmedBooking });
-        } else {
-          return res.status(400).json({ message: 'Payment not completed successfully after confirmation.' });
         }
-      } else {
-        return res.status(400).json({ message: 'Payment not in a valid state for confirmation.' });
       }
+
+      else if (paymentIntent.status === "succeeded") {
+      }
+
+      else {
+        return res.status(400).json({
+          message: "Payment is not in a valid state for confirmation.",
+          status: paymentIntent.status,
+        });
+      }
+
+      const confirmedBooking = await ConfirmedBooking.create({
+        userId,
+        listingId,
+        startDate,
+        endDate,
+        guestCapacity: temporaryBooking.guestCapacity,
+        totalPrice: temporaryBooking.totalPrice,
+        paymentIntentId,
+      });
+
+      await TemporaryBooking.findByIdAndDelete(bookingId);
+
+      return res.status(201).json({ message: "Booking confirmed.", confirmedBooking });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Internal Server Error', error: error.message });
+      return res.status(500).json({ message: "Internal Server Error", error: error.message });
     }
   },
 

@@ -1,18 +1,22 @@
 import authController from '../../controller/authController/index.js';
+import googleAuthController from '../../controller/authController/googleAuthController.js';
 import passport from 'passport';
-import  {authenticateHost } from '../../middleWare/authenticate/index.js';
+import { authenticateHost } from '../../middleWare/authenticate/index.js';
 import upload from '../../config/cloudnry/index.js';
 import combinedAuthenticate from '../../middleWare/combineAuthenticate/index.js'
 
 const authRoute = (app) => {
   app.post('/signUp', authController.signUp);
   app.post('/login', authController.login);
-    app.put('/update-profile/:hostId', combinedAuthenticate, 
-      upload.fields([
-        { name: 'profileImage', maxCount: 1 }, 
-        { name: 'CNIC', maxCount: 2 }  
-      ]), 
-      authController.updateProfile);
+  app.put('/update-profile/:hostId', combinedAuthenticate,
+    upload.fields([
+      { name: 'profileImage', maxCount: 1 },
+      { name: 'CNIC', maxCount: 2 }
+    ]),
+    authController.updateProfile);
+  // Google Identity Services (Option A)
+  app.post('/auth/google', googleAuthController.googleLogin);
+
   app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
   app.get(
@@ -23,7 +27,7 @@ const authRoute = (app) => {
       res.status(200).json({ message, user: req.user });
     }
   );
-  
+
 
   app.post('/verify-token', authController.verifyToken);
   app.post('/logout', authController.logout);

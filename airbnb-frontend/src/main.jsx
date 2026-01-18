@@ -7,14 +7,18 @@ import { WishlistProvider } from "./context/wishlistProvider.jsx";
 import { BookingProvider } from "./context/booking.jsx";
 import "./i18n/i18n.jsx";
 
+import { GoogleOAuthProvider } from '@react-oauth/google';
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <AppProvider>
-      <WishlistProvider>
-        <BookingProvider>
-          <App />
-        </BookingProvider>
-      </WishlistProvider>
-    </AppProvider>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+      <AppProvider>
+        <WishlistProvider>
+          <BookingProvider>
+            <App />
+          </BookingProvider>
+        </WishlistProvider>
+      </AppProvider>
+    </GoogleOAuthProvider>
   </StrictMode>
 );

@@ -19,6 +19,9 @@ import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
 import { loginUser } from "../../config/ServiceApi/serviceApi";
 
+import { GoogleLogin } from '@react-oauth/google';
+import { googleLogin } from '../../config/ServiceApi/serviceApi';
+
 const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -27,6 +30,34 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm();
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const { credential } = credentialResponse;
+      const res = await googleLogin(credential);
+
+      if (res) {
+        localStorage.setItem("token", res.token);
+        localStorage.setItem("user", JSON.stringify(res.user));
+
+        Swal.fire({
+          icon: "success",
+          title: "Login Successful",
+          text: `Welcome ${res.user.userName}!`,
+        });
+
+        onClose();
+      }
+    } catch (error) {
+      onClose();
+      Swal.fire({
+        icon: "error",
+        title: "Google Login Failed",
+        text: error.message || "Something went wrong.",
+      });
+      console.error("Google Login Error:", error);
+    }
+  };
 
   const onSubmit = async (data) => {
     try {
@@ -51,7 +82,7 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
         onClose();
       }
     } catch (error) {
-      onClose();
+      // onClose(); // Don't close on error so they can retry
       Swal.fire({
         icon: "error",
         title: signUp ? "Signup Failed" : "Login Failed",
@@ -210,13 +241,17 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
             <Divider sx={{ my: 1.2 }}>or</Divider>
 
             <Grid container spacing={1.5}>
-              <Grid item xs={12}>
-                <SocialButton icon={<FaGoogle />} text="Continue with Google" />
-              </Grid>
-              <Grid item xs={12}>
-                <SocialButton
-                  icon={<FaFacebookF color="#1877f2" />}
-                  text="Continue with Facebook"
+              <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center' }}>
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() => {
+                    console.log('Login Failed');
+                    Swal.fire({ icon: 'error', title: 'Login Failed', text: 'Google Login was unsuccessful' });
+                  }}
+                  shape="pill"
+                  width="300px"
+                  text="continue_with"
+                  theme="filled_blue"
                 />
               </Grid>
             </Grid>

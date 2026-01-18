@@ -81,52 +81,57 @@ const BookingComponent = () => {
       return;
     }
 
-    const cardElement = elements.getElement(CardElement);
-
     setIsLoading(true);
     try {
-      const { paymentMethod, error } = await stripe.createPaymentMethod({
-        type: "card",
-        card: cardElement,
-      });
-
-      if (error) {
-        Swal.fire({
-          icon: "error",
-          title: "Payment Error",
-          text: error.message,
-        });
-        setIsLoading(false);
-        return;
-      }
-
       const data = {
         startDate: bookingData?.startDate,
         endDate: bookingData?.endDate,
         guestCapacity: bookingData?.guestCapacity,
-        paymentMethodId: paymentMethod.id,
       };
 
+      // 1. Create Booking (Temporary) & Get Client Secret
       const response = await postDataById(
         "create-bookings",
         data,
         token,
         roomId
       );
-      if (response) {
-        Swal.fire({
-          icon: "success",
-          title: "Booking Request Sent",
-          text: "Your booking request has been sent to the host. If the host accepts, your booking will be confirmed and payment will be deducted.",
+
+      if (response && response.clientSecret) {
+        const cardElement = elements.getElement(CardElement);
+
+        // 2. Confirm Payment Intent
+        const { error, paymentIntent } = await stripe.confirmCardPayment(response.clientSecret, {
+          payment_method: {
+            card: cardElement,
+            billing_details: {
+              name: user?.userName || "Guest",
+              email: user?.email,
+            },
+          },
         });
-        navigate("/");
+
+        if (error) {
+          Swal.fire({
+            icon: "error",
+            title: "Payment Error",
+            text: error.message,
+          });
+        } else if (paymentIntent.status === "succeeded") {
+          Swal.fire({
+            icon: "success",
+            title: "Booking Confirmed",
+            text: "Payment successful! Your booking is confirmed.",
+          });
+          navigate("/");
+        }
       }
     } catch (error) {
-      console.error("Error during payment:", error);
+      console.error("Error during booking/payment:", error);
       Swal.fire({
         icon: "error",
         title: "Booking Failed",
-        text: "There was an issue with your booking or payment. Please try again later.",
+        text: error.message || "An unexpected error occurred.",
       });
     } finally {
       setIsLoading(false);
@@ -343,7 +348,7 @@ const BookingComponent = () => {
           }}
           size="small"
           onClick={handleReserve}
-          //   disabled={!!errors.cardNumber || !!errors.expiration || !!errors.cvv}
+        //   disabled={!!errors.cardNumber || !!errors.expiration || !!errors.cvv}
         >
           Request to Book
         </Button>

@@ -9,12 +9,12 @@ const hostSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    immutable: true, 
+    immutable: true,
 
   },
-  phoneNumber:{
-    type:Number,
-    require:false
+  phoneNumber: {
+    type: Number,
+    require: false
   },
   password: {
     type: String,
@@ -43,9 +43,11 @@ const hostSchema = new mongoose.Schema({
     },
     required: false,
     default: {},
-  }
+  },
+  stripeAccountId: { type: String, default: null },
+  stripeOnboardingCompleted: { type: Boolean, default: false },
 }, {
-  timestamps: true, 
+  timestamps: true,
 });
 
 const authentication = mongoose.model('Host', hostSchema);

@@ -97,6 +97,7 @@ const NavbarHost = () => {
     { name: t("menu.hostMenu.calendar"), route: "/hosting/calendar" },
     { name: t("menu.hostMenu.listings"), route: "/hosting/listings" },
     { name: t("menu.hostMenu.messages"), route: "/hosting/messages" },
+    { name: "Payments", route: "/hosting/payments" },
   ];
 
   const toggleDrawer = (open) => (event) => {

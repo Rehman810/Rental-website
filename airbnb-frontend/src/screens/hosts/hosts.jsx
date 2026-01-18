@@ -9,9 +9,10 @@ const Messages = lazy(() => import("../../pages/messages/messages"));
 const Footer = lazy(() => import("../../components/footer/footer"));
 const Today = lazy(() => import("../../pages/today/today"));
 const Listings = lazy(() => import("../../pages/listings/listings"));
+const Payments = lazy(() => import("../../pages/payments/payments"));
 
 const Hosts = () => {
-    const location = useLocation();
+  const location = useLocation();
   const isMessage = location.pathname.includes("messages");
 
   return (
@@ -30,11 +31,14 @@ const Hosts = () => {
 
           {/* Messages Page */}
           <Route path="/messages" element={<Messages />} />
+
+          {/* Payments Page */}
+          <Route path="/payments" element={<Payments />} />
         </Routes>
       </div>
       {!isMessage && (
-      <Footer />
-    )}
+        <Footer />
+      )}
     </>
   );
 };

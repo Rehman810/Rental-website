@@ -1,145 +1,282 @@
-import React, { useState, useEffect } from "react";
-import { CircularProgress } from "@mui/material";
-import { Box, Typography, Avatar, Paper, Grid, Divider } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import {
+  Box,
+  Typography,
+  Avatar,
+  Paper,
+  Grid,
+  Divider,
+  Chip,
+  Stack,
+  CircularProgress,
+} from "@mui/material";
+import SentimentDissatisfiedIcon from "@mui/icons-material/SentimentDissatisfied";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import PersonIcon from "@mui/icons-material/Person";
+import PaymentsIcon from "@mui/icons-material/Payments";
+import PhoneIcon from "@mui/icons-material/Phone";
+import EmailIcon from "@mui/icons-material/Email";
+
 import { fetchData } from "../../config/ServiceApi/serviceApi";
 import { useBookingContext } from "../../context/booking";
 
 const CheckingOut = () => {
   const [checkouts, setCheckouts] = useState([]);
   const [loading, setLoading] = useState(true);
+
   const token = localStorage.getItem("token");
   const { setCheckingOut } = useBookingContext();
+
   useEffect(() => {
     const fetchCheckouts = async () => {
-      const response = await fetchData("bookings-checking-out-today", token);
-      setCheckouts(response.bookingsCheckingOutToday);
-      setCheckingOut(response.count);
-      setLoading(false);
+      try {
+        setLoading(true);
+        const response = await fetchData("bookings-checking-out-today", token);
+
+        const list = response?.bookingsCheckingOutToday || [];
+        setCheckouts(list);
+        setCheckingOut(response?.count || list.length);
+      } catch (err) {
+        console.error("CheckingOut fetch error:", err);
+        setCheckouts([]);
+        setCheckingOut(0);
+      } finally {
+        setLoading(false);
+      }
     };
+
     fetchCheckouts();
-  }, []);
+  }, [token, setCheckingOut]);
 
   if (loading) {
     return (
-      <Box textAlign="center" sx={{ mt: 5 }}>
+      <Box sx={{ py: 6, textAlign: "center" }}>
         <CircularProgress />
-
-        <Typography variant="h6" color="textSecondary">
-          Loading guests checking out today...
+        <Typography sx={{ mt: 2 }} fontWeight={900}>
+          Loading checkouts...
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Fetching guests checking out today.
         </Typography>
       </Box>
     );
   }
 
-  if (pendingBookings?.length === 0 || pendingBookings == undefined) {
+  if (!checkouts || checkouts.length === 0) {
     return (
-      <Box textAlign="center" sx={{ mt: 5, p: 3 }}>
-        <SentimentDissatisfied color="action" sx={{ fontSize: 50 }} />
-        <Typography variant="h6" color="textSecondary" sx={{ mt: 2 }}>
-          No guests check out.
+      <Box
+        sx={{
+          p: 4,
+          textAlign: "center",
+        }}
+      >
+        <SentimentDissatisfiedIcon sx={{ fontSize: 52, color: "text.secondary" }} />
+        <Typography variant="h6" fontWeight={900} sx={{ mt: 1 }}>
+          No checkouts today
         </Typography>
-        <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-          There are no guests checking out today. Please check back later.
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+          There are no guests checking out today. You’re all good.
         </Typography>
       </Box>
     );
   }
 
   return (
-    <Box sx={{ p: 3 }}>
-      {checkouts.map((checkout) => (
-        <Paper
-          key={checkout.id}
-          elevation={3}
-          sx={{
-            p: 3,
-            mb: 3,
-            borderRadius: 2,
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-            backgroundColor: "#f9f9f9",
-          }}
-        >
-          <Grid container spacing={3} sx={{ alignItems: "center" }}>
-            <Grid item xs={12} md={4}>
-              <Box
-                display="flex"
-                flexDirection="column"
-                gap={2}
-                sx={{ alignItems: "center" }}
-              >
-                <img
-                  src={checkout.listingId?.photos[0]}
-                  alt={checkout.listingId.title}
-                  style={{
-                    width: "100%",
-                    height: "auto",
-                    borderRadius: 8,
-                    objectFit: "cover",
+    <Stack spacing={2}>
+      {checkouts.map((checkout) => {
+        const listing = checkout?.listingId;
+        const guest = checkout?.userSpecificData;
+
+        return (
+          <Paper
+            key={checkout?._id || checkout?.id}
+            elevation={0}
+            sx={{
+              borderRadius: 4,
+              border: "1px solid",
+              borderColor: "divider",
+              overflow: "hidden",
+              backgroundColor: "white",
+              transition: "0.2s ease",
+              "&:hover": {
+                boxShadow: "0 18px 45px rgba(0,0,0,0.10)",
+                transform: "translateY(-2px)",
+              },
+            }}
+          >
+            <Grid container>
+              {/* Left: Listing Image */}
+              <Grid item xs={12} md={4}>
+                <Box
+                  sx={{
+                    position: "relative",
+                    height: { xs: 220, md: "100%" },
+                    minHeight: { md: 220 },
+                    backgroundColor: "rgba(0,0,0,0.06)",
                   }}
-                />
-                <Typography variant="h6" fontWeight="bold" align="center">
-                  {checkout.listingId.title}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  align="center"
                 >
-                  {checkout.listingId.city}
-                </Typography>
-              </Box>
-            </Grid>
+                  <img
+                    src={listing?.photos?.[0]}
+                    alt={listing?.title || "Listing"}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      display: "block",
+                    }}
+                    loading="lazy"
+                  />
 
-            <Grid item xs={12} md={4}>
-              <Box
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                gap={2}
-              >
-                <Avatar
-                  src={checkout.userSpecificData.photoProfile}
-                  alt={checkout.userSpecificData.name}
-                  sx={{ width: 72, height: 72 }}
-                />
-                <Box textAlign="center">
-                  <Typography variant="h6" fontWeight="bold" gutterBottom>
-                    {checkout.userSpecificData.name}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {`Guests: ${checkout.guestCapacity}`}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {`Phone: ${checkout.userSpecificData?.phoneNumber}`}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {`Email: ${checkout.userSpecificData?.email}`}
-                  </Typography>
+                  <Chip
+                    label="Checking out today"
+                    sx={{
+                      position: "absolute",
+                      top: 12,
+                      left: 12,
+                      borderRadius: 999,
+                      fontWeight: 900,
+                      backgroundColor: "rgba(0,0,0,0.70)",
+                      color: "white",
+                    }}
+                  />
                 </Box>
-              </Box>
-            </Grid>
+              </Grid>
 
-            <Grid item xs={12} md={4}>
-              <Box>
-                <Typography variant="body2" color="textSecondary" gutterBottom>
-                  {`Check-in: ${new Date(
-                    checkout.startDate
-                  ).toLocaleDateString()}`}
-                </Typography>
-                <Typography variant="body2" color="textSecondary" gutterBottom>
-                  {`Check-out: ${new Date(
-                    checkout.endDate
-                  ).toLocaleDateString()}`}
-                </Typography>
-                <Typography variant="body1" fontWeight="bold" color="primary">
-                  {`Total: Rs${checkout.totalPrice}`}
-                </Typography>
-              </Box>
+              {/* Right: Content */}
+              <Grid item xs={12} md={8}>
+                <Box sx={{ p: { xs: 2, md: 2.5 } }}>
+                  {/* Header */}
+                  <Stack
+                    direction={{ xs: "column", sm: "row" }}
+                    spacing={1}
+                    alignItems={{ xs: "flex-start", sm: "center" }}
+                    justifyContent="space-between"
+                  >
+                    <Box>
+                      <Typography variant="h6" fontWeight={900}>
+                        {listing?.title || "Untitled listing"}
+                      </Typography>
+
+                      <Stack direction="row" spacing={0.8} alignItems="center" sx={{ mt: 0.4 }}>
+                        <LocationOnIcon sx={{ fontSize: 18, color: "text.secondary" }} />
+                        <Typography variant="body2" color="text.secondary">
+                          {listing?.city || "Unknown city"}
+                        </Typography>
+                      </Stack>
+                    </Box>
+
+                    <Chip
+                      icon={<PaymentsIcon />}
+                      label={`Rs ${checkout?.totalPrice || 0}`}
+                      variant="outlined"
+                      sx={{
+                        borderRadius: 999,
+                        fontWeight: 900,
+                        px: 1,
+                      }}
+                    />
+                  </Stack>
+
+                  <Divider sx={{ my: 2 }} />
+
+                  {/* Guest + Dates */}
+                  <Grid container spacing={2}>
+                    {/* Guest Card */}
+                    <Grid item xs={12} sm={6}>
+                      <Paper
+                        elevation={0}
+                        sx={{
+                          p: 2,
+                          borderRadius: 3,
+                          border: "1px solid",
+                          borderColor: "divider",
+                          backgroundColor: "rgba(0,0,0,0.015)",
+                        }}
+                      >
+                        <Stack direction="row" spacing={1.5} alignItems="center">
+                          <Avatar
+                            src={guest?.photoProfile}
+                            alt={guest?.name || "Guest"}
+                            sx={{ width: 52, height: 52 }}
+                          >
+                            <PersonIcon />
+                          </Avatar>
+
+                          <Box>
+                            <Typography fontWeight={900}>
+                              {guest?.name || "Guest"}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              Guests: {checkout?.guestCapacity || 0}
+                            </Typography>
+                          </Box>
+                        </Stack>
+
+                        <Stack spacing={0.6} sx={{ mt: 1.5 }}>
+                          <Stack direction="row" spacing={1} alignItems="center">
+                            <PhoneIcon sx={{ fontSize: 16, color: "text.secondary" }} />
+                            <Typography variant="body2" color="text.secondary">
+                              {guest?.phoneNumber || "N/A"}
+                            </Typography>
+                          </Stack>
+
+                          <Stack direction="row" spacing={1} alignItems="center">
+                            <EmailIcon sx={{ fontSize: 16, color: "text.secondary" }} />
+                            <Typography variant="body2" color="text.secondary">
+                              {guest?.email || "N/A"}
+                            </Typography>
+                          </Stack>
+                        </Stack>
+                      </Paper>
+                    </Grid>
+
+                    {/* Dates Card */}
+                    <Grid item xs={12} sm={6}>
+                      <Paper
+                        elevation={0}
+                        sx={{
+                          p: 2,
+                          borderRadius: 3,
+                          border: "1px solid",
+                          borderColor: "divider",
+                          backgroundColor: "rgba(0,0,0,0.015)",
+                        }}
+                      >
+                        <Stack direction="row" spacing={1} alignItems="center">
+                          <CalendarMonthIcon sx={{ color: "text.secondary" }} />
+                          <Typography fontWeight={900}>Trip dates</Typography>
+                        </Stack>
+
+                        <Box sx={{ mt: 1.2 }}>
+                          <Typography variant="body2" color="text.secondary">
+                            Check-in:{" "}
+                            <strong>
+                              {checkout?.startDate
+                                ? new Date(checkout.startDate).toLocaleDateString()
+                                : "N/A"}
+                            </strong>
+                          </Typography>
+
+                          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                            Check-out:{" "}
+                            <strong>
+                              {checkout?.endDate
+                                ? new Date(checkout.endDate).toLocaleDateString()
+                                : "N/A"}
+                            </strong>
+                          </Typography>
+                        </Box>
+                      </Paper>
+                    </Grid>
+                  </Grid>
+                </Box>
+              </Grid>
             </Grid>
-          </Grid>
-        </Paper>
-      ))}
-    </Box>
+          </Paper>
+        );
+      })}
+    </Stack>
   );
 };
 

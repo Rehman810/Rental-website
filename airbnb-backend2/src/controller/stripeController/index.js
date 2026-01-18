@@ -20,6 +20,7 @@ export const stripeController = {
                     // Assuming PK based on existing code, or US. Express supports many.
                     // Ideally catch error if country not supported.
                     // Let's use user email.
+                    url: "https://pakbnb.com",
                     email: host.email,
                 });
                 accountId = account.id;
@@ -29,8 +30,8 @@ export const stripeController = {
 
             const accountLink = await stripe.accountLinks.create({
                 account: accountId,
-                refresh_url: 'http://localhost:5173/host/dashboard/payments', // Frontend URL
-                return_url: 'http://localhost:5173/host/dashboard/payments',
+                refresh_url: 'http://localhost:5174/hosting/payments', // Frontend URL
+                return_url: 'http://localhost:5174/hosting/payments',
                 type: 'account_onboarding',
             });
 

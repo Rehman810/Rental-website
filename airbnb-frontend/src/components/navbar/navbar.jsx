@@ -10,6 +10,8 @@ import {
   Menu,
   MenuItem,
   Divider,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
 import {
   Menu as MenuIcon,
@@ -24,14 +26,39 @@ import handleLogout from "../logout/logout";
 import VerifyToken from "../protected/verifyToken";
 import Language from "../language/Language";
 import { useTranslation } from "react-i18next";
+import {
+  Logout as LogoutIcon,
+  FavoriteBorder as FavoriteBorderIcon,
+  Luggage as LuggageIcon,
+  HelpOutline as HelpOutlineIcon,
+  HomeWorkOutlined as HomeWorkOutlinedIcon,
+  MailOutline as MailOutlineIcon,
+  PersonOutline as PersonOutlineIcon,
+  DashboardCustomizeOutlined as DashboardCustomizeOutlinedIcon,
+  Login as LoginIcon,
+  PersonAddAlt as PersonAddAltIcon,
+} from "@mui/icons-material";
 
-const VerifiedMenu = ({
-  anchorEl,
-  handleMenuClose,
-  navigate,
-  handleLogout,
-}) => {
+const VerifiedMenu = ({ anchorEl, handleMenuClose, navigate, handleLogout }) => {
   const { t } = useTranslation();
+
+  const menuSx = {
+    mt: 1.2,
+    "& .MuiPaper-root": {
+      borderRadius: 3,
+      minWidth: 240,
+      border: "1px solid",
+      borderColor: "divider",
+      boxShadow: "0 18px 60px rgba(0,0,0,0.12)",
+      overflow: "hidden",
+    },
+  };
+
+  const itemSx = {
+    py: 1.2,
+    px: 1.5,
+    "&:hover": { backgroundColor: "rgba(0,0,0,0.04)" },
+  };
 
   return (
     <Menu
@@ -39,25 +66,67 @@ const VerifiedMenu = ({
       open={Boolean(anchorEl)}
       onClose={handleMenuClose}
       keepMounted
+      sx={menuSx}
+      transformOrigin={{ horizontal: "right", vertical: "top" }}
+      anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
     >
-      <MenuItem onClick={() => navigate("/user/guestAllMessages")}>{t("menu.verified.messages")}</MenuItem>
-      {/* <MenuItem>{t("menu.verified.notifications")}</MenuItem> */}
-      <MenuItem onClick={() => navigate("/user/trips")}>
-        {t("menu.verified.trips")}
+      <MenuItem sx={itemSx} onClick={() => navigate("/user/guestAllMessages")}>
+        <ListItemIcon>
+          <MailOutlineIcon fontSize="small" />
+        </ListItemIcon>
+        <ListItemText primary={t("menu.verified.messages")} />
       </MenuItem>
-      <MenuItem onClick={() => navigate("/user/wishlist")}>
-        {t("menu.verified.wishlists")}
+
+      <MenuItem sx={itemSx} onClick={() => navigate("/user/trips")}>
+        <ListItemIcon>
+          <LuggageIcon fontSize="small" />
+        </ListItemIcon>
+        <ListItemText primary={t("menu.verified.trips")} />
       </MenuItem>
+
+      <MenuItem sx={itemSx} onClick={() => navigate("/user/wishlist")}>
+        <ListItemIcon>
+          <FavoriteBorderIcon fontSize="small" />
+        </ListItemIcon>
+        <ListItemText primary={t("menu.verified.wishlists")} />
+      </MenuItem>
+
       <Divider />
-      <MenuItem onClick={() => navigate("/hosting/listings")}>
-        {t("menu.verified.manageListings")}
-      </MenuItem> 
-      <MenuItem onClick={()=>navigate("/user/profile")}>{t("menu.hostMenu2.userProfile")}</MenuItem>
+
+      <MenuItem sx={itemSx} onClick={() => navigate("/hosting/listings")}>
+        <ListItemIcon>
+          <DashboardCustomizeOutlinedIcon fontSize="small" />
+        </ListItemIcon>
+        <ListItemText primary={t("menu.verified.manageListings")} />
+      </MenuItem>
+
+      <MenuItem sx={itemSx} onClick={() => navigate("/user/profile")}>
+        <ListItemIcon>
+          <PersonOutlineIcon fontSize="small" />
+        </ListItemIcon>
+        <ListItemText primary={t("menu.hostMenu2.userProfile")} />
+      </MenuItem>
+
       <Divider />
-      {/* <MenuItem>{t("menu.verified.giftCards")}</MenuItem> */}
-      <MenuItem onClick={() => navigate("/user/help/feature")}>{t("menu.verified.helpCenter")}</MenuItem>
-      <MenuItem onClick={() => handleLogout(navigate)}>
-        {t("menu.verified.logout")}
+
+      <MenuItem sx={itemSx} onClick={() => navigate("/user/help/feature")}>
+        <ListItemIcon>
+          <HelpOutlineIcon fontSize="small" />
+        </ListItemIcon>
+        <ListItemText primary={t("menu.verified.helpCenter")} />
+      </MenuItem>
+
+      <MenuItem
+        sx={{
+          ...itemSx,
+          color: "error.main",
+        }}
+        onClick={() => handleLogout(navigate)}
+      >
+        <ListItemIcon sx={{ color: "error.main" }}>
+          <LogoutIcon fontSize="small" />
+        </ListItemIcon>
+        <ListItemText primary={t("menu.verified.logout")} />
       </MenuItem>
     </Menu>
   );
@@ -72,29 +141,67 @@ const UnverifiedMenu = ({
 }) => {
   const { t } = useTranslation();
 
+  const menuSx = {
+    mt: 1.2,
+    "& .MuiPaper-root": {
+      borderRadius: 3,
+      minWidth: 240,
+      border: "1px solid",
+      borderColor: "divider",
+      boxShadow: "0 18px 60px rgba(0,0,0,0.12)",
+      overflow: "hidden",
+    },
+  };
+
+  const itemSx = {
+    py: 1.2,
+    px: 1.5,
+    "&:hover": { backgroundColor: "rgba(0,0,0,0.04)" },
+  };
+
   return (
     <Menu
       anchorEl={anchorEl}
       open={Boolean(anchorEl)}
       onClose={handleMenuClose}
       keepMounted
+      sx={menuSx}
+      transformOrigin={{ horizontal: "right", vertical: "top" }}
+      anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
     >
-      <MenuItem onClick={handleLoginModalOpen}>
-        {t("menu.unverified.login")}
+      <MenuItem sx={itemSx} onClick={handleLoginModalOpen}>
+        <ListItemIcon>
+          <LoginIcon fontSize="small" />
+        </ListItemIcon>
+        <ListItemText primary={t("menu.unverified.login")} />
       </MenuItem>
-      <MenuItem onClick={handleSignUpModalOpen}>
-        {t("menu.unverified.signUp")}
+
+      <MenuItem sx={itemSx} onClick={handleSignUpModalOpen}>
+        <ListItemIcon>
+          <PersonAddAltIcon fontSize="small" />
+        </ListItemIcon>
+        <ListItemText primary={t("menu.unverified.signUp")} />
       </MenuItem>
+
       <Divider />
-      <MenuItem>{t("menu.unverified.giftCards")}</MenuItem>
-      <MenuItem onClick={() => navigate("/hosting/listings")}>
-        {t("menu.unverified.airbnbYourHome")}
+
+      <MenuItem sx={itemSx} onClick={() => navigate("/hosting/listings")}>
+        <ListItemIcon>
+          <HomeWorkOutlinedIcon fontSize="small" />
+        </ListItemIcon>
+        <ListItemText primary={t("menu.unverified.airbnbYourHome")} />
       </MenuItem>
-      <MenuItem>{t("menu.unverified.hostAnExperience")}</MenuItem>
-      <MenuItem onClick={() => navigate("/user/help/feature")}>{t("menu.unverified.helpCenter")}</MenuItem>
+
+      <MenuItem sx={itemSx} onClick={() => navigate("/user/help/feature")}>
+        <ListItemIcon>
+          <HelpOutlineIcon fontSize="small" />
+        </ListItemIcon>
+        <ListItemText primary={t("menu.unverified.helpCenter")} />
+      </MenuItem>
     </Menu>
   );
 };
+
 
 const Navbar = () => {
   const { t } = useTranslation();
@@ -153,18 +260,31 @@ const Navbar = () => {
           padding: "0 16px",
         }}
       >
-        <Box>
+        <Box
+          onClick={() => navigate("/")}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            cursor: "pointer",
+            minWidth: 160,
+          }}
+        >
+          <Box
+            sx={{
+              width: 34,
+              height: 34,
+              borderRadius: 2,
+              background: "linear-gradient(135deg, #ff385c, #ff5a5f)",
+              boxShadow: "0 12px 30px rgba(255,56,92,0.25)",
+            }}
+          />
           <Typography
             variant="h6"
-            component="div"
             sx={{
-              fontWeight: "bold",
-              color: "red",
-              cursor: "pointer",
-            }}
-            className="airbnbBold"
-            onClick={() => {
-              navigate("/");
+              fontWeight: 900,
+              letterSpacing: "-0.3px",
+              userSelect: "none",
             }}
           >
             ThePakbnb

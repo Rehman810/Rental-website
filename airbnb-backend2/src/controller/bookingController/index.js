@@ -79,7 +79,7 @@ export const bookingController = {
 
       const paymentIntent = await stripeClient.paymentIntents.create({
         amount: totalAmountCents,
-        currency: "usd",
+        currency: "pkr",
         automatic_payment_methods: { enabled: true },
         application_fee_amount: platformFeeCents,
         capture_method: "manual",

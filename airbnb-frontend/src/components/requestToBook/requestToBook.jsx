@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Box,
   Grid,
@@ -8,12 +8,23 @@ import {
   Card,
   CardMedia,
   CardContent,
+  Paper,
+  Stack,
+  Chip,
+  CircularProgress,
 } from "@mui/material";
 import Swal from "sweetalert2";
 import { useNavigate, useParams } from "react-router-dom";
 import { postDataById } from "../../config/ServiceApi/serviceApi";
 import { useBookingContext } from "../../context/booking";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import GroupIcon from "@mui/icons-material/Group";
+import LockIcon from "@mui/icons-material/Lock";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ErrorIcon from "@mui/icons-material/Error";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import toast from "react-hot-toast";
 
 const BookingComponent = () => {
   const { bookListing, bookingData } = useBookingContext();
@@ -21,8 +32,10 @@ const BookingComponent = () => {
   const { roomId } = useParams();
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user"));
+
   const stripe = useStripe();
   const elements = useElements();
+
   const [isLoading, setIsLoading] = useState(false);
 
   const validateForm = () => {
@@ -39,49 +52,41 @@ const BookingComponent = () => {
     const startMonth = start.toLocaleString("en-US", { month: "short" });
     const endMonth = end.toLocaleString("en-US", { month: "short" });
 
-    if (startMonth === endMonth) {
-      return `${startDay} - ${endDay} ${startMonth}`;
-    } else {
-      return `${startDay} ${startMonth} - ${endDay} ${endMonth}`;
-    }
+    if (startMonth === endMonth) return `${startDay} - ${endDay} ${startMonth}`;
+    return `${startDay} ${startMonth} - ${endDay} ${endMonth}`;
   };
 
+  const missingPhone = !user?.phoneNumber;
+  const missingPhoto = !user?.photoProfile;
+
+  const total = useMemo(() => {
+    return bookingData?.total ? Number(bookingData.total) : 0;
+  }, [bookingData]);
+
   const handleReserve = async () => {
-    const isValid = validateForm();
-    if (!isValid) return;
-
-    let errorMessage = "";
-
-    if (!user?.phoneNumber && !user?.photoProfile) {
-      errorMessage =
-        "Please add your phone number and upload a profile photo to proceed with the booking.";
-    } else if (!user?.phoneNumber) {
-      errorMessage =
-        "Please add your phone number to proceed with the booking.";
-    } else if (!user?.photoProfile) {
-      errorMessage =
-        "Please upload a profile photo to proceed with the booking.";
-    }
-
-    if (errorMessage) {
-      Swal.fire({
-        icon: "error",
-        title: "Missing Information",
-        text: errorMessage,
-      });
+    if (!stripe || !elements) {
+      toast.error("Payment gateway is still loading. Please wait...");
       return;
     }
 
-    if (!validateForm()) {
-      Swal.fire({
-        icon: "error",
-        title: "Stripe Not Loaded",
-        text: "Please wait for the payment gateway to load.",
-      });
+    if (!user?.phoneNumber && !user?.photoProfile) {
+      toast.error("Please add phone number & profile photo to continue.");
+      return;
+    }
+
+    if (!user?.phoneNumber) {
+      toast.error("Please add your phone number to continue.");
+      return;
+    }
+
+    if (!user?.photoProfile) {
+      toast.error("Please upload a profile photo to continue.");
       return;
     }
 
     setIsLoading(true);
+    const toastId = toast.loading("Processing your booking...");
+
     try {
       const data = {
         startDate: bookingData?.startDate,
@@ -89,19 +94,18 @@ const BookingComponent = () => {
         guestCapacity: bookingData?.guestCapacity,
       };
 
-      // 1. Create Booking (Temporary) & Get Client Secret
-      const response = await postDataById(
-        "create-bookings",
-        data,
-        token,
-        roomId
-      );
+      const response = await postDataById("create-bookings", data, token, roomId);
 
-      if (response && response.clientSecret) {
-        const cardElement = elements.getElement(CardElement);
+      if (!response?.clientSecret) {
+        toast.error("Unable to start payment. Please try again.", { id: toastId });
+        return;
+      }
 
-        // 2. Confirm Payment Intent
-        const { error, paymentIntent } = await stripe.confirmCardPayment(response.clientSecret, {
+      const cardElement = elements.getElement(CardElement);
+
+      const { error, paymentIntent } = await stripe.confirmCardPayment(
+        response.clientSecret,
+        {
           payment_method: {
             card: cardElement,
             billing_details: {
@@ -109,259 +113,443 @@ const BookingComponent = () => {
               email: user?.email,
             },
           },
-        });
-
-        if (error) {
-          Swal.fire({
-            icon: "error",
-            title: "Payment Error",
-            text: error.message,
-          });
-        } else if (paymentIntent.status === "succeeded") {
-          Swal.fire({
-            icon: "success",
-            title: "Booking Confirmed",
-            text: "Payment successful! Your booking is confirmed.",
-          });
-          navigate("/");
         }
+      );
+
+      if (error) {
+        toast.error(error.message || "Payment failed", { id: toastId });
+        return;
       }
+
+      if (paymentIntent?.status === "requires_capture") {
+        toast.success(
+          "Booking requested! Payment will be charged after host accepts.",
+          { id: toastId }
+        );
+
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
+
+        return;
+      }
+
+      // If you ever switch to auto-capture
+      if (paymentIntent?.status === "succeeded") {
+        toast.success("Payment successful! Booking confirmed 🎉", { id: toastId });
+
+        setTimeout(() => {
+          navigate("/");
+        }, 800);
+
+        return;
+      }
+
+      toast.error(`Payment status: ${paymentIntent?.status}`, { id: toastId });
     } catch (error) {
-      console.error("Error during booking/payment:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Booking Failed",
-        text: error.message || "An unexpected error occurred.",
-      });
+      console.error(error);
+      toast.error(error.message || "Something went wrong", { id: toastId });
     } finally {
       setIsLoading(false);
     }
   };
 
+
   return (
-    <Box sx={{ padding: 4 }}>
-      <Grid container spacing={4}>
-        <Grid item xs={12} md={7}>
-          <Box>
-            <Typography variant="h4" fontWeight="bold">
-              Request to book
-            </Typography>
-          </Box>
-
-          <Divider sx={{ my: 2 }} />
-          <Typography variant="h6" fontWeight="bold">
-            Pay with Card
+    <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1200, mx: "auto" }}>
+      {/* Header */}
+      <Paper
+        elevation={0}
+        sx={{
+          p: { xs: 2.2, md: 2.8 },
+          borderRadius: 3,
+          border: "1px solid",
+          borderColor: "divider",
+          mb: 3,
+          background:
+            "linear-gradient(135deg, rgba(25,118,210,0.06), rgba(156,39,176,0.04))",
+        }}
+      >
+        <Stack spacing={0.5}>
+          <Typography variant="h5" fontWeight={900}>
+            Request to book
           </Typography>
-          <Box mt={2}>
-            <CardElement
-              options={{
-                style: {
-                  base: {
-                    fontSize: "16px",
-                    color: "#424770",
-                    "::placeholder": {
-                      color: "#aab7c4",
-                    },
-                  },
-                  invalid: {
-                    color: "#9e2146",
-                  },
-                },
+          <Typography variant="body2" color="text.secondary">
+            Review your trip details and complete payment securely.
+          </Typography>
+        </Stack>
+      </Paper>
+
+      <Grid container spacing={3}>
+        {/* LEFT */}
+        <Grid item xs={12} md={7}>
+          <Stack spacing={2.5}>
+            {/* Payment Card */}
+            <Paper
+              elevation={0}
+              sx={{
+                p: 2.5,
+                borderRadius: 3,
+                border: "1px solid",
+                borderColor: "divider",
               }}
-            />
-          </Box>
+            >
+              <Stack spacing={1.5}>
+                <Stack direction="row" alignItems="center" justifyContent="space-between">
+                  <Typography variant="h6" fontWeight={900}>
+                    Pay with card
+                  </Typography>
 
-          <Box mt={4}>
-            <Typography variant="h6" fontWeight="bold">
-              Your trip
-            </Typography>
-            <Divider sx={{ my: 2 }} />
-            <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <Typography variant="subtitle1" fontWeight={"bold"}>
-                  Dates
+                  <Chip
+                    icon={<LockIcon />}
+                    label="Secure checkout"
+                    size="small"
+                    sx={{
+                      borderRadius: 2,
+                      fontWeight: 800,
+                      bgcolor: "rgba(46,125,50,0.10)",
+                      color: "success.main",
+                    }}
+                  />
+                </Stack>
+
+                <Divider />
+
+                <Box
+                  sx={{
+                    p: 1.6,
+                    borderRadius: 2,
+                    border: "1px solid",
+                    borderColor: "divider",
+                    backgroundColor: "rgba(0,0,0,0.02)",
+                  }}
+                >
+                  <CardElement
+                    options={{
+                      hidePostalCode: true,
+                      style: {
+                        base: {
+                          fontSize: "16px",
+                          color: "#1f2937",
+                          "::placeholder": { color: "#9ca3af" },
+                        },
+                        invalid: { color: "#b91c1c" },
+                      },
+                    }}
+                  />
+                </Box>
+
+                <Typography variant="caption" color="text.secondary">
+                  Your card details are encrypted and processed by Stripe.
                 </Typography>
-                <Typography variant="subtitle1">
-                  {formatDateRange(
-                    bookingData?.startDate,
-                    bookingData?.endDate
-                  )}
-                </Typography>
+              </Stack>
+            </Paper>
+
+            {/* Trip Details */}
+            <Paper
+              elevation={0}
+              sx={{
+                p: 2.5,
+                borderRadius: 3,
+                border: "1px solid",
+                borderColor: "divider",
+              }}
+            >
+              <Typography variant="h6" fontWeight={900}>
+                Your trip
+              </Typography>
+
+              <Divider sx={{ my: 2 }} />
+
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <InfoTile
+                    icon={<CalendarMonthIcon />}
+                    title="Dates"
+                    value={formatDateRange(bookingData?.startDate, bookingData?.endDate)}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <InfoTile
+                    icon={<GroupIcon />}
+                    title="Guests"
+                    value={`${bookingData?.guestCapacity || 0}`}
+                  />
+                </Grid>
               </Grid>
-              <Grid item xs={6}>
-                <Typography variant="subtitle1" fontWeight={"bold"}>
-                  Guests
-                </Typography>
-                <Typography variant="subtitle1">
-                  {bookingData?.guestCapacity}
-                </Typography>
-              </Grid>
-            </Grid>
-          </Box>
+            </Paper>
 
-          <Box mt={4}>
-            <Typography variant="h6" fontWeight="bold">
-              Required for your trip
-            </Typography>
+            {/* Requirements */}
+            <Paper
+              elevation={0}
+              sx={{
+                p: 2.5,
+                borderRadius: 3,
+                border: "1px solid",
+                borderColor: "divider",
+              }}
+            >
+              <Typography variant="h6" fontWeight={900}>
+                Required for your trip
+              </Typography>
 
-            <Box mt={2}>
-              <Box mb={3}>
-                <Typography variant="h6" fontWeight="bold">
-                  Message the host
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Before you can continue, let Michelle know a little about your
-                  trip and why their place is a good fit.
-                </Typography>
-              </Box>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.6 }}>
+                Complete these items before requesting a booking.
+              </Typography>
 
-              <Box textAlign="right">
-                <Button variant="outlined" sx={{ mb: 2 }}>
-                  Add
-                </Button>
-              </Box>
+              <Divider sx={{ my: 2 }} />
 
-              {!user?.phoneNumber && (
-                <>
-                  <Box mb={3}>
-                    <Typography variant="h6" fontWeight="bold">
-                      Phone Number
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Add and confirm your phone number to get trip updates
-                    </Typography>
-                  </Box>
+              <Stack spacing={1.4}>
+                {/* <RequirementRow
+                  title="Message the host"
+                  description="Introduce yourself and share a quick note about your trip."
+                  actionLabel="Add"
+                  onAction={() => { }}
+                  status="required"
+                /> */}
 
-                  <Box textAlign="right">
-                    <Button
-                      variant="outlined"
-                      sx={{ mb: 2 }}
-                      onClick={() => navigate("/user/profile")}
-                    >
-                      Add
-                    </Button>
-                  </Box>
-                </>
-              )}
-              {!user?.photoProfile && (
-                <>
-                  <Box mb={3}>
-                    <Typography variant="h6" fontWeight="bold">
-                      Profile photo
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Hosts want to know who’s staying at their place.
-                    </Typography>
-                  </Box>
+                <RequirementRow
+                  title="Phone number"
+                  description="Add and confirm your phone number to get trip updates."
+                  actionLabel={missingPhone ? "Add" : "Completed"}
+                  onAction={() => navigate("/user/profile")}
+                  status={missingPhone ? "required" : "done"}
+                />
 
-                  <Box textAlign="right">
-                    <Button
-                      variant="outlined"
-                      sx={{ mb: 2 }}
-                      onClick={() => navigate("/user/profile")}
-                    >
-                      Add
-                    </Button>
-                  </Box>
-                </>
-              )}
-            </Box>
-          </Box>
-          <Box mt={4}>
-            <Typography variant="body2" color="text.secondary">
-              Cancellation policy: This reservation is non-refundable.
-            </Typography>
-          </Box>
+                <RequirementRow
+                  title="Profile photo"
+                  description="Hosts want to know who’s staying at their place."
+                  actionLabel={missingPhoto ? "Add" : "Completed"}
+                  onAction={() => navigate("/user/profile")}
+                  status={missingPhoto ? "required" : "done"}
+                />
+              </Stack>
+            </Paper>
+
+            {/* Policy */}
+            <Paper
+              elevation={0}
+              sx={{
+                p: 2.5,
+                borderRadius: 3,
+                border: "1px solid",
+                borderColor: "divider",
+                backgroundColor: "rgba(0,0,0,0.02)",
+              }}
+            >
+              <Typography variant="body2" color="text.secondary">
+                <b>Cancellation policy:</b> This reservation is non-refundable.
+              </Typography>
+            </Paper>
+          </Stack>
         </Grid>
 
+        {/* RIGHT */}
         <Grid item xs={12} md={5}>
-          <Box
-            sx={{
-              position: "sticky",
-              top: 100,
-            }}
-          >
-            <Card>
+          <Box sx={{ position: "sticky", top: 110 }}>
+            <Paper
+              elevation={0}
+              sx={{
+                borderRadius: 3,
+                border: "1px solid",
+                borderColor: "divider",
+                overflow: "hidden",
+              }}
+            >
               <CardMedia
                 component="img"
-                height="140"
+                height="170"
                 image={
-                  bookListing?.photos
-                    ? bookListing?.photos[0]
-                    : "https://via.placeholder.com/300"
+                  bookListing?.photos?.[0] || "https://via.placeholder.com/300"
                 }
-                alt="Luxury Pool Villa"
+                alt="Listing"
+                sx={{ objectFit: "cover" }}
               />
-              <CardContent>
-                <Typography variant="h6" fontWeight="bold">
-                  {bookListing?.title}
+
+              <Box sx={{ p: 2.3 }}>
+                <Typography variant="subtitle1" fontWeight={900}>
+                  {bookListing?.title || "Listing"}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  {bookListing?.roomType}
+                  {bookListing?.roomType || ""}
                 </Typography>
+
                 <Divider sx={{ my: 2 }} />
-                <Box>
-                  <Grid container justifyContent="space-between">
-                    <Typography variant="body2">
-                      For {bookingData?.nights} nights
-                    </Typography>
-                    <Typography variant="body2">
-                      Rs {bookingData?.priceForHouse}
-                    </Typography>
-                  </Grid>
-                  <Grid container justifyContent="space-between">
-                    <Typography variant="body2">Service fee</Typography>
-                    <Typography variant="body2">
-                      Rs {bookingData?.serviceFee}
-                    </Typography>
-                  </Grid>
-                  <Divider sx={{ my: 2 }} />
-                  <Grid container justifyContent="space-between">
-                    <Typography variant="subtitle1" fontWeight="bold">
-                      Total (PKR)
-                    </Typography>
-                    <Typography variant="subtitle1" fontWeight="bold">
-                      Rs {bookingData.total}
-                    </Typography>
-                  </Grid>
-                </Box>
-              </CardContent>
-            </Card>
+
+                <Stack spacing={1}>
+                  <PriceRow
+                    label={`For ${bookingData?.nights || 0} nights`}
+                    value={`Rs ${bookingData?.priceForHouse || 0}`}
+                  />
+                  <PriceRow
+                    label="Service fee"
+                    value={`Rs ${bookingData?.serviceFee || 0}`}
+                  />
+                </Stack>
+
+                <Divider sx={{ my: 2 }} />
+
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                  <Typography fontWeight={900}>Total (PKR)</Typography>
+                  <Typography fontWeight={900}>Rs {bookingData?.total || 0}</Typography>
+                </Stack>
+
+                <Divider sx={{ my: 2 }} />
+
+                <Button
+                  variant="contained"
+                  fullWidth
+                  onClick={handleReserve}
+                  disabled={isLoading || missingPhone || missingPhoto}
+                  endIcon={
+                    isLoading ? null : <ArrowForwardIcon />
+                  }
+                  sx={{
+                    py: 1.35,
+                    borderRadius: 2,
+                    textTransform: "none",
+                    fontWeight: 900,
+                    boxShadow: "0 12px 30px rgba(25,118,210,0.25)",
+                    "&:hover": {
+                      transform: isLoading ? "none" : "translateY(-1px)",
+                      boxShadow: isLoading
+                        ? "0 12px 30px rgba(25,118,210,0.25)"
+                        : "0 16px 35px rgba(25,118,210,0.35)",
+                    },
+                    transition: "all 0.18s ease",
+                  }}
+                >
+                  {isLoading ? (
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <CircularProgress size={18} color="inherit" />
+                      <span>Processing...</span>
+                    </Stack>
+                  ) : (
+                    "Request to Book"
+                  )}
+                </Button>
+
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ display: "block", mt: 1.3, textAlign: "center", lineHeight: 1.6 }}
+                >
+                  <b>Your reservation won’t be confirmed</b> until the host accepts your request
+                  (within 24 hours). You won’t be charged until then.
+                </Typography>
+              </Box>
+            </Paper>
           </Box>
         </Grid>
       </Grid>
+    </Box>
+  );
+};
 
-      <Box mt={4}>
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{
-            mt: 3,
-            padding: "10px",
-            fontWeight: "bold",
-            letterSpacing: 1,
-            textTransform: "uppercase",
-            "&:hover": {
-              backgroundColor: "primary.dark",
-            },
-            marginBottom: "10px",
-          }}
-          size="small"
-          onClick={handleReserve}
-        //   disabled={!!errors.cardNumber || !!errors.expiration || !!errors.cvv}
-        >
-          Request to Book
-        </Button>
-        <br />
-        <Typography variant="caption" textAlign="center">
-          <b>
-            Your reservation won’t be confirmed until the Host accepts your
-            request (within 24 hours).
-          </b>{" "}
-          You won’t be charged until then.
+/* ------------------- Small UI Components ------------------- */
+
+const InfoTile = ({ icon, title, value }) => {
+  return (
+    <Box
+      sx={{
+        p: 1.8,
+        borderRadius: 2.5,
+        border: "1px solid",
+        borderColor: "divider",
+        backgroundColor: "rgba(255,255,255,0.55)",
+        display: "flex",
+        gap: 1.2,
+        alignItems: "flex-start",
+      }}
+    >
+      <Box
+        sx={{
+          width: 38,
+          height: 38,
+          borderRadius: 2,
+          display: "grid",
+          placeItems: "center",
+          backgroundColor: "rgba(25,118,210,0.10)",
+          color: "primary.main",
+          flexShrink: 0,
+        }}
+      >
+        {icon}
+      </Box>
+
+      <Box>
+        <Typography variant="caption" color="text.secondary" fontWeight={800}>
+          {title}
+        </Typography>
+        <Typography fontWeight={900} sx={{ mt: 0.2 }}>
+          {value}
         </Typography>
       </Box>
     </Box>
+  );
+};
+
+const RequirementRow = ({ title, description, actionLabel, onAction, status }) => {
+  const isDone = status === "done";
+
+  return (
+    <Box
+      sx={{
+        p: 1.8,
+        borderRadius: 2.5,
+        border: "1px solid",
+        borderColor: "divider",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 2,
+      }}
+    >
+      <Box sx={{ display: "flex", gap: 1.2, alignItems: "flex-start" }}>
+        <Box sx={{ mt: 0.2 }}>
+          {isDone ? (
+            <CheckCircleIcon sx={{ color: "success.main" }} />
+          ) : (
+            <ErrorIcon sx={{ color: "warning.main" }} />
+          )}
+        </Box>
+
+        <Box>
+          <Typography fontWeight={900}>{title}</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.2 }}>
+            {description}
+          </Typography>
+        </Box>
+      </Box>
+
+      <Button
+        variant={isDone ? "outlined" : "contained"}
+        onClick={onAction}
+        disabled={isDone}
+        sx={{
+          borderRadius: 2,
+          textTransform: "none",
+          fontWeight: 900,
+          minWidth: 110,
+        }}
+      >
+        {actionLabel}
+      </Button>
+    </Box>
+  );
+};
+
+const PriceRow = ({ label, value }) => {
+  return (
+    <Stack direction="row" justifyContent="space-between" alignItems="center">
+      <Typography variant="body2" color="text.secondary">
+        {label}
+      </Typography>
+      <Typography variant="body2" fontWeight={900}>
+        {value}
+      </Typography>
+    </Stack>
   );
 };
 

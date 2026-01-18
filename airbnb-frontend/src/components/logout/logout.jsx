@@ -19,11 +19,11 @@ const handleLogout = async (navigate) => {
 
     const response = await axios.post(`${apiKey}/logout`, {}, config);
 
-    console.log("Logout successful:", response.data);
+    window.location.reload();
 
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    navigate("/"); 
+    navigate("/");
   } catch (error) {
     console.error("Logout error:", error.message || error);
   }

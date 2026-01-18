@@ -9,7 +9,7 @@ const App = () => {
   return (
     <Suspense fallback={<Loader open={true} />}>
       <ToastNotification />
-      <Toaster />
+      <Toaster position="top-right" reverseOrder={false} />
       <Router />
     </Suspense>
   )

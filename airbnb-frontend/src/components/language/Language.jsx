@@ -7,8 +7,12 @@ import {
   Grid,
   IconButton,
   Divider,
+  Box,
+  Paper,
+  Stack,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "../../context/context";
 
@@ -17,20 +21,64 @@ const Language = ({ open, toggleModal }) => {
   const { setLanguage } = useAppContext();
 
   const languages = [
-    { code: "en", lang: "English" },
-    { code: "zh", lang: "Chinese" },
+    { code: "en", lang: "English", region: "United States" },
+    { code: "zh", lang: "Chinese", region: "China" },
   ];
 
   const otherLanguages = [
-    { code: "tr", lang: "Turkish" },
-    { code: "ar", lang: "Arabic" },
-    { code: "ur", lang: "Urdu" },
-    { code: "fr", lang: "French" },
-    { code: "de", lang: "German" },
+    { code: "tr", lang: "Turkish", region: "Türkiye" },
+    { code: "ar", lang: "Arabic", region: "Middle East" },
+    { code: "ur", lang: "Urdu", region: "Pakistan" },
+    { code: "fr", lang: "French", region: "France" },
+    { code: "de", lang: "German", region: "Germany" },
   ];
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
+  };
+
+  const LanguageCard = ({ lng }) => {
+    const isActive = i18n.language === lng.code;
+
+    return (
+      <Paper
+        elevation={0}
+        onClick={() => {
+          setLanguage({ code: lng.code, lang: lng.lang });
+          changeLanguage(lng.code);
+          toggleModal();
+        }}
+        sx={{
+          p: 1.6,
+          borderRadius: 3,
+          border: "1px solid",
+          borderColor: isActive ? "text.primary" : "divider",
+          cursor: "pointer",
+          transition: "all 0.18s ease",
+          backgroundColor: isActive ? "rgba(0,0,0,0.03)" : "white",
+          "&:hover": {
+            transform: "translateY(-2px)",
+            boxShadow: "0 18px 45px rgba(0,0,0,0.10)",
+            borderColor: "text.primary",
+          },
+        }}
+      >
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Box>
+            <Typography sx={{ fontWeight: 900, fontSize: 14 }}>
+              {lng.lang}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.3 }}>
+              {lng.region}
+            </Typography>
+          </Box>
+
+          {isActive && (
+            <CheckCircleIcon sx={{ fontSize: 20, color: "success.main" }} />
+          )}
+        </Stack>
+      </Paper>
+    );
   };
 
   return (
@@ -40,82 +88,84 @@ const Language = ({ open, toggleModal }) => {
       fullWidth
       maxWidth="md"
       PaperProps={{
-        style: {
-          height: "50vh",
-          borderRadius: "10px",
+        sx: {
+          borderRadius: 4,
+          overflow: "hidden",
         },
       }}
     >
+      {/* Header */}
       <DialogTitle
-        style={{
+        sx={{
+          px: 3,
+          py: 2,
           display: "flex",
-          justifyContent: "space-between",
           alignItems: "center",
+          justifyContent: "space-between",
+          borderBottom: "1px solid",
+          borderColor: "divider",
+          backgroundColor: "rgba(255,255,255,0.92)",
+          backdropFilter: "blur(10px)",
         }}
       >
-        <Typography variant="h5" fontWeight={"bold"}>Language and region</Typography>
-        {/* Close Button */}
-        <IconButton onClick={toggleModal}>
+        <Box>
+          <Typography variant="h6" fontWeight={900}>
+            Language & Region
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.3 }}>
+            Select your preferred language for a better experience.
+          </Typography>
+        </Box>
+
+        <IconButton
+          onClick={toggleModal}
+          sx={{
+            borderRadius: 2,
+            "&:hover": { backgroundColor: "rgba(0,0,0,0.06)" },
+          }}
+        >
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      <DialogContent>
-        {/* Language Options */}
-        <Typography variant="body1" style={{ marginBottom: "10px" }}>
-          Choose a language
-          <Divider style={{ margin: "20px 0" }}/>
-        </Typography>
-        <Grid container spacing={2}>
-          {/* First, display English and Chinese */}
-          {languages.map((lng) => (
-            <Grid item xs={6} sm={4} key={lng.code}>
-              <Typography
-                variant="body2"
-                style={{
-                  cursor: "pointer",
-                  fontWeight: i18n.language === lng.code ? "bold" : "normal",
-                  border: i18n.language === lng.code ? "1px solid black" : "none",
-                  padding: "4px",
-                  borderRadius: "10px",
-                  textAlign: "center",
-                  width: "50%"
-                }}
-                onClick={() => {
-                  setLanguage(lng);
-                  changeLanguage(lng.code);
-                }}
-              >
-                {lng.lang}
-              </Typography>
-            </Grid>
-          ))}
-        </Grid>
-        <Divider style={{ margin: "20px 0" }} />
-        <Grid container spacing={2}>
-          {/* Other languages */}
-          {otherLanguages.map((lng) => (
-            <Grid item xs={6} sm={4} key={lng.code}>
-              <Typography
-                variant="body2"
-                style={{
-                  cursor: "pointer",
-                  fontWeight: i18n.language === lng.code ? "bold" : "normal",
-                  border: i18n.language === lng.code ? "1px solid black" : "none",
-                  padding: "4px",
-                  borderRadius: "10px",
-                  textAlign: "center",
-                  width: "50%"
-                }}
-                onClick={() => {
-                  setLanguage(lng);
-                  changeLanguage(lng.code);
-                }}
-              >
-                {lng.lang}
-              </Typography>
-            </Grid>
-          ))}
-        </Grid>
+
+      {/* Body */}
+      <DialogContent
+        sx={{
+          px: 3,
+          py: 3,
+          maxHeight: "65vh",
+        }}
+      >
+        {/* Primary Languages */}
+        <Box sx={{ mb: 2 }}>
+          <Typography fontWeight={900} sx={{ mb: 1 }}>
+            Recommended
+          </Typography>
+          <Grid container spacing={2}>
+            {languages.map((lng) => (
+              <Grid item xs={12} sm={6} md={4} key={lng.code}>
+                <LanguageCard lng={lng} />
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+
+        <Divider sx={{ my: 3 }} />
+
+        {/* Other Languages */}
+        <Box>
+          <Typography fontWeight={900} sx={{ mb: 1 }}>
+            More languages
+          </Typography>
+
+          <Grid container spacing={2}>
+            {otherLanguages.map((lng) => (
+              <Grid item xs={12} sm={6} md={4} key={lng.code}>
+                <LanguageCard lng={lng} />
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
       </DialogContent>
     </Dialog>
   );

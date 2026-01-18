@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Box,
   AppBar,
@@ -12,9 +12,16 @@ import {
   CardContent,
   Skeleton,
   Tooltip,
+  Chip,
+  Button,
+  InputAdornment,
+  Divider,
+  Stack,
+  Paper,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
+import CloseIcon from "@mui/icons-material/Close";
 import useDocumentTitle from "../../hooks/dynamicTitle/dynamicTitle";
 import { useNavigate } from "react-router-dom";
 import { fetchDataById } from "../../config/ServiceApi/serviceApi";
@@ -23,10 +30,12 @@ const ListingPage = () => {
   const [listing, setListing] = useState([]);
   const [tempListing, setTempListing] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filteredListing, setFilteredListing] = useState([]);
+
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
-  useDocumentTitle("Listings - Airbnb");
+
+  useDocumentTitle("Listings - ThePakbnb");
+
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user"));
 
@@ -34,202 +43,327 @@ const ListingPage = () => {
     const fetchOptions = async () => {
       try {
         const response = await fetchDataById("listings", token, user?._id);
-        setListing(response.confirmedListings);
-        setTempListing(response.temporaryListings);
-        setFilteredListing(response.confirmedListings);
-        console.log(response);
+        setListing(response?.confirmedListings || []);
+        setTempListing(response?.temporaryListings || []);
       } catch (error) {
-        console.error("Failed to fetch options:", error);
+        console.error("Failed to fetch listings:", error);
       } finally {
         setLoading(false);
       }
     };
+
     fetchOptions();
-  }, []);
+  }, [token, user?._id]);
 
-  const formatAddress = (address) => {
-    if (!address) return "";
+  const formatAddress = (item) => {
+    if (!item) return "Address not available";
 
-    const formatted = [
-      address?.flat,
-      address?.city,
-      address?.postcode,
-      address?.country,
-    ]
-      .filter((field) => field)
+    const formatted = [item?.flat, item?.city, item?.postcode, item?.country]
+      .filter(Boolean)
       .join(", ");
 
     return formatted || "Address not available";
   };
 
-  const handleSearchChange = (e) => {
-    const query = e.target.value.toLowerCase();
-    setSearchQuery(query);
+  const filteredConfirmed = useMemo(() => {
+    if (!searchQuery?.trim()) return listing;
+    const q = searchQuery.toLowerCase();
+    return listing.filter((item) => item?.title?.toLowerCase().includes(q));
+  }, [listing, searchQuery]);
 
-    const filtered = listing.filter((item) =>
-      item.title.toLowerCase().includes(query)
+  const filteredTemp = useMemo(() => {
+    if (!searchQuery?.trim()) return tempListing;
+    const q = searchQuery.toLowerCase();
+    return tempListing.filter((item) => item?.title?.toLowerCase().includes(q));
+  }, [tempListing, searchQuery]);
+
+  const renderCardSkeletons = () =>
+    Array.from({ length: 6 }).map((_, index) => (
+      <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+        <Card
+          sx={{
+            borderRadius: 4,
+            border: "1px solid",
+            borderColor: "divider",
+            overflow: "hidden",
+          }}
+        >
+          <Skeleton variant="rectangular" width="100%" height={210} />
+          <CardContent>
+            <Skeleton variant="text" width="75%" height={30} />
+            <Skeleton variant="text" width="90%" height={20} />
+            <Skeleton variant="text" width="40%" height={20} />
+          </CardContent>
+        </Card>
+      </Grid>
+    ));
+
+  const ListingCard = ({ item, status }) => {
+    const isVerified = status === "verified";
+
+    return (
+      <Card
+        onClick={() => navigate(`/rooms/${item._id}`)}
+        sx={{
+          borderRadius: 4,
+          border: "1px solid",
+          borderColor: "divider",
+          overflow: "hidden",
+          cursor: "pointer",
+          transition: "0.25s ease",
+          "&:hover": {
+            transform: "translateY(-4px)",
+            boxShadow: "0 18px 50px rgba(0,0,0,0.12)",
+          },
+        }}
+      >
+        <Box sx={{ position: "relative" }}>
+          <CardMedia
+            component="img"
+            height="210"
+            image={item?.photos?.[0] || "/fallback-image.jpg"}
+            alt={item?.title || "Listing"}
+            sx={{ objectFit: "cover" }}
+          />
+
+          <Chip
+            label={isVerified ? "Verified" : "Pending review"}
+            size="small"
+            sx={{
+              position: "absolute",
+              top: 12,
+              left: 12,
+              borderRadius: "999px",
+              fontWeight: 900,
+              bgcolor: isVerified ? "rgba(0,0,0,0.85)" : "rgba(255,56,92,0.92)",
+              color: "#fff",
+            }}
+          />
+        </Box>
+
+        <CardContent sx={{ p: 2 }}>
+          <Typography
+            variant="subtitle1"
+            fontWeight={900}
+            sx={{
+              display: "-webkit-box",
+              WebkitLineClamp: 1,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+            }}
+          >
+            {item?.title || "Untitled listing"}
+          </Typography>
+
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{
+              mt: 0.6,
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+              minHeight: 38,
+            }}
+          >
+            {formatAddress(item)}
+          </Typography>
+
+          <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mt: 1.5 }}>
+            <Typography variant="caption" color="text.secondary" fontWeight={800}>
+              View →
+            </Typography>
+          </Stack>
+        </CardContent>
+      </Card>
     );
-    setFilteredListing(filtered);
   };
 
   return (
-    <Box>
-      <AppBar position="static" color="transparent" elevation={0}>
-        <Toolbar sx={{ justifyContent: "space-between" }}>
-          <Typography variant="h5" fontWeight="bold">
-            Your Listings
-          </Typography>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+    <Box sx={{ bgcolor: "#fff", minHeight: "100vh" }}>
+      {/* Header */}
+      <AppBar
+        position="sticky"
+        color="transparent"
+        elevation={0}
+        sx={{
+          borderBottom: "1px solid",
+          borderColor: "divider",
+          backdropFilter: "blur(10px)",
+          backgroundColor: "rgba(255,255,255,0.9)",
+        }}
+      >
+        <Toolbar
+          sx={{
+            justifyContent: "space-between",
+            gap: 2,
+            flexDirection: { xs: "column", md: "row" },
+            alignItems: { xs: "stretch", md: "center" },
+            py: 2,
+          }}
+        >
+          {/* Left */}
+          <Box sx={{ textAlign: { xs: "center", md: "left" } }}>
+            <Typography variant="h5" fontWeight={900}>
+              Your Listings
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Manage verified and pending listings in one place.
+            </Typography>
+          </Box>
+
+          {/* Right */}
+          <Stack
+            direction={{ xs: "column", sm: "row" }}
+            spacing={1.5}
+            alignItems="stretch"
+            sx={{
+              width: { xs: "100%", md: "auto" },
+              justifyContent: "flex-end",
+            }}
+          >
             <TextField
-              variant="outlined"
-              placeholder="Search"
+              placeholder="Search listings..."
               size="small"
-              sx={{ borderRadius: 2 }}
               value={searchQuery}
-              onChange={handleSearchChange}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              sx={{
+                width: { xs: "100%", sm: 260, md: 320 },
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: "999px",
+                  bgcolor: "#fafafa",
+                },
+              }}
               InputProps={{
-                startAdornment: <SearchIcon sx={{ marginRight: 1 }} />,
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: "text.secondary" }} />
+                  </InputAdornment>
+                ),
+                endAdornment: searchQuery ? (
+                  <InputAdornment position="end">
+                    <IconButton size="small" onClick={() => setSearchQuery("")}>
+                      <CloseIcon fontSize="small" />
+                    </IconButton>
+                  </InputAdornment>
+                ) : null,
               }}
             />
-            <Tooltip title="Create Listing" arrow>
-              <IconButton
-                color="primary"
-                sx={{
-                  backgroundColor: "#f5f5f5",
-                  borderRadius: "50%",
-                }}
-                onClick={() => navigate("/listingSteps")}
-              >
-                <AddIcon sx={{ color: "black" }} />
-              </IconButton>
-            </Tooltip>
-          </Box>
+
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => navigate("/listingSteps")}
+              sx={{
+                width: { xs: "100%", sm: "auto" },
+                borderRadius: "999px",
+                textTransform: "none",
+                fontWeight: 900,
+                px: 2,
+                boxShadow: "0 12px 30px rgba(0,0,0,0.12)",
+              }}
+            >
+              New Listing
+            </Button>
+          </Stack>
         </Toolbar>
+
       </AppBar>
 
-      <Box sx={{ padding: 3 }}>
-        <Typography variant="h6" fontWeight="bold" sx={{ marginBottom: 2 }}>
-          Confirmed Listings
-        </Typography>
-        <Grid container spacing={3}>
+      {/* Body */}
+      <Box sx={{ px: { xs: 2, md: 3 }, py: 3 }}>
+        {/* Confirmed */}
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
+          <Typography variant="h6" fontWeight={900}>
+            Confirmed Listings
+          </Typography>
+          <Chip
+            label={`${filteredConfirmed?.length || 0} items`}
+            variant="outlined"
+            sx={{ borderRadius: "999px", fontWeight: 800 }}
+          />
+        </Stack>
+
+        <Grid container spacing={2.5}>
           {loading ? (
-            Array.from({ length: 4 }).map((_, index) => (
-              <Grid item xs={12} sm={6} md={4} key={index}>
-                <Card
-                  sx={{
-                    borderRadius: 3,
-                    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-                    height: "25rem",
-                  }}
-                >
-                  <Box sx={{ position: "relative" }}>
-                    <Skeleton
-                      variant="rectangular"
-                      width="100%"
-                      height={280}
-                      sx={{ borderRadius: "12px 12px 0 0" }}
-                    />
-                  </Box>
-                  <CardContent>
-                    <Skeleton variant="text" width="80%" height={30} />
-                    <Skeleton variant="text" width="90%" height={20} />
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))
-          ) : filteredListing.length === 0 ? (
+            renderCardSkeletons()
+          ) : filteredConfirmed.length === 0 ? (
             <Grid item xs={12}>
-              <Typography variant="h6" align="center" color="text.secondary">
-                No confirmed listings available
-              </Typography>
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 4,
+                  borderRadius: 4,
+                  border: "1px dashed",
+                  borderColor: "divider",
+                  textAlign: "center",
+                }}
+              >
+                <Typography variant="h6" fontWeight={900}>
+                  No confirmed listings found
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                  Try adjusting your search or create a new listing.
+                </Typography>
+
+                <Button
+                  variant="contained"
+                  sx={{ mt: 2, borderRadius: "999px", fontWeight: 900, textTransform: "none" }}
+                  onClick={() => navigate("/listingSteps")}
+                >
+                  Create Listing
+                </Button>
+              </Paper>
             </Grid>
           ) : (
-            filteredListing.map((listing) => (
-              <Grid item xs={12} sm={6} md={4} key={listing._id}>
-                <Card
-                  sx={{
-                    borderRadius: 3,
-                    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-                    transition: "transform 0.3s",
-                    "&:hover": { transform: "scale(1.02)" },
-                    height: "25rem",
-                  }}
-                >
-                  <Box sx={{ position: "relative" }}>
-                    <CardMedia
-                      component="img"
-                      height="280"
-                      image={listing?.photos[0]}
-                      alt={listing.title}
-                      sx={{ borderRadius: "12px 12px 0 0" }}
-                    />
-                  </Box>
-                  <CardContent>
-                    <Typography variant="h6" fontWeight="bold">
-                      {listing.title}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ marginTop: 1 }}
-                    >
-                      {formatAddress(listing)}
-                    </Typography>
-                  </CardContent>
-                </Card>
+            filteredConfirmed.map((item) => (
+              <Grid item xs={12} sm={6} md={4} lg={3} key={item._id}>
+                <ListingCard item={item} status="verified" />
               </Grid>
             ))
           )}
         </Grid>
 
-        <Typography
-          variant="h6"
-          fontWeight="bold"
-          sx={{ marginTop: 4, marginBottom: 2 }}
-        >
-          Not Verified Listings
-        </Typography>
-        <Grid container spacing={3}>
-          {tempListing.length === 0 ? (
+        <Divider sx={{ my: 4 }} />
+
+        {/* Pending */}
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
+          <Typography variant="h6" fontWeight={900}>
+            Pending Verification
+          </Typography>
+          <Chip
+            label={`${filteredTemp?.length || 0} items`}
+            variant="outlined"
+            sx={{ borderRadius: "999px", fontWeight: 800 }}
+          />
+        </Stack>
+
+        <Grid container spacing={2.5}>
+          {!loading && filteredTemp.length === 0 ? (
             <Grid item xs={12}>
-              <Typography variant="h6" align="center" color="text.secondary">
-                No listings available
-              </Typography>
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 4,
+                  borderRadius: 4,
+                  border: "1px dashed",
+                  borderColor: "divider",
+                  textAlign: "center",
+                }}
+              >
+                <Typography variant="h6" fontWeight={900}>
+                  No pending listings
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                  Everything looks good — no listings are waiting for review.
+                </Typography>
+              </Paper>
             </Grid>
           ) : (
-            tempListing.map((temp) => (
-              <Grid item xs={12} sm={6} md={4} key={temp._id}>
-                <Card
-                  sx={{
-                    borderRadius: 3,
-                    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-                    transition: "transform 0.3s",
-                    "&:hover": { transform: "scale(1.02)" },
-                    height: "25rem",
-                  }}
-                >
-                  <Box sx={{ position: "relative" }}>
-                    <CardMedia
-                      component="img"
-                      height="280"
-                      image={temp?.photos[0]}
-                      alt={temp.title}
-                      sx={{ borderRadius: "12px 12px 0 0" }}
-                    />
-                  </Box>
-                  <CardContent>
-                    <Typography variant="h6" fontWeight="bold">
-                      {temp.title}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ marginTop: 1 }}
-                    >
-                      {formatAddress(temp)}
-                    </Typography>
-                  </CardContent>
-                </Card>
+            filteredTemp.map((item) => (
+              <Grid item xs={12} sm={6} md={4} lg={3} key={item._id}>
+                <ListingCard item={item} status="pending" />
               </Grid>
             ))
           )}

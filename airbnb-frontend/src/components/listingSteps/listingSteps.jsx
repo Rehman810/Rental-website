@@ -339,8 +339,8 @@ function ListingSteps() {
               {activeStep === 0
                 ? "Get Started"
                 : activeStep === steps.length - 1
-                ? "Finish"
-                : "Next"}
+                  ? "Finish"
+                  : "Next"}
               {theme.direction === "rtl" ? (
                 <KeyboardArrowLeft />
               ) : (

@@ -1,43 +1,62 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { Box, Button, Grid, Skeleton, Typography } from "@mui/material";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
+import {
+  Box,
+  Button,
+  Grid,
+  Skeleton,
+  Typography,
+  Container,
+  Paper,
+  Stack,
+  Chip,
+  IconButton,
+} from "@mui/material";
+import MapIcon from "@mui/icons-material/Map";
+import ViewListIcon from "@mui/icons-material/ViewList";
+import CloseIcon from "@mui/icons-material/Close";
 import { useTranslation } from "react-i18next";
 import { fetchData } from "../../config/ServiceApi/serviceApi";
 import { useAppContext } from "../../context/context";
 import Card from "../../components/cards/cards";
 import LeafletMap from "../../components/map/map";
 
-// Memoize Card component to prevent unnecessary re-renders
 const MemoizedCard = React.memo(({ data }) => <Card data={data} />);
 
 const Home = () => {
   const { t } = useTranslation();
-  const [listing, setListing] = useState([]); // All listings
-  const [filteredData, setFilteredData] = useState([]); // Filtered listings
-  const [loading, setLoading] = useState(true); // Indicates if initial data is loading
-  const [loadingMore, setLoadingMore] = useState(false); // Tracks if more data is loading
+  const { searchParams } = useAppContext();
+
+  const [listing, setListing] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMoreData, setHasMoreData] = useState(true);
+
   const [mapVisible, setMapVisible] = useState(false);
   const [showMapButton, setShowMapButton] = useState(true);
-  const [page, setPage] = useState(1); // Start from page 1
-  const [limit] = useState(6); // Items per page
-  const [hasMoreData, setHasMoreData] = useState(true); // Flag to track if more data exists
 
-  const { searchParams } = useAppContext();
+  const [page, setPage] = useState(1);
+  const limit = 6;
+
   const user = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
 
-  // Function to load and filter data based on searchParams
+  // ✅ Filtered results label
+  const activeSearchLabel = useMemo(() => {
+    if (!searchParams?.destination) return null;
+    return searchParams.destination?.split(",")[0]?.trim();
+  }, [searchParams]);
+
+  // Filter logic
   useEffect(() => {
-    if (listing?.length === 0) {
+    if (!listing?.length) {
       setFilteredData([]);
       return;
     }
 
-    if (
-      !searchParams ||
-      !searchParams.destination ||
-      !searchParams.checkIn ||
-      !searchParams.checkOut
-    ) {
+    if (!searchParams?.destination || !searchParams?.checkIn || !searchParams?.checkOut) {
+      setFilteredData(listing);
       return;
     }
 
@@ -52,74 +71,56 @@ const Home = () => {
       const isAvailable = !product?.bookings?.some((booking) => {
         const bookingStart = new Date(booking.startDate);
         const bookingEnd = new Date(booking.endDate);
-
-        const isOverlap =
-          checkInDate < bookingEnd && checkOutDate > bookingStart;
-        return isOverlap;
+        return checkInDate < bookingEnd && checkOutDate > bookingStart;
       });
 
-      const guests = searchParams.guests <= product.guestCapacity;
+      const guestsOk = searchParams.guests <= product.guestCapacity;
 
-      return cityMatches && isAvailable && guests;
+      return cityMatches && isAvailable && guestsOk;
     });
 
     setFilteredData(filteredProducts);
   }, [searchParams, listing]);
 
-  // Fetch data on page change
+  // Fetch on page change
   useEffect(() => {
     const fetchOptions = async () => {
       try {
-        setLoadingMore(true); // Set loadingMore to true when starting to fetch new data
+        setLoadingMore(true);
+
         const response = await fetchData(
-          `all-listring?page=${page}&limit=${limit}${token ? `&userId=${user._id}` : ""}`,
+          `all-listring?page=${page}&limit=${limit}${token ? `&userId=${user?._id}` : ""}`,
           token
         );
-        console.log(page);
-        
-        console.log(response);
 
-        // Check if the new listings are already in the current list
-        if (response.listings.length > 0) {
-          setListing((prevListing) => {
-            const newListings = response.listings.filter(
-              (newItem) => !prevListing.some((item) => item._id === newItem._id)
-            );
-            return [...prevListing, ...newListings];
+        const newList = response?.listings || [];
+
+        if (newList.length > 0) {
+          setListing((prev) => {
+            const unique = newList.filter((n) => !prev.some((p) => p._id === n._id));
+            return [...prev, ...unique];
           });
 
-          setFilteredData((prevFilteredData) => {
-            const newFilteredData = response.listings.filter(
-              (newItem) => !prevFilteredData.some((item) => item._id === newItem._id)
-            );
-            return [...prevFilteredData, ...newFilteredData];
-          });
-
-          setHasMoreData(true); 
+          setHasMoreData(true);
         } else {
-          setHasMoreData(false); // Set flag to false if no new data is received
+          setHasMoreData(false);
         }
       } catch (error) {
-        console.error("Failed to fetch options:", error);
+        console.error("Failed to fetch listings:", error);
         setHasMoreData(false);
-        setLoading(false);
       } finally {
-        setLoading(false); // Set loading to false when data is fetched
-        setLoadingMore(false); // Set loadingMore to false when new data is loaded
+        setLoading(false);
+        setLoadingMore(false);
       }
     };
 
-    if (hasMoreData && !loadingMore) {
-      fetchOptions();
-    }
-  }, [page, token, limit, hasMoreData]);
+    if (hasMoreData && !loadingMore) fetchOptions();
+  }, [page]);
 
-  // Memoize toggleMapVisibility function to prevent re-creation on every render
   const toggleMapVisibility = useCallback(() => {
     setMapVisible((prev) => !prev);
   }, []);
 
-  // Memoize handleScroll function to prevent re-creation on every render
   const handleScroll = useCallback(() => {
     const footerHeight = 280;
     const scrollY = window.scrollY + window.innerHeight;
@@ -127,95 +128,107 @@ const Home = () => {
 
     setShowMapButton(scrollY < documentHeight - footerHeight);
 
-    // Trigger fetch when user reaches the bottom
     if (scrollY >= documentHeight - footerHeight && !loadingMore && hasMoreData) {
-      setPage((prevPage) => prevPage + 1); // Increment page number
+      setPage((prev) => prev + 1);
     }
   }, [loadingMore, hasMoreData]);
 
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
 
   return (
-    <div>
+    <Box sx={{ minHeight: "100vh", pb: 6 }}>
+      {/* MAP VIEW */}
       {mapVisible ? (
         <Box
           sx={{
             position: "fixed",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            top: 0,
-            height: "100vh",
-            transition: "height 0.3s ease-in-out",
+            inset: 0,
+            zIndex: 1300,
+            backgroundColor: "background.paper",
           }}
         >
+          {/* Top Bar */}
+          <Paper
+            elevation={0}
+            sx={{
+              position: "absolute",
+              top: 16,
+              left: "50%",
+              transform: "translateX(-50%)",
+              zIndex: 10,
+              px: 2,
+              py: 1,
+              borderRadius: 3,
+              border: "1px solid",
+              borderColor: "divider",
+              backdropFilter: "blur(10px)",
+              backgroundColor: "rgba(255,255,255,0.9)",
+            }}
+          >
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <Typography fontWeight={900}>
+                {t("home.showMap")}
+              </Typography>
+              <IconButton size="small" onClick={toggleMapVisibility}>
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            </Stack>
+          </Paper>
+
           <LeafletMap
-            latitude={filteredData[0]?.latitude || 24.8607}
-            longitude={filteredData[0]?.longitude || 67.0011}
+            latitude={filteredData?.[0]?.latitude || 24.8607}
+            longitude={filteredData?.[0]?.longitude || 67.0011}
             steps={true}
           />
         </Box>
       ) : (
-        <Box sx={{ flexGrow: 1, p: 2 }}>
-          <Grid container spacing={2}>
+        // LIST VIEW
+        <Container maxWidth="xl" sx={{ pt: 2 }}>
+          {/* Grid */}
+          <Grid container spacing={2.2}>
             {loading ? (
               Array.from({ length: 12 }).map((_, index) => (
                 <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
-                  <Box
+                  <Paper
+                    elevation={0}
                     sx={{
-                      height: 380,
-                      borderRadius: 2,
+                      borderRadius: 3,
+                      border: "1px solid",
+                      borderColor: "divider",
                       overflow: "hidden",
-                      boxShadow: 2,
                     }}
                   >
-                    <Skeleton
-                      variant="rectangular"
-                      width="100%"
-                      height={220}
-                      sx={{ borderRadius: 2 }}
-                    />
-                    <Skeleton
-                      variant="text"
-                      width="80%"
-                      height={32}
-                      sx={{ mt: 1, mx: 2 }}
-                    />
-                    <Skeleton
-                      variant="text"
-                      width="90%"
-                      height={20}
-                      sx={{ mt: 1, mx: 2 }}
-                    />
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        mt: 1,
-                        mx: 2,
-                      }}
-                    >
-                      <Skeleton variant="circular" width={20} height={20} />
-                      <Skeleton
-                        variant="text"
-                        width="30%"
-                        height={20}
-                        sx={{ ml: 1 }}
-                      />
+                    <Skeleton variant="rectangular" width="100%" height={220} />
+                    <Box sx={{ p: 2 }}>
+                      <Skeleton variant="text" width="75%" height={28} />
+                      <Skeleton variant="text" width="90%" height={18} />
+                      <Skeleton variant="text" width="50%" height={18} />
                     </Box>
-                  </Box>
+                  </Paper>
                 </Grid>
               ))
-            ) : listing?.length === 0 ? (
+            ) : filteredData?.length === 0 ? (
               <Grid item xs={12}>
-                <Typography variant="h6" align="center" color="text.secondary">
-                  {t("home.noListingsPresent")}
-                </Typography>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 4,
+                    borderRadius: 3,
+                    border: "1px solid",
+                    borderColor: "divider",
+                    textAlign: "center",
+                  }}
+                >
+                  <Typography variant="h6" fontWeight={900}>
+                    No stays found
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.6 }}>
+                    Try changing your dates, destination or guest count.
+                  </Typography>
+                </Paper>
               </Grid>
             ) : (
               filteredData?.map((item) => (
@@ -225,83 +238,58 @@ const Home = () => {
               ))
             )}
 
-            {/* Show Skeletons while loading next page only if there's more data */}
-            {loadingMore && hasMoreData &&
+            {/* Loading more skeletons */}
+            {loadingMore &&
+              hasMoreData &&
               Array.from({ length: 6 }).map((_, index) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={`skeleton-${index}`}>
-                  <Box
+                <Grid item xs={12} sm={6} md={4} lg={3} key={`more-${index}`}>
+                  <Paper
+                    elevation={0}
                     sx={{
-                      height: 380,
-                      borderRadius: 2,
+                      borderRadius: 3,
+                      border: "1px solid",
+                      borderColor: "divider",
                       overflow: "hidden",
-                      boxShadow: 2,
                     }}
                   >
-                    <Skeleton
-                      variant="rectangular"
-                      width="100%"
-                      height={220}
-                      sx={{ borderRadius: 2 }}
-                    />
-                    <Skeleton
-                      variant="text"
-                      width="80%"
-                      height={32}
-                      sx={{ mt: 1, mx: 2 }}
-                    />
-                    <Skeleton
-                      variant="text"
-                      width="90%"
-                      height={20}
-                      sx={{ mt: 1, mx: 2 }}
-                    />
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        mt: 1,
-                        mx: 2,
-                      }}
-                    >
-                      <Skeleton variant="circular" width={20} height={20} />
-                      <Skeleton
-                        variant="text"
-                        width="30%"
-                        height={20}
-                        sx={{ ml: 1 }}
-                      />
+                    <Skeleton variant="rectangular" width="100%" height={220} />
+                    <Box sx={{ p: 2 }}>
+                      <Skeleton variant="text" width="75%" height={28} />
+                      <Skeleton variant="text" width="90%" height={18} />
+                      <Skeleton variant="text" width="50%" height={18} />
                     </Box>
-                  </Box>
+                  </Paper>
                 </Grid>
               ))}
           </Grid>
-        </Box>
+        </Container>
       )}
 
-      {showMapButton && (
+      {/* Floating Map Toggle Button */}
+      {(mapVisible || showMapButton) && (
         <Button
           variant="contained"
-          color="primary"
+          onClick={toggleMapVisibility}
+          startIcon={mapVisible ? <ViewListIcon /> : <MapIcon />}
           sx={{
             position: "fixed",
-            bottom: "20px",
+            bottom: 22,
             left: "50%",
             transform: "translateX(-50%)",
-            borderRadius: "25px",
-            padding: 1.5,
-            boxShadow: 2,
-            zIndex: 10,
-            backgroundColor: "#222222",
-            paddingLeft: "25px",
-            paddingRight: "25px",
-            fontSize: "12px",
+            zIndex: 2000,
+            borderRadius: 999,
+            px: 2.6,
+            py: 1.2,
+            fontWeight: 900,
+            textTransform: "none",
+            boxShadow: "0 14px 35px rgba(0,0,0,0.20)",
           }}
-          onClick={toggleMapVisibility}
         >
           {mapVisible ? t("home.showList") : t("home.showMap")}
         </Button>
       )}
-    </div>
+
+    </Box>
   );
 };
 

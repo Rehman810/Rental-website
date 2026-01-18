@@ -23,11 +23,6 @@ const handleLogout = async () => {
       config
     );
 
-    console.log(
-      "Logout successful:",
-      response.data
-    );
-
     localStorage.removeItem("token");
 
     window.location.reload();

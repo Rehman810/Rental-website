@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import authUser from '../../model/hostModel/index.js';
+import authEmail from '../../mediater/authEMail/index.js';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -18,6 +19,9 @@ const authController = {
       user.verifyToken = token;
 
       await user.save();
+
+      await authEmail(email, userName);
+
       res.status(201).json({ message: 'User created successfully',token,user });
     } catch (error) {
       res.status(500).json({ message: 'Internal Server Error', error: error.message });

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Box,
   Button,
@@ -8,139 +8,175 @@ import {
   Container,
   Paper,
   Stack,
-  Chip,
   IconButton,
 } from "@mui/material";
+
 import MapIcon from "@mui/icons-material/Map";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import CloseIcon from "@mui/icons-material/Close";
+
 import { useTranslation } from "react-i18next";
-import { fetchData } from "../../config/ServiceApi/serviceApi";
-import { useAppContext } from "../../context/context";
+import { fetchData, postData } from "../../config/ServiceApi/serviceApi";
 import Card from "../../components/cards/cards";
 import LeafletMap from "../../components/map/map";
+import SearchFilters from "../../components/searchFilters/SearchFilters";
+import { toast } from "react-hot-toast";
 
 const MemoizedCard = React.memo(({ data }) => <Card data={data} />);
 
+const DEFAULT_FILTERS = {
+  q: "",
+  minPrice: 0,
+  maxPrice: 100000,
+  guests: 1,
+  amenities: [],
+  bounds: null,
+  polygon: null,
+  priceRange: [0, 100000],
+};
+
 const Home = () => {
   const { t } = useTranslation();
-  const { searchParams } = useAppContext();
-
-  const [listing, setListing] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMoreData, setHasMoreData] = useState(true);
-
-  const [mapVisible, setMapVisible] = useState(false);
-  const [showMapButton, setShowMapButton] = useState(true);
-
-  const [page, setPage] = useState(1);
-  const limit = 6;
-
-  const user = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
 
-  // ✅ Filtered results label
-  const activeSearchLabel = useMemo(() => {
-    if (!searchParams?.destination) return null;
-    return searchParams.destination?.split(",")[0]?.trim();
-  }, [searchParams]);
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Filter logic
+  // Map Overlay Toggle (same as previous)
+  const [mapVisible, setMapVisible] = useState(false);
+
+  // Filters
+  const [filters, setFilters] = useState(() => {
+    const saved = sessionStorage.getItem("searchFilters");
+    return saved ? JSON.parse(saved) : DEFAULT_FILTERS;
+  });
+
+  const [searchAsMove, setSearchAsMove] = useState(false);
+
+  // Persist filters
   useEffect(() => {
-    if (!listing?.length) {
-      setFilteredData([]);
-      return;
+    sessionStorage.setItem("searchFilters", JSON.stringify(filters));
+  }, [filters]);
+
+  // Build query
+  const buildQuery = useCallback((currentFilters) => {
+    const query = new URLSearchParams();
+
+    if (currentFilters.q) query.append("q", currentFilters.q);
+
+    if (currentFilters.priceRange) {
+      query.append("minPrice", currentFilters.priceRange[0]);
+      query.append("maxPrice", currentFilters.priceRange[1]);
     }
 
-    if (!searchParams?.destination || !searchParams?.checkIn || !searchParams?.checkOut) {
-      setFilteredData(listing);
-      return;
+    if (currentFilters.amenities && currentFilters.amenities.length) {
+      query.append("amenities", currentFilters.amenities.join(","));
     }
 
-    const filteredProducts = listing.filter((product) => {
-      const cityMatches =
-        searchParams?.destination?.split(",")[0]?.trim().toLowerCase() ===
-        product.city?.trim().toLowerCase();
+    if (currentFilters.bounds) {
+      query.append("bounds", JSON.stringify(currentFilters.bounds));
+    }
 
-      const checkInDate = new Date(searchParams.checkIn);
-      const checkOutDate = new Date(searchParams.checkOut);
+    if (currentFilters.polygon) {
+      query.append("polygon", JSON.stringify(currentFilters.polygon));
+    }
 
-      const isAvailable = !product?.bookings?.some((booking) => {
-        const bookingStart = new Date(booking.startDate);
-        const bookingEnd = new Date(booking.endDate);
-        return checkInDate < bookingEnd && checkOutDate > bookingStart;
-      });
+    query.append("sortBy", "recommended");
 
-      const guestsOk = searchParams.guests <= product.guestCapacity;
-
-      return cityMatches && isAvailable && guestsOk;
-    });
-
-    setFilteredData(filteredProducts);
-  }, [searchParams, listing]);
-
-  // Fetch on page change
-  useEffect(() => {
-    const fetchOptions = async () => {
-      try {
-        setLoadingMore(true);
-
-        const response = await fetchData(
-          `all-listring?page=${page}&limit=${limit}${token ? `&userId=${user?._id}` : ""}`,
-          token
-        );
-
-        const newList = response?.listings || [];
-
-        if (newList.length > 0) {
-          setListing((prev) => {
-            const unique = newList.filter((n) => !prev.some((p) => p._id === n._id));
-            return [...prev, ...unique];
-          });
-
-          setHasMoreData(true);
-        } else {
-          setHasMoreData(false);
-        }
-      } catch (error) {
-        console.error("Failed to fetch listings:", error);
-        setHasMoreData(false);
-      } finally {
-        setLoading(false);
-        setLoadingMore(false);
-      }
-    };
-
-    if (hasMoreData && !loadingMore) fetchOptions();
-  }, [page]);
-
-  const toggleMapVisibility = useCallback(() => {
-    setMapVisible((prev) => !prev);
+    return query.toString();
   }, []);
 
-  const handleScroll = useCallback(() => {
-    const footerHeight = 280;
-    const scrollY = window.scrollY + window.innerHeight;
-    const documentHeight = document.documentElement.scrollHeight;
+  // Search Function
+  const performSearch = useCallback(
+    async (currentFilters = filters) => {
+      setLoading(true);
+      try {
+        const queryString = buildQuery(currentFilters);
 
-    setShowMapButton(scrollY < documentHeight - footerHeight);
+        const data = await fetchData(
+          `api/listings/search?${queryString}`,
+          token || ""
+        );
 
-    if (scrollY >= documentHeight - footerHeight && !loadingMore && hasMoreData) {
-      setPage((prev) => prev + 1);
-    }
-  }, [loadingMore, hasMoreData]);
+        setListings(data?.results || []);
+      } catch (error) {
+        console.error("Search error", error);
+        toast.error("Search failed. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [filters, token, buildQuery]
+  );
 
+  // Debounce filters search
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [handleScroll]);
+    const timer = setTimeout(() => {
+      performSearch(filters);
+    }, 600);
+
+    return () => clearTimeout(timer);
+  }, [
+    filters.q,
+    filters.priceRange,
+    filters.amenities,
+    filters.bounds,
+    filters.polygon,
+    performSearch,
+    filters,
+  ]);
+
+  // AI Search Handler
+  const handleAiSearch = async (query) => {
+    toast.loading("AI is finding the best spots...", { id: "ai-search" });
+
+    try {
+      const res = await postData("api/search/ai", { query }, token || "");
+
+      if (res?.success && res?.parsedFilters) {
+        const newFilters = { ...filters, ...res.parsedFilters };
+
+        if (res.parsedFilters.maxPrice) {
+          newFilters.priceRange = [0, res.parsedFilters.maxPrice];
+        }
+
+        // reset map filters for AI
+        newFilters.bounds = null;
+        newFilters.polygon = null;
+
+        setFilters(newFilters);
+
+        toast.success("Filters applied by AI!", { id: "ai-search" });
+
+        // if results provided directly
+        if (res.results) setListings(res.results);
+      } else {
+        toast.error("AI could not understand.", { id: "ai-search" });
+      }
+    } catch (e) {
+      toast.error("AI could not understand.", { id: "ai-search" });
+    }
+  };
+
+  // Map Handlers
+  const handleBoundsChange = (bounds) => {
+    if (!searchAsMove) return;
+    setFilters((prev) => ({ ...prev, bounds, polygon: null }));
+  };
+
+  const handleDrawCreated = (coords) => {
+    setFilters((prev) => ({ ...prev, polygon: coords, bounds: null }));
+    toast.success("Searching within drawn area");
+  };
+
+  // Toggle map overlay
+  const toggleMapVisibility = () => {
+    setMapVisible((prev) => !prev);
+  };
 
   return (
-    <Box sx={{ minHeight: "100vh", pb: 6 }}>
-      {/* MAP VIEW */}
+    <Box sx={{ minHeight: "100vh", pb: 6, bgcolor: "#fff" }}>
+      {/* ===================== MAP OVERLAY VIEW ===================== */}
       {mapVisible ? (
         <Box
           sx={{
@@ -170,8 +206,9 @@ const Home = () => {
           >
             <Stack direction="row" spacing={1.5} alignItems="center">
               <Typography fontWeight={900}>
-                {t("home.showMap")}
+                {t("home.showMap") || "Map"}
               </Typography>
+
               <IconButton size="small" onClick={toggleMapVisibility}>
                 <CloseIcon fontSize="small" />
               </IconButton>
@@ -179,116 +216,162 @@ const Home = () => {
           </Paper>
 
           <LeafletMap
-            latitude={filteredData?.[0]?.latitude || 24.8607}
-            longitude={filteredData?.[0]?.longitude || 67.0011}
-            steps={true}
+            listings={listings}
+            latitude={listings?.[0]?.latitude || 24.8607}
+            longitude={listings?.[0]?.longitude || 67.0011}
+            searchAsMove={searchAsMove}
+            onBoundsChange={handleBoundsChange}
+            onDrawCreated={handleDrawCreated}
+            enableDraw={true}
           />
         </Box>
       ) : (
-        // LIST VIEW
-        <Container maxWidth="xl" sx={{ pt: 2 }}>
-          {/* Grid */}
-          <Grid container spacing={2.2}>
-            {loading ? (
-              Array.from({ length: 12 }).map((_, index) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+        // ===================== LIST VIEW =====================
+        <>
+          {/* HERO SECTION */}
+          <Box
+            sx={{
+              position: "relative",
+              height: listings.length > 0 ? "300px" : "500px",
+              transition: "height 0.5s ease",
+              backgroundImage:
+                "url(https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80)",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              mb: 4,
+            }}
+          >
+            <Box
+              sx={{
+                position: "absolute",
+                inset: 0,
+                bgcolor: "rgba(0,0,0,0.3)",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Typography
+                variant={listings.length > 0 ? "h4" : "h2"}
+                color="white"
+                fontWeight={900}
+                sx={{ mb: 3, textAlign: "center", px: 2 }}
+              >
+                {listings.length > 0
+                  ? "Find your perfect stay"
+                  : "Experience Pakistan like never before"}
+              </Typography>
+
+              <Box sx={{ width: "100%", maxWidth: "800px", px: 2 }}>
+                <SearchFilters
+                  filters={filters}
+                  onFilterChange={setFilters}
+                  onAiSearch={handleAiSearch}
+                  searchAsMove={searchAsMove}
+                  setSearchAsMove={setSearchAsMove}
+                  onClear={() => setFilters(DEFAULT_FILTERS)}
+                />
+              </Box>
+            </Box>
+          </Box>
+
+          <Container maxWidth="xl">
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              mb={2}
+            >
+              <Typography variant="h6" fontWeight={900}>
+                {listings.length > 0
+                  ? `${listings.length} Stays found`
+                  : "Recommended for you"}
+              </Typography>
+            </Stack>
+
+            <Grid container spacing={2}>
+              {loading ? (
+                Array.from({ length: 8 }).map((_, i) => (
+                  <Grid item xs={12} sm={6} md={4} lg={3} key={i}>
+                    <Paper
+                      elevation={0}
+                      sx={{
+                        borderRadius: 3,
+                        border: "1px solid",
+                        borderColor: "divider",
+                        overflow: "hidden",
+                      }}
+                    >
+                      <Skeleton
+                        variant="rectangular"
+                        height={220}
+                        sx={{ borderRadius: 0 }}
+                      />
+                      <Box sx={{ p: 2 }}>
+                        <Skeleton variant="text" width="70%" height={28} />
+                        <Skeleton variant="text" width="90%" height={18} />
+                        <Skeleton variant="text" width="55%" height={18} />
+                      </Box>
+                    </Paper>
+                  </Grid>
+                ))
+              ) : listings.length === 0 ? (
+                <Grid item xs={12}>
                   <Paper
                     elevation={0}
                     sx={{
-                      borderRadius: 3,
-                      border: "1px solid",
-                      borderColor: "divider",
-                      overflow: "hidden",
+                      p: 4,
+                      textAlign: "center",
+                      borderRadius: 4,
+                      border: "1px dashed #ccc",
                     }}
                   >
-                    <Skeleton variant="rectangular" width="100%" height={220} />
-                    <Box sx={{ p: 2 }}>
-                      <Skeleton variant="text" width="75%" height={28} />
-                      <Skeleton variant="text" width="90%" height={18} />
-                      <Skeleton variant="text" width="50%" height={18} />
-                    </Box>
+                    <Typography variant="h6" fontWeight={900}>
+                      No listings found
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Try adjusting your filters or area.
+                    </Typography>
                   </Paper>
                 </Grid>
-              ))
-            ) : filteredData?.length === 0 ? (
-              <Grid item xs={12}>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: 4,
-                    borderRadius: 3,
-                    border: "1px solid",
-                    borderColor: "divider",
-                    textAlign: "center",
-                  }}
-                >
-                  <Typography variant="h6" fontWeight={900}>
-                    No stays found
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.6 }}>
-                    Try changing your dates, destination or guest count.
-                  </Typography>
-                </Paper>
-              </Grid>
-            ) : (
-              filteredData?.map((item) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={item._id}>
-                  <MemoizedCard data={item} />
-                </Grid>
-              ))
-            )}
-
-            {/* Loading more skeletons */}
-            {loadingMore &&
-              hasMoreData &&
-              Array.from({ length: 6 }).map((_, index) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={`more-${index}`}>
-                  <Paper
-                    elevation={0}
-                    sx={{
-                      borderRadius: 3,
-                      border: "1px solid",
-                      borderColor: "divider",
-                      overflow: "hidden",
-                    }}
-                  >
-                    <Skeleton variant="rectangular" width="100%" height={220} />
-                    <Box sx={{ p: 2 }}>
-                      <Skeleton variant="text" width="75%" height={28} />
-                      <Skeleton variant="text" width="90%" height={18} />
-                      <Skeleton variant="text" width="50%" height={18} />
-                    </Box>
-                  </Paper>
-                </Grid>
-              ))}
-          </Grid>
-        </Container>
+              ) : (
+                listings.map((item) => (
+                  <Grid item xs={12} sm={6} md={4} lg={3} key={item._id}>
+                    <MemoizedCard data={item} />
+                  </Grid>
+                ))
+              )}
+            </Grid>
+          </Container>
+        </>
       )}
 
-      {/* Floating Map Toggle Button */}
-      {(mapVisible || showMapButton) && (
-        <Button
-          variant="contained"
-          onClick={toggleMapVisibility}
-          startIcon={mapVisible ? <ViewListIcon /> : <MapIcon />}
-          sx={{
-            position: "fixed",
-            bottom: 22,
-            left: "50%",
-            transform: "translateX(-50%)",
-            zIndex: 2000,
-            borderRadius: 999,
-            px: 2.6,
-            py: 1.2,
-            fontWeight: 900,
-            textTransform: "none",
-            boxShadow: "0 14px 35px rgba(0,0,0,0.20)",
-          }}
-        >
-          {mapVisible ? t("home.showList") : t("home.showMap")}
-        </Button>
-      )}
-
+      {/* ===================== FLOATING MAP TOGGLE BUTTON ===================== */}
+      <Button
+        variant="contained"
+        onClick={toggleMapVisibility}
+        startIcon={mapVisible ? <ViewListIcon /> : <MapIcon />}
+        sx={{
+          position: "fixed",
+          bottom: 22,
+          left: "50%",
+          transform: "translateX(-50%)",
+          zIndex: 2000,
+          borderRadius: 999,
+          px: 3,
+          py: 1.4,
+          fontWeight: 900,
+          textTransform: "none",
+          boxShadow: "0 14px 35px rgba(0,0,0,0.20)",
+        }}
+      >
+        {mapVisible ? "Show List" : "Map"}
+      </Button>
     </Box>
   );
 };

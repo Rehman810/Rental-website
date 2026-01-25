@@ -12,11 +12,7 @@ import {
   Stack,
   Chip,
   Avatar,
-  Rating,
-  TextField,
   Button,
-  DialogTitle,
-  DialogActions,
   Container,
   Paper,
 } from "@mui/material";
@@ -28,8 +24,9 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import PaymentsIcon from "@mui/icons-material/Payments";
 import StarIcon from "@mui/icons-material/Star";
-import { fetchData, postDataById } from "../../config/ServiceApi/serviceApi";
+import { fetchData } from "../../config/ServiceApi/serviceApi";
 import toast from "react-hot-toast";
+import LeaveReviewModal from "../../components/reviews/LeaveReviewModal";
 
 const Trips = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -40,24 +37,22 @@ const Trips = () => {
   const token = localStorage.getItem("token");
 
   const [userReviews, setUserReviews] = useState({});
-  const [reviewModalOpen, setReviewModalOpen] = useState(false);
-  const [selectedTripId, setSelectedTripId] = useState(null);
-
-  const [rating, setRating] = useState(0);
-  const [reviewText, setReviewText] = useState("");
+  const [leaveReviewOpen, setLeaveReviewOpen] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState(null);
 
   const isMobile = useMediaQuery("(max-width:900px)");
 
+  const fetchTrips = async () => {
+    try {
+      const response = await fetchData("guest-bookings", token);
+      setTrips(response?.userBookings || []);
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to load trips");
+    }
+  };
+
   useEffect(() => {
-    const fetchTrips = async () => {
-      try {
-        const response = await fetchData("guest-bookings", token);
-        setTrips(response?.userBookings || []);
-      } catch (e) {
-        console.error(e);
-        toast.error("Failed to load trips");
-      }
-    };
     fetchTrips();
   }, [token]);
 
@@ -74,16 +69,6 @@ const Trips = () => {
     }),
     []
   );
-
-  const isToday = (dateString) => {
-    const today = new Date();
-    const date = new Date(dateString);
-    return (
-      date.getDate() === today.getDate() &&
-      date.getMonth() === today.getMonth() &&
-      date.getFullYear() === today.getFullYear()
-    );
-  };
 
   const handleImageClick = (index, tripIndex) => {
     setCurrentImageIndex(index);
@@ -111,39 +96,9 @@ const Trips = () => {
     setCurrentImageIndex((prev) => (prev - 1 >= 0 ? prev - 1 : total - 1));
   };
 
-  const handleOpenReviewModal = (tripId) => {
-    setSelectedTripId(tripId);
-    setReviewModalOpen(true);
-  };
-
-  const handleCloseReviewModal = () => {
-    setReviewModalOpen(false);
-    setSelectedTripId(null);
-    setRating(0);
-    setReviewText("");
-  };
-
-  const handleReviewSubmit = async () => {
-    if (!selectedTripId) return;
-
-    const toastId = toast.loading("Submitting review...");
-
-    try {
-      const payload = { rating, comment: reviewText };
-
-      const response = await postDataById("reviews", payload, token, selectedTripId);
-
-      if (response) {
-        setUserReviews((prev) => ({ ...prev, [selectedTripId]: true }));
-        toast.success("Review submitted successfully!", { id: toastId });
-        handleCloseReviewModal();
-      } else {
-        toast.error("Failed to submit review", { id: toastId });
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("Something went wrong", { id: toastId });
-    }
+  const handleOpenReviewModal = (trip) => {
+    setSelectedBooking(trip);
+    setLeaveReviewOpen(true);
   };
 
   return (
@@ -195,7 +150,7 @@ const Trips = () => {
               const statusColor =
                 trip?.status === "Active" ? "success" : trip?.status === "Cancelled" ? "error" : "warning";
 
-              const canReview = isToday(trip?.endDate) && !userReviews[listing?._id];
+              const canReview = new Date(trip.endDate) < new Date() && trip.status !== "Cancelled";
 
               const amenities = Array.isArray(listing?.amenities) ? listing.amenities : [];
               const visibleAmenities = amenities.slice(0, 6);
@@ -365,11 +320,11 @@ const Trips = () => {
                           </Typography>
                         </Stack>
 
-                        {canReview ? (
+                        {canReview && (
                           <Button
                             variant="outlined"
                             size="small"
-                            onClick={() => handleOpenReviewModal(listing?._id)}
+                            onClick={() => handleOpenReviewModal(trip)}
                             sx={{
                               borderRadius: 999,
                               textTransform: "none",
@@ -379,14 +334,7 @@ const Trips = () => {
                           >
                             Give review
                           </Button>
-                        ) : userReviews[listing?._id] ? (
-                          <Chip
-                            label="Reviewed"
-                            color="success"
-                            size="small"
-                            sx={{ borderRadius: 999, fontWeight: 900 }}
-                          />
-                        ) : null}
+                        )}
                       </Stack>
                     </CardContent>
                   </Card>
@@ -419,48 +367,13 @@ const Trips = () => {
       </Container>
 
       {/* Review Modal */}
-      <Dialog
-        open={reviewModalOpen}
-        onClose={handleCloseReviewModal}
-        sx={{ "& .MuiDialog-paper": { width: 560, maxWidth: "92%" } }}
-      >
-        <DialogTitle sx={{ fontWeight: 900 }}>Leave a Review</DialogTitle>
-        <DialogContent>
-          <Stack spacing={2}>
-            <Typography variant="body2" color="text.secondary">
-              Rate your experience and share quick feedback.
-            </Typography>
-
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Rating value={rating} onChange={(e, v) => setRating(v)} />
-              <Typography fontWeight={900}>{rating || 0}/5</Typography>
-            </Stack>
-
-            <TextField
-              label="Write your review"
-              multiline
-              rows={4}
-              value={reviewText}
-              onChange={(e) => setReviewText(e.target.value)}
-              fullWidth
-            />
-          </Stack>
-        </DialogContent>
-
-        <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={handleCloseReviewModal} sx={{ textTransform: "none", fontWeight: 900 }}>
-            Cancel
-          </Button>
-          <Button
-            onClick={handleReviewSubmit}
-            variant="contained"
-            disabled={!rating || !reviewText.trim()}
-            sx={{ textTransform: "none", fontWeight: 900, borderRadius: 2 }}
-          >
-            Submit
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <LeaveReviewModal
+        open={leaveReviewOpen}
+        onClose={() => setLeaveReviewOpen(false)}
+        listingId={selectedBooking?.listingId?._id}
+        bookingId={selectedBooking?._id}
+        onReviewSubmitted={fetchTrips}
+      />
 
       {/* Fullscreen Image Modal */}
       <Dialog fullScreen open={imageDialogOpen} onClose={handleCloseImageDialog}>

@@ -14,38 +14,38 @@ import initializeSocket from './socket.io/index.js';
 dotenv.config();
 
 const app = express();
-app.use(cors({ origin: '*' })); 
+app.use(cors({ origin: "http://localhost:5174", credentials: true }));
 app.use(express.json());
 
 app.use(passport.initialize());
 
 app.use(session({
-    secret: process.env.JWT_SECRET,
-    resave: false,
-    saveUninitialized: false,
+  secret: process.env.JWT_SECRET,
+  resave: false,
+  saveUninitialized: false,
 }));
 
 const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "*", 
+    origin: "*",
     methods: ["GET", "POST", "DELETE", "PUT"],
   },
   transports: ["websocket", "polling"],
 });
 
-initializeSocket(io); 
+initializeSocket(io);
 
 export const limiter = rateLimit({
   windowMs: 1 * 60 * 1000,
-  max: 5, 
+  max: 5,
   message: { error: 'You have exceeded the maximum number of requests. Please try again later.' },
   standardHeaders: true,
   legacyHeaders: false,
 });
 
-allRoutes(app, io); 
+allRoutes(app, io);
 
 app.get('/', (req, res) => {
   res.send({ code: 200, message: 'Server is running successfully.' });

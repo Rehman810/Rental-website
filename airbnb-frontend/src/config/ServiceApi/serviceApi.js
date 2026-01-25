@@ -192,3 +192,24 @@ export const fetchDataByIds = async (endpoint, token, id1, id2) => {
 
 
 
+
+export const createReview = async (data, token) => {
+  return await postData('api/reviews', data, token, true);
+};
+
+export const getListingReviews = async (listingId, page = 1, limit = 5) => {
+  try {
+    const response = await axios.get(`${apiKey}/api/reviews/listing/${listingId}?page=${page}&limit=${limit}`);
+    return response.data;
+  } catch (error) {
+    throw new Error('Error fetching reviews: ' + error.message);
+  }
+};
+
+export const respondToReview = async (reviewId, message, token) => {
+  return await postData(`api/reviews/${reviewId}/host-response`, { message }, token);
+};
+
+export const checkCanReview = async (bookingId, token) => {
+  return await fetchData(`api/reviews/can-review/${bookingId}`, token);
+};

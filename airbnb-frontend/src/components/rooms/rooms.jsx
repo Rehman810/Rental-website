@@ -54,6 +54,7 @@ import TwitterIcon from "@mui/icons-material/Twitter";
 import EmailIcon from "@mui/icons-material/Email";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import Tooltip from "@mui/material/Tooltip";
+import ReviewsSection from "../../components/reviews/ReviewsSection";
 
 const { RangePicker } = DatePicker;
 
@@ -706,63 +707,19 @@ const RoomPage = () => {
             </Typography>
           </Paper>
 
-          {/* Reviews */}
-          {place?.reviews?.length > 0 && (
-            <Paper
-              elevation={0}
-              sx={{
-                mt: 3,
-                p: 2.5,
-                borderRadius: 3,
-                border: "1px solid",
-                borderColor: "divider",
-              }}
-            >
-              <Typography variant="h6" fontWeight={900}>
-                Guest Reviews
-              </Typography>
-
-              <Divider sx={{ my: 2 }} />
-
-              <Stack spacing={2}>
-                {place?.reviews?.map((review, index) => (
-                  <Box
-                    key={index}
-                    sx={{
-                      p: 2,
-                      borderRadius: 2.5,
-                      border: "1px solid",
-                      borderColor: "divider",
-                    }}
-                  >
-                    <Stack direction="row" spacing={1.5} alignItems="center">
-                      <Avatar
-                        src={review?.hostId?.photoProfile}
-                        alt={review?.hostId?.userName}
-                      />
-                      <Box sx={{ flex: 1 }}>
-                        <Stack direction="row" alignItems="center" spacing={1}>
-                          <Typography fontWeight={900}>
-                            {review?.hostId?.userName || "Guest"}
-                          </Typography>
-                          <Rating
-                            value={review?.rating || 0}
-                            precision={0.5}
-                            readOnly
-                            size="small"
-                          />
-                        </Stack>
-
-                        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.4 }}>
-                          {review?.comment || ""}
-                        </Typography>
-                      </Box>
-                    </Stack>
-                  </Box>
-                ))}
-              </Stack>
-            </Paper>
-          )}
+          {/* Reviews Section */}
+          <Paper
+            elevation={0}
+            sx={{
+              mt: 3,
+              p: 2.5,
+              borderRadius: 3,
+              border: "1px solid",
+              borderColor: "divider",
+            }}
+          >
+            <ReviewsSection listingId={roomId} currentUser={JSON.parse(localStorage.getItem('user'))} listingHostId={place?.hostId?._id || place?.hostId} />
+          </Paper>
         </Grid>
 
         {/* Right Column - Booking Card */}

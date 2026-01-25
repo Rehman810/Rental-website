@@ -7,6 +7,7 @@ import "leaflet-draw";
 // Fix for default markers
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+import { CURRENCY } from "../../config/env";
 
 let DefaultIcon = L.icon({
   iconUrl: icon,
@@ -150,7 +151,7 @@ const LeafletMap = ({
                         <div style="min-width: 150px;">
                             <img src="${item.photos?.[0] || ''}" style="width:100%; height:100px; object-fit:cover; border-radius:8px; margin-bottom:5px;" />
                             <h4 style="margin:0; font-size:14px;">${item.title}</h4>
-                            <p style="margin:0; font-weight:bold;">${item.weekdayActualPrice} PKR</p>
+                            <p style="margin:0; font-weight:bold;">${item.weekdayActualPrice} ${CURRENCY}</p>
                         </div>
                     `);
           markersRef.current.addLayer(marker);

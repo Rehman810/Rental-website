@@ -1,6 +1,7 @@
 
 import masterTemplate from '../masterTemplate.js';
 import { EMAIL_TYPES } from '../../emailTypes.js';
+import { FRONTEND_BASE_URL } from '../../../appConfig.js';
 
 export const getAdminEmailContent = (type, payload) => {
     const { userName, listingTitle, rejectionReason } = payload;
@@ -11,7 +12,7 @@ export const getAdminEmailContent = (type, payload) => {
                 title: 'Identity Verified',
                 greeting: `Hello ${userName},`,
                 message: 'Your CNIC verification has been approved by our admin team! You are now a verified member of our community.',
-                action: { label: 'Go to Profile', url: 'http://localhost:3000/account' },
+                action: { label: 'Go to Profile', url: `${FRONTEND_BASE_URL}/account` },
             });
 
         case EMAIL_TYPES.ADMIN_EMAIL_VERIFIED:
@@ -19,7 +20,7 @@ export const getAdminEmailContent = (type, payload) => {
                 title: 'Email Verified',
                 greeting: `Hi ${userName},`,
                 message: 'Your email address has been manually verified by our administration team.',
-                action: { label: 'Go to Home', url: 'http://localhost:3000' },
+                action: { label: 'Go to Home', url: `${FRONTEND_BASE_URL}` },
             });
 
         case EMAIL_TYPES.ADMIN_LISTING_VERIFIED:
@@ -27,7 +28,7 @@ export const getAdminEmailContent = (type, payload) => {
                 title: 'Listing Approved',
                 greeting: `Congratulations ${userName},`,
                 message: `Your listing "${listingTitle}" has been verified and approved by our team. It is now live for guests to book!`,
-                action: { label: 'View Listing', url: 'http://localhost:3000/host/listings' },
+                action: { label: 'View Listing', url: `${FRONTEND_BASE_URL}/host/listings` },
             });
 
         case EMAIL_TYPES.ADMIN_LISTING_REJECTED:
@@ -38,7 +39,7 @@ export const getAdminEmailContent = (type, payload) => {
                 details: [
                     { label: 'Reason', value: rejectionReason || 'Does not meet our community guidelines' }
                 ],
-                action: { label: 'Edit Listing', url: 'http://localhost:3000/host/listings' },
+                action: { label: 'Edit Listing', url: `${FRONTEND_BASE_URL}/host/listings` },
             });
 
         default:

@@ -24,6 +24,7 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import CloseIcon from '@mui/icons-material/Close';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
+import { CURRENCY } from "../../config/env";
 
 const amenitiesList = ["Wifi", "AC", "Parking", "Pool", "Kitchen", "TV", "Washer", "Iron", "Heating"];
 
@@ -178,7 +179,7 @@ const SearchFilters = ({
 
                         {/* Price Range */}
                         <Box sx={{ mb: 4 }}>
-                            <Typography fontWeight="bold" gutterBottom>Price Range (PKR)</Typography>
+                            <Typography fontWeight="bold" gutterBottom>Price Range (${CURRENCY})</Typography>
                             <Slider
                                 value={filters.priceRange || [0, 100000]}
                                 onChange={handlePriceChange}
@@ -192,14 +193,14 @@ const SearchFilters = ({
                                 <TextField
                                     size="small"
                                     value={filters.priceRange?.[0] || 0}
-                                    InputProps={{ readOnly: true, startAdornment: <InputAdornment position="start">PKR</InputAdornment> }}
+                                    InputProps={{ readOnly: true, startAdornment: <InputAdornment position="start">{CURRENCY}</InputAdornment> }}
                                     sx={{ width: 120 }}
                                 />
                                 <Typography color="text.secondary">-</Typography>
                                 <TextField
                                     size="small"
                                     value={filters.priceRange?.[1] || 100000}
-                                    InputProps={{ readOnly: true, startAdornment: <InputAdornment position="start">PKR</InputAdornment> }}
+                                    InputProps={{ readOnly: true, startAdornment: <InputAdornment position="start">{CURRENCY}</InputAdornment> }}
                                     sx={{ width: 120 }}
                                 />
                             </Box>

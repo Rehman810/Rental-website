@@ -23,6 +23,7 @@ import {
 } from '@mui/material';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
+import { API_BASE_URL } from '../../config/env';
 
 const HostSettings = () => {
     const [loading, setLoading] = useState(true);
@@ -55,13 +56,6 @@ const HostSettings = () => {
     });
 
     const token = localStorage.getItem('token');
-    const apiUrl = 'http://localhost:5000'; // Adjust as needed
-    // Note: Previous components used http://192.168.18.45:5000 directly. 
-    // I should probably check where API URL is defined, or use relative path if proxy is set.
-    // The navbar user 'http://192.168.18.45:5000' hardcoded in one place.
-    // I will use a config or generic logic.
-
-    const BASE_URL = 'http://localhost:5000';
 
     useEffect(() => {
         fetchSettings();
@@ -69,7 +63,7 @@ const HostSettings = () => {
 
     const fetchSettings = async () => {
         try {
-            const response = await axios.get(`${BASE_URL}/host/settings`, {
+            const response = await axios.get(`${API_BASE_URL}/host/settings`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (response.data.settings) {
@@ -86,7 +80,7 @@ const HostSettings = () => {
     const handleSave = async () => {
         setSaving(true);
         try {
-            await axios.put(`${BASE_URL}/host/settings`, { settings }, {
+            await axios.put(`${API_BASE_URL}/host/settings`, { settings }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             toast.success("Settings saved successfully!");

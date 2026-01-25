@@ -22,6 +22,7 @@ import {
   unsubscribeFromUpdates,
 } from "../../webSockets/webSockets";
 import useDocumentTitle from "../../hooks/dynamicTitle/dynamicTitle";
+import { APP_NAME } from "../../config/env";
 
 initializeSocket();
 
@@ -36,7 +37,7 @@ const GuestAllMessages = () => {
   const receiverId = user._id;
   const messagesEndRef = useRef(null);
 
-  useDocumentTitle(selectedSenderId ? `${senders.find((s) => s.id === selectedSenderId)?.name} - ThePakbnb` : "Messages - ThePakbnb");
+  useDocumentTitle(selectedSenderId ? `${senders.find((s) => s.id === selectedSenderId)?.name} - ${APP_NAME}` : `Messages - ${APP_NAME}`);
 
   // Fetch the list of senders
   useEffect(() => {
@@ -205,7 +206,7 @@ const GuestAllMessages = () => {
                   "&:hover": {
                     backgroundColor:
                       selectedSenderId === sender.id ? "#b2ebf2" : "#f0f0f0",
-                      cursor: "pointer"
+                    cursor: "pointer"
                   },
                   transition: "background-color 0.3s ease",
                 }}

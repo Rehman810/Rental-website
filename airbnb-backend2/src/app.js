@@ -14,10 +14,12 @@ import initializeSocket from './socket.io/index.js';
 import { startCronJob } from './cron/expirePendingBookings.js';
 import { startReminderCron } from './cron/sendBookingReminders.js';
 
+import { FRONTEND_BASE_URL } from './config/appConfig.js';
+
 dotenv.config();
 
 const app = express();
-app.use(cors({ origin: "http://localhost:5174", credentials: true }));
+app.use(cors({ origin: FRONTEND_BASE_URL, credentials: true }));
 app.use(express.json());
 
 app.use(passport.initialize());

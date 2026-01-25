@@ -2,6 +2,7 @@ import Stripe from 'stripe';
 import Host from '../../model/hostModel/index.js';
 import TemporaryBooking from '../../model/temporaryBooking/index.js';
 import ConfirmedBooking from '../../model/confirmBooking/index.js';
+import { FRONTEND_BASE_URL } from '../../config/appConfig.js';
 
 const stripe = new Stripe(process.env.STRIPE_KEY);
 
@@ -30,8 +31,8 @@ export const stripeController = {
 
             const accountLink = await stripe.accountLinks.create({
                 account: accountId,
-                refresh_url: 'http://localhost:5174/hosting/payments', // Frontend URL
-                return_url: 'http://localhost:5174/hosting/payments',
+                refresh_url: `${FRONTEND_BASE_URL}/hosting/payments`,
+                return_url: `${FRONTEND_BASE_URL}/hosting/payments`,
                 type: 'account_onboarding',
             });
 

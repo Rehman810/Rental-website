@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { APP_NAME } from "../../config/env";
 import {
   AppBar,
   Toolbar,
@@ -287,7 +288,7 @@ const Navbar = () => {
               userSelect: "none",
             }}
           >
-            ThePakbnb
+            {APP_NAME}
           </Typography>
         </Box>
 

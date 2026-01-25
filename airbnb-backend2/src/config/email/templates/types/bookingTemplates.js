@@ -1,6 +1,7 @@
 
 import masterTemplate from '../masterTemplate.js';
 import { EMAIL_TYPES } from '../../emailTypes.js';
+import { FRONTEND_BASE_URL, CURRENCY } from '../../../appConfig.js';
 
 const formatDate = (date) => new Date(date).toLocaleDateString(undefined, {
     weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
@@ -24,7 +25,7 @@ export const getBookingEmailContent = (type, payload) => {
         { label: 'Check-in', value: formatDate(startDate) },
         { label: 'Check-out', value: formatDate(endDate) },
         { label: 'Guests', value: guestCapacity },
-        { label: 'Total Price', value: `PKR ${totalPrice}` }, // Assuming PKR based on user prompt context
+        { label: 'Total Price', value: `${CURRENCY} ${totalPrice}` },
         { label: 'Booking ID', value: bookingId },
     ];
 
@@ -35,7 +36,7 @@ export const getBookingEmailContent = (type, payload) => {
                 greeting: `Hello ${userName},`,
                 message: 'You have received a new booking request! Please review and respond within 24 hours to secure this booking.',
                 details: commonDetails,
-                action: { label: 'Review Request', url: actionUrl || 'http://localhost:3000/host/dashboard' },
+                action: { label: 'Review Request', url: actionUrl || `${FRONTEND_BASE_URL}/host/dashboard` },
             });
 
         case EMAIL_TYPES.BOOKING_PENDING_GUEST:
@@ -44,7 +45,7 @@ export const getBookingEmailContent = (type, payload) => {
                 greeting: `Hi ${userName},`,
                 message: 'Your booking request has been sent to the host. We will notify you once they accept or reject your request.',
                 details: commonDetails,
-                action: { label: 'View Booking', url: actionUrl || 'http://localhost:3000/trips' },
+                action: { label: 'View Booking', url: actionUrl || `${FRONTEND_BASE_URL}/trips` },
             });
 
         case EMAIL_TYPES.BOOKING_CONFIRMED_HOST:
@@ -53,7 +54,7 @@ export const getBookingEmailContent = (type, payload) => {
                 greeting: `Great news ${userName},`,
                 message: 'You have approved the booking. The guest has been notified and payment is clear.',
                 details: commonDetails,
-                action: { label: 'View Details', url: actionUrl || 'http://localhost:3000/host/dashboard' },
+                action: { label: 'View Details', url: actionUrl || `${FRONTEND_BASE_URL}/host/dashboard` },
             });
 
         case EMAIL_TYPES.BOOKING_CONFIRMED_GUEST:
@@ -62,7 +63,7 @@ export const getBookingEmailContent = (type, payload) => {
                 greeting: `Hooray ${userName}!`,
                 message: 'Your booking request has been accepted by the host. Get ready for your trip!',
                 details: commonDetails,
-                action: { label: 'View Trip', url: actionUrl || 'http://localhost:3000/trips' },
+                action: { label: 'View Trip', url: actionUrl || `${FRONTEND_BASE_URL}/trips` },
             });
 
         case EMAIL_TYPES.BOOKING_REJECTED_GUEST:
@@ -74,7 +75,7 @@ export const getBookingEmailContent = (type, payload) => {
                     ...commonDetails,
                     ...(rejectionReason ? [{ label: 'Reason', value: rejectionReason }] : [])
                 ],
-                action: { label: 'Find Other Stays', url: 'http://localhost:3000' },
+                action: { label: 'Find Other Stays', url: `${FRONTEND_BASE_URL}` },
             });
 
         case EMAIL_TYPES.BOOKING_EXPIRED_GUEST:
@@ -83,7 +84,7 @@ export const getBookingEmailContent = (type, payload) => {
                 greeting: `Hi ${userName},`,
                 message: 'Your booking request was not accepted by the host within 24 hours and has officially expired. You have not been charged.',
                 details: commonDetails,
-                action: { label: 'Search Again', url: 'http://localhost:3000' },
+                action: { label: 'Search Again', url: `${FRONTEND_BASE_URL}` },
             });
 
         case EMAIL_TYPES.BOOKING_REMINDER_HOST:
@@ -92,7 +93,7 @@ export const getBookingEmailContent = (type, payload) => {
                 greeting: `Hello ${userName},`,
                 message: 'This is a reminder that you have a guest checking in tomorrow.',
                 details: commonDetails,
-                action: { label: 'View Booking', url: actionUrl || 'http://localhost:3000/host/dashboard' },
+                action: { label: 'View Booking', url: actionUrl || `${FRONTEND_BASE_URL}/host/dashboard` },
             });
 
         case EMAIL_TYPES.BOOKING_REMINDER_GUEST:
@@ -101,7 +102,7 @@ export const getBookingEmailContent = (type, payload) => {
                 greeting: `Ready for your trip, ${userName}?`,
                 message: 'Your stay begins tomorrow! accurate details are below.',
                 details: commonDetails,
-                action: { label: 'View Trip Info', url: actionUrl || 'http://localhost:3000/trips' },
+                action: { label: 'View Trip Info', url: actionUrl || `${FRONTEND_BASE_URL}/trips` },
             });
 
         default:

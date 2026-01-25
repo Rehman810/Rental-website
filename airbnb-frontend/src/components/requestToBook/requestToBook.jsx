@@ -25,6 +25,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import toast from "react-hot-toast";
+import { CURRENCY } from "../../config/env";
 
 const BookingComponent = () => {
   const { bookListing, bookingData } = useBookingContext();
@@ -420,8 +421,8 @@ const BookingComponent = () => {
                 <Divider sx={{ my: 2 }} />
 
                 <Stack direction="row" justifyContent="space-between" alignItems="center">
-                  <Typography fontWeight={900}>Total (PKR)</Typography>
-                  <Typography fontWeight={900}>Rs {bookingData?.total || 0}</Typography>
+                  <Typography fontWeight={900}>Total ({CURRENCY})</Typography>
+                  <Typography fontWeight={900}>{CURRENCY} {bookingData?.total || 0}</Typography>
                 </Stack>
 
                 <Divider sx={{ my: 2 }} />

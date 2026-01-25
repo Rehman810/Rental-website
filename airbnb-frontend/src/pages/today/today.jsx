@@ -14,10 +14,11 @@ import CurrentlyHosting from "../../components/currentlyHosting/currentlyHosting
 import Upcoming from "../../components/upcoming/upcoming";
 import PendingBooking from "../../components/pendingBooking/pendingBooking";
 import { useBookingContext } from "../../context/booking";
+import { APP_NAME } from "../../config/env";
 
 const ReservationSection = () => {
   const [selectedTab, setSelectedTab] = useState("Pending Booking");
-  useDocumentTitle("Host Dashboard - ThePakbnb");
+  useDocumentTitle("Host Dashboard - " + APP_NAME);
 
   const user = JSON.parse(localStorage.getItem("user"));
   const { checkingOut, pendingBooking, currentlyHosting, upcoming } =

@@ -1,4 +1,5 @@
 import { Box, Container, Grid, Typography, Link, Divider, Stack, IconButton, Paper } from "@mui/material";
+import { APP_NAME, CURRENCY } from "../../config/env";
 import { useTranslation } from "react-i18next";
 import { FaFacebookF, FaTwitter, FaInstagram } from "react-icons/fa";
 import { MdLanguage } from "react-icons/md";
@@ -12,6 +13,7 @@ const Footer = () => {
   const [open, setOpen] = useState(false);
   const { langauge } = useAppContext();
   const navigate = useNavigate();
+  const currentYear = new Date().getFullYear();
 
   const toggleModal = () => setOpen(!open);
 
@@ -43,7 +45,7 @@ const Footer = () => {
               }}
             >
               <Typography variant="h6" fontWeight={900}>
-                ThePakbnb
+                {APP_NAME}
               </Typography>
 
               <Typography variant="body2" color="text.secondary" sx={{ mt: 0.8, lineHeight: 1.7 }}>
@@ -109,7 +111,7 @@ const Footer = () => {
           {/* Left */}
           <Stack direction={{ xs: "column", sm: "row" }} spacing={1} alignItems={{ xs: "flex-start", sm: "center" }}>
             <Typography variant="body2" color="text.secondary">
-              © 2026 ThePakbnb, Inc.
+              © {currentYear} {APP_NAME}, Inc.
             </Typography>
 
             <Stack direction="row" spacing={1.2} divider={<DotDivider />}>
@@ -147,7 +149,7 @@ const Footer = () => {
               </Typography>
             </Stack>
 
-            <ChipLike label="Rs PKR" />
+            <ChipLike label={`${CURRENCY}`} />
           </Stack>
         </Box>
       </Container>

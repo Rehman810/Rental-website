@@ -2,6 +2,7 @@
 import cron from 'node-cron';
 import ConfirmedBooking from '../model/confirmBooking/index.js';
 import { sendAppEmail, EMAIL_TYPES } from '../config/email/sendAppEmail.js';
+import { FRONTEND_BASE_URL } from '../config/appConfig.js';
 
 export const sendBookingReminders = async () => {
     try {
@@ -50,7 +51,7 @@ export const sendBookingReminders = async () => {
                             guestCapacity: booking.guestCapacity,
                             totalPrice: booking.totalPrice,
                             bookingId: booking._id,
-                            actionUrl: 'http://localhost:3000/trips'
+                            actionUrl: `${FRONTEND_BASE_URL}/trips`
                         }
                     });
                 }
@@ -68,7 +69,7 @@ export const sendBookingReminders = async () => {
                             guestCapacity: booking.guestCapacity,
                             totalPrice: booking.totalPrice,
                             bookingId: booking._id,
-                            actionUrl: 'http://localhost:3000/host/dashboard'
+                            actionUrl: `${FRONTEND_BASE_URL}/host/dashboard`
                         }
                     });
                 }

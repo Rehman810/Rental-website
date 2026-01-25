@@ -70,9 +70,10 @@
 
 
 import io from "socket.io-client";
+import { API_BASE_URL } from "../config/env";
 import API_CONFIG from "../config/Api/Api";
 
-const { apiKey } = "http://192.168.18.45:5000"
+const { apiKey } = API_CONFIG;
 let socket;
 
 /**
@@ -80,7 +81,7 @@ let socket;
  */
 export const initializeSocket = () => {
   if (!socket) {
-    socket = io("http://192.168.18.45:5000", {
+    socket = io(API_BASE_URL, {
       transports: ["websocket", "polling"],
       reconnection: true,
       reconnectionAttempts: 5, // Limit to 5 reconnection attempts
@@ -131,8 +132,8 @@ export const initializeSocket = () => {
  * @param {function} callback - The callback function to handle the event.
  */
 export const subscribeToUpdates = (eventName, callback) => {
-  console.log("eventName",eventName)
-  console.log("callback",callback)
+  console.log("eventName", eventName)
+  console.log("callback", callback)
   if (!socket) {
     console.error("Socket is not initialized. Call initializeSocket() first.");
     return;
@@ -146,7 +147,7 @@ export const subscribeToUpdates = (eventName, callback) => {
  * @param {string} eventName - The name of the event to unsubscribe from.
  */
 export const unsubscribeFromUpdates = (eventName) => {
-  console.log("event name",eventName)
+  console.log("event name", eventName)
   if (!socket) {
     console.error("Socket is not initialized. Call initializeSocket() first.");
     return;

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { APP_NAME } from "../../config/env";
 import {
   Modal,
   Box,
@@ -132,7 +133,7 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
         {/* Body */}
         <Box sx={{ px: 2.5, py: 2.5 }}>
           <Typography variant="h5" fontWeight={900} sx={{ mb: 0.5 }}>
-            Welcome to ThePakbnb
+            Welcome to {APP_NAME}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             {signUp

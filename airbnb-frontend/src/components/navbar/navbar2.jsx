@@ -44,6 +44,7 @@ import {
   unsubscribeFromUpdates,
 } from "../../webSockets/webSockets";
 import axios from "axios";
+import { APP_NAME } from "../../config/env";
 
 initializeSocket();
 
@@ -173,7 +174,7 @@ const NavbarHost = () => {
               userSelect: "none",
             }}
           >
-            ThePakbnb
+            {APP_NAME}
           </Typography>
 
           <ChipLike label="Host" />

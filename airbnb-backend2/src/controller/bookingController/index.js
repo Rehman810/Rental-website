@@ -6,6 +6,7 @@ import { sendAppEmail, EMAIL_TYPES } from '../../config/email/sendAppEmail.js';
 import Stripe from 'stripe'; // Import the Stripe module
 const stripeClient = Stripe(process.env.STRIPE_KEY);
 import Host from '../../model/hostModel/index.js'
+import { FRONTEND_BASE_URL } from '../../config/appConfig.js';
 
 export const bookingController = {
 
@@ -23,8 +24,8 @@ export const bookingController = {
 
       const accountLink = await stripeClient.accountLinks.create({
         account: account.id,
-        refresh_url: "http://localhost:3000/host/onboarding/refresh",
-        return_url: "http://localhost:3000/host/onboarding/success",
+        refresh_url: `${FRONTEND_BASE_URL}/host/onboarding/refresh`,
+        return_url: `${FRONTEND_BASE_URL}/host/onboarding/success`,
         type: "account_onboarding",
       });
 
@@ -253,7 +254,7 @@ export const bookingController = {
           guestCapacity: booking.guestCapacity,
           totalPrice: booking.totalPrice,
           bookingId: booking._id,
-          actionUrl: 'http://localhost:3000/host/dashboard/requests'
+          actionUrl: `${FRONTEND_BASE_URL}/host/dashboard/requests`
         }
       });
 
@@ -337,7 +338,7 @@ export const bookingController = {
               guestCapacity: booking.guestCapacity,
               totalPrice: booking.totalPrice,
               bookingId: confirmedBooking._id,
-              actionUrl: 'http://localhost:3000/trips'
+              actionUrl: `${FRONTEND_BASE_URL}/trips`
             }
           });
 

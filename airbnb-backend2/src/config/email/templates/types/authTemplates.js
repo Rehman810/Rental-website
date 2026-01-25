@@ -1,6 +1,7 @@
 
 import masterTemplate from '../masterTemplate.js';
 import { EMAIL_TYPES } from '../../emailTypes.js';
+import { APP_NAME, FRONTEND_BASE_URL } from '../../../appConfig.js';
 
 export const getAuthEmailContent = (type, payload) => {
     const { userName, email, otpCode, actionUrl } = payload;
@@ -8,25 +9,25 @@ export const getAuthEmailContent = (type, payload) => {
     switch (type) {
         case EMAIL_TYPES.AUTH_WELCOME:
             return masterTemplate({
-                title: 'Welcome to Airbnb!',
+                title: `Welcome to ${APP_NAME}!`,
                 greeting: `Welcome, ${userName}!`,
                 message: 'We are thrilled to have you join our community. Your account has been successfully created.',
                 details: [
                     { label: 'Username', value: userName },
                     { label: 'Email', value: email },
                 ],
-                action: { label: 'Explore Homes', url: 'http://localhost:3000/' }, // Update with env var in real app
+                action: { label: 'Explore Homes', url: `${FRONTEND_BASE_URL}/` },
             });
 
         case EMAIL_TYPES.AUTH_GOOGLE_WELCOME:
             return masterTemplate({
-                title: 'Welcome to Airbnb!',
+                title: `Welcome to ${APP_NAME}!`,
                 greeting: `Hi ${userName},`,
                 message: 'You have successfully signed up using your Google account. We are excited to have you on board!',
                 details: [
                     { label: 'Account', value: email },
                 ],
-                action: { label: 'Go to Dashboard', url: 'http://localhost:3000/dashboard' },
+                action: { label: 'Go to Dashboard', url: `${FRONTEND_BASE_URL}/dashboard` },
             });
 
         case EMAIL_TYPES.AUTH_EMAIL_VERIFY_OTP:

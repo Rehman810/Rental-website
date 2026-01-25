@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL, CURRENCY } from '../../config/env';
 import {
     Box,
     Container,
@@ -40,19 +41,19 @@ const HostBookings = () => {
     const [confirmedBookings, setConfirmedBookings] = useState([]);
 
     const token = localStorage.getItem('token');
-    const BASE_URL = 'http://localhost:5000';
+
     const navigate = useNavigate();
 
     const fetchBookings = async () => {
         setLoading(true);
         try {
             // Fetch Pending Requests (Temporary Bookings)
-            const pendingRes = await axios.get(`${BASE_URL}/temporary-booking`, {
+            const pendingRes = await axios.get(`${API_BASE_URL}/temporary-booking`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
             // Fetch Confirmed Bookings
-            const confirmedRes = await axios.get(`${BASE_URL}/get-confirmed-booking`, {
+            const confirmedRes = await axios.get(`${API_BASE_URL}/get-confirmed-booking`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -84,7 +85,7 @@ const HostBookings = () => {
 
     const handleApprove = async (bookingId) => {
         try {
-            await axios.post(`${BASE_URL}/approve-booking/${bookingId}`, {}, {
+            await axios.post(`${API_BASE_URL}/approve-booking/${bookingId}`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             toast.success("Booking Approved & Confirmed! 🎉");
@@ -98,7 +99,7 @@ const HostBookings = () => {
     const handleReject = async (bookingId) => {
         if (!window.confirm("Are you sure you want to reject this booking?")) return;
         try {
-            await axios.delete(`${BASE_URL}/reject-booking/${bookingId}`, {
+            await axios.delete(`${API_BASE_URL}/reject-booking/${bookingId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             toast.success("Booking Rejected");
@@ -160,7 +161,7 @@ const HostBookings = () => {
                                                 </Grid>
                                                 <Grid item xs={6} sm={4}>
                                                     <Typography variant="caption" color="text.secondary">Total Payout</Typography>
-                                                    <Typography fontWeight={600} color="success.main">PKR {booking.totalPrice}</Typography>
+                                                    <Typography fontWeight={600} color="success.main">{CURRENCY} {booking.totalPrice}</Typography>
                                                 </Grid>
                                             </Grid>
                                         </Grid>

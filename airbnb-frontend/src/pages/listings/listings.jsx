@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { API_BASE_URL } from "../../config/env";
 import {
   Box,
   AppBar,
@@ -30,6 +31,7 @@ import toast from 'react-hot-toast';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CheckIcon from '@mui/icons-material/Check';
 import { Menu, MenuItem, Stack as MuiStack, Dialog, DialogTitle, DialogContent, DialogActions, FormControl, InputLabel, Select, Switch, FormControlLabel } from "@mui/material"; // Stack already imported as Stack
+import { APP_NAME } from "../../config/env";
 
 const AvailabilityModal = ({ open, onClose, listing, token, onUpdate }) => {
   const [formData, setFormData] = useState({});
@@ -70,7 +72,7 @@ const AvailabilityModal = ({ open, onClose, listing, token, onUpdate }) => {
       // In state, I'll store it as 'default', 'true', 'false' string for Select, or just handle it carefully.
       // Let's refine state handling for Selects to be cleaner.
 
-      await axios.put(`http://localhost:5000/listing/${listing._id}/availability`, payload, {
+      await axios.put(`${API_BASE_URL}/listing/${listing._id}/availability`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success("Availability rules updated");
@@ -200,7 +202,7 @@ const ListingPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
-  useDocumentTitle("Listings - ThePakbnb");
+  useDocumentTitle("Listings - " + APP_NAME);
 
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user"));
@@ -274,7 +276,7 @@ const ListingPage = () => {
       handleClose();
       const toastId = toast.loading("Updating booking mode...");
       try {
-        await axios.put(`http://localhost:5000/listing/${item._id}/booking-mode`, { bookingMode: mode }, {
+        await axios.put(`${API_BASE_URL}/listing/${item._id}/booking-mode`, { bookingMode: mode }, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success("Updated!", { id: toastId });
@@ -497,7 +499,7 @@ const ListingPage = () => {
                 const confirm = window.confirm("This will reset ALL your listings to use your Host Settings default. Continue?");
                 if (confirm) {
                   try {
-                    await axios.post('http://localhost:5000/listings/migrate-modes', {}, {
+                    await axios.post(`${API_BASE_URL}/listings/migrate-modes`, {}, {
                       headers: { Authorization: `Bearer ${token}` }
                     });
                     window.location.reload();
@@ -684,7 +686,7 @@ const GuestRequirementsModal = ({ open, onClose, listing, token, onUpdate }) => 
         minAccountAgeDays: formData.minAccountAgeDays === undefined || formData.minAccountAgeDays === "" ? null : Number(formData.minAccountAgeDays)
       };
 
-      await axios.put(`http://localhost:5000/listing/${listing._id}/guest-requirements`, payload, {
+      await axios.put(`${API_BASE_URL}/listing/${listing._id}/guest-requirements`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success("Guest requirements updated");

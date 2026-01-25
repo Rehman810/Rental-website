@@ -10,7 +10,7 @@ const AdminRoute = (app, io) => {
     app.get('/get-temporary-listing/:listingId', combinedAuthenticate, checkRole(['admin']), (req, res) => adminController.getTemporaryListing(io, req, res));
     app.get('/get-users-verification', combinedAuthenticate, checkRole(['admin']), (req, res) => adminController.getUsersForVerification(io, req, res));
     app.put('/verify-email/:hostId', combinedAuthenticate, checkRole(['admin']), (req, res) => adminController.updateEmailVerification(io, req, res));
-
+    app.post('/admin/bookings/expire-pending', combinedAuthenticate, checkRole(['admin']), (req, res) => adminController.triggerExpirePendingBookings(io, req, res));
 
 };
 

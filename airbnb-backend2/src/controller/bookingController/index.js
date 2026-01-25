@@ -403,7 +403,10 @@ export const bookingController = {
       // Filter? For now return all. Frontend can filter by status 'pending_approval' vs 'on_hold'.
       // Ideally 'on_hold' are just abandoned carts, host shouldn't see them usually.
       // But let's return all and let UI decided.
-      const bookings = await TemporaryBooking.find({ listingId: { $in: listingIds } })
+      const bookings = await TemporaryBooking.find({
+        listingId: { $in: listingIds },
+        status: { $ne: 'expired' }
+      })
         .populate('listingId')
         .exec();
 

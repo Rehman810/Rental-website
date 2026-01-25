@@ -3,7 +3,18 @@ import ListingModel from '../../model/listingModel/index.js'
 import Host from '../../model/hostModel/index.js'
 import Notification from "../../model/notification/index.js";
 import { notificationController } from "../notificationController/index.js";
+import { expirePendingBookings } from "../../cron/expirePendingBookings.js";
+
 export const adminController = {
+  triggerExpirePendingBookings: async (io, req, res) => {
+    try {
+      const result = await expirePendingBookings();
+      res.status(200).json(result);
+    } catch (error) {
+      console.error('Error triggering manual expiry:', error);
+      res.status(500).json({ message: 'Internal Server Error', error: error.message });
+    }
+  },
 
 
 

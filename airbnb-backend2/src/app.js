@@ -11,6 +11,8 @@ import http from 'http';
 import { Server } from 'socket.io';
 import initializeSocket from './socket.io/index.js';
 
+import { startCronJob } from './cron/expirePendingBookings.js';
+
 dotenv.config();
 
 const app = express();
@@ -58,7 +60,11 @@ const startServer = async () => {
     console.log("DB CONFIG =>", config.db);
 
     const PORT = process.env.PORT || 5000;
-    server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    server.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+      // Start Cron Job
+      startCronJob();
+    });
   } catch (error) {
     console.error('Error during server initialization:', error.message);
   }

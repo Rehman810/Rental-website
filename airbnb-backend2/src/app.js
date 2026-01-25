@@ -12,6 +12,7 @@ import { Server } from 'socket.io';
 import initializeSocket from './socket.io/index.js';
 
 import { startCronJob } from './cron/expirePendingBookings.js';
+import { startReminderCron } from './cron/sendBookingReminders.js';
 
 dotenv.config();
 
@@ -64,6 +65,7 @@ const startServer = async () => {
       console.log(`Server running on port ${PORT}`);
       // Start Cron Job
       startCronJob();
+      startReminderCron();
     });
   } catch (error) {
     console.error('Error during server initialization:', error.message);

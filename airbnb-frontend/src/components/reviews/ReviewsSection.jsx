@@ -1,27 +1,99 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
-    Box, Typography, Avatar, Grid, LinearProgress, Button,
-    Pagination, Paper, Divider, Stack, Dialog, DialogTitle,
-    DialogContent, TextField, DialogActions, Chip
-} from '@mui/material';
-import StarIcon from '@mui/icons-material/Star';
-import VerifiedIcon from '@mui/icons-material/Verified';
-import { getListingReviews, respondToReview } from '../../config/ServiceApi/serviceApi';
-import toast from 'react-hot-toast';
+    Box,
+    Typography,
+    Avatar,
+    Grid,
+    LinearProgress,
+    Button,
+    Pagination,
+    Paper,
+    Divider,
+    Stack,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    TextField,
+    DialogActions,
+    Chip,
+    Skeleton,
+} from "@mui/material";
+import StarIcon from "@mui/icons-material/Star";
+import VerifiedIcon from "@mui/icons-material/Verified";
+import ReplyIcon from "@mui/icons-material/Reply";
+import toast from "react-hot-toast";
+import { getListingReviews, respondToReview } from "../../config/ServiceApi/serviceApi";
 
-const ReviewBar = ({ label, value }) => (
-    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-        <Typography sx={{ minWidth: 120, fontSize: '0.9rem' }}>{label}</Typography>
-        <Box sx={{ flexGrow: 1, mx: 2 }}>
-            <LinearProgress variant="determinate" value={(value / 5) * 100} sx={{ height: 6, borderRadius: 3 }} />
+/* ----------------------------- Helpers ----------------------------- */
+
+const formatNumber = (num, digits = 1) => {
+    if (num === null || num === undefined || isNaN(Number(num))) return "0.0";
+    return Number(num).toFixed(digits);
+};
+
+const RatingPill = ({ value }) => {
+    const safeValue = Number(value || 0);
+    return (
+        <Chip
+            icon={<StarIcon sx={{ fontSize: 18 }} />}
+            label={formatNumber(safeValue, 1)}
+            size="small"
+            sx={{
+                borderRadius: 2,
+                fontWeight: 900,
+                bgcolor: "rgba(255,193,7,0.14)",
+                color: "text.primary",
+                px: 0.5,
+            }}
+        />
+    );
+};
+
+const ReviewBar = ({ label, value }) => {
+    const safeValue = Number(value || 0);
+    const percent = Math.min(100, Math.max(0, (safeValue / 5) * 100));
+
+    return (
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+            <Typography
+                sx={{
+                    minWidth: 140,
+                    fontSize: "0.92rem",
+                    fontWeight: 800,
+                    color: "text.primary",
+                }}
+            >
+                {label}
+            </Typography>
+
+            <Box sx={{ flexGrow: 1 }}>
+                <LinearProgress
+                    variant="determinate"
+                    value={percent}
+                    sx={{
+                        height: 8,
+                        borderRadius: 10,
+                        bgcolor: "rgba(0,0,0,0.06)",
+                        "& .MuiLinearProgress-bar": {
+                            borderRadius: 10,
+                        },
+                    }}
+                />
+            </Box>
+
+            <Typography sx={{ width: 42, textAlign: "right", fontWeight: 900 }}>
+                {formatNumber(safeValue, 1)}
+            </Typography>
         </Box>
-        <Typography sx={{ fontSize: '0.9rem', fontWeight: 'bold' }}>{value}</Typography>
-    </Box>
-);
+    );
+};
+
+/* ----------------------------- Component ----------------------------- */
 
 const ReviewsSection = ({ listingId, currentUser, listingHostId }) => {
     const [reviews, setReviews] = useState([]);
     const [stats, setStats] = useState(null);
+
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalReviews, setTotalReviews] = useState(0);
@@ -30,21 +102,25 @@ const ReviewsSection = ({ listingId, currentUser, listingHostId }) => {
     // Host Response State
     const [responseModalOpen, setResponseModalOpen] = useState(false);
     const [activeReviewId, setActiveReviewId] = useState(null);
-    const [responseText, setResponseText] = useState('');
+    const [responseText, setResponseText] = useState("");
     const [submittingResponse, setSubmittingResponse] = useState(false);
+
+    const isHost = useMemo(() => {
+        return currentUser && listingHostId && currentUser._id === listingHostId;
+    }, [currentUser, listingHostId]);
 
     const fetchReviews = useCallback(async () => {
         setLoading(true);
         try {
             const data = await getListingReviews(listingId, page);
-            console.log(data);
-            setReviews(data.reviews);
-            setTotalPages(data.totalPages);
-            setTotalReviews(data.totalReviews);
-            setStats(data.listingStats);
+
+            setReviews(data?.reviews || []);
+            setTotalPages(data?.totalPages || 1);
+            setTotalReviews(data?.totalReviews || 0);
+            setStats(data?.listingStats || null);
         } catch (error) {
             console.error(error);
-            // toast.error('Failed to load reviews');
+            // toast.error("Failed to load reviews");
         } finally {
             setLoading(false);
         }
@@ -60,112 +136,405 @@ const ReviewsSection = ({ listingId, currentUser, listingHostId }) => {
 
     const openResponseModal = (reviewId) => {
         setActiveReviewId(reviewId);
-        setResponseText('');
+        setResponseText("");
         setResponseModalOpen(true);
     };
 
     const handleSubmitResponse = async () => {
         if (!responseText.trim()) return;
+
         setSubmittingResponse(true);
         try {
-            const user = localStorage.getItem('token');
-            await respondToReview(activeReviewId, responseText, user);
-            toast.success('Response posted');
+            const token = localStorage.getItem("token");
+            await respondToReview(activeReviewId, responseText, token);
+
+            toast.success("Response posted");
             setResponseModalOpen(false);
-            fetchReviews(); // Refresh
+            fetchReviews();
         } catch (error) {
-            toast.error('Failed to post response');
+            toast.error("Failed to post response");
         } finally {
             setSubmittingResponse(false);
         }
     };
 
-    const isHost = currentUser && listingHostId && currentUser._id === listingHostId;
+    /**
+     * Requirements logic:
+     * - Bars only show if required (your ask)
+     * You can adjust these keys based on your backend.
+     */
+    const reqs = stats?.effectiveGuestRequirements || stats?.guestRequirements || null;
 
-    if (loading && reviews.length === 0) return <Typography>Loading reviews...</Typography>;
+    const ratingAvg = stats?.ratingAvg || 0;
+    const ratingDetails = stats?.ratingDetails || {};
+
+    // Only show bar if required (strict)
+    const showCleanliness = reqs?.requireCleanlinessRating === true || reqs?.requireRatings === true;
+    const showCommunication = reqs?.requireCommunicationRating === true || reqs?.requireRatings === true;
+    const showLocation = reqs?.requireLocationRating === true || reqs?.requireRatings === true;
+    const showValue = reqs?.requireValueRating === true || reqs?.requireRatings === true;
+
+    // If requirements object not present, fallback: show if stats exists
+    const showFallbackBars = !reqs;
+
+    const showAnyBar =
+        showFallbackBars ||
+        showCleanliness ||
+        showCommunication ||
+        showLocation ||
+        showValue;
 
     return (
         <Box sx={{ py: 4 }}>
-            <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
-                ★ {stats?.ratingAvg || 'New'} · {totalReviews} Reviews
-            </Typography>
+            {/* Header Summary */}
+            <Paper
+                elevation={0}
+                sx={{
+                    p: { xs: 2, md: 2.5 },
+                    borderRadius: 3,
+                    border: "1px solid",
+                    borderColor: "divider",
+                    mb: 3,
+                    background:
+                        "linear-gradient(135deg, rgba(25,118,210,0.06), rgba(156,39,176,0.04))",
+                }}
+            >
+                <Stack
+                    direction={{ xs: "column", sm: "row" }}
+                    alignItems={{ xs: "flex-start", sm: "center" }}
+                    justifyContent="space-between"
+                    spacing={1.5}
+                >
+                    <Box>
+                        <Typography variant="h5" sx={{ fontWeight: 900 }}>
+                            Reviews
+                        </Typography>
 
-            {stats && stats.ratingDetails && (
-                <Grid container spacing={4} sx={{ mb: 4 }}>
-                    <Grid item xs={12} md={6}>
-                        <ReviewBar label="Cleanliness" value={stats.ratingDetails.cleanliness} />
-                        <ReviewBar label="Communication" value={stats.ratingDetails.communication} />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                        <ReviewBar label="Check-in/Location" value={stats.ratingDetails.location} />
-                        <ReviewBar label="Value" value={stats.ratingDetails.value} />
-                    </Grid>
-                </Grid>
+                        <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 0.8 }}>
+                            <RatingPill value={ratingAvg} />
+                            <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 700 }}>
+                                {totalReviews} {totalReviews === 1 ? "review" : "reviews"}
+                            </Typography>
+                            {ratingAvg > 0 && (
+                                <Chip
+                                    icon={<VerifiedIcon sx={{ fontSize: 18 }} />}
+                                    label="Verified stays"
+                                    size="small"
+                                    sx={{
+                                        borderRadius: 2,
+                                        fontWeight: 800,
+                                        bgcolor: "rgba(46,125,50,0.10)",
+                                        color: "success.main",
+                                    }}
+                                />
+                            )}
+                        </Stack>
+                    </Box>
+
+                    <Box sx={{ textAlign: { xs: "left", sm: "right" } }}>
+                        <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 700 }}>
+                            Overall rating
+                        </Typography>
+                        <Typography variant="h6" sx={{ fontWeight: 900, mt: 0.3 }}>
+                            {ratingAvg ? `${formatNumber(ratingAvg, 1)} / 5.0` : "New listing"}
+                        </Typography>
+                    </Box>
+                </Stack>
+            </Paper>
+
+            {/* Rating Breakdown */}
+            {stats && showAnyBar && (
+                <Paper
+                    elevation={0}
+                    sx={{
+                        p: { xs: 2, md: 2.5 },
+                        borderRadius: 3,
+                        border: "1px solid",
+                        borderColor: "divider",
+                        mb: 3,
+                    }}
+                >
+                    <Stack spacing={1.6}>
+                        <Stack
+                            direction="row"
+                            justifyContent="space-between"
+                            alignItems="center"
+                            sx={{ mb: 0.5 }}
+                        >
+                            <Typography variant="h6" sx={{ fontWeight: 900 }}>
+                                Rating breakdown
+                            </Typography>
+
+                            <Stack direction="row" spacing={1} alignItems="center">
+                                <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 700 }}>
+                                    Average
+                                </Typography>
+                                <RatingPill value={ratingAvg} />
+                            </Stack>
+                        </Stack>
+
+                        <Divider />
+
+                        <Grid container spacing={2.2}>
+                            <Grid item xs={12} md={6}>
+                                <Stack spacing={1.4}>
+                                    {(showFallbackBars || showCleanliness) && (
+                                        <ReviewBar label="Cleanliness" value={ratingDetails.cleanliness} />
+                                    )}
+                                    {(showFallbackBars || showCommunication) && (
+                                        <ReviewBar label="Communication" value={ratingDetails.communication} />
+                                    )}
+                                </Stack>
+                            </Grid>
+
+                            <Grid item xs={12} md={6}>
+                                <Stack spacing={1.4}>
+                                    {(showFallbackBars || showLocation) && (
+                                        <ReviewBar label="Location / Check-in" value={ratingDetails.location} />
+                                    )}
+                                    {(showFallbackBars || showValue) && (
+                                        <ReviewBar label="Value" value={ratingDetails.value} />
+                                    )}
+                                </Stack>
+                            </Grid>
+                        </Grid>
+                    </Stack>
+                </Paper>
             )}
 
-            <Stack spacing={3}>
-                {reviews.map((review) => (
-                    <Paper key={review._id} elevation={0} sx={{ p: 0 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                            <Avatar src={review.guestId?.photoProfile} alt={review.guestId?.userName} sx={{ width: 48, height: 48, mr: 2 }} />
-                            <Box>
-                                <Typography variant="subtitle1" fontWeight="bold">
-                                    {review.guestId?.userName || 'Guest'}
-                                </Typography>
-                                <Typography variant="caption" color="text.secondary">
-                                    {new Date(review.createdAt).toLocaleDateString()}
-                                </Typography>
-                            </Box>
-                        </Box>
-
-                        <Box sx={{ mb: 2 }}>
-                            <Typography variant="body1">{review.comment}</Typography>
-                        </Box>
-
-                        {review.photos && review.photos.length > 0 && (
-                            <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-                                {review.photos.map((photo, index) => (
-                                    <img
-                                        key={index}
-                                        src={photo}
-                                        alt="Review"
-                                        style={{ width: 100, height: 80, objectFit: 'cover', borderRadius: 8, cursor: 'pointer' }}
-                                        onClick={() => window.open(photo, '_blank')}
-                                    />
-                                ))}
-                            </Box>
-                        )}
-
-                        {review.hostResponse && review.hostResponse.message && (
-                            <Box sx={{ ml: 4, pl: 2, borderLeft: '3px solid #ddd', mt: 2 }}>
-                                <Typography variant="subtitle2" fontWeight="bold">Response from Host:</Typography>
-                                <Typography variant="body2">{review.hostResponse.message}</Typography>
-                                <Typography variant="caption" color="text.secondary">
-                                    {new Date(review.hostResponse.respondedAt).toLocaleDateString()}
-                                </Typography>
-                            </Box>
-                        )}
-
-                        {isHost && !review.hostResponse && (
-                            <Button size="small" onClick={() => openResponseModal(review._id)} sx={{ mt: 1 }}>
-                                Reply
-                            </Button>
-                        )}
-                        <Divider sx={{ mt: 3 }} />
+            {/* Reviews List */}
+            <Stack spacing={2}>
+                {loading && reviews.length === 0 ? (
+                    <>
+                        {[1, 2, 3].map((x) => (
+                            <Paper
+                                key={x}
+                                elevation={0}
+                                sx={{
+                                    p: 2.5,
+                                    borderRadius: 3,
+                                    border: "1px solid",
+                                    borderColor: "divider",
+                                }}
+                            >
+                                <Stack direction="row" spacing={2} alignItems="center">
+                                    <Skeleton variant="circular" width={48} height={48} />
+                                    <Box sx={{ flexGrow: 1 }}>
+                                        <Skeleton width="40%" height={22} />
+                                        <Skeleton width="25%" height={18} />
+                                    </Box>
+                                </Stack>
+                                <Skeleton sx={{ mt: 2 }} height={60} />
+                            </Paper>
+                        ))}
+                    </>
+                ) : reviews.length === 0 ? (
+                    <Paper
+                        elevation={0}
+                        sx={{
+                            p: 3,
+                            borderRadius: 3,
+                            border: "1px solid",
+                            borderColor: "divider",
+                            textAlign: "center",
+                        }}
+                    >
+                        <Typography sx={{ fontWeight: 900 }}>No reviews yet</Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.6 }}>
+                            Be the first to share your experience.
+                        </Typography>
                     </Paper>
-                ))}
+                ) : (
+                    reviews.map((review) => {
+                        const guestName = review?.guestId?.userName || "Guest";
+                        const guestPhoto = review?.guestId?.photoProfile || "";
+                        const createdAt = review?.createdAt
+                            ? new Date(review.createdAt).toLocaleDateString()
+                            : "";
+
+                        // If your review has its own ratings per review, show it:
+                        const perReviewOverall =
+                            review?.ratings?.overall ||
+                            review?.overallRating ||
+                            null;
+
+                        return (
+                            <Paper
+                                key={review._id}
+                                elevation={0}
+                                sx={{
+                                    p: { xs: 2, md: 2.5 },
+                                    borderRadius: 3,
+                                    border: "1px solid",
+                                    borderColor: "divider",
+                                    transition: "all 0.18s ease",
+                                    "&:hover": {
+                                        boxShadow: "0 14px 34px rgba(0,0,0,0.08)",
+                                        transform: "translateY(-1px)",
+                                    },
+                                }}
+                            >
+                                {/* Header */}
+                                <Stack direction="row" spacing={2} alignItems="flex-start">
+                                    <Avatar
+                                        src={guestPhoto}
+                                        alt={guestName}
+                                        sx={{
+                                            width: 52,
+                                            height: 52,
+                                            border: "1px solid",
+                                            borderColor: "divider",
+                                        }}
+                                    />
+
+                                    <Box sx={{ flexGrow: 1 }}>
+                                        <Stack
+                                            direction={{ xs: "column", sm: "row" }}
+                                            alignItems={{ xs: "flex-start", sm: "center" }}
+                                            justifyContent="space-between"
+                                            spacing={1}
+                                        >
+                                            <Box>
+                                                <Typography sx={{ fontWeight: 900, fontSize: "1.05rem" }}>
+                                                    {guestName}
+                                                </Typography>
+                                                <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700 }}>
+                                                    {createdAt}
+                                                </Typography>
+                                            </Box>
+
+                                            <Stack direction="row" spacing={1} alignItems="center">
+                                                {perReviewOverall && (
+                                                    <Chip
+                                                        icon={<StarIcon sx={{ fontSize: 18 }} />}
+                                                        label={`${formatNumber(perReviewOverall, 1)} / 5`}
+                                                        size="small"
+                                                        sx={{
+                                                            borderRadius: 2,
+                                                            fontWeight: 900,
+                                                            bgcolor: "rgba(255,193,7,0.14)",
+                                                        }}
+                                                    />
+                                                )}
+
+                                                {isHost && !review?.hostResponse && (
+                                                    <Button
+                                                        size="small"
+                                                        variant="outlined"
+                                                        startIcon={<ReplyIcon />}
+                                                        onClick={() => openResponseModal(review._id)}
+                                                        sx={{
+                                                            borderRadius: 2,
+                                                            textTransform: "none",
+                                                            fontWeight: 900,
+                                                        }}
+                                                    >
+                                                        Reply
+                                                    </Button>
+                                                )}
+                                            </Stack>
+                                        </Stack>
+
+                                        {/* Comment */}
+                                        <Typography sx={{ mt: 1.4, fontSize: "0.98rem", lineHeight: 1.65 }}>
+                                            {review?.comment || "—"}
+                                        </Typography>
+
+                                        {/* Photos */}
+                                        {review?.photos?.length > 0 && (
+                                            <Stack direction="row" spacing={1.2} sx={{ mt: 1.6, flexWrap: "wrap" }}>
+                                                {review.photos.map((photo, index) => (
+                                                    <Box
+                                                        key={index}
+                                                        onClick={() => window.open(photo, "_blank")}
+                                                        sx={{
+                                                            width: 112,
+                                                            height: 86,
+                                                            borderRadius: 2,
+                                                            overflow: "hidden",
+                                                            border: "1px solid",
+                                                            borderColor: "divider",
+                                                            cursor: "pointer",
+                                                            "&:hover": {
+                                                                transform: "translateY(-1px)",
+                                                                boxShadow: "0 10px 25px rgba(0,0,0,0.10)",
+                                                            },
+                                                            transition: "all 0.18s ease",
+                                                        }}
+                                                    >
+                                                        <img
+                                                            src={photo}
+                                                            alt="Review"
+                                                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                                        />
+                                                    </Box>
+                                                ))}
+                                            </Stack>
+                                        )}
+
+                                        {/* Host Response */}
+                                        {review?.hostResponse?.message && (
+                                            <Box
+                                                sx={{
+                                                    mt: 2,
+                                                    p: 2,
+                                                    borderRadius: 2.5,
+                                                    border: "1px solid",
+                                                    borderColor: "divider",
+                                                    bgcolor: "rgba(25,118,210,0.05)",
+                                                }}
+                                            >
+                                                <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 0.8 }}>
+                                                    <VerifiedIcon sx={{ fontSize: 18, color: "primary.main" }} />
+                                                    <Typography sx={{ fontWeight: 900 }}>
+                                                        Host response
+                                                    </Typography>
+                                                </Stack>
+
+                                                <Typography variant="body2" sx={{ lineHeight: 1.65 }}>
+                                                    {review.hostResponse.message}
+                                                </Typography>
+
+                                                <Typography
+                                                    variant="caption"
+                                                    color="text.secondary"
+                                                    sx={{ display: "block", mt: 0.8, fontWeight: 700 }}
+                                                >
+                                                    {review.hostResponse.respondedAt
+                                                        ? new Date(review.hostResponse.respondedAt).toLocaleDateString()
+                                                        : ""}
+                                                </Typography>
+                                            </Box>
+                                        )}
+                                    </Box>
+                                </Stack>
+                            </Paper>
+                        );
+                    })
+                )}
             </Stack>
 
+            {/* Pagination */}
             {totalPages > 1 && (
-                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
                     <Pagination count={totalPages} page={page} onChange={handlePageChange} />
                 </Box>
             )}
 
             {/* Host Response Dialog */}
-            <Dialog open={responseModalOpen} onClose={() => setResponseModalOpen(false)} fullWidth maxWidth="sm">
-                <DialogTitle>Reply to Review</DialogTitle>
+            <Dialog
+                open={responseModalOpen}
+                onClose={() => setResponseModalOpen(false)}
+                fullWidth
+                maxWidth="sm"
+            >
+                <DialogTitle sx={{ fontWeight: 900 }}>Reply to Review</DialogTitle>
+
                 <DialogContent>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1.2 }}>
+                        Keep it professional. This response will be visible to guests.
+                    </Typography>
+
                     <TextField
                         autoFocus
                         margin="dense"
@@ -177,10 +546,22 @@ const ReviewsSection = ({ listingId, currentUser, listingHostId }) => {
                         onChange={(e) => setResponseText(e.target.value)}
                     />
                 </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setResponseModalOpen(false)}>Cancel</Button>
-                    <Button onClick={handleSubmitResponse} variant="contained" disabled={submittingResponse}>
-                        {submittingResponse ? 'Posting...' : 'Post Reply'}
+
+                <DialogActions sx={{ px: 3, pb: 2 }}>
+                    <Button
+                        onClick={() => setResponseModalOpen(false)}
+                        sx={{ textTransform: "none", fontWeight: 900 }}
+                    >
+                        Cancel
+                    </Button>
+
+                    <Button
+                        onClick={handleSubmitResponse}
+                        variant="contained"
+                        disabled={submittingResponse || !responseText.trim()}
+                        sx={{ textTransform: "none", fontWeight: 900, borderRadius: 2 }}
+                    >
+                        {submittingResponse ? "Posting..." : "Post Reply"}
                     </Button>
                 </DialogActions>
             </Dialog>

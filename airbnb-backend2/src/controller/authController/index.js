@@ -1,8 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import authUser from '../../model/hostModel/index.js';
-import authEmail from '../../mediater/authEMail/index.js';
-import { sendVerificationCode } from '../../mediater/verificationEmail/index.js';
+import { sendAppEmail, EMAIL_TYPES } from '../../config/email/sendAppEmail.js';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -21,7 +20,14 @@ const authController = {
 
       await user.save();
 
-      await authEmail(email, userName);
+      await sendAppEmail({
+        to: email,
+        type: EMAIL_TYPES.AUTH_WELCOME,
+        payload: {
+          userName,
+          email,
+        }
+      });
 
       res.status(201).json({ message: 'User created successfully', token, user });
     } catch (error) {
@@ -155,7 +161,14 @@ const authController = {
       user.emailVerifyExpiry = expiry;
       await user.save();
 
-      await sendVerificationCode(email, code);
+      await sendAppEmail({
+        to: email,
+        type: EMAIL_TYPES.AUTH_EMAIL_VERIFY_OTP,
+        payload: {
+          userName: user.userName,
+          otpCode: code,
+        }
+      });
 
       res.status(200).json({ message: "Verification code sent to email" });
     } catch (error) {

@@ -1,7 +1,8 @@
 import Listing from '../../model/listingModel/index.js';
 import TemporaryBooking from '../../model/temporaryBooking/index.js';
 import ConfirmedBooking from '../../model/confirmBooking/index.js';
-import sendConfirmationEmail from '../../config/confirmEmail/index.js';
+import sendConfirmationEmail from '../../config/confirmEmail/index.js'; // Keep if used elsewhere or remove
+import { sendAppEmail, EMAIL_TYPES } from '../../config/email/sendAppEmail.js';
 import Stripe from 'stripe'; // Import the Stripe module
 const stripeClient = Stripe(process.env.STRIPE_KEY);
 import Host from '../../model/hostModel/index.js'
@@ -231,7 +232,45 @@ export const bookingController = {
       booking.status = 'pending_approval';
       await booking.save();
 
-      // Notify host (Placeholder for email/notification)
+      // Email Notifications
+      const fullBooking = await TemporaryBooking.findById(booking._id)
+        .populate('userId')
+        .populate({ path: 'listingId', populate: { path: 'hostId' } });
+
+      const guestUser = fullBooking.userId;
+      const listing = fullBooking.listingId;
+      const hostUser = listing.hostId;
+
+      // Email to Host
+      await sendAppEmail({
+        to: hostUser.email,
+        type: EMAIL_TYPES.BOOKING_PENDING_HOST,
+        payload: {
+          userName: hostUser.userName,
+          listingTitle: listing.title,
+          startDate: booking.startDate,
+          endDate: booking.endDate,
+          guestCapacity: booking.guestCapacity,
+          totalPrice: booking.totalPrice,
+          bookingId: booking._id,
+          actionUrl: 'http://localhost:3000/host/dashboard/requests'
+        }
+      });
+
+      // Email to Guest
+      await sendAppEmail({
+        to: guestUser.email,
+        type: EMAIL_TYPES.BOOKING_PENDING_GUEST,
+        payload: {
+          userName: guestUser.userName,
+          listingTitle: listing.title,
+          startDate: booking.startDate,
+          endDate: booking.endDate,
+          guestCapacity: booking.guestCapacity,
+          totalPrice: booking.totalPrice,
+          bookingId: booking._id,
+        }
+      });
 
       return res.status(200).json({ message: "Request sent to host.", booking });
     } catch (error) {
@@ -280,6 +319,47 @@ export const bookingController = {
 
       return res.status(200).json({ message: "Booking approved and confirmed.", confirmedBooking });
 
+      // Send Emails (Non-blocking)
+      (async () => {
+        try {
+          const guestUser = await Host.findById(booking.userId);
+          const hostUser = booking.listingId.hostId; // Already populated
+
+          // Email to Guest
+          await sendAppEmail({
+            to: guestUser.email,
+            type: EMAIL_TYPES.BOOKING_CONFIRMED_GUEST,
+            payload: {
+              userName: guestUser.userName,
+              listingTitle: booking.listingId.title,
+              startDate: booking.startDate,
+              endDate: booking.endDate,
+              guestCapacity: booking.guestCapacity,
+              totalPrice: booking.totalPrice,
+              bookingId: confirmedBooking._id,
+              actionUrl: 'http://localhost:3000/trips'
+            }
+          });
+
+          // Email to Host
+          await sendAppEmail({
+            to: hostUser.email,
+            type: EMAIL_TYPES.BOOKING_CONFIRMED_HOST,
+            payload: {
+              userName: hostUser.userName,
+              listingTitle: booking.listingId.title,
+              startDate: booking.startDate,
+              endDate: booking.endDate,
+              guestCapacity: booking.guestCapacity,
+              totalPrice: booking.totalPrice,
+              bookingId: confirmedBooking._id,
+            }
+          });
+        } catch (err) {
+          console.error("Error sending approval emails", err);
+        }
+      })();
+
     } catch (error) {
       return res.status(500).json({ message: "Internal Server Error", error: error.message });
     }
@@ -305,6 +385,24 @@ export const bookingController = {
       }
 
       await TemporaryBooking.findByIdAndDelete(bookingId);
+
+      // Email to Guest
+      try {
+        const guestUser = await Host.findById(booking.userId);
+        await sendAppEmail({
+          to: guestUser.email,
+          type: EMAIL_TYPES.BOOKING_REJECTED_GUEST,
+          payload: {
+            userName: guestUser.userName,
+            listingTitle: booking.listingId.title,
+            startDate: booking.startDate,
+            endDate: booking.endDate,
+            totalPrice: booking.totalPrice,
+            bookingId: booking._id,
+            rejectionReason: req.body.reason || 'Dates unavailable or other reasons.'
+          }
+        });
+      } catch (e) { console.error("Error sending rejection email", e) }
 
       return res.status(200).json({ message: "Booking rejected." });
 

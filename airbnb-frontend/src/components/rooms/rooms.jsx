@@ -56,6 +56,29 @@ import InstagramIcon from "@mui/icons-material/Instagram";
 import Tooltip from "@mui/material/Tooltip";
 import ReviewsSection from "../../components/reviews/ReviewsSection";
 
+import WifiIcon from "@mui/icons-material/Wifi";
+import TvIcon from "@mui/icons-material/Tv";
+import KitchenIcon from "@mui/icons-material/Kitchen";
+import LocalParkingIcon from "@mui/icons-material/LocalParking";
+import AcUnitIcon from "@mui/icons-material/AcUnit";
+import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
+import PoolIcon from "@mui/icons-material/Pool";
+import HotTubIcon from "@mui/icons-material/HotTub";
+import LocalLaundryServiceIcon from "@mui/icons-material/LocalLaundryService";
+import BalconyIcon from "@mui/icons-material/Balcony";
+import ElevatorIcon from "@mui/icons-material/Elevator";
+import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
+import SecurityIcon from "@mui/icons-material/Security";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
+import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
+import PetsIcon from "@mui/icons-material/Pets";
+import SmokeFreeIcon from "@mui/icons-material/SmokeFree";
+import WorkIcon from "@mui/icons-material/Work";
+import RestaurantIcon from "@mui/icons-material/Restaurant";
+import MicrowaveIcon from "@mui/icons-material/Microwave";
+import CoffeeIcon from "@mui/icons-material/Coffee";
+import BathtubIcon from "@mui/icons-material/Bathtub";
+
 const { RangePicker } = DatePicker;
 
 const MemoizedHostSection = React.memo(HostSection);
@@ -66,6 +89,7 @@ const RoomPage = () => {
   const [host, setHost] = useState({});
   const [dates, setDates] = useState(null);
   const [openShareModal, setOpenShareModal] = useState(false);
+  const [openAmenitiesModal, setOpenAmenitiesModal] = useState(false);
 
   const shareUrl = window.location.href;
   const shareText = `Check out this place: ${place?.title || "Listing"}`;
@@ -100,6 +124,37 @@ const RoomPage = () => {
 
   const [selectedStartDate, setSelectedStartDate] = useState(null);
   const [selectedDates, setSelectedDates] = useState(null);
+
+  const AMENITY_ICONS = {
+    wifi: <WifiIcon fontSize="small" />,
+    tv: <TvIcon fontSize="small" />,
+    kitchen: <KitchenIcon fontSize="small" />,
+    parking: <LocalParkingIcon fontSize="small" />,
+    "air conditioning": <AcUnitIcon fontSize="small" />,
+    gym: <FitnessCenterIcon fontSize="small" />,
+    pool: <PoolIcon fontSize="small" />,
+    "hot tub": <HotTubIcon fontSize="small" />,
+    washer: <LocalLaundryServiceIcon fontSize="small" />,
+    dryer: <LocalLaundryServiceIcon fontSize="small" />,
+    balcony: <BalconyIcon fontSize="small" />,
+    elevator: <ElevatorIcon fontSize="small" />,
+    heating: <LocalFireDepartmentIcon fontSize="small" />,
+    security: <SecurityIcon fontSize="small" />,
+    cctv: <CameraAltIcon fontSize="small" />,
+    "first aid kit": <HealthAndSafetyIcon fontSize="small" />,
+    "pet friendly": <PetsIcon fontSize="small" />,
+    "no smoking": <SmokeFreeIcon fontSize="small" />,
+    workspace: <WorkIcon fontSize="small" />,
+    "dining area": <RestaurantIcon fontSize="small" />,
+    microwave: <MicrowaveIcon fontSize="small" />,
+    "coffee maker": <CoffeeIcon fontSize="small" />,
+    bathtub: <BathtubIcon fontSize="small" />,
+  };
+
+  const getAmenityIcon = (name) => {
+    const key = String(name || "").trim().toLowerCase();
+    return AMENITY_ICONS[key] || <CheckIcon sx={{ fontSize: 18 }} />;
+  };
 
   const toPascalCase = (str) => {
     return str
@@ -722,6 +777,107 @@ const RoomPage = () => {
             </Typography>
           </Paper>
 
+          {/* Amenities Section */}
+          <Paper
+            elevation={0}
+            sx={{
+              mt: 3,
+              p: 2.5,
+              borderRadius: 3,
+              border: "1px solid",
+              borderColor: "divider",
+              background:
+                "linear-gradient(135deg, rgba(25,118,210,0.04), rgba(156,39,176,0.03))",
+            }}
+          >
+            <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
+              <Box>
+                <Typography variant="h6" fontWeight={900}>
+                  What this place offers
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Amenities included with your stay
+                </Typography>
+              </Box>
+
+              {place?.amenities?.length > 6 && (
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={() => setOpenAmenitiesModal(true)}
+                  sx={{
+                    borderRadius: 2,
+                    textTransform: "none",
+                    fontWeight: 900,
+                  }}
+                >
+                  Show all
+                </Button>
+              )}
+            </Stack>
+
+            <Divider sx={{ my: 2 }} />
+
+            {place?.amenities?.length > 0 ? (
+              <Grid container spacing={1.2}>
+                {place?.amenities?.slice(0, 6).map((amenity, index) => (
+                  <Grid item xs={12} sm={6} key={index}>
+                    <Box
+                      sx={{
+                        p: 1.4,
+                        borderRadius: 2.5,
+                        border: "1px solid",
+                        borderColor: "divider",
+                        bgcolor: "rgba(255,255,255,0.70)",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1.2,
+                        transition: "all 0.18s ease",
+                        "&:hover": {
+                          transform: "translateY(-1px)",
+                          boxShadow: "0 12px 28px rgba(0,0,0,0.08)",
+                        },
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          width: 34,
+                          height: 34,
+                          borderRadius: 2,
+                          display: "grid",
+                          placeItems: "center",
+                          bgcolor: "rgba(25,118,210,0.10)",
+                          color: "primary.main",
+                          flexShrink: 0,
+                        }}
+                      >
+                        {getAmenityIcon(amenity)}
+                      </Box>
+
+                      <Typography fontWeight={900} sx={{ fontSize: "0.95rem" }}>
+                        {amenity}
+                      </Typography>
+                    </Box>
+                  </Grid>
+                ))}
+              </Grid>
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                No amenities listed.
+              </Typography>
+            )}
+
+            {place?.amenities?.length > 6 && (
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ display: "block", mt: 1.8, fontWeight: 700 }}
+              >
+                Showing 6 of {place?.amenities?.length} amenities
+              </Typography>
+            )}
+          </Paper>
+
           {/* Reviews Section */}
           <Paper
             elevation={0}
@@ -793,56 +949,6 @@ const RoomPage = () => {
                   format="DD MMM, YYYY"
                   value={selectedDates}
                 />
-
-                {/* Guest Requirements Info */}
-                {place?.effectiveGuestRequirements && Object.values(place.effectiveGuestRequirements).some(v => v) && (
-                  <Box sx={{ p: 2, bgcolor: "#f8f9fa", borderRadius: 2, mb: 2, border: "1px solid #e9ecef" }}>
-                    <Typography variant="caption" fontWeight={800} display="block" sx={{ mb: 1, color: "text.secondary" }}>
-                      BOOKING REQUIREMENTS
-                    </Typography>
-                    <Stack spacing={0.5}>
-                      {place.effectiveGuestRequirements.requireVerifiedPhone && (
-                        <Stack direction="row" alignItems="center" spacing={1}>
-                          <CheckIcon fontSize="small" color={user?.phoneNumber ? "success" : "disabled"} sx={{ fontSize: 14 }} />
-                          <Typography variant="caption" color={user?.phoneNumber ? "text.primary" : "text.secondary"}>Verified Phone</Typography>
-                        </Stack>
-                      )}
-                      {place.effectiveGuestRequirements.requireVerifiedEmail && (
-                        <Stack direction="row" alignItems="center" spacing={1}>
-                          <CheckIcon fontSize="small" sx={{ fontSize: 14 }} color={user?.isEmailVerified ? "success" : "disabled"} />
-                          <Typography variant="caption">Verified Email</Typography>
-                        </Stack>
-                      )}
-                      {place.effectiveGuestRequirements.requireCNIC && (
-                        <Stack direction="row" alignItems="center" spacing={1}>
-                          <CheckIcon fontSize="small" sx={{ fontSize: 14 }} />
-                          <Typography variant="caption">Verified ID (CNIC)</Typography>
-                        </Stack>
-                      )}
-                      {place.effectiveGuestRequirements.requireProfilePhoto && (
-                        <Stack direction="row" alignItems="center" spacing={1}>
-                          <CheckIcon fontSize="small" sx={{ fontSize: 14 }} color={user?.photoProfile ? "success" : "disabled"} />
-                          <Typography variant="caption">Profile Photo</Typography>
-                        </Stack>
-                      )}
-                      {place.effectiveGuestRequirements.minAccountAgeDays > 0 && (
-                        <Stack direction="row" alignItems="center" spacing={1}>
-                          <CheckIcon fontSize="small" sx={{ fontSize: 14 }} />
-                          <Typography variant="caption">Account Age &ge; {place.effectiveGuestRequirements.minAccountAgeDays} Days</Typography>
-                        </Stack>
-                      )}
-                      {place.effectiveGuestRequirements.requireCompletedProfile && (
-                        <Stack direction="row" alignItems="center" spacing={1}>
-                          <CheckIcon fontSize="small" sx={{ fontSize: 14 }} />
-                          <Typography variant="caption">Completed Profile</Typography>
-                        </Stack>
-                      )}
-                    </Stack>
-                    <Button size="small" sx={{ mt: 1, p: 0, textTransform: "none" }} onClick={() => navigate('/user/profile')}>
-                      Complete Profile
-                    </Button>
-                  </Box>
-                )}
 
                 <Button
                   variant="text"
@@ -1007,6 +1113,93 @@ const RoomPage = () => {
       <Box sx={{ mt: 4 }}>
         <MemoizedHostSection data={host} listing={place} />
       </Box>
+      {/* Amenities Modal */}
+      <Dialog
+        open={openAmenitiesModal}
+        onClose={() => setOpenAmenitiesModal(false)}
+        fullWidth
+        maxWidth="sm"
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            p: 0.5,
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            fontWeight: 900,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            pb: 1,
+          }}
+        >
+          Amenities
+          <IconButton onClick={() => setOpenAmenitiesModal(false)}>
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+
+        <DialogContent sx={{ pt: 1 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Everything included with this place.
+          </Typography>
+
+          <Grid container spacing={1.2}>
+            {place?.amenities?.map((amenity, index) => (
+              <Grid item xs={12} sm={6} key={index}>
+                <Box
+                  sx={{
+                    p: 1.4,
+                    borderRadius: 2.5,
+                    border: "1px solid",
+                    borderColor: "divider",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1.2,
+                    bgcolor: "rgba(0,0,0,0.02)",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: 34,
+                      height: 34,
+                      borderRadius: 2,
+                      display: "grid",
+                      placeItems: "center",
+                      bgcolor: "rgba(25,118,210,0.10)",
+                      color: "primary.main",
+                      flexShrink: 0,
+                    }}
+                  >
+                    {getAmenityIcon(amenity)}
+                  </Box>
+
+                  <Typography fontWeight={900} sx={{ fontSize: "0.95rem" }}>
+                    {amenity}
+                  </Typography>
+                </Box>
+              </Grid>
+            ))}
+          </Grid>
+        </DialogContent>
+
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button
+            onClick={() => setOpenAmenitiesModal(false)}
+            variant="contained"
+            sx={{
+              textTransform: "none",
+              fontWeight: 900,
+              borderRadius: 2,
+            }}
+          >
+            Done
+          </Button>
+        </DialogActions>
+      </Dialog>
+
     </Box>
   );
 };

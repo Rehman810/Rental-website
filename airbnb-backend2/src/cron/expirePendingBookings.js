@@ -6,6 +6,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const stripeClient = Stripe(process.env.STRIPE_KEY);
+import { sendAppEmail, EMAIL_TYPES } from '../config/email/sendAppEmail.js';
+import Host from '../model/hostModel/index.js'; // Needed if not populated, but populating is better
 
 export const expirePendingBookings = async () => {
     try {
@@ -18,7 +20,7 @@ export const expirePendingBookings = async () => {
         const expiredBookings = await TemporaryBooking.find({
             status: 'pending_approval',
             createdAt: { $lte: expiryTime }
-        });
+        }).populate('userId').populate('listingId');
 
         if (expiredBookings.length === 0) {
             console.log('[Cron] No expired bookings found.');
@@ -50,6 +52,25 @@ export const expirePendingBookings = async () => {
                 booking.status = 'expired';
                 await booking.save();
                 processedCount++;
+
+                // Send Email to Guest
+                const guest = booking.userId;
+                const listing = booking.listingId;
+                if (guest && guest.email) {
+                    await sendAppEmail({
+                        to: guest.email,
+                        type: EMAIL_TYPES.BOOKING_EXPIRED_GUEST,
+                        payload: {
+                            userName: guest.userName,
+                            listingTitle: listing?.title || 'Listing',
+                            startDate: booking.startDate,
+                            endDate: booking.endDate,
+                            guestCapacity: booking.guestCapacity,
+                            totalPrice: booking.totalPrice,
+                            bookingId: booking._id
+                        }
+                    });
+                }
 
             } catch (err) {
                 console.error(`[Cron] Error processing booking ${booking._id}:`, err.message);

@@ -4,6 +4,7 @@ import Host from '../../model/hostModel/index.js'
 import Notification from "../../model/notification/index.js";
 import { notificationController } from "../notificationController/index.js";
 import { expirePendingBookings } from "../../cron/expirePendingBookings.js";
+import { sendAppEmail, EMAIL_TYPES } from '../../config/email/sendAppEmail.js';
 
 export const adminController = {
   triggerExpirePendingBookings: async (io, req, res) => {
@@ -84,6 +85,16 @@ export const adminController = {
         createdAt: notification.createdAt,
       });
 
+      // Email Notification
+      await sendAppEmail({
+        to: hostData.email,
+        type: EMAIL_TYPES.ADMIN_LISTING_VERIFIED,
+        payload: {
+          userName: hostData.userName,
+          listingTitle: confirmedListing.title,
+        }
+      });
+
       res.status(200).json({ message: 'Listing confirmed successfully.', confirmedListing });
     } catch (error) {
       console.error('Error confirming listing:', error);
@@ -144,6 +155,15 @@ export const adminController = {
           cnicStatus: "Verified",
         },
       });
+
+      // Email Notification
+      await sendAppEmail({
+        to: host.email,
+        type: EMAIL_TYPES.ADMIN_CNIC_VERIFIED,
+        payload: {
+          userName: host.userName,
+        }
+      });
     } catch (error) {
       console.error("Error verifying CNIC:", error);
       res.status(500).json({ message: "Internal Server Error", error: error.message });
@@ -200,6 +220,16 @@ export const adminController = {
         host.emailVerifyCode = undefined;
       }
       await host.save();
+
+      if (isVerified) {
+        await sendAppEmail({
+          to: host.email,
+          type: EMAIL_TYPES.ADMIN_EMAIL_VERIFIED,
+          payload: {
+            userName: host.userName,
+          }
+        });
+      }
 
       res.status(200).json({ message: `Email verification ${isVerified ? 'enabled' : 'disabled'}` });
     } catch (error) {

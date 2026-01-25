@@ -330,7 +330,7 @@ const ListingPage = () => {
             }}
           />
 
-          <IconButton
+          {/* <IconButton
             size="small"
             sx={{ position: "absolute", top: 12, right: 12, bgcolor: "rgba(255,255,255,0.9)", '&:hover': { bgcolor: "white" } }}
             onClick={(e) => {
@@ -339,7 +339,7 @@ const ListingPage = () => {
             }}
           >
             <SettingsIcon fontSize="small" />
-          </IconButton>
+          </IconButton> */}
 
           <Menu
             anchorEl={anchorEl}

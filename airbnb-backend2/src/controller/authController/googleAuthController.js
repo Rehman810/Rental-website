@@ -1,6 +1,7 @@
 import { OAuth2Client } from 'google-auth-library';
 import jwt from 'jsonwebtoken';
 import authUser from '../../model/hostModel/index.js';
+import { sendAppEmail, EMAIL_TYPES } from '../../config/email/sendAppEmail.js';
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -49,6 +50,15 @@ const googleAuthController = {
                     verifyToken: '' // Initialize
                 });
                 await user.save();
+
+                await sendAppEmail({
+                    to: email,
+                    type: EMAIL_TYPES.AUTH_GOOGLE_WELCOME,
+                    payload: {
+                        userName: name,
+                        email,
+                    }
+                });
             }
 
             // Generate JWT

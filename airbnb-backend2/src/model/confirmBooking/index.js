@@ -8,6 +8,8 @@ const confirmedBookingSchema = new mongoose.Schema({
   guestCapacity: { type: Number, required: true },
   totalPrice: { type: Number, required: true },
   createdAt: { type: Date, default: Date.now },
+  paymentIntentId: { type: String },
+  reminderSent: { type: Boolean, default: false },
 });
 
 export default mongoose.model('ConfirmedBooking', confirmedBookingSchema);

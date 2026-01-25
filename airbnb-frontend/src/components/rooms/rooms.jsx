@@ -736,6 +736,16 @@ const RoomPage = () => {
             }}
           >
             <Stack spacing={2}>
+              {console.log(place?.effectiveBookingMode)}
+              {/* Booking Mode Badge */}
+              <Box sx={{ mb: 2 }}>
+                {place?.effectiveBookingMode === 'instant' ? (
+                  <Chip label="Instant Book" color="success" size="small" sx={{ fontWeight: 800, borderRadius: 1 }} />
+                ) : (
+                  <Chip label="Approval Required" color="warning" size="small" sx={{ fontWeight: 800, borderRadius: 1, color: "white" }} />
+                )}
+              </Box>
+
               {/* Price */}
               <Box>
                 <Typography variant="h4" fontWeight={900} sx={{ color: "primary.main" }}>
@@ -885,7 +895,7 @@ const RoomPage = () => {
                   transition: "all 0.18s ease",
                 }}
               >
-                Reserve
+                {place?.effectiveBookingMode === 'instant' ? "Reserve" : "Request to Book"}
               </Button>
 
               <Typography variant="body2" color="text.secondary" textAlign="center">

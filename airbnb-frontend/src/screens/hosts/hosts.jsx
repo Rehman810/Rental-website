@@ -10,6 +10,8 @@ const Footer = lazy(() => import("../../components/footer/footer"));
 const Today = lazy(() => import("../../pages/today/today"));
 const Listings = lazy(() => import("../../pages/listings/listings"));
 const Payments = lazy(() => import("../../pages/payments/payments"));
+const HostSettings = lazy(() => import("../../pages/hostSettings/HostSettings"));
+const HostBookings = lazy(() => import("../../pages/hostBookings/HostBookings"));
 
 const Hosts = () => {
   const location = useLocation();
@@ -29,11 +31,17 @@ const Hosts = () => {
           {/* Host Bookings Calendar Page */}
           <Route path="/calendar" element={<HostBookingsCalendar />} />
 
+          {/* Host Bookings List Page */}
+          <Route path="/bookings" element={<HostBookings />} />
+
           {/* Messages Page */}
           <Route path="/messages" element={<Messages />} />
 
           {/* Payments Page */}
           <Route path="/payments" element={<Payments />} />
+
+          {/* Settings Page */}
+          <Route path="/settings" element={<HostSettings />} />
         </Routes>
       </div>
       {!isMessage && (

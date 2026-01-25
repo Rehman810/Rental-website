@@ -50,7 +50,7 @@ export const bookingController = {
         return res.status(400).json({ message: 'End date must be after start date.' });
       }
 
-      // Populate hostId to check Stripe connection
+      // Populate hostId to check Stripe connection and settings
       const listing = await Listing.findById(listingId).populate('hostId');
       if (!listing) {
         return res.status(404).json({ message: 'Listing not found.' });
@@ -60,6 +60,9 @@ export const bookingController = {
       if (!host || !host.stripeAccountId) {
         return res.status(400).json({ message: 'Host has not connected Stripe' });
       }
+
+      // Determine booking mode: Listing Override > Host Default > System Default ('request')
+      const bookingMode = listing.bookingMode ?? host.settings?.bookingMode ?? 'request';
 
       if (guestCapacity > listing.guestCapacity) {
         return res.status(400).json({ message: 'Guest capacity exceeds limit.' });
@@ -82,13 +85,10 @@ export const bookingController = {
         currency: "pkr",
         automatic_payment_methods: { enabled: true },
         application_fee_amount: platformFeeCents,
-        capture_method: "manual",
+        capture_method: "manual", // ALWAYS manual first
         transfer_data: {
           destination: host.stripeAccountId,
         },
-        // Removed paymentMethodId as usually we return client_secret for frontend to confirm using Elements
-        // But if paymentMethodId was passed, we could confirm immediately. 
-        // User requirement: "return client_secret"
       });
 
       const booking = await TemporaryBooking.create({
@@ -99,15 +99,118 @@ export const bookingController = {
         guestCapacity,
         totalPrice,
         paymentIntentId: paymentIntent.id,
+        status: 'on_hold' // waiting for user to authorize payment
       });
       res.status(201).json({
-        message: 'Booking created.',
+        message: 'Booking created. Proceed to payment.',
         booking,
         clientSecret: paymentIntent.client_secret,
+        bookingMode: bookingMode
       });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Internal Server Error', error: error.message });
+    }
+  },
+
+  // Called after payment authorization if bookingMode is 'request'
+  requestBooking: async (req, res) => {
+    try {
+      const { bookingId } = req.params;
+      const booking = await TemporaryBooking.findById(bookingId);
+      if (!booking) return res.status(404).json({ message: "Booking not found." });
+
+      // Verify payment intent status (it should be 'requires_capture' or 'succeeded' if auth worked)
+      const paymentIntent = await stripeClient.paymentIntents.retrieve(booking.paymentIntentId);
+      if (paymentIntent.status !== 'requires_capture') {
+        // If not authorized yet, we shouldn't move to pending_approval
+        // UNLESS it's already succeeded (unlikely with manual capture)
+        // Or if the payment flow failed.
+        return res.status(400).json({ message: "Payment authorization failed or incomplete." });
+      }
+
+      booking.status = 'pending_approval';
+      await booking.save();
+
+      // Notify host (Placeholder for email/notification)
+
+      return res.status(200).json({ message: "Request sent to host.", booking });
+    } catch (error) {
+      return res.status(500).json({ message: "Internal Server Error", error: error.message });
+    }
+  },
+
+  // Called by Host to approve
+  approveBooking: async (req, res) => {
+    try {
+      const { bookingId } = req.params;
+      // Ensure user is host of this listing
+      // We need to populate listing to check host
+      const booking = await TemporaryBooking.findById(bookingId).populate('listingId');
+      if (!booking) return res.status(404).json({ message: "Booking not found." });
+
+      if (booking.listingId.hostId.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ message: "Not authorized to approve this booking." });
+      }
+
+      if (booking.status !== 'pending_approval') {
+        return res.status(400).json({ message: "Booking is not in pending state." });
+      }
+
+      // Capture Payment
+      const paymentIntent = await stripeClient.paymentIntents.retrieve(booking.paymentIntentId);
+      if (paymentIntent.status === "requires_capture") {
+        const capturedIntent = await stripeClient.paymentIntents.capture(booking.paymentIntentId);
+        if (capturedIntent.status !== "succeeded") {
+          return res.status(400).json({ message: "Payment capture failed.", status: capturedIntent.status });
+        }
+      }
+
+      // Move to Confirmed
+      const confirmedBooking = await ConfirmedBooking.create({
+        userId: booking.userId,
+        listingId: booking.listingId._id,
+        startDate: booking.startDate,
+        endDate: booking.endDate,
+        guestCapacity: booking.guestCapacity,
+        totalPrice: booking.totalPrice,
+        paymentIntentId: booking.paymentIntentId,
+      });
+
+      await TemporaryBooking.findByIdAndDelete(bookingId);
+
+      return res.status(200).json({ message: "Booking approved and confirmed.", confirmedBooking });
+
+    } catch (error) {
+      return res.status(500).json({ message: "Internal Server Error", error: error.message });
+    }
+  },
+
+  // Called by Host to reject
+  rejectBooking: async (req, res) => {
+    try {
+      const { bookingId } = req.params;
+      const booking = await TemporaryBooking.findById(bookingId).populate('listingId');
+      if (!booking) return res.status(404).json({ message: "Booking not found." });
+
+      if (booking.listingId.hostId.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ message: "Not authorized to reject this booking." });
+      }
+
+      // Cancel Payment Intent
+      try {
+        await stripeClient.paymentIntents.cancel(booking.paymentIntentId);
+      } catch (e) {
+        console.warn("Failed to cancel payment intent:", e.message);
+        // Continue to delete booking anyway
+      }
+
+      await TemporaryBooking.findByIdAndDelete(bookingId);
+
+      return res.status(200).json({ message: "Booking rejected." });
+
+    } catch (error) {
+      return res.status(500).json({ message: "Internal Server Error", error: error.message });
     }
   },
 
@@ -197,12 +300,16 @@ export const bookingController = {
         return res.status(404).json({ message: 'No listings found for this host.' });
       }
       const listingIds = listings.map((listing) => listing._id);
+
+      // Filter? For now return all. Frontend can filter by status 'pending_approval' vs 'on_hold'.
+      // Ideally 'on_hold' are just abandoned carts, host shouldn't see them usually.
+      // But let's return all and let UI decided.
       const bookings = await TemporaryBooking.find({ listingId: { $in: listingIds } })
         .populate('listingId')
         .exec();
 
       if (bookings.length === 0) {
-        return res.status(200).json({ message: 'No temporary bookings found for this host.' });
+        return res.status(200).json({ message: 'No temporary bookings found for this host.', bookings: [] });
       }
       const bookingsWithUserData = await Promise.all(
         bookings.map(async (booking) => {
@@ -269,7 +376,6 @@ export const bookingController = {
                 email: userData.email,
                 photoProfile: userData.photoProfile,
                 phoneNumber: userData.phoneNumber
-
               }
               : null,
           };
@@ -394,7 +500,11 @@ export const bookingController = {
 
       const bookingsWithDetails = allBookings.map((booking) => {
         const bookingData = booking.toObject();
-        const status = booking instanceof TemporaryBooking ? 'Pending' : 'Confirmed';
+        // Updated status logic
+        let status = 'Confirmed';
+        if (booking instanceof TemporaryBooking) {
+          status = bookingData.status === 'pending_approval' ? 'Pending Approval' : 'Pending Payment';
+        }
 
         const hostData = bookingData.listingId?.hostId;
         const { hostId, ...listingDetails } = bookingData.listingId || {};

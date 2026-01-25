@@ -25,6 +25,11 @@ import CloseIcon from "@mui/icons-material/Close";
 import useDocumentTitle from "../../hooks/dynamicTitle/dynamicTitle";
 import { useNavigate } from "react-router-dom";
 import { fetchDataById } from "../../config/ServiceApi/serviceApi";
+import axios from 'axios';
+import toast from 'react-hot-toast';
+import SettingsIcon from '@mui/icons-material/Settings';
+import CheckIcon from '@mui/icons-material/Check';
+import { Menu, MenuItem, Stack as MuiStack } from "@mui/material"; // Stack already imported as Stack
 
 const ListingPage = () => {
   const [listing, setListing] = useState([]);
@@ -100,6 +105,30 @@ const ListingPage = () => {
 
   const ListingCard = ({ item, status }) => {
     const isVerified = status === "verified";
+    const [anchorEl, setAnchorEl] = useState(null);
+
+    const handleClose = () => setAnchorEl(null);
+
+    const handleUpdateMode = async (mode) => {
+      handleClose();
+      const toastId = toast.loading("Updating booking mode...");
+      try {
+        await axios.put(`http://localhost:5000/listing/${item._id}/booking-mode`, { bookingMode: mode }, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        toast.success("Updated!", { id: toastId });
+        // Refresh listings locally to see checkmark update
+        // Simple way: Update local state. 
+        // Better way: Re-fetch or update `listing` state.
+        // For now, let's just force reload or update state manually.
+        const updateList = (list) => list.map(l => l._id === item._id ? { ...l, bookingMode: mode === null ? undefined : mode } : l);
+        setListing(prev => updateList(prev));
+        setTempListing(prev => updateList(prev));
+
+      } catch (e) {
+        toast.error("Failed to update", { id: toastId });
+      }
+    };
 
     return (
       <Card
@@ -139,6 +168,43 @@ const ListingPage = () => {
               color: "#fff",
             }}
           />
+
+          <IconButton
+            size="small"
+            sx={{ position: "absolute", top: 12, right: 12, bgcolor: "rgba(255,255,255,0.9)", '&:hover': { bgcolor: "white" } }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setAnchorEl(e.currentTarget);
+            }}
+          >
+            <SettingsIcon fontSize="small" />
+          </IconButton>
+
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={(e) => { e.stopPropagation(); handleClose(); }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <MenuItem onClick={() => handleUpdateMode(null)}>
+              <Stack direction="row" alignItems="center" spacing={1} justifyContent="space-between" width="100%">
+                <Typography fontSize={13} fontWeight={!item.bookingMode ? 800 : 400}>Use Host Default</Typography>
+                {!item.bookingMode && <CheckIcon fontSize="small" color="primary" />}
+              </Stack>
+            </MenuItem>
+            <MenuItem onClick={() => handleUpdateMode('instant')}>
+              <Stack direction="row" alignItems="center" spacing={1} justifyContent="space-between" width="100%">
+                <Typography fontSize={13} fontWeight={item.bookingMode === 'instant' ? 800 : 400}>Instant Book</Typography>
+                {item.bookingMode === 'instant' && <CheckIcon fontSize="small" color="primary" />}
+              </Stack>
+            </MenuItem>
+            <MenuItem onClick={() => handleUpdateMode('request')}>
+              <Stack direction="row" alignItems="center" spacing={1} justifyContent="space-between" width="100%">
+                <Typography fontSize={13} fontWeight={item.bookingMode === 'request' ? 800 : 400}>Request to Book</Typography>
+                {item.bookingMode === 'request' && <CheckIcon fontSize="small" color="primary" />}
+              </Stack>
+            </MenuItem>
+          </Menu>
         </Box>
 
         <CardContent sx={{ p: 2 }}>
@@ -250,6 +316,24 @@ const ListingPage = () => {
                 ) : null,
               }}
             />
+
+            <Button
+              variant="outlined"
+              onClick={async () => {
+                const confirm = window.confirm("This will reset ALL your listings to use your Host Settings default. Continue?");
+                if (confirm) {
+                  try {
+                    await axios.post('http://localhost:5000/listings/migrate-modes', {}, {
+                      headers: { Authorization: `Bearer ${token}` }
+                    });
+                    window.location.reload();
+                  } catch (e) { console.error(e); }
+                }
+              }}
+              sx={{ borderRadius: "999px", textTransform: "none", fontWeight: 800, color: "text.secondary" }}
+            >
+              Reset All Defaults
+            </Button>
 
             <Button
               variant="contained"

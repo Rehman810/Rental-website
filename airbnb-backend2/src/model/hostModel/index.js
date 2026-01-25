@@ -61,6 +61,27 @@ const hostSchema = new mongoose.Schema({
   },
   stripeAccountId: { type: String, default: null },
   stripeOnboardingCompleted: { type: Boolean, default: false },
+  settings: {
+    bookingMode: { type: String, enum: ['instant', 'request'], default: 'request' },
+    cancellationPolicy: { type: String, enum: ['flexible', 'moderate', 'strict'], default: 'moderate' },
+    houseRules: {
+      quietHours: { type: Boolean, default: false },
+      smokingAllowed: { type: Boolean, default: false },
+      petsAllowed: { type: Boolean, default: false },
+    },
+    guestRequirements: {
+      requireVerifiedPhone: { type: Boolean, default: false },
+      requireCNIC: { type: Boolean, default: false },
+    },
+    pricing: {
+      basePrice: { type: Number, default: 0 },
+      weekendPrice: { type: Number, default: 0 },
+    },
+    notifications: {
+      email: { type: Boolean, default: true },
+      sms: { type: Boolean, default: false },
+    }
+  },
 }, {
   timestamps: true,
 });

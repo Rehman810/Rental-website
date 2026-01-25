@@ -8,6 +8,7 @@ import chatController from "../chatRoute/index.js"
 import notificationRoutes from "../notificationRoute/index.js"
 
 import stripeRoute from "../stripeRoute/index.js"
+import hostSettingsRoute from "../hostSettingsRoute/index.js"
 
 const allRoutes = async (app, io) => {
     authRoute(app)
@@ -19,5 +20,6 @@ const allRoutes = async (app, io) => {
     chatController(app, io)
     notificationRoutes(app)
     stripeRoute(app)
+    hostSettingsRoute(app)
 }
 export default allRoutes

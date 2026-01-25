@@ -32,6 +32,8 @@ import {
   HelpOutline as HelpIcon,
   Logout as LogoutIcon,
   TravelExplore as TravelIcon,
+  SettingsOutlined as SettingsIcon,
+  BookOnlineOutlined as BookOnlineIcon,
 } from "@mui/icons-material";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import handleLogout from "../logout/logout";
@@ -70,8 +72,10 @@ const NavbarHost = () => {
       { name: t("menu.hostMenu.today"), route: "/hosting/today", icon: <DashboardIcon fontSize="small" /> },
       { name: t("menu.hostMenu.calendar"), route: "/hosting/calendar", icon: <CalendarIcon fontSize="small" /> },
       { name: t("menu.hostMenu.listings"), route: "/hosting/listings", icon: <ListingsIcon fontSize="small" /> },
+      { name: "Bookings", route: "/hosting/bookings", icon: <BookOnlineIcon fontSize="small" /> },
       { name: t("menu.hostMenu.messages"), route: "/hosting/messages", icon: <MailIcon fontSize="small" /> },
       { name: "Payments", route: "/hosting/payments", icon: <PaymentsIcon fontSize="small" /> },
+      { name: "Settings", route: "/hosting/settings", icon: <SettingsIcon fontSize="small" /> },
     ],
     [t]
   );

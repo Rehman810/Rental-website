@@ -1,9 +1,9 @@
-import  {bookingController} from '../../controller/bookingController/index.js';
+import { bookingController } from '../../controller/bookingController/index.js';
 import { authenticateHost } from '../../middleWare/authenticate/index.js';
 import combinedAuthenticate from '../../middleWare/combineAuthenticate/index.js'
 
 const bookingRoute = (app) => {
-    app.post('/create-bookings/:listingId/',combinedAuthenticate, bookingController.createBooking);
+    app.post('/create-bookings/:listingId/', combinedAuthenticate, bookingController.createBooking);
     app.post('/confirm-booking/:bookingId', combinedAuthenticate, bookingController.confirmBooking);
     app.delete('/reject-booking/:bookingId', combinedAuthenticate, bookingController.deleteBooking);
     app.get('/temporary-booking', combinedAuthenticate, bookingController.getTemporaryBookings);
@@ -15,6 +15,10 @@ const bookingRoute = (app) => {
 
     app.get('/guest-bookings', combinedAuthenticate, bookingController.getUserBookings);
     app.get('/confirmed-booking-dates', combinedAuthenticate, bookingController.getConfirmedBookingDates);
+
+    app.post('/request-booking/:bookingId', combinedAuthenticate, bookingController.requestBooking);
+    app.post('/approve-booking/:bookingId', combinedAuthenticate, bookingController.approveBooking);
+    app.delete('/reject-booking/:bookingId', combinedAuthenticate, bookingController.rejectBooking);
 
 }
 export default bookingRoute;

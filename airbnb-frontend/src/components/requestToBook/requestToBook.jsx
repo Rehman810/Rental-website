@@ -101,6 +101,9 @@ const BookingComponent = () => {
         return;
       }
 
+      const { bookingMode, booking } = response;
+      console.log(bookingMode, booking._id);
+
       const cardElement = elements.getElement(CardElement);
 
       const { error, paymentIntent } = await stripe.confirmCardPayment(
@@ -121,27 +124,34 @@ const BookingComponent = () => {
         return;
       }
 
-      if (paymentIntent?.status === "requires_capture") {
-        toast.success(
-          "Booking requested! Payment will be charged after host accepts.",
-          { id: toastId }
-        );
+      const bookingId = booking._id;
 
-        setTimeout(() => {
-          navigate("/");
-        }, 2000);
+      if (paymentIntent?.status === "requires_capture" || paymentIntent?.status === "succeeded") {
 
-        return;
-      }
+        if (bookingMode === 'instant') {
+          // Instant Book: Capture and Confirm
+          try {
+            await postDataById(`confirm-booking`, {}, token, bookingId);
+            toast.success("Payment successful! Booking confirmed 🎉", { id: toastId });
+            setTimeout(() => {
+              navigate("/");
+            }, 2000);
+          } catch (confirmError) {
+            toast.error("Payment authorized but confirmation failed. Please contact support.", { id: toastId });
+          }
 
-      // If you ever switch to auto-capture
-      if (paymentIntent?.status === "succeeded") {
-        toast.success("Payment successful! Booking confirmed 🎉", { id: toastId });
-
-        setTimeout(() => {
-          navigate("/");
-        }, 800);
-
+        } else {
+          // Request to Book: Mark as Pending Approval
+          try {
+            await postDataById(`request-booking`, {}, token, bookingId);
+            toast.success("Request sent to host. Waiting for approval.", { id: toastId });
+            setTimeout(() => {
+              navigate("/");
+            }, 2000);
+          } catch (reqError) {
+            toast.error("Payment authorized but request failed. Please contact support.", { id: toastId });
+          }
+        }
         return;
       }
 
@@ -172,7 +182,7 @@ const BookingComponent = () => {
       >
         <Stack spacing={0.5}>
           <Typography variant="h5" fontWeight={900}>
-            Request to book
+            {bookListing?.effectiveBookingMode === 'instant' ? "Confirm and Pay" : "Request to Book"}
           </Typography>
           <Typography variant="body2" color="text.secondary">
             Review your trip details and complete payment securely.
@@ -426,7 +436,7 @@ const BookingComponent = () => {
                       <span>Processing...</span>
                     </Stack>
                   ) : (
-                    "Request to Book"
+                    bookListing?.effectiveBookingMode === 'instant' ? "Confirm and Pay" : "Request to Book"
                   )}
                 </Button>
 
@@ -435,8 +445,10 @@ const BookingComponent = () => {
                   color="text.secondary"
                   sx={{ display: "block", mt: 1.3, textAlign: "center", lineHeight: 1.6 }}
                 >
-                  <b>Your reservation won’t be confirmed</b> until the host accepts your request
-                  (within 24 hours). You won’t be charged until then.
+                  {bookListing?.effectiveBookingMode === 'instant'
+                    ? "Your booking will be confirmed immediately."
+                    : <span><b>Your reservation won’t be confirmed</b> until the host accepts your request (within 24 hours). You won’t be charged until then.</span>
+                  }
                 </Typography>
               </Box>
             </Paper>

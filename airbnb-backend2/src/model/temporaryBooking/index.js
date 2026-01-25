@@ -8,6 +8,7 @@ const temporaryBookingSchema = new mongoose.Schema({
   guestCapacity: { type: Number, required: true },
   totalPrice: { type: Number, required: true },
   paymentIntentId: { type: String, required: true },
+  status: { type: String, enum: ['on_hold', 'pending_approval'], default: 'on_hold' },
   createdAt: { type: Date, default: Date.now },
 });
 

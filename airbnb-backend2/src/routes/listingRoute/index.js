@@ -14,6 +14,8 @@ const listingRoute = (app) => {
     app.get('/all-listring', listingController.getAllListings)
     app.put('/listing/:id', combinedAuthenticate, upload.single('image'), listingController.updateListing);
     app.delete('/listing/:id', combinedAuthenticate, listingController.deleteListing);
+    app.put('/listing/:listingId/booking-mode', combinedAuthenticate, listingController.updateBookingMode);
+    app.post('/listings/migrate-modes', combinedAuthenticate, listingController.migrateBookingModes);
 };
 
 export default listingRoute;

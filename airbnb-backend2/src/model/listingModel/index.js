@@ -16,6 +16,10 @@ const listingSchema = new mongoose.Schema({
     enum: ['Entire Place', 'A Room', 'A Shared Room'],
     required: false,
   },
+  bookingMode: {
+    type: String,
+    enum: ['instant', 'request'],
+  },
   street: { type: String, required: false },
   flat: { type: String },
   city: { type: String, required: false },

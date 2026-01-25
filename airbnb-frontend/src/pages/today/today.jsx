@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Box,
   Button,
@@ -15,33 +15,48 @@ import Upcoming from "../../components/upcoming/upcoming";
 import PendingBooking from "../../components/pendingBooking/pendingBooking";
 import { useBookingContext } from "../../context/booking";
 import { APP_NAME } from "../../config/env";
+import ConfirmedBookings from "../../components/confirmedBookings/confirmedBookings";
+import { fetchData } from "../../config/ServiceApi/serviceApi";
 
 const ReservationSection = () => {
   const [selectedTab, setSelectedTab] = useState("Pending Booking");
   useDocumentTitle("Host Dashboard - " + APP_NAME);
 
   const user = JSON.parse(localStorage.getItem("user"));
-  const { checkingOut, pendingBooking, currentlyHosting, upcoming } =
-    useBookingContext();
+  const {
+    checkingOut,
+    pendingBooking,
+    currentlyHosting,
+    upcoming,
+    confirmedBookings,
+    setPendingBooking,
+    setCheckingOut,
+    setCurrentlyHosting,
+    setUpcoming,
+    setConfirmedBookings,
+  } = useBookingContext();
 
   const tabs = useMemo(
     () => [
       { label: "Pending Booking", count: pendingBooking || 0 },
+      { label: "Confirmed Bookings", count: confirmedBookings || 0 },
       { label: "Checking out", count: checkingOut || 0 },
       { label: "Currently hosting", count: currentlyHosting || 0 },
       { label: "Upcoming", count: upcoming || 0 },
     ],
-    [pendingBooking, checkingOut, currentlyHosting, upcoming]
+    [pendingBooking, confirmedBookings, checkingOut, currentlyHosting, upcoming]
   );
 
   const totalReservations = useMemo(() => {
-    return (pendingBooking || 0) + (checkingOut || 0) + (currentlyHosting || 0) + (upcoming || 0);
-  }, [pendingBooking, checkingOut, currentlyHosting, upcoming]);
+    return (pendingBooking || 0) + (confirmedBookings || 0) + (checkingOut || 0) + (currentlyHosting || 0) + (upcoming || 0);
+  }, [pendingBooking, confirmedBookings, checkingOut, currentlyHosting, upcoming]);
 
   const renderContent = () => {
     switch (selectedTab) {
       case "Checking out":
         return <CheckingOut />;
+      case "Confirmed Bookings":
+        return <ConfirmedBookings />;
       case "Currently hosting":
         return <CurrentlyHosting />;
       case "Upcoming":
@@ -62,6 +77,48 @@ const ReservationSection = () => {
       .split(" ")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(" ");
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    const fetchAllCounts = async () => {
+      try {
+        const [
+          pendingRes,
+          checkingOutRes,
+          hostingRes,
+          upcomingRes,
+          confirmedRes,
+        ] = await Promise.all([
+          fetchData("temporary-booking", token),
+          fetchData("bookings-checking-out-today", token),
+          fetchData("currently-hosting", token),
+          fetchData("upcoming-bookings", token),
+          fetchData("get-confirmed-booking", token),
+        ]);
+
+        const pendingList = pendingRes?.bookings || [];
+        const pendingApproval = pendingList.filter(
+          (b) => b.status === "pending_approval"
+        );
+
+        setPendingBooking(pendingRes?.count ?? pendingApproval.length);
+        setCheckingOut(checkingOutRes?.count ?? (checkingOutRes?.bookingsCheckingOutToday?.length || 0));
+        setCurrentlyHosting(hostingRes?.count ?? (hostingRes?.currentlyHostingBookings?.length || 0));
+        setUpcoming(upcomingRes?.count ?? (upcomingRes?.upcomingBookings?.length || 0));
+        setConfirmedBookings(confirmedRes?.count ?? (confirmedRes?.bookings?.length || 0));
+      } catch (err) {
+        console.error("Counts fetch error:", err);
+      }
+    };
+
+    fetchAllCounts();
+  }, [
+    setPendingBooking,
+    setCheckingOut,
+    setCurrentlyHosting,
+    setUpcoming,
+    setConfirmedBookings
+  ]);
 
   return (
     <Box sx={{ p: { xs: 2, md: 3 }, maxWidth: 1200, mx: "auto" }}>

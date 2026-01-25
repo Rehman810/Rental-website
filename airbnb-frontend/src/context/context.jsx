@@ -76,7 +76,7 @@ export const AppProvider = ({ children }) => {
     setContextLongitude,
     contextLatitude,
     contextLongitude,
-    searchParams, 
+    searchParams,
     setSearchParams,
     langauge,
     setLanguage

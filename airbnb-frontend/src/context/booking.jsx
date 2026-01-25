@@ -13,6 +13,7 @@ export const BookingProvider = ({ children }) => {
   const [pendingBooking, setPendingBooking] = useState()
   const [upcoming, setUpcoming] = useState()
   const [currentlyHosting, setCurrentlyHosting] = useState()
+  const [confirmedBookings, setConfirmedBookings] = useState(0);
 
   const resetBookingState = () => {
     setBookingData({});
@@ -32,7 +33,9 @@ export const BookingProvider = ({ children }) => {
     pendingBooking,
     setPendingBooking,
     upcoming,
-    setUpcoming
+    setUpcoming,
+    confirmedBookings,
+    setConfirmedBookings
   };
 
   return (

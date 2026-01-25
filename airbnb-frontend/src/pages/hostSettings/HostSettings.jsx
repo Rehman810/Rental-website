@@ -305,16 +305,43 @@ const HostSettings = () => {
                 <CardContent sx={{ p: 4 }}>
                     <Typography variant="h6" fontWeight={800} gutterBottom>Guest Requirements</Typography>
                     <Grid container spacing={2}>
-                        <Grid item xs={12}>
+                        <Grid item xs={12} sm={6}>
                             <FormControlLabel
                                 control={<Switch checked={settings.guestRequirements.requireVerifiedPhone} onChange={(e) => handleChange('guestRequirements', 'requireVerifiedPhone', e.target.checked)} />}
                                 label="Require verified phone number"
                             />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item xs={12} sm={6}>
+                            <FormControlLabel
+                                control={<Switch checked={settings.guestRequirements.requireVerifiedEmail} onChange={(e) => handleChange('guestRequirements', 'requireVerifiedEmail', e.target.checked)} />}
+                                label="Require verified email"
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
                             <FormControlLabel
                                 control={<Switch checked={settings.guestRequirements.requireCNIC} onChange={(e) => handleChange('guestRequirements', 'requireCNIC', e.target.checked)} />}
                                 label="Require CNIC verification"
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <FormControlLabel
+                                control={<Switch checked={settings.guestRequirements.requireProfilePhoto} onChange={(e) => handleChange('guestRequirements', 'requireProfilePhoto', e.target.checked)} />}
+                                label="Require profile photo"
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <FormControlLabel
+                                control={<Switch checked={settings.guestRequirements.requireCompletedProfile} onChange={(e) => handleChange('guestRequirements', 'requireCompletedProfile', e.target.checked)} />}
+                                label="Require completed profile"
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Minimum Account Age (Days)"
+                                type="number"
+                                value={settings.guestRequirements.minAccountAgeDays ?? 0}
+                                onChange={(e) => handleChange('guestRequirements', 'minAccountAgeDays', parseInt(e.target.value))}
                             />
                         </Grid>
                     </Grid>

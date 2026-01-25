@@ -19,6 +19,14 @@ const listingSchema = new mongoose.Schema({
   bookingMode: {
     enum: ['instant', 'request'],
   },
+  guestRequirementsOverride: {
+    requireVerifiedPhone: { type: Boolean },
+    requireCNIC: { type: Boolean },
+    requireVerifiedEmail: { type: Boolean },
+    requireProfilePhoto: { type: Boolean },
+    minAccountAgeDays: { type: Number },
+    requireCompletedProfile: { type: Boolean },
+  },
   minNights: { type: Number },
   maxNights: { type: Number },
   allowSameDayBooking: { type: Boolean },

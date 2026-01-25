@@ -12,6 +12,21 @@ const hostSchema = new mongoose.Schema({
     immutable: true,
 
   },
+  isEmailVerified: {
+    type: Boolean,
+    default: false
+  },
+  emailVerifiedAt: {
+    type: Date
+  },
+  emailVerifyCode: {
+    type: String,
+    select: false
+  },
+  emailVerifyExpiry: {
+    type: Date,
+    select: false
+  },
   phoneNumber: {
     type: Number,
     require: false
@@ -72,6 +87,10 @@ const hostSchema = new mongoose.Schema({
     guestRequirements: {
       requireVerifiedPhone: { type: Boolean, default: false },
       requireCNIC: { type: Boolean, default: false },
+      requireVerifiedEmail: { type: Boolean, default: false },
+      requireProfilePhoto: { type: Boolean, default: false },
+      minAccountAgeDays: { type: Number, default: 0 },
+      requireCompletedProfile: { type: Boolean, default: false },
     },
     pricing: {
       basePrice: { type: Number, default: 0 },

@@ -24,7 +24,7 @@ import {
 
 import { DatePicker } from "antd";
 import "antd/dist/reset.css";
-
+import CheckIcon from '@mui/icons-material/Check';
 import LeafletMap from "../map/map";
 import HostSection from "../hostSection/hostSection";
 import { useNavigate, useParams } from "react-router-dom";
@@ -95,6 +95,7 @@ const RoomPage = () => {
   const { setBookingData, setBookListing } = useBookingContext();
   const { roomId } = useParams();
   const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user"));
   const navigate = useNavigate();
 
   const [selectedStartDate, setSelectedStartDate] = useState(null);
@@ -792,6 +793,56 @@ const RoomPage = () => {
                   format="DD MMM, YYYY"
                   value={selectedDates}
                 />
+
+                {/* Guest Requirements Info */}
+                {place?.effectiveGuestRequirements && Object.values(place.effectiveGuestRequirements).some(v => v) && (
+                  <Box sx={{ p: 2, bgcolor: "#f8f9fa", borderRadius: 2, mb: 2, border: "1px solid #e9ecef" }}>
+                    <Typography variant="caption" fontWeight={800} display="block" sx={{ mb: 1, color: "text.secondary" }}>
+                      BOOKING REQUIREMENTS
+                    </Typography>
+                    <Stack spacing={0.5}>
+                      {place.effectiveGuestRequirements.requireVerifiedPhone && (
+                        <Stack direction="row" alignItems="center" spacing={1}>
+                          <CheckIcon fontSize="small" color={user?.phoneNumber ? "success" : "disabled"} sx={{ fontSize: 14 }} />
+                          <Typography variant="caption" color={user?.phoneNumber ? "text.primary" : "text.secondary"}>Verified Phone</Typography>
+                        </Stack>
+                      )}
+                      {place.effectiveGuestRequirements.requireVerifiedEmail && (
+                        <Stack direction="row" alignItems="center" spacing={1}>
+                          <CheckIcon fontSize="small" sx={{ fontSize: 14 }} color={user?.isEmailVerified ? "success" : "disabled"} />
+                          <Typography variant="caption">Verified Email</Typography>
+                        </Stack>
+                      )}
+                      {place.effectiveGuestRequirements.requireCNIC && (
+                        <Stack direction="row" alignItems="center" spacing={1}>
+                          <CheckIcon fontSize="small" sx={{ fontSize: 14 }} />
+                          <Typography variant="caption">Verified ID (CNIC)</Typography>
+                        </Stack>
+                      )}
+                      {place.effectiveGuestRequirements.requireProfilePhoto && (
+                        <Stack direction="row" alignItems="center" spacing={1}>
+                          <CheckIcon fontSize="small" sx={{ fontSize: 14 }} color={user?.photoProfile ? "success" : "disabled"} />
+                          <Typography variant="caption">Profile Photo</Typography>
+                        </Stack>
+                      )}
+                      {place.effectiveGuestRequirements.minAccountAgeDays > 0 && (
+                        <Stack direction="row" alignItems="center" spacing={1}>
+                          <CheckIcon fontSize="small" sx={{ fontSize: 14 }} />
+                          <Typography variant="caption">Account Age &ge; {place.effectiveGuestRequirements.minAccountAgeDays} Days</Typography>
+                        </Stack>
+                      )}
+                      {place.effectiveGuestRequirements.requireCompletedProfile && (
+                        <Stack direction="row" alignItems="center" spacing={1}>
+                          <CheckIcon fontSize="small" sx={{ fontSize: 14 }} />
+                          <Typography variant="caption">Completed Profile</Typography>
+                        </Stack>
+                      )}
+                    </Stack>
+                    <Button size="small" sx={{ mt: 1, p: 0, textTransform: "none" }} onClick={() => navigate('/user/profile')}>
+                      Complete Profile
+                    </Button>
+                  </Box>
+                )}
 
                 <Button
                   variant="text"

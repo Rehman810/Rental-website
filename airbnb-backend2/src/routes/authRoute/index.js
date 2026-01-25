@@ -31,6 +31,10 @@ const authRoute = (app) => {
 
   app.post('/verify-token', authController.verifyToken);
   app.post('/logout', authController.logout);
+
+  // Email Verification
+  app.post('/auth/send-email-verification', combinedAuthenticate, authController.sendEmailVerification);
+  app.post('/auth/verify-email-code', combinedAuthenticate, authController.verifyEmailCode);
 };
 
 export default authRoute;

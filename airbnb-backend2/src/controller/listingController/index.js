@@ -137,6 +137,18 @@ export const listingController = {
         checkOutBy: listing.checkOutBy ?? availabilitySettings.checkOutBy ?? "11:00"
       };
 
+      // Calculate Effective Guest Requirements
+      const hostReqs = hostData.settings?.guestRequirements || {};
+      const overrideReqs = listing.guestRequirementsOverride || {};
+      const effectiveGuestRequirements = {
+        requireVerifiedPhone: overrideReqs.requireVerifiedPhone ?? hostReqs.requireVerifiedPhone ?? false,
+        requireCNIC: overrideReqs.requireCNIC ?? hostReqs.requireCNIC ?? false,
+        requireVerifiedEmail: overrideReqs.requireVerifiedEmail ?? hostReqs.requireVerifiedEmail ?? false,
+        requireProfilePhoto: overrideReqs.requireProfilePhoto ?? hostReqs.requireProfilePhoto ?? false,
+        minAccountAgeDays: overrideReqs.minAccountAgeDays ?? hostReqs.minAccountAgeDays ?? 0,
+        requireCompletedProfile: overrideReqs.requireCompletedProfile ?? hostReqs.requireCompletedProfile ?? false,
+      };
+
       const reviewData = reviews.map(review => ({
         _id: review._id,
         rating: review.rating,
@@ -155,6 +167,7 @@ export const listingController = {
           ...listing.toObject(),
           effectiveBookingMode, // Also inside listing object for convenience
           effectiveAvailability, // Return effective rules
+          effectiveGuestRequirements, // Return effective requirements
           bookings: listing.confirmedBookings.map(booking => ({
             userId: booking.userId,
             startDate: booking.startDate,
@@ -397,6 +410,74 @@ export const listingController = {
     } catch (error) {
       console.error('Error updating availability:', error);
       res.status(500).json({ message: "Internal Server Error", error: error.message });
+    }
+  },
+
+  updateGuestRequirements: async (req, res) => {
+    try {
+      const { listingId } = req.params;
+      const {
+        requireVerifiedPhone,
+        requireCNIC,
+        requireVerifiedEmail,
+        requireProfilePhoto,
+        minAccountAgeDays,
+        requireCompletedProfile
+      } = req.body;
+
+      const hostId = req.user._id;
+      const listing = await Listing.findOne({ _id: listingId, hostId });
+
+      if (!listing) {
+        return res.status(404).json({ message: "Listing not found or unauthorized." });
+      }
+
+      // Initialize if missing
+      if (!listing.guestRequirementsOverride) {
+        listing.guestRequirementsOverride = {};
+      }
+
+      // Helper to update or unset
+      const updateField = (field, value) => {
+        if (value === null) {
+          listing.guestRequirementsOverride[field] = undefined; // Unset
+        } else if (value !== undefined) {
+          listing.guestRequirementsOverride[field] = value;
+        }
+      };
+
+      updateField('requireVerifiedPhone', requireVerifiedPhone);
+      updateField('requireCNIC', requireCNIC);
+      updateField('requireVerifiedEmail', requireVerifiedEmail);
+      updateField('requireProfilePhoto', requireProfilePhoto);
+      updateField('minAccountAgeDays', minAccountAgeDays);
+      updateField('requireCompletedProfile', requireCompletedProfile);
+
+      await listing.save();
+
+      // Recalculate effective rules
+      const host = await Host.findById(hostId);
+      const hostSettings = host.settings?.guestRequirements || {};
+      const overrides = listing.guestRequirementsOverride || {};
+
+      const effectiveRequirements = {
+        requireVerifiedPhone: overrides.requireVerifiedPhone ?? hostSettings.requireVerifiedPhone ?? false,
+        requireCNIC: overrides.requireCNIC ?? hostSettings.requireCNIC ?? false,
+        requireVerifiedEmail: overrides.requireVerifiedEmail ?? hostSettings.requireVerifiedEmail ?? false,
+        requireProfilePhoto: overrides.requireProfilePhoto ?? hostSettings.requireProfilePhoto ?? false,
+        minAccountAgeDays: overrides.minAccountAgeDays ?? hostSettings.minAccountAgeDays ?? 0,
+        requireCompletedProfile: overrides.requireCompletedProfile ?? hostSettings.requireCompletedProfile ?? false,
+      };
+
+      return res.status(200).json({
+        message: "Guest requirements updated.",
+        overrides: listing.guestRequirementsOverride,
+        effectiveRequirements
+      });
+
+    } catch (error) {
+      console.error('Error updating guest requirements:', error);
+      return res.status(500).json({ message: "Internal Server Error", error: error.message });
     }
   }
 

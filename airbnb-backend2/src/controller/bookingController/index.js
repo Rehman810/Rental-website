@@ -61,6 +61,62 @@ export const bookingController = {
         return res.status(400).json({ message: 'Host has not connected Stripe' });
       }
 
+      // --- Guest Requirements Validation ---
+      const hostSettings = host.settings?.guestRequirements || {};
+      const overrides = listing.guestRequirementsOverride || {};
+
+      const effectiveRequirements = {
+        requireVerifiedPhone: overrides.requireVerifiedPhone ?? hostSettings.requireVerifiedPhone ?? false,
+        requireCNIC: overrides.requireCNIC ?? hostSettings.requireCNIC ?? false,
+        requireVerifiedEmail: overrides.requireVerifiedEmail ?? hostSettings.requireVerifiedEmail ?? false,
+        requireProfilePhoto: overrides.requireProfilePhoto ?? hostSettings.requireProfilePhoto ?? false,
+        minAccountAgeDays: overrides.minAccountAgeDays ?? hostSettings.minAccountAgeDays ?? 0,
+        requireCompletedProfile: overrides.requireCompletedProfile ?? hostSettings.requireCompletedProfile ?? false,
+      };
+
+      const guest = await Host.findById(req.user._id); // Fetch fresh guest data
+      const missingRequirements = [];
+
+      if (effectiveRequirements.requireVerifiedPhone) {
+        // Check if phone exists. Assuming 'valid' means exists for now.
+        // User model has phoneNumber (Number).
+        if (!guest.phoneNumber) missingRequirements.push('verified_phone');
+      }
+
+      if (effectiveRequirements.requireCNIC) {
+        if (!guest.CNIC || !guest.CNIC.isVerified) missingRequirements.push('cnic_verified');
+      }
+
+      if (effectiveRequirements.requireVerifiedEmail) {
+        if (!guest.isEmailVerified) missingRequirements.push('verified_email');
+      }
+
+      if (effectiveRequirements.requireProfilePhoto) {
+        if (!guest.photoProfile) missingRequirements.push('profile_photo');
+      }
+
+      if (effectiveRequirements.minAccountAgeDays > 0) {
+        const accountAge = (new Date() - new Date(guest.createdAt)) / (1000 * 60 * 60 * 24);
+        if (accountAge < effectiveRequirements.minAccountAgeDays) {
+          missingRequirements.push(`account_age_${effectiveRequirements.minAccountAgeDays}_days`);
+        }
+      }
+
+      if (effectiveRequirements.requireCompletedProfile) {
+        // Basic Profile Check: Name, Email, Phone, Photo
+        if (!guest.userName || !guest.email || !guest.phoneNumber || !guest.photoProfile) {
+          missingRequirements.push('completed_profile');
+        }
+      }
+
+      if (missingRequirements.length > 0) {
+        return res.status(400).json({
+          message: "Guest does not meet booking requirements",
+          missing: missingRequirements
+        });
+      }
+      // --- End Guest Requirements Validation ---
+
       // Determine booking mode: Listing Override > Host Default > System Default ('request')
       const bookingMode = listing.bookingMode ?? host.settings?.bookingMode ?? 'request';
 

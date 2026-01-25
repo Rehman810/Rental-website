@@ -36,6 +36,7 @@ const ProfileSection = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedFields, setEditedFields] = useState({});
+  const [openEmailVerify, setOpenEmailVerify] = useState(false);
 
   const [cnicFront, setCnicFront] = useState(null);
   const [cnicBack, setCnicBack] = useState(null);
@@ -312,11 +313,23 @@ const ProfileSection = () => {
 
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
-                <FieldCard
-                  icon={<EmailIcon />}
-                  label="Email"
-                  value={user?.email || "Not available"}
-                />
+                <Box sx={{ p: 2, borderRadius: 2.5, border: "1px solid", borderColor: "divider", bgcolor: "rgba(0,0,0,0.02)" }}>
+                  <Stack direction="row" spacing={1.2} alignItems="center">
+                    <Box sx={{ width: 38, height: 38, borderRadius: 2, display: "grid", placeItems: "center", bgcolor: "rgba(25,118,210,0.10)", color: "primary.main", flexShrink: 0 }}>
+                      <EmailIcon fontSize="small" />
+                    </Box>
+                    <Box sx={{ flex: 1 }}>
+                      <Typography variant="caption" color="text.secondary" fontWeight={800}>Email</Typography>
+                      <Stack direction="row" alignItems="center" justifyContent="space-between">
+                        <Typography fontWeight={900} sx={{ mt: 0.2 }}>{user?.email || "No email"}</Typography>
+                        {!user?.isEmailVerified && (
+                          <Button size="small" variant="text" onClick={() => setOpenEmailVerify(true)} sx={{ minWidth: 0, p: 0.5, fontWeight: 800 }}>Verify</Button>
+                        )}
+                        {!!user?.isEmailVerified && <CheckCircleIcon color="success" fontSize="small" />}
+                      </Stack>
+                    </Box>
+                  </Stack>
+                </Box>
               </Grid>
 
               <Grid item xs={12} sm={6}>
@@ -491,13 +504,102 @@ const ProfileSection = () => {
           </Paper>
         </Grid>
       </Grid>
+
+      <EmailVerificationDialog
+        open={openEmailVerify}
+        onClose={() => setOpenEmailVerify(false)}
+        email={user?.email}
+        token={token}
+        onSuccess={(updatedUser) => {
+          const merged = { ...user, ...updatedUser };
+          setUser(merged);
+          localStorage.setItem("user", JSON.stringify(merged));
+          toast.success("Email verified successfully!");
+        }}
+      />
     </Box>
   );
 };
 
 /* ---------------- Small Components ---------------- */
 
+import { Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
+import { postData } from "../../config/ServiceApi/serviceApi";
+
+const EmailVerificationDialog = ({ open, onClose, email, token, onSuccess }) => {
+  const [step, setStep] = useState(1); // 1: Send, 2: Verify
+  const [code, setCode] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSend = async () => {
+    setLoading(true);
+    try {
+      // POST needs to be imported or used from serviceApi
+      await postData("auth/send-email-verification", { email }, token);
+      setStep(2);
+      toast.success("Verification code sent!");
+    } catch (e) {
+      // console.error(e);
+      // handled by serviceApi toast usually, or catch
+      toast.error(e.message || "Failed to send code");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerify = async () => {
+    setLoading(true);
+    try {
+      await postData("auth/verify-email-code", { email, code }, token);
+      onSuccess({ isEmailVerified: true, emailVerifiedAt: new Date() });
+      onClose();
+    } catch (e) {
+      toast.error(e.message || "Verification failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
+      <DialogTitle fontWeight={800}>{step === 1 ? "Verify Email" : "Enter Code"}</DialogTitle>
+      <DialogContent dividers>
+        {step === 1 ? (
+          <Typography>
+            Send a 6-digit verification code to <b>{email}</b>?
+          </Typography>
+        ) : (
+          <Stack spacing={2}>
+            <Typography variant="body2">
+              Enter the code sent to {email}.
+            </Typography>
+            <TextField
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              placeholder="123456"
+              fullWidth
+              autoFocus
+              inputProps={{ maxLength: 6, style: { fontSize: 24, letterSpacing: 8, textAlign: 'center' } }}
+            />
+          </Stack>
+        )}
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Cancel</Button>
+        {step === 1 ? (
+          <Button variant="contained" onClick={handleSend} disabled={loading}>{loading ? "Sending..." : "Send Code"}</Button>
+        ) : (
+          <Button variant="contained" onClick={handleVerify} disabled={loading || code.length < 6}>{loading ? "Verifying..." : "Verify"}</Button>
+        )}
+      </DialogActions>
+    </Dialog>
+  );
+};
+
 const FieldCard = ({ icon, label, value }) => {
+  // ... existing FieldCard code
+  // ...
+
   return (
     <Box
       sx={{

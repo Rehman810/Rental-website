@@ -195,6 +195,7 @@ const ListingPage = () => {
   const [tempListing, setTempListing] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingAvailability, setEditingAvailability] = useState(null);
+  const [editingGuestRequirements, setEditingGuestRequirements] = useState(null);
 
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
@@ -369,6 +370,12 @@ const ListingPage = () => {
                 <Typography fontSize={13}>Availability Rules</Typography>
                 {/* Show check if any override exists? */}
                 {(item.minNights || item.maxNights || item.checkInFrom) && <CheckIcon fontSize="small" color="action" />}
+              </Stack>
+            </MenuItem>
+            <MenuItem onClick={() => { handleClose(); setEditingGuestRequirements(item); }}>
+              <Stack direction="row" alignItems="center" spacing={1} justifyContent="space-between" width="100%">
+                <Typography fontSize={13}>Guest Requirements</Typography>
+                {item.guestRequirementsOverride && Object.keys(item.guestRequirementsOverride).length > 0 && <CheckIcon fontSize="small" color="action" />}
               </Stack>
             </MenuItem>
           </Menu>
@@ -627,15 +634,119 @@ const ListingPage = () => {
         onClose={() => setEditingAvailability(null)}
         listing={editingAvailability}
         token={token}
-        onUpdate={() => {
-          // Trigger refresh - simpler to just reload page or fetch again
-          // For now, reload window or define fetch function outside
-          // fetchDataById("listings", token, user?._id).then...
-          window.location.reload();
-        }}
+        onUpdate={() => window.location.reload()}
       />
 
+      {/* Guest Requirements Dialog */}
+      <GuestRequirementsModal
+        open={!!editingGuestRequirements}
+        onClose={() => setEditingGuestRequirements(null)}
+        listing={editingGuestRequirements}
+        token={token}
+        onUpdate={() => window.location.reload()}
+      />
     </Box>
+  );
+};
+
+const GuestRequirementsModal = ({ open, onClose, listing, token, onUpdate }) => {
+  const [formData, setFormData] = useState({});
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (listing) {
+      setFormData({
+        requireVerifiedPhone: listing.guestRequirementsOverride?.requireVerifiedPhone,
+        requireCNIC: listing.guestRequirementsOverride?.requireCNIC,
+        requireVerifiedEmail: listing.guestRequirementsOverride?.requireVerifiedEmail,
+        requireProfilePhoto: listing.guestRequirementsOverride?.requireProfilePhoto,
+        minAccountAgeDays: listing.guestRequirementsOverride?.minAccountAgeDays,
+        requireCompletedProfile: listing.guestRequirementsOverride?.requireCompletedProfile
+      });
+    }
+  }, [listing]);
+
+  const handleChange = (key, value) => {
+    setFormData(prev => ({ ...prev, [key]: value }));
+  };
+
+  const getSelectValue = (val) => val === undefined || val === null ? "default" : (val ? "true" : "false");
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const payload = {
+        requireVerifiedPhone: formData.requireVerifiedPhone === undefined ? null : formData.requireVerifiedPhone,
+        requireCNIC: formData.requireCNIC === undefined ? null : formData.requireCNIC,
+        requireVerifiedEmail: formData.requireVerifiedEmail === undefined ? null : formData.requireVerifiedEmail,
+        requireProfilePhoto: formData.requireProfilePhoto === undefined ? null : formData.requireProfilePhoto,
+        requireCompletedProfile: formData.requireCompletedProfile === undefined ? null : formData.requireCompletedProfile,
+        minAccountAgeDays: formData.minAccountAgeDays === undefined || formData.minAccountAgeDays === "" ? null : Number(formData.minAccountAgeDays)
+      };
+
+      await axios.put(`http://localhost:5000/listing/${listing._id}/guest-requirements`, payload, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success("Guest requirements updated");
+      onUpdate();
+      onClose();
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to update");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const BooleanOverride = ({ label, field }) => (
+    <Grid item xs={12} sm={6}>
+      <FormControl fullWidth>
+        <InputLabel shrink>{label}</InputLabel>
+        <Select
+          value={getSelectValue(formData[field])}
+          onChange={(e) => handleChange(field, e.target.value === "default" ? undefined : (e.target.value === "true"))}
+          label={label}
+          displayEmpty
+        >
+          <MenuItem value="default"><em>Use Host Default</em></MenuItem>
+          <MenuItem value="true">Yes</MenuItem>
+          <MenuItem value="false">No</MenuItem>
+        </Select>
+      </FormControl>
+    </Grid>
+  );
+
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+      <DialogTitle fontWeight={800}>Guest Requirements Override</DialogTitle>
+      <DialogContent dividers>
+        <Typography variant="body2" color="text.secondary" paragraph>
+          Override global host settings for this specific listing.
+        </Typography>
+        <Grid container spacing={2}>
+          <BooleanOverride label="Require Verified Phone" field="requireVerifiedPhone" />
+          <BooleanOverride label="Require Verified Email" field="requireVerifiedEmail" />
+          <BooleanOverride label="Require CNIC Verification" field="requireCNIC" />
+          <BooleanOverride label="Require Profile Photo" field="requireProfilePhoto" />
+          <BooleanOverride label="Require Completed Profile" field="requireCompletedProfile" />
+
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth label="Min Account Age (Days)" type="number"
+              value={formData.minAccountAgeDays ?? ""}
+              onChange={(e) => handleChange('minAccountAgeDays', e.target.value === "" ? undefined : e.target.value)}
+              placeholder="Host Default"
+              InputLabelProps={{ shrink: true }}
+              helperText="Leave empty to use host default"
+            />
+          </Grid>
+        </Grid>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} disabled={saving}>Cancel</Button>
+        <Button onClick={handleSave} variant="contained" disabled={saving}>{saving ? "Saving..." : "Save Overrides"}</Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

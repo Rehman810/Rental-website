@@ -16,6 +16,7 @@ const listingRoute = (app) => {
     app.delete('/listing/:id', combinedAuthenticate, listingController.deleteListing);
     app.put('/listing/:listingId/booking-mode', combinedAuthenticate, listingController.updateBookingMode);
     app.put('/listing/:listingId/availability', combinedAuthenticate, listingController.updateAvailability);
+    app.put('/listing/:listingId/guest-requirements', combinedAuthenticate, listingController.updateGuestRequirements);
     app.post('/listings/migrate-modes', combinedAuthenticate, listingController.migrateBookingModes);
 };
 

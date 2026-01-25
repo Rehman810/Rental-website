@@ -15,6 +15,7 @@ const EditProductPage = lazy(() => import("../pages/editProduct/editProduct"));
 const Listings = lazy(() => import("../pages/orderDetails/orderDetails"));
 const ListingDetails = lazy(() => import("../components/orders/orders"));
 const CNICVerification = lazy(() => import("../pages/cnicVerification/cnicVerification"));
+const UserVerification = lazy(() => import("../pages/userVerification/UserVerification"));
 
 import "../assets/styles/mainScreen.css";
 
@@ -31,10 +32,10 @@ const MainScreen = () => {
   return (
     <Box sx={{ display: 'flex', width: "100%" }}>
       <CssBaseline />
-      <Navbar open={open} handleDrawerOpen={handleDrawerOpen}/>
-      <div style={{width: "95%", margin: "0 auto"}}>
+      <Navbar open={open} handleDrawerOpen={handleDrawerOpen} />
+      <div style={{ width: "95%", margin: "0 auto" }}>
         <div>
-          <Sidebar open={open} handleDrawerClose={handleDrawerClose}/>
+          <Sidebar open={open} handleDrawerClose={handleDrawerClose} />
         </div>
         <div>
           <Routes>
@@ -42,13 +43,16 @@ const MainScreen = () => {
             {/* <Route path="/" element={<Body open={open} body={<DashBoard />}/>} /> */}
 
             {/* Listings Route */}
-            <Route path="/" element={<Body open={open} body={<Listings />}/>} />
+            <Route path="/" element={<Body open={open} body={<Listings />} />} />
 
             {/* Listing Details Route */}
-            <Route path="/listing/:listingId" element={<Body open={open} body={<ListingDetails />}/>} />
+            <Route path="/listing/:listingId" element={<Body open={open} body={<ListingDetails />} />} />
 
             {/* cnic-verification Route */}
-            <Route path="/cnic-verification" element={<Body open={open} body={<CNICVerification />}/>} />
+            <Route path="/cnic-verification" element={<Body open={open} body={<CNICVerification />} />} />
+
+            {/* user-verification Route */}
+            <Route path="/user-verification" element={<Body open={open} body={<UserVerification />} />} />
 
             {/* 404 Route */}
             <Route path="*" element={<NotFound />} />

@@ -158,7 +158,15 @@ const BookingComponent = () => {
       toast.error(`Payment status: ${paymentIntent?.status}`, { id: toastId });
     } catch (error) {
       console.error(error);
-      toast.error(error.message || "Something went wrong", { id: toastId });
+      if (error.response?.data?.missing) {
+        // Handle guest requirement missing
+        const missing = error.response.data.missing;
+        const missingText = missing.map(m => m.replace(/_/g, ' ')).join(', ');
+        toast.error(`Missing requirements: ${missingText}`, { id: toastId, duration: 5000 });
+        // Optionally navigate to profile?
+      } else {
+        toast.error(error.response?.data?.message || error.message || "Something went wrong", { id: toastId });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -310,32 +318,43 @@ const BookingComponent = () => {
 
               <Divider sx={{ my: 2 }} />
 
-              <Stack spacing={1.4}>
-                {/* <RequirementRow
-                  title="Message the host"
-                  description="Introduce yourself and share a quick note about your trip."
-                  actionLabel="Add"
-                  onAction={() => { }}
-                  status="required"
-                /> */}
+              {/* Dynamic Requirements */}
+              {(() => {
+                const reqs = bookListing?.effectiveGuestRequirements || {};
+                const createdDate = new Date(user?.createdAt || Date.now());
+                const accountAge =
+                  (Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
 
-                <RequirementRow
-                  title="Phone number"
-                  description="Add and confirm your phone number to get trip updates."
-                  actionLabel={missingPhone ? "Add" : "Completed"}
-                  onAction={() => navigate("/user/profile")}
-                  status={missingPhone ? "required" : "done"}
-                />
+                return (
+                  <>
+                    {/* Phone */}
+                    {(reqs.requireVerifiedPhone || !user?.phoneNumber) && (
+                      <RequirementRow
+                        title="Phone number"
+                        description="Add and confirm your phone number."
+                        actionLabel={user?.phoneNumber ? "Completed" : "Add"}
+                        onAction={() => navigate("/user/profile")}
+                        status={user?.phoneNumber ? "done" : "required"}
+                        required={reqs.requireVerifiedPhone}
+                      />
+                    )}
 
-                <RequirementRow
-                  title="Profile photo"
-                  description="Hosts want to know who’s staying at their place."
-                  actionLabel={missingPhoto ? "Add" : "Completed"}
-                  onAction={() => navigate("/user/profile")}
-                  status={missingPhoto ? "required" : "done"}
-                />
-              </Stack>
+                    {/* Photo */}
+                    {(reqs.requireProfilePhoto || !user?.photoProfile) && (
+                      <RequirementRow
+                        title="Profile photo"
+                        description="Hosts want to know who’s staying."
+                        actionLabel={user?.photoProfile ? "Completed" : "Add"}
+                        onAction={() => navigate("/user/profile")}
+                        status={user?.photoProfile ? "done" : "required"}
+                        required={reqs.requireProfilePhoto}
+                      />
+                    )}
+                  </>
+                );
+              })()}
             </Paper>
+
 
             {/* Policy */}
             <Paper
@@ -454,8 +473,8 @@ const BookingComponent = () => {
             </Paper>
           </Box>
         </Grid>
-      </Grid>
-    </Box>
+      </Grid >
+    </Box >
   );
 };
 

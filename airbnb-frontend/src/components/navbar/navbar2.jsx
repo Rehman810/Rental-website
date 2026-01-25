@@ -70,6 +70,7 @@ const NavbarHost = () => {
 
   const menuItems = useMemo(
     () => [
+      { name: "Dashboard", route: "/hosting/dashboard", icon: <DashboardIcon fontSize="small" /> },
       { name: t("menu.hostMenu.today"), route: "/hosting/today", icon: <DashboardIcon fontSize="small" /> },
       { name: t("menu.hostMenu.calendar"), route: "/hosting/calendar", icon: <CalendarIcon fontSize="small" /> },
       { name: t("menu.hostMenu.listings"), route: "/hosting/listings", icon: <ListingsIcon fontSize="small" /> },

@@ -9,6 +9,7 @@ import notificationRoutes from "../notificationRoute/index.js"
 
 import stripeRoute from "../stripeRoute/index.js"
 import hostSettingsRoute from "../hostSettingsRoute/index.js"
+import hostDashboardRoute from "../hostDashboardRoute/index.js"
 
 const allRoutes = async (app, io) => {
     authRoute(app)
@@ -21,5 +22,6 @@ const allRoutes = async (app, io) => {
     notificationRoutes(app)
     stripeRoute(app)
     hostSettingsRoute(app)
+    hostDashboardRoute(app)
 }
 export default allRoutes

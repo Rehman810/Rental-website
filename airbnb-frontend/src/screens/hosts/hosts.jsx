@@ -2,6 +2,7 @@ import React, { lazy } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 
 const NavbarHost = lazy(() => import("../../components/navbar/navbar2"));
+const HostDashboard = lazy(() => import("../../pages/hostDashboard/HostDashboard"));
 const HostBookingsCalendar = lazy(() =>
   import("../../pages/calendar/calendar")
 );
@@ -22,6 +23,9 @@ const Hosts = () => {
       <NavbarHost />
       <div style={{ minHeight: "22vh" }}>
         <Routes>
+          {/* Dashboard Page */}
+          <Route path="/dashboard" element={<HostDashboard />} />
+
           {/* Hosting Page */}
           <Route path="/today" element={<Today />} />
 

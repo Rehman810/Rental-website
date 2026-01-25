@@ -14,7 +14,12 @@ import {
     Button,
     Grid,
     Divider,
-    CircularProgress
+    CircularProgress,
+    TextField,
+    Select,
+    MenuItem,
+    InputLabel,
+    InputAdornment
 } from '@mui/material';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
@@ -37,6 +42,15 @@ const HostSettings = () => {
         notifications: {
             email: true,
             sms: false,
+        },
+        availability: {
+            minNights: 1,
+            maxNights: 30,
+            allowSameDayBooking: false,
+            minNoticeDays: 1,
+            bookingWindowMonths: 6,
+            checkInFrom: "14:00",
+            checkOutBy: "11:00"
         }
     });
 
@@ -141,6 +155,104 @@ const HostSettings = () => {
                             />
                         </RadioGroup>
                     </FormControl>
+                </CardContent>
+            </Card>
+
+            {/* Availability Rules */}
+            <Card sx={{ mb: 3, borderRadius: 3, boxShadow: "0 8px 40px rgba(0,0,0,0.08)" }}>
+                <CardContent sx={{ p: 4 }}>
+                    <Typography variant="h6" fontWeight={800} gutterBottom>Availability Rules (Default)</Typography>
+                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                        Set default availability rules for your listings. You can override these per listing.
+                    </Typography>
+                    <Grid container spacing={3} sx={{ mt: 1 }}>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Minimum Nights"
+                                type="number"
+                                value={settings.availability?.minNights ?? 1}
+                                onChange={(e) => handleChange('availability', 'minNights', parseInt(e.target.value))}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Maximum Nights"
+                                type="number"
+                                value={settings.availability?.maxNights ?? 30}
+                                onChange={(e) => handleChange('availability', 'maxNights', parseInt(e.target.value))}
+                            />
+                        </Grid>
+
+                        <Grid item xs={12}>
+                            <FormControlLabel
+                                control={<Switch checked={settings.availability?.allowSameDayBooking ?? false} onChange={(e) => {
+                                    const checked = e.target.checked;
+                                    handleChange('availability', 'allowSameDayBooking', checked);
+                                    if (!checked && (settings.availability?.minNoticeDays ?? 1) < 1) {
+                                        handleChange('availability', 'minNoticeDays', 1);
+                                    }
+                                }} />}
+                                label="Allow same-day booking"
+                            />
+                        </Grid>
+
+                        <Grid item xs={12} sm={6}>
+                            <FormControl fullWidth>
+                                <InputLabel>Minimum Notice</InputLabel>
+                                <Select
+                                    value={settings.availability?.minNoticeDays ?? 1}
+                                    label="Minimum Notice"
+                                    onChange={(e) => handleChange('availability', 'minNoticeDays', e.target.value)}
+                                // Disable 0 if same day is not allowed
+                                >
+                                    <MenuItem value={0} disabled={!settings.availability?.allowSameDayBooking}>Same Day (0 days)</MenuItem>
+                                    <MenuItem value={1}>1 Day</MenuItem>
+                                    <MenuItem value={2}>2 Days</MenuItem>
+                                    <MenuItem value={7}>7 Days</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <FormControl fullWidth>
+                                <InputLabel>Booking Window</InputLabel>
+                                <Select
+                                    value={settings.availability?.bookingWindowMonths ?? 6}
+                                    label="Booking Window"
+                                    onChange={(e) => handleChange('availability', 'bookingWindowMonths', e.target.value)}
+                                >
+                                    <MenuItem value={1}>1 Month</MenuItem>
+                                    <MenuItem value={3}>3 Months</MenuItem>
+                                    <MenuItem value={6}>6 Months</MenuItem>
+                                    <MenuItem value={12}>12 Months</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
+
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Check-in From"
+                                type="time"
+                                value={settings.availability?.checkInFrom ?? "14:00"}
+                                onChange={(e) => handleChange('availability', 'checkInFrom', e.target.value)}
+                                InputLabelProps={{ shrink: true }}
+                                inputProps={{ step: 300 }} // 5 min
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Check-out By"
+                                type="time"
+                                value={settings.availability?.checkOutBy ?? "11:00"}
+                                onChange={(e) => handleChange('availability', 'checkOutBy', e.target.value)}
+                                InputLabelProps={{ shrink: true }}
+                                inputProps={{ step: 300 }} // 5 min
+                            />
+                        </Grid>
+                    </Grid>
                 </CardContent>
             </Card>
 

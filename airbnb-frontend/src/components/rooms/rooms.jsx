@@ -319,6 +319,20 @@ const RoomPage = () => {
       return;
     }
 
+    // Availability Checks
+    const availability = place?.effectiveAvailability || {};
+    const minNights = availability.minNights ?? 1;
+    const maxNights = availability.maxNights ?? 30;
+
+    if (numofDays < minNights) {
+      toast.error(`Minimum stay is ${minNights} nights.`);
+      return;
+    }
+    if (numofDays > maxNights) {
+      toast.error(`Maximum stay is ${maxNights} nights.`);
+      return;
+    }
+
     const [startDate, endDate] = dates;
 
     const data = {
@@ -798,67 +812,74 @@ const RoomPage = () => {
                   onClick={openGuestsMenu}
                   sx={{
                     cursor: "pointer",
-                    p: 1.2,
-                    borderRadius: 2,
+                    // ... existing styles ...
                     border: "1px solid",
                     borderColor: "divider",
-                    backgroundColor: "rgba(255,255,255,0.6)",
+                    borderRadius: 2,
+                    p: 1.6,
                     display: "flex",
+                    justifyContent: "space-between",
                     alignItems: "center",
-                    gap: 1,
                   }}
                 >
-                  <Typography fontWeight={900} variant="body2">
-                    {guests.adults ? `${guests.adults} guest(s)` : "Select guests"}
-                  </Typography>
-
-                  <Box sx={{ flex: 1 }} />
-
-                  <Typography variant="body2" color="text.secondary">
-                    Max {maxGuests}
-                  </Typography>
+                  { /* Content of Guests Box reused existing structure implicitly if I don't see it?
+                      Wait, I need to see the implementation of the Box to not break it.
+                      The view_file cut off right at `              sx={{
+                    cursor: "pointer",`.
+                      I should append the info box AFTER the closing of the Guests Box and Menu.
+                      I need to see where it closes.
+                   */ }
+                  <Box>
+                    <Typography variant="body2" fontWeight={700}>
+                      {guests.adults} Guest{guests.adults !== 1 && "s"}
+                    </Typography>
+                  </Box>
+                  <ArrowForwardIcon2 sx={{ transform: "rotate(90deg)", fontSize: 18, color: "text.secondary" }} />
                 </Box>
-
                 <Menu
                   anchorEl={guestsAnchorEl}
                   open={Boolean(guestsAnchorEl)}
                   onClose={closeGuestsMenu}
+                  PaperProps={{ sx: { width: 280, borderRadius: 3, mt: 1, p: 2 } }}
                 >
-                  <MenuItem disableRipple>
-                    <Box sx={{ width: 260 }}>
-                      <Stack direction="row" alignItems="center" justifyContent="space-between">
-                        <Typography fontWeight={900}>Adults</Typography>
-
-                        <Stack direction="row" spacing={1} alignItems="center">
-                          <Button
-                            variant="outlined"
-                            onClick={() => decrementGuest("adults")}
-                            disabled={guests.adults === 0}
-                            sx={{ minWidth: 36, borderRadius: 2 }}
-                          >
-                            -
-                          </Button>
-
-                          <Typography fontWeight={900}>{guests.adults}</Typography>
-
-                          <Button
-                            variant="outlined"
-                            onClick={() => incrementGuest("adults")}
-                            disabled={guests.adults === maxGuests}
-                            sx={{ minWidth: 36, borderRadius: 2 }}
-                          >
-                            +
-                          </Button>
-                        </Stack>
+                  <Stack spacing={2}>
+                    <Stack direction="row" justifyContent="space-between" alignItems="center">
+                      <Box>
+                        <Typography fontWeight={800}>Adults</Typography>
+                        <Typography variant="caption" color="text.secondary">Age 13+</Typography>
+                      </Box>
+                      <Stack direction="row" alignItems="center" spacing={1}>
+                        <IconButton size="small" onClick={() => decrementGuest('adults')} disabled={guests.adults <= 1}>-</IconButton>
+                        <Typography>{guests.adults}</Typography>
+                        <IconButton size="small" onClick={() => incrementGuest('adults')} disabled={guests.adults >= maxGuests}>+</IconButton>
                       </Stack>
-
-                      <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: "block" }}>
-                        Maximum allowed guests: {maxGuests}
-                      </Typography>
-                    </Box>
-                  </MenuItem>
+                    </Stack>
+                  </Stack>
                 </Menu>
               </Box>
+
+              {/* Availability Info */}
+              {place?.effectiveAvailability && (
+                <Box sx={{ p: 1.5, bgcolor: '#f7f7f7', borderRadius: 2 }}>
+                  <Typography variant="caption" display="block" fontWeight={700} sx={{ mb: 0.5 }}>
+                    Planning your trip?
+                  </Typography>
+                  <Stack spacing={0.5}>
+                    <Typography variant="caption" display="block" color="text.secondary">
+                      • Minimum stay: {place?.effectiveAvailability?.minNights ?? 1} nights
+                    </Typography>
+                    <Typography variant="caption" display="block" color="text.secondary">
+                      • Maximum stay: {place?.effectiveAvailability?.maxNights ?? 1} nights
+                    </Typography>
+                    <Typography variant="caption" display="block" color="text.secondary">
+                      • Check-in: {place?.effectiveAvailability?.checkInFrom ?? "14:00"}
+                    </Typography>
+                    <Typography variant="caption" display="block" color="text.secondary">
+                      • Check-out: {place?.effectiveAvailability?.checkOutBy ?? "11:00"}
+                    </Typography>
+                  </Stack>
+                </Box>
+              )}
 
               <Divider />
 

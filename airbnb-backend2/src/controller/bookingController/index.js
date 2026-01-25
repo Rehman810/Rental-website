@@ -64,6 +64,49 @@ export const bookingController = {
       // Determine booking mode: Listing Override > Host Default > System Default ('request')
       const bookingMode = listing.bookingMode ?? host.settings?.bookingMode ?? 'request';
 
+      // --- Availability Validation Start ---
+      const availability = host.settings?.availability || {};
+
+      const effectiveMinNights = listing.minNights ?? availability.minNights ?? 1;
+      const effectiveMaxNights = listing.maxNights ?? availability.maxNights ?? 30;
+      // allowSameDayBooking is mainly for UI/Logic consistency, minNoticeDays drives the check
+      const effectiveMinNoticeDays = listing.minNoticeDays ?? availability.minNoticeDays ?? 1;
+      const effectiveBookingWindowMonths = listing.bookingWindowMonths ?? availability.bookingWindowMonths ?? 6;
+
+      const stayDuration = Math.ceil((parsedEndDate - parsedStartDate) / (1000 * 60 * 60 * 24));
+
+      if (stayDuration < effectiveMinNights) {
+        return res.status(400).json({ message: `Minimum stay is ${effectiveMinNights} nights.` });
+      }
+      if (stayDuration > effectiveMaxNights) {
+        return res.status(400).json({ message: `Maximum stay is ${effectiveMaxNights} nights.` });
+      }
+
+      // Times set to midnight for pure date comparison
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const checkInDate = new Date(parsedStartDate);
+      checkInDate.setHours(0, 0, 0, 0);
+
+      const diffTime = checkInDate - today;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays < 0) {
+        return res.status(400).json({ message: "Cannot book in the past." });
+      }
+
+      if (diffDays < effectiveMinNoticeDays) {
+        return res.status(400).json({ message: `Advance notice of ${effectiveMinNoticeDays} days required.` });
+      }
+
+      const maxFutureDate = new Date(today);
+      maxFutureDate.setMonth(maxFutureDate.getMonth() + effectiveBookingWindowMonths);
+
+      if (checkInDate > maxFutureDate) {
+        return res.status(400).json({ message: `Booking dates are too far in advance. Max ${effectiveBookingWindowMonths} months allowed.` });
+      }
+      // --- Availability Validation End ---
+
       if (guestCapacity > listing.guestCapacity) {
         return res.status(400).json({ message: 'Guest capacity exceeds limit.' });
       }

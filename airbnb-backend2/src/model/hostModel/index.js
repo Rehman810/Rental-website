@@ -80,6 +80,15 @@ const hostSchema = new mongoose.Schema({
     notifications: {
       email: { type: Boolean, default: true },
       sms: { type: Boolean, default: false },
+    },
+    availability: {
+      minNights: { type: Number, default: 1 },
+      maxNights: { type: Number, default: 30 },
+      allowSameDayBooking: { type: Boolean, default: false },
+      minNoticeDays: { type: Number, enum: [0, 1, 2, 7], default: 1 },
+      bookingWindowMonths: { type: Number, enum: [1, 3, 6, 12], default: 6 },
+      checkInFrom: { type: String, default: "14:00" },
+      checkOutBy: { type: String, default: "11:00" }
     }
   },
 }, {

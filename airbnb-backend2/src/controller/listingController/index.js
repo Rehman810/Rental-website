@@ -125,6 +125,18 @@ export const listingController = {
       // Note: listing.bookingMode might be undefined
       const effectiveBookingMode = listing.bookingMode ?? hostData.settings?.bookingMode ?? 'request';
 
+      // Calculate Effective availability
+      const availabilitySettings = hostData.settings?.availability || {};
+      const effectiveAvailability = {
+        minNights: listing.minNights ?? availabilitySettings.minNights ?? 1,
+        maxNights: listing.maxNights ?? availabilitySettings.maxNights ?? 30,
+        allowSameDayBooking: listing.allowSameDayBooking ?? availabilitySettings.allowSameDayBooking ?? false,
+        minNoticeDays: listing.minNoticeDays ?? availabilitySettings.minNoticeDays ?? 1,
+        bookingWindowMonths: listing.bookingWindowMonths ?? availabilitySettings.bookingWindowMonths ?? 6,
+        checkInFrom: listing.checkInFrom ?? availabilitySettings.checkInFrom ?? "14:00",
+        checkOutBy: listing.checkOutBy ?? availabilitySettings.checkOutBy ?? "11:00"
+      };
+
       const reviewData = reviews.map(review => ({
         _id: review._id,
         rating: review.rating,
@@ -142,6 +154,7 @@ export const listingController = {
         listing: {
           ...listing.toObject(),
           effectiveBookingMode, // Also inside listing object for convenience
+          effectiveAvailability, // Return effective rules
           bookings: listing.confirmedBookings.map(booking => ({
             userId: booking.userId,
             startDate: booking.startDate,
@@ -316,6 +329,74 @@ export const listingController = {
 
     } catch (error) {
       return res.status(500).json({ message: "Internal Server Error", error: error.message });
+    }
+  },
+
+  updateAvailability: async (req, res) => {
+    try {
+      const { listingId } = req.params;
+      const {
+        minNights, maxNights, allowSameDayBooking, minNoticeDays,
+        bookingWindowMonths, checkInFrom, checkOutBy
+      } = req.body;
+
+      const hostId = req.user._id;
+      const listing = await Listing.findOne({ _id: listingId, hostId });
+
+      if (!listing) {
+        return res.status(404).json({ message: "Listing not found or unauthorized." });
+      }
+
+      // Helper to update or unset
+      const updateField = (field, value) => {
+        if (value === null) {
+          listing[field] = undefined; // Unset
+        } else if (value !== undefined) {
+          listing[field] = value;
+        }
+      };
+
+      updateField('minNights', minNights);
+      updateField('maxNights', maxNights);
+      updateField('allowSameDayBooking', allowSameDayBooking);
+      updateField('minNoticeDays', minNoticeDays);
+      updateField('bookingWindowMonths', bookingWindowMonths);
+      updateField('checkInFrom', checkInFrom);
+      updateField('checkOutBy', checkOutBy);
+
+      await listing.save();
+
+      // Calculate effective values
+      const host = await Host.findById(hostId);
+      const hostSettings = host.settings?.availability || {};
+
+      const effective = {
+        minNights: listing.minNights ?? hostSettings.minNights ?? 1,
+        maxNights: listing.maxNights ?? hostSettings.maxNights ?? 30,
+        allowSameDayBooking: listing.allowSameDayBooking ?? hostSettings.allowSameDayBooking ?? false,
+        minNoticeDays: listing.minNoticeDays ?? hostSettings.minNoticeDays ?? 1,
+        bookingWindowMonths: listing.bookingWindowMonths ?? hostSettings.bookingWindowMonths ?? 6,
+        checkInFrom: listing.checkInFrom ?? hostSettings.checkInFrom ?? "14:00",
+        checkOutBy: listing.checkOutBy ?? hostSettings.checkOutBy ?? "11:00"
+      };
+
+      res.status(200).json({
+        message: "Availability settings updated",
+        overrides: {
+          minNights: listing.minNights,
+          maxNights: listing.maxNights,
+          allowSameDayBooking: listing.allowSameDayBooking,
+          minNoticeDays: listing.minNoticeDays,
+          bookingWindowMonths: listing.bookingWindowMonths,
+          checkInFrom: listing.checkInFrom,
+          checkOutBy: listing.checkOutBy
+        },
+        effective
+      });
+
+    } catch (error) {
+      console.error('Error updating availability:', error);
+      res.status(500).json({ message: "Internal Server Error", error: error.message });
     }
   }
 

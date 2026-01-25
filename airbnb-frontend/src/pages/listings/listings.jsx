@@ -29,12 +29,172 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CheckIcon from '@mui/icons-material/Check';
-import { Menu, MenuItem, Stack as MuiStack } from "@mui/material"; // Stack already imported as Stack
+import { Menu, MenuItem, Stack as MuiStack, Dialog, DialogTitle, DialogContent, DialogActions, FormControl, InputLabel, Select, Switch, FormControlLabel } from "@mui/material"; // Stack already imported as Stack
+
+const AvailabilityModal = ({ open, onClose, listing, token, onUpdate }) => {
+  const [formData, setFormData] = useState({});
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (listing) {
+      setFormData({
+        minNights: listing.minNights ?? "",
+        maxNights: listing.maxNights ?? "",
+        allowSameDayBooking: listing.allowSameDayBooking, // boolean or undefined
+        minNoticeDays: listing.minNoticeDays ?? "default",
+        bookingWindowMonths: listing.bookingWindowMonths ?? "default",
+        checkInFrom: listing.checkInFrom ?? "",
+        checkOutBy: listing.checkOutBy ?? ""
+      });
+    }
+  }, [listing]);
+
+  const handleChange = (key, value) => {
+    setFormData(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const payload = {
+        minNights: formData.minNights === "" ? null : Number(formData.minNights),
+        maxNights: formData.maxNights === "" ? null : Number(formData.maxNights),
+        allowSameDayBooking: formData.allowSameDayBooking === "default" ? null : formData.allowSameDayBooking === "true", // Handle select logic below
+        minNoticeDays: formData.minNoticeDays === "default" ? null : Number(formData.minNoticeDays),
+        bookingWindowMonths: formData.bookingWindowMonths === "default" ? null : Number(formData.bookingWindowMonths),
+        checkInFrom: formData.checkInFrom === "" ? null : formData.checkInFrom,
+        checkOutBy: formData.checkOutBy === "" ? null : formData.checkOutBy
+      };
+
+      // Fix allowSameDayBooking logic for payload
+      // In state, I'll store it as 'default', 'true', 'false' string for Select, or just handle it carefully.
+      // Let's refine state handling for Selects to be cleaner.
+
+      await axios.put(`http://localhost:5000/listing/${listing._id}/availability`, payload, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success("Availability rules updated");
+      onUpdate();
+      onClose();
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to update");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Helper for boolean/default select
+  const getBoolValue = (val) => val === undefined || val === null ? "default" : (val ? "true" : "false");
+
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+      <DialogTitle fontWeight={800}>Availability Overrides</DialogTitle>
+      <DialogContent dividers>
+        <Typography variant="body2" color="text.secondary" paragraph>
+          Leave fields empty or select "Host Default" to use your global settings.
+        </Typography>
+        <Grid container spacing={2}>
+          <Grid item xs={6}>
+            <TextField
+              fullWidth label="Min Nights" type="number"
+              value={formData.minNights}
+              onChange={(e) => handleChange('minNights', e.target.value)}
+              placeholder="Host Default"
+              InputLabelProps={{ shrink: true }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              fullWidth label="Max Nights" type="number"
+              value={formData.maxNights}
+              onChange={(e) => handleChange('maxNights', e.target.value)}
+              placeholder="Host Default"
+              InputLabelProps={{ shrink: true }}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <FormControl fullWidth>
+              <InputLabel shrink>Allow Same Day Booking</InputLabel>
+              <Select
+                value={getBoolValue(formData.allowSameDayBooking)}
+                onChange={(e) => handleChange('allowSameDayBooking', e.target.value === "default" ? undefined : (e.target.value === "true"))}
+                label="Allow Same Day Booking"
+                displayEmpty
+              >
+                <MenuItem value="default"><em>Use Host Default</em></MenuItem>
+                <MenuItem value="true">Yes</MenuItem>
+                <MenuItem value="false">No</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={6}>
+            <FormControl fullWidth>
+              <InputLabel shrink>Min Notice</InputLabel>
+              <Select
+                value={formData.minNoticeDays}
+                onChange={(e) => handleChange('minNoticeDays', e.target.value)}
+                label="Min Notice"
+                displayEmpty
+              >
+                <MenuItem value="default"><em>Use Host Default</em></MenuItem>
+                <MenuItem value={0}>Same Day (0)</MenuItem>
+                <MenuItem value={1}>1 Day</MenuItem>
+                <MenuItem value={2}>2 Days</MenuItem>
+                <MenuItem value={7}>7 Days</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={6}>
+            <FormControl fullWidth>
+              <InputLabel shrink>Booking Window</InputLabel>
+              <Select
+                value={formData.bookingWindowMonths}
+                onChange={(e) => handleChange('bookingWindowMonths', e.target.value)}
+                label="Booking Window"
+                displayEmpty
+              >
+                <MenuItem value="default"><em>Use Host Default</em></MenuItem>
+                <MenuItem value={1}>1 Month</MenuItem>
+                <MenuItem value={3}>3 Months</MenuItem>
+                <MenuItem value={6}>6 Months</MenuItem>
+                <MenuItem value={12}>12 Months</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              fullWidth label="Check-in From" type="time"
+              value={formData.checkInFrom}
+              onChange={(e) => handleChange('checkInFrom', e.target.value)}
+              InputLabelProps={{ shrink: true }}
+              inputProps={{ step: 300 }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              fullWidth label="Check-out By" type="time"
+              value={formData.checkOutBy}
+              onChange={(e) => handleChange('checkOutBy', e.target.value)}
+              InputLabelProps={{ shrink: true }}
+              inputProps={{ step: 300 }}
+            />
+          </Grid>
+        </Grid>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} disabled={saving}>Cancel</Button>
+        <Button onClick={handleSave} variant="contained" disabled={saving}>{saving ? "Saving..." : "Save Overrides"}</Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
 
 const ListingPage = () => {
   const [listing, setListing] = useState([]);
   const [tempListing, setTempListing] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [editingAvailability, setEditingAvailability] = useState(null);
 
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
@@ -202,6 +362,13 @@ const ListingPage = () => {
               <Stack direction="row" alignItems="center" spacing={1} justifyContent="space-between" width="100%">
                 <Typography fontSize={13} fontWeight={item.bookingMode === 'request' ? 800 : 400}>Request to Book</Typography>
                 {item.bookingMode === 'request' && <CheckIcon fontSize="small" color="primary" />}
+              </Stack>
+            </MenuItem>
+            <MenuItem onClick={() => { handleClose(); setEditingAvailability(item); }}>
+              <Stack direction="row" alignItems="center" spacing={1} justifyContent="space-between" width="100%">
+                <Typography fontSize={13}>Availability Rules</Typography>
+                {/* Show check if any override exists? */}
+                {(item.minNights || item.maxNights || item.checkInFrom) && <CheckIcon fontSize="small" color="action" />}
               </Stack>
             </MenuItem>
           </Menu>
@@ -453,6 +620,21 @@ const ListingPage = () => {
           )}
         </Grid>
       </Box>
+
+      {/* Availability Dialog */}
+      <AvailabilityModal
+        open={!!editingAvailability}
+        onClose={() => setEditingAvailability(null)}
+        listing={editingAvailability}
+        token={token}
+        onUpdate={() => {
+          // Trigger refresh - simpler to just reload page or fetch again
+          // For now, reload window or define fetch function outside
+          // fetchDataById("listings", token, user?._id).then...
+          window.location.reload();
+        }}
+      />
+
     </Box>
   );
 };

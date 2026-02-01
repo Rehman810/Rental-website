@@ -10,6 +10,7 @@ import notificationRoutes from "../notificationRoute/index.js"
 import stripeRoute from "../stripeRoute/index.js"
 import hostSettingsRoute from "../hostSettingsRoute/index.js"
 import hostDashboardRoute from "../hostDashboardRoute/index.js"
+import platformSettingsRoute from '../platformSettingsRoute/index.js'
 
 import { setSocket } from '../../config/notifications/notificationService.js';
 
@@ -28,5 +29,6 @@ const allRoutes = async (app, io) => {
     stripeRoute(app)
     hostSettingsRoute(app)
     hostDashboardRoute(app)
+    platformSettingsRoute(app)
 }
 export default allRoutes

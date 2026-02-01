@@ -46,6 +46,14 @@ const Language = ({ open, toggleModal }) => {
         onClick={() => {
           setLanguage({ code: lng.code, lang: lng.lang });
           changeLanguage(lng.code);
+
+          const token = localStorage.getItem('token');
+          if (token) {
+            import('../../services/platformSettingsService.js').then(({ updatePlatformSettings }) => {
+              updatePlatformSettings({ language: lng.code }, token).catch(err => console.error(err));
+            });
+          }
+
           toggleModal();
         }}
         sx={{

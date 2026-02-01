@@ -77,7 +77,8 @@ const NotificationBell = () => {
                         border: "1px solid",
                         borderColor: "divider",
                         boxShadow: "0 18px 60px rgba(0,0,0,0.12)",
-                        overflow: "hidden"
+                        height: "500px",
+                        overflowY: "auto",
                     },
                 }}
                 transformOrigin={{ horizontal: "right", vertical: "top" }}

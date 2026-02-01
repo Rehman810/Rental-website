@@ -256,7 +256,7 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
                     Swal.fire({ icon: 'error', title: 'Login Failed', text: 'Google Login was unsuccessful' });
                   }}
                   shape="pill"
-                  width="300px"
+                  width="350px"
                   text="continue_with"
                   theme="filled_blue"
                 />

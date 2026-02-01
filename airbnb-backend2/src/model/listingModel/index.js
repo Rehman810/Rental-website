@@ -17,6 +17,7 @@ const listingSchema = new mongoose.Schema({
     required: false,
   },
   bookingMode: {
+    type: String,
     enum: ['instant', 'request'],
   },
   guestRequirementsOverride: {

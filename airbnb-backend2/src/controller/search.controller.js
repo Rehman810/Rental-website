@@ -15,10 +15,15 @@ export const searchListings = async (req, res) => {
             polygon, // GeoJSON coordinates for polygon
             sortBy,
             page = 1,
-            limit = 10
+            limit = 10,
+            excludeHostId // New param
         } = req.query;
 
         const query = {};
+
+        if (excludeHostId) {
+            query.hostId = { $ne: excludeHostId };
+        }
 
         // Text Search (updated to be more inclusive and handle "City, Country" format)
         if (q) {
@@ -151,7 +156,7 @@ export const searchListings = async (req, res) => {
 
 export const aiSearch = async (req, res) => {
     try {
-        const { query } = req.body;
+        const { query, excludeHostId } = req.body;
         if (!query) return res.status(400).json({ message: "Query required" });
 
         const filters = {
@@ -208,6 +213,7 @@ export const aiSearch = async (req, res) => {
         const dbQuery = {};
         if (filters.guests) dbQuery.guestCapacity = { $gte: filters.guests };
         if (filters.maxPrice < 10000000) dbQuery.weekdayActualPrice = { $lte: filters.maxPrice };
+        if (excludeHostId) dbQuery.hostId = { $ne: excludeHostId };
 
         // Use text search for the query, but try to match against town/city specifically if possible
         // For simplicity, we just text search the whole string against title/city/town

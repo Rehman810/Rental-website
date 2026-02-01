@@ -114,6 +114,11 @@ const Home = () => {
 
     query.append("sortBy", "recommended");
 
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user?._id) {
+      query.append("excludeHostId", user._id);
+    }
+
     return query.toString();
   }, []);
 
@@ -162,7 +167,11 @@ const Home = () => {
     toast.loading("AI is finding the best spots...", { id: "ai-search" });
 
     try {
-      const res = await postData("api/search/ai", { query }, token || "");
+      const user = JSON.parse(localStorage.getItem("user"));
+      const body = { query };
+      if (user?._id) body.excludeHostId = user._id;
+
+      const res = await postData("api/search/ai", body, token || "");
 
       if (res?.success && res?.parsedFilters) {
         const newFilters = { ...filters, ...res.parsedFilters };

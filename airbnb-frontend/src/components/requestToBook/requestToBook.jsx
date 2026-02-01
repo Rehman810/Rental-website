@@ -249,8 +249,8 @@ const BookingComponent = () => {
                       style: {
                         base: {
                           fontSize: "16px",
-                          color: "#1f2937",
-                          "::placeholder": { color: "#9ca3af" },
+                          color: "var(--text-primary)",
+                          "::placeholder": { color: "var(--text-secondary)" },
                         },
                         invalid: { color: "#b91c1c" },
                       },

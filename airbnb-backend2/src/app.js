@@ -20,16 +20,24 @@ import { FRONTEND_BASE_URL } from './config/appConfig.js';
 dotenv.config();
 
 const app = express();
-app.use(cors({ origin: FRONTEND_BASE_URL, credentials: true }));
+// app.use(cors({ origin: FRONTEND_BASE_URL, credentials: true }));
+app.use(cors({
+  origin: true,              // allow ALL origins
+  credentials: true,         // allow cookies
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+app.options("*", cors());
+
 app.use(express.json());
 
 app.use(passport.initialize());
 
-app.use(session({
-  secret: process.env.JWT_SECRET,
-  resave: false,
-  saveUninitialized: false,
-}));
+// app.use(session({
+//   secret: process.env.JWT_SECRET,
+//   resave: false,
+//   saveUninitialized: false,
+// }));
 
 const server = http.createServer(app);
 

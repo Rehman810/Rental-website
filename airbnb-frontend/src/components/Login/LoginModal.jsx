@@ -254,6 +254,8 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
                   width="350px"
                   text="continue_with"
                   theme="filled_blue"
+                  useOneTap={false}
+                  auto_select={false}
                 />
               </Grid>
             </Grid>

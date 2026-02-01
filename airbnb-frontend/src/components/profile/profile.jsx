@@ -162,7 +162,7 @@ const ProfileSection = () => {
         <Typography variant="h5" fontWeight={900}>
           Profile
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+        <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
           Manage your personal information and verification details.
         </Typography>
       </Paper>
@@ -208,9 +208,9 @@ const ProfileSection = () => {
                       border: "1px solid",
                       borderColor: "divider",
                       backgroundColor: "background.paper",
-                      boxShadow: "0 10px 25px rgba(0,0,0,0.08)",
+                      boxShadow: "var(--shadow-md)",
                       "&:hover": {
-                        backgroundColor: "rgba(25,118,210,0.06)",
+                        backgroundColor: "var(--bg-secondary)",
                       },
                     }}
                   >
@@ -229,7 +229,7 @@ const ProfileSection = () => {
                 <Typography variant="h6" fontWeight={900}>
                   {user?.userName}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" color="var(--text-secondary)">
                   Guest Account
                 </Typography>
               </Box>
@@ -241,7 +241,7 @@ const ProfileSection = () => {
                   icon={<EmailIcon />}
                   label={user?.email || "No email"}
                   variant="outlined"
-                  sx={{ borderRadius: 2, fontWeight: 700 }}
+                  sx={{ borderRadius: 2, fontWeight: 700, color: "var(--text-primary)" }}
                 />
               </Stack>
             </Stack>
@@ -270,7 +270,7 @@ const ProfileSection = () => {
                 <Typography variant="h6" fontWeight={900}>
                   About {user?.userName}
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.4 }}>
+                <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.4 }}>
                   Keep your details updated for smoother bookings.
                 </Typography>
               </Box>
@@ -319,7 +319,7 @@ const ProfileSection = () => {
                       <EmailIcon fontSize="small" />
                     </Box>
                     <Box sx={{ flex: 1 }}>
-                      <Typography variant="caption" color="text.secondary" fontWeight={800}>Email</Typography>
+                      <Typography variant="caption" color="var(--text-secondary)" fontWeight={800}>Email</Typography>
                       <Stack direction="row" alignItems="center" justifyContent="space-between">
                         <Typography fontWeight={900} sx={{ mt: 0.2 }}>{user?.email || "No email"}</Typography>
                         {!user?.isEmailVerified && (
@@ -359,7 +359,7 @@ const ProfileSection = () => {
                     </Box>
 
                     <Box sx={{ flex: 1 }}>
-                      <Typography variant="caption" color="text.secondary" fontWeight={800}>
+                      <Typography variant="caption" color="var(--text-secondary)" fontWeight={800}>
                         Phone
                       </Typography>
 
@@ -412,7 +412,7 @@ const ProfileSection = () => {
                   <Typography variant="h6" fontWeight={900}>
                     Upload CNIC
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.4 }}>
+                  <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.4 }}>
                     Upload both sides for verification. Your data stays secure.
                   </Typography>
                 </Box>
@@ -457,10 +457,29 @@ const ProfileSection = () => {
                     fontWeight: 900,
                     px: 2.4,
                     py: 1.1,
+
+                    /* normal */
+                    boxShadow: "var(--shadow-sm)",
+
+                    /* 🌙 disabled state — IMPORTANT */
+                    "&.Mui-disabled": {
+                      backgroundColor: "var(--bg-tertiary)",
+                      color: "var(--text-tertiary)",
+                      border: "1px solid var(--border-muted)",
+                      boxShadow: "none",
+                      cursor: "not-allowed",
+                    },
+
+                    "&.Mui-disabled:hover": {
+                      backgroundColor: "var(--bg-tertiary)",
+                    },
+
+                    transition: "all 0.18s ease",
                   }}
                 >
                   Submit CNIC
                 </Button>
+
               </Stack>
             </Paper>
           )}
@@ -487,7 +506,7 @@ const ProfileSection = () => {
                 label={isVerifiedCnic ? "Verified" : "Not verified"}
                 color={isVerifiedCnic ? "success" : "default"}
                 variant="outlined"
-                sx={{ borderRadius: 2, fontWeight: 900 }}
+                sx={{ borderRadius: 2, fontWeight: 900, color: "var(--text-primary)" }}
               />
             </Stack>
 
@@ -495,9 +514,9 @@ const ProfileSection = () => {
 
             <Stack direction="row" spacing={1} alignItems="center">
               {isVerifiedCnic ? (
-                <CheckCircleIcon sx={{ color: "success.main" }} />
+                <CheckCircleIcon sx={{ color: "var(--text-primary)" }} />
               ) : (
-                <CloseIcon sx={{ color: "text.disabled" }} />
+                <CloseIcon sx={{ color: "var(--text-primary)" }} />
               )}
               <Typography fontWeight={800}>CNIC</Typography>
             </Stack>
@@ -627,7 +646,7 @@ const FieldCard = ({ icon, label, value }) => {
         </Box>
 
         <Box>
-          <Typography variant="caption" color="text.secondary" fontWeight={800}>
+          <Typography variant="caption" color="var(--text-secondary)" fontWeight={800}>
             {label}
           </Typography>
           <Typography fontWeight={900} sx={{ mt: 0.2 }}>
@@ -695,7 +714,7 @@ const UploadCard = ({ title, preview, onUpload }) => {
               sx={{ width: "100%", height: "100%", objectFit: "cover" }}
             />
           ) : (
-            <Typography variant="body2" color="text.secondary" fontWeight={700}>
+            <Typography variant="body2" color="var(--text-secondary)" fontWeight={700}>
               Preview will appear here
             </Typography>
           )}

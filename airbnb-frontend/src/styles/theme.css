@@ -1,0 +1,211 @@
+:root {
+    /* Core Colors - Light Mode (Default) */
+    --primary: #FF5A5F;
+    --primary-hover: #F55056;
+
+    --bg-primary: #FFFFFF;
+    --bg-secondary: #F7F7F7;
+    --bg-tertiary: #FFFFFF;
+    --bg-input: #FFFFFF;
+    --bg-card: #FFFFFF;
+
+    --text-primary: #222222;
+    --text-secondary: #717171;
+    --text-tertiary: #B0B0B0;
+    --text-inverse: #FFFFFF;
+
+    --border-light: #DDDDDD;
+    --border-medium: #B0B0B0;
+    --border-focus: #222222;
+
+    --overlay: rgba(0, 0, 0, 0.4);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.16);
+
+    /* Status Colors */
+    --success: #008A05;
+    --danger: #C13515;
+    --warning: #FA9A00;
+    --info: #006C70;
+
+    /* Missing Tokens */
+    --icon-primary: #222222;
+    --border-muted: #EBEBEB;
+    --text-muted: #717171;
+}
+
+[data-theme='dark'] {
+    /* Core Colors - Dark Mode */
+    --primary: #FF5A5F;
+    --primary-hover: #FF7074;
+
+    --bg-primary: #121212;
+    /* Material Dark primary buffer */
+    --bg-secondary: #1E1E1E;
+    /* Elev 1 */
+    --bg-tertiary: #2C2C2C;
+    /* Elev 2 */
+    --bg-input: #2C2C2C;
+    --bg-card: #1E1E1E;
+
+    --text-primary: #EAEAEA;
+    --text-secondary: #A0A0A0;
+    --text-tertiary: #606060;
+    --text-inverse: #121212;
+    --text-muted: #A0A0A0;
+
+    --border-light: #333333;
+    --border-medium: #555555;
+    --border-focus: #EAEAEA;
+    --border-muted: #2C2C2C;
+
+    --icon-primary: #EAEAEA;
+
+    --overlay: rgba(255, 255, 255, 0.15);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+
+    /* Status Colors Adjusted for Dark Mode */
+    --success: #00A619;
+    --danger: #E3502d;
+    --warning: #FCC419;
+    --info: #00A6AC;
+}
+
+/* Global Transitions */
+body,
+[data-theme] {
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+/* -------------------------------------------
+   Framework Overrides (MUI, etc.)
+   Enforce variable usage without invasive config
+------------------------------------------- */
+
+/* Force Paper/Modals to use card background */
+.MuiPaper-root,
+.MuiMenu-paper,
+.MuiDialog-paper,
+.MuiPopover-paper {
+    background-color: var(--bg-card) !important;
+    color: var(--text-primary) !important;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Force Text Colors */
+.MuiTypography-root {
+    color: inherit;
+}
+
+.MuiTypography-colorTextPrimary {
+    color: var(--text-primary) !important;
+}
+
+.MuiTypography-colorTextSecondary {
+    color: var(--text-secondary) !important;
+}
+
+.MuiIconButton-root {
+    color: var(--text-secondary) !important;
+}
+
+.MuiIconButton-root:hover {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Dividers */
+.MuiDivider-root {
+    border-color: var(--border-light) !important;
+}
+
+/* Input Fields */
+.MuiInputBase-root {
+    color: var(--text-primary) !important;
+}
+
+.MuiInputLabel-root {
+    color: var(--text-secondary) !important;
+}
+
+.MuiInputLabel-root.Mui-focused {
+    color: var(--primary) !important;
+}
+
+.MuiOutlinedInput-notchedOutline {
+    border-color: var(--border-light) !important;
+}
+
+.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+    border-color: var(--border-medium) !important;
+}
+
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: var(--primary) !important;
+}
+
+/* Date Pickers & Misc */
+.ant-picker {
+    background: var(--bg-input) !important;
+    border-color: var(--border-light) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Ensure Icons adapt */
+svg {
+    fill: currentColor;
+}
+
+/* Placeholder styling */
+input::placeholder,
+textarea::placeholder {
+    color: var(--text-tertiary) !important;
+    opacity: 1;
+}
+
+/* Ant Design DatePicker – Dark Mode */
+.ant-picker-dropdown {
+    background-color: transparent !important;
+}
+
+.ant-picker-panel {
+    background-color: var(--bg-card) !important;
+    color: var(--text-primary) !important;
+}
+
+.ant-picker-header {
+    background-color: var(--bg-card) !important;
+    border-bottom: 1px solid var(--border-light) !important;
+}
+
+.ant-picker-content th,
+.ant-picker-content td {
+    color: var(--text-primary) !important;
+}
+
+.ant-picker-cell {
+    color: var(--text-secondary) !important;
+}
+
+.ant-picker-cell-in-view {
+    color: var(--text-primary) !important;
+}
+
+.ant-picker-cell-selected .ant-picker-cell-inner,
+.ant-picker-cell-range-start .ant-picker-cell-inner,
+.ant-picker-cell-range-end .ant-picker-cell-inner {
+    background-color: var(--primary) !important;
+    color: var(--text-inverse) !important;
+}
+
+.ant-picker-cell-today .ant-picker-cell-inner::before {
+    border-color: var(--primary) !important;
+}
+
+.ant-picker-footer {
+    background-color: var(--bg-card) !important;
+    border-top: 1px solid var(--border-light) !important;
+}

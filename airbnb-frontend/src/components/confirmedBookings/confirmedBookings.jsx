@@ -51,7 +51,7 @@ const ConfirmedBookings = () => {
                 <Typography sx={{ mt: 2 }} fontWeight={900}>
                     Loading confirmed bookings...
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" color="var(--text-secondary)">
                     Syncing your confirmed reservations.
                 </Typography>
             </Box>
@@ -61,11 +61,11 @@ const ConfirmedBookings = () => {
     if (!confirmed || confirmed.length === 0) {
         return (
             <Box sx={{ p: 4, textAlign: "center" }}>
-                <SentimentDissatisfiedIcon sx={{ fontSize: 52, color: "text.secondary" }} />
+                <SentimentDissatisfiedIcon sx={{ fontSize: 52, color: "var(--text-secondary)" }} />
                 <Typography variant="h6" fontWeight={900} sx={{ mt: 1 }}>
                     No confirmed bookings yet
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
                     Once you approve requests, they’ll show up here.
                 </Typography>
             </Box>
@@ -147,13 +147,13 @@ const ConfirmedBookings = () => {
                                             </Typography>
 
                                             <Stack direction="row" spacing={0.8} alignItems="center" sx={{ mt: 0.4 }}>
-                                                <LocationOnIcon sx={{ fontSize: 18, color: "text.secondary" }} />
-                                                <Typography variant="body2" color="text.secondary">
+                                                <LocationOnIcon sx={{ fontSize: 18, color: "var(--text-secondary)" }} />
+                                                <Typography variant="body2" color="var(--text-secondary)">
                                                     {listing?.city || "Unknown city"}
                                                 </Typography>
                                             </Stack>
 
-                                            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                                            <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 1 }}>
                                                 {booking?.startDate
                                                     ? new Date(booking.startDate).toLocaleDateString()
                                                     : "N/A"}{" "}
@@ -178,7 +178,7 @@ const ConfirmedBookings = () => {
 
                                     <Divider sx={{ my: 2 }} />
 
-                                    <Typography variant="body2" color="text.secondary">
+                                    <Typography variant="body2" color="var(--text-secondary)">
                                         Guests: <b>{booking?.guestCapacity || 0}</b>
                                     </Typography>
                                 </Box>

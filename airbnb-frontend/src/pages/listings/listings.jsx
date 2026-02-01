@@ -93,7 +93,7 @@ const AvailabilityModal = ({ open, onClose, listing, token, onUpdate }) => {
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle fontWeight={800}>Availability Overrides</DialogTitle>
       <DialogContent dividers>
-        <Typography variant="body2" color="text.secondary" paragraph>
+        <Typography variant="body2" color="var(--text-secondary)" paragraph>
           Leave fields empty or select "Host Default" to use your global settings.
         </Typography>
         <Grid container spacing={2}>
@@ -399,7 +399,7 @@ const ListingPage = () => {
 
           <Typography
             variant="body2"
-            color="text.secondary"
+            color="var(--text-secondary)"
             sx={{
               mt: 0.6,
               display: "-webkit-box",
@@ -413,7 +413,7 @@ const ListingPage = () => {
           </Typography>
 
           <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mt: 1.5 }}>
-            <Typography variant="caption" color="text.secondary" fontWeight={800}>
+            <Typography variant="caption" color="var(--text-secondary)" fontWeight={800}>
               View →
             </Typography>
           </Stack>
@@ -450,7 +450,7 @@ const ListingPage = () => {
             <Typography variant="h5" fontWeight={900}>
               Your Listings
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" color="var(--text-secondary)">
               Manage verified and pending listings in one place.
             </Typography>
           </Box>
@@ -474,13 +474,13 @@ const ListingPage = () => {
                 width: { xs: "100%", sm: 260, md: 320 },
                 "& .MuiOutlinedInput-root": {
                   borderRadius: "999px",
-                  bgcolor: "#fafafa",
+                  bgcolor: "var(--bg-secondary)",
                 },
               }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon sx={{ color: "text.secondary" }} />
+                    <SearchIcon sx={{ color: "var(--text-secondary)" }} />
                   </InputAdornment>
                 ),
                 endAdornment: searchQuery ? (
@@ -506,7 +506,7 @@ const ListingPage = () => {
                   } catch (e) { console.error(e); }
                 }
               }}
-              sx={{ borderRadius: "999px", textTransform: "none", fontWeight: 800, color: "text.secondary" }}
+              sx={{ borderRadius: "999px", textTransform: "none", fontWeight: 800, color: "var(--text-secondary)" }}
             >
               Reset All Defaults
             </Button>
@@ -541,8 +541,14 @@ const ListingPage = () => {
           <Chip
             label={`${filteredConfirmed?.length || 0} items`}
             variant="outlined"
-            sx={{ borderRadius: "999px", fontWeight: 800 }}
-          />
+            sx={{
+              borderRadius: "999px",
+              fontWeight: 800,
+
+              color: "var(--text-secondary)",
+              borderColor: "var(--border-light)",
+              bgcolor: "transparent",
+            }} />
         </Stack>
 
         <Grid container spacing={2.5}>
@@ -563,7 +569,7 @@ const ListingPage = () => {
                 <Typography variant="h6" fontWeight={900}>
                   No confirmed listings found
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 1 }}>
                   Try adjusting your search or create a new listing.
                 </Typography>
 
@@ -595,8 +601,14 @@ const ListingPage = () => {
           <Chip
             label={`${filteredTemp?.length || 0} items`}
             variant="outlined"
-            sx={{ borderRadius: "999px", fontWeight: 800 }}
-          />
+            sx={{
+              borderRadius: "999px",
+              fontWeight: 800,
+
+              color: "var(--text-secondary)",
+              borderColor: "var(--border-light)",
+              bgcolor: "transparent",
+            }} />
         </Stack>
 
         <Grid container spacing={2.5}>
@@ -615,7 +627,7 @@ const ListingPage = () => {
                 <Typography variant="h6" fontWeight={900}>
                   No pending listings
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 1 }}>
                   Everything looks good — no listings are waiting for review.
                 </Typography>
               </Paper>
@@ -722,7 +734,7 @@ const GuestRequirementsModal = ({ open, onClose, listing, token, onUpdate }) => 
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle fontWeight={800}>Guest Requirements Override</DialogTitle>
       <DialogContent dividers>
-        <Typography variant="body2" color="text.secondary" paragraph>
+        <Typography variant="body2" color="var(--text-secondary)" paragraph>
           Override global host settings for this specific listing.
         </Typography>
         <Grid container spacing={2}>

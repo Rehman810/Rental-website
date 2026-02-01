@@ -56,7 +56,7 @@ const CheckingOut = () => {
         <Typography sx={{ mt: 2 }} fontWeight={900}>
           Loading checkouts...
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" color="var(--text-secondary)">
           Fetching guests checking out today.
         </Typography>
       </Box>
@@ -71,11 +71,11 @@ const CheckingOut = () => {
           textAlign: "center",
         }}
       >
-        <SentimentDissatisfiedIcon sx={{ fontSize: 52, color: "text.secondary" }} />
+        <SentimentDissatisfiedIcon sx={{ fontSize: 52, color: "var(--text-secondary)" }} />
         <Typography variant="h6" fontWeight={900} sx={{ mt: 1 }}>
           No checkouts today
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+        <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
           There are no guests checking out today. You’re all good.
         </Typography>
       </Box>
@@ -159,8 +159,8 @@ const CheckingOut = () => {
                       </Typography>
 
                       <Stack direction="row" spacing={0.8} alignItems="center" sx={{ mt: 0.4 }}>
-                        <LocationOnIcon sx={{ fontSize: 18, color: "text.secondary" }} />
-                        <Typography variant="body2" color="text.secondary">
+                        <LocationOnIcon sx={{ fontSize: 18, color: "var(--text-secondary)" }} />
+                        <Typography variant="body2" color="var(--text-secondary)">
                           {listing?.city || "Unknown city"}
                         </Typography>
                       </Stack>
@@ -207,7 +207,7 @@ const CheckingOut = () => {
                             <Typography fontWeight={900}>
                               {guest?.name || "Guest"}
                             </Typography>
-                            <Typography variant="body2" color="text.secondary">
+                            <Typography variant="body2" color="var(--text-secondary)">
                               Guests: {checkout?.guestCapacity || 0}
                             </Typography>
                           </Box>
@@ -215,15 +215,15 @@ const CheckingOut = () => {
 
                         <Stack spacing={0.6} sx={{ mt: 1.5 }}>
                           <Stack direction="row" spacing={1} alignItems="center">
-                            <PhoneIcon sx={{ fontSize: 16, color: "text.secondary" }} />
-                            <Typography variant="body2" color="text.secondary">
+                            <PhoneIcon sx={{ fontSize: 16, color: "var(--text-secondary)" }} />
+                            <Typography variant="body2" color="var(--text-secondary)">
                               {guest?.phoneNumber || "N/A"}
                             </Typography>
                           </Stack>
 
                           <Stack direction="row" spacing={1} alignItems="center">
-                            <EmailIcon sx={{ fontSize: 16, color: "text.secondary" }} />
-                            <Typography variant="body2" color="text.secondary">
+                            <EmailIcon sx={{ fontSize: 16, color: "var(--text-secondary)" }} />
+                            <Typography variant="body2" color="var(--text-secondary)">
                               {guest?.email || "N/A"}
                             </Typography>
                           </Stack>
@@ -244,12 +244,12 @@ const CheckingOut = () => {
                         }}
                       >
                         <Stack direction="row" spacing={1} alignItems="center">
-                          <CalendarMonthIcon sx={{ color: "text.secondary" }} />
+                          <CalendarMonthIcon sx={{ color: "var(--text-secondary)" }} />
                           <Typography fontWeight={900}>Trip dates</Typography>
                         </Stack>
 
                         <Box sx={{ mt: 1.2 }}>
-                          <Typography variant="body2" color="text.secondary">
+                          <Typography variant="body2" color="var(--text-secondary)">
                             Check-in:{" "}
                             <strong>
                               {checkout?.startDate
@@ -258,7 +258,7 @@ const CheckingOut = () => {
                             </strong>
                           </Typography>
 
-                          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                          <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
                             Check-out:{" "}
                             <strong>
                               {checkout?.endDate

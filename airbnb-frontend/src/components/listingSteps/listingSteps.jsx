@@ -320,7 +320,7 @@ function ListingSteps() {
     <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
       <AppBar
         position="static"
-        sx={{ backgroundColor: "white", color: "black" }}
+        sx={{ backgroundColor: "var(--bg-primary)", color: "var(--text-primary)" }}
       >
         <Toolbar>
           <Box
@@ -335,9 +335,10 @@ function ListingSteps() {
               color="inherit"
               sx={{
                 textTransform: "none",
-                border: "1px solid gray",
+                border: "1px solid var(--border-medium)",
                 borderRadius: "20px",
                 padding: "8px",
+                color: "var(--text-primary)",
               }}
               onClick={() => navigate(-1)}
             >
@@ -354,7 +355,7 @@ function ListingSteps() {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          backgroundColor: "#f9f9f9",
+          backgroundColor: "var(--bg-secondary)",
           padding: 2,
           // paddingTop: "100px",
         }}
@@ -366,7 +367,7 @@ function ListingSteps() {
         sx={{
           boxShadow: "0px -2px 4px rgba(0,0,0,0.1)",
           padding: 2,
-          backgroundColor: "white",
+          backgroundColor: "var(--bg-primary)",
         }}
       >
         <MobileStepper
@@ -379,7 +380,7 @@ function ListingSteps() {
               size="small"
               onClick={handleNext}
               disabled={isNextDisabled}
-              color="black"
+              sx={{ color: "var(--text-primary)" }}
             >
               {activeStep === 0
                 ? "Get Started"
@@ -398,7 +399,7 @@ function ListingSteps() {
               size="small"
               onClick={handleBack}
               disabled={activeStep === 0}
-              color="black"
+              sx={{ color: "var(--text-primary)" }}
             >
               {theme.direction === "rtl" ? (
                 <KeyboardArrowRight />

@@ -40,6 +40,7 @@ import {
   Login as LoginIcon,
   PersonAddAlt as PersonAddAltIcon,
 } from "@mui/icons-material";
+import ThemeToggle from "../ThemeToggle/ThemeToggle";
 
 const VerifiedMenu = ({ anchorEl, handleMenuClose, navigate, handleLogout }) => {
   const { t } = useTranslation();
@@ -51,7 +52,7 @@ const VerifiedMenu = ({ anchorEl, handleMenuClose, navigate, handleLogout }) => 
       minWidth: 240,
       border: "1px solid",
       borderColor: "divider",
-      boxShadow: "0 18px 60px rgba(0,0,0,0.12)",
+      boxShadow: "var(--shadow-lg)",
       overflow: "hidden",
     },
   };
@@ -59,7 +60,7 @@ const VerifiedMenu = ({ anchorEl, handleMenuClose, navigate, handleLogout }) => 
   const itemSx = {
     py: 1.2,
     px: 1.5,
-    "&:hover": { backgroundColor: "rgba(0,0,0,0.04)" },
+    "&:hover": { backgroundColor: "var(--bg-secondary)" },
   };
 
   return (
@@ -74,21 +75,21 @@ const VerifiedMenu = ({ anchorEl, handleMenuClose, navigate, handleLogout }) => 
     >
       <MenuItem sx={itemSx} onClick={() => navigate("/user/guestAllMessages")}>
         <ListItemIcon>
-          <MailOutlineIcon fontSize="small" />
+          <MailOutlineIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} />
         </ListItemIcon>
         <ListItemText primary={t("menu.verified.messages")} />
       </MenuItem>
 
       <MenuItem sx={itemSx} onClick={() => navigate("/user/trips")}>
         <ListItemIcon>
-          <LuggageIcon fontSize="small" />
+          <LuggageIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} />
         </ListItemIcon>
         <ListItemText primary={t("menu.verified.trips")} />
       </MenuItem>
 
       <MenuItem sx={itemSx} onClick={() => navigate("/user/wishlist")}>
         <ListItemIcon>
-          <FavoriteBorderIcon fontSize="small" />
+          <FavoriteBorderIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} />
         </ListItemIcon>
         <ListItemText primary={t("menu.verified.wishlists")} />
       </MenuItem>
@@ -97,14 +98,14 @@ const VerifiedMenu = ({ anchorEl, handleMenuClose, navigate, handleLogout }) => 
 
       <MenuItem sx={itemSx} onClick={() => navigate("/hosting/listings")}>
         <ListItemIcon>
-          <DashboardCustomizeOutlinedIcon fontSize="small" />
+          <DashboardCustomizeOutlinedIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} />
         </ListItemIcon>
         <ListItemText primary={t("menu.verified.manageListings")} />
       </MenuItem>
 
       <MenuItem sx={itemSx} onClick={() => navigate("/user/profile")}>
         <ListItemIcon>
-          <PersonOutlineIcon fontSize="small" />
+          <PersonOutlineIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} />
         </ListItemIcon>
         <ListItemText primary={t("menu.hostMenu2.userProfile")} />
       </MenuItem>
@@ -113,7 +114,7 @@ const VerifiedMenu = ({ anchorEl, handleMenuClose, navigate, handleLogout }) => 
 
       <MenuItem sx={itemSx} onClick={() => navigate("/user/help/feature")}>
         <ListItemIcon>
-          <HelpOutlineIcon fontSize="small" />
+          <HelpOutlineIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} />
         </ListItemIcon>
         <ListItemText primary={t("menu.verified.helpCenter")} />
       </MenuItem>
@@ -126,7 +127,7 @@ const VerifiedMenu = ({ anchorEl, handleMenuClose, navigate, handleLogout }) => 
         onClick={() => handleLogout(navigate)}
       >
         <ListItemIcon sx={{ color: "error.main" }}>
-          <LogoutIcon fontSize="small" />
+          <LogoutIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} />
         </ListItemIcon>
         <ListItemText primary={t("menu.verified.logout")} />
       </MenuItem>
@@ -150,7 +151,7 @@ const UnverifiedMenu = ({
       minWidth: 240,
       border: "1px solid",
       borderColor: "divider",
-      boxShadow: "0 18px 60px rgba(0,0,0,0.12)",
+      boxShadow: "var(--shadow-lg)",
       overflow: "hidden",
     },
   };
@@ -158,7 +159,7 @@ const UnverifiedMenu = ({
   const itemSx = {
     py: 1.2,
     px: 1.5,
-    "&:hover": { backgroundColor: "rgba(0,0,0,0.04)" },
+    "&:hover": { backgroundColor: "var(--bg-secondary)" },
   };
 
   return (
@@ -173,14 +174,14 @@ const UnverifiedMenu = ({
     >
       <MenuItem sx={itemSx} onClick={handleLoginModalOpen}>
         <ListItemIcon>
-          <LoginIcon fontSize="small" />
+          <LoginIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} />
         </ListItemIcon>
         <ListItemText primary={t("menu.unverified.login")} />
       </MenuItem>
 
       <MenuItem sx={itemSx} onClick={handleSignUpModalOpen}>
         <ListItemIcon>
-          <PersonAddAltIcon fontSize="small" />
+          <PersonAddAltIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} />
         </ListItemIcon>
         <ListItemText primary={t("menu.unverified.signUp")} />
       </MenuItem>
@@ -189,14 +190,14 @@ const UnverifiedMenu = ({
 
       <MenuItem sx={itemSx} onClick={() => navigate("/hosting/listings")}>
         <ListItemIcon>
-          <HomeWorkOutlinedIcon fontSize="small" />
+          <HomeWorkOutlinedIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} />
         </ListItemIcon>
         <ListItemText primary={t("menu.unverified.airbnbYourHome")} />
       </MenuItem>
 
       <MenuItem sx={itemSx} onClick={() => navigate("/user/help/feature")}>
         <ListItemIcon>
-          <HelpOutlineIcon fontSize="small" />
+          <HelpOutlineIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} />
         </ListItemIcon>
         <ListItemText primary={t("menu.unverified.helpCenter")} />
       </MenuItem>
@@ -248,12 +249,14 @@ const Navbar = () => {
     <AppBar
       position="static"
       sx={{
-        backgroundColor: "white",
-        color: "black",
+        backgroundColor: "var(--bg-primary)",
+        color: "var(--text-primary)",
         boxShadow: "none",
         position: "sticky",
         top: 0,
         zIndex: 10,
+        borderBottom: "1px solid var(--border-light)",
+        transition: "background-color 0.2s ease, color 0.2s ease",
       }}
     >
       <Toolbar
@@ -317,7 +320,7 @@ const Navbar = () => {
               sx={{
                 fontWeight: 600,
                 textTransform: "none",
-                color: "black",
+                color: "var(--text-primary)",
                 display: {
                   xs: "none",
                   sm: "inline-flex",
@@ -331,15 +334,16 @@ const Navbar = () => {
                 : t("navbar.switchToHosting")}
             </Button>
             {token && <NotificationBell />}
-            <IconButton>
+            <IconButton sx={{ color: "var(--text-primary)" }}>
               <GlobalIcon onClick={toggleModal} />
             </IconButton>
+            <ThemeToggle />
           </Box>
           <Box
             sx={{
               display: "flex",
               alignItems: "center",
-              border: "1px solid #ddd",
+              border: "1px solid var(--border-light)",
               borderRadius: "30px",
               padding: "5px 10px",
               gap: "10px",
@@ -359,8 +363,8 @@ const Navbar = () => {
               </IconButton>
               <Avatar
                 sx={{
-                  bgcolor: user?.photoProfile ? "transparent" : "#f2f2f2",
-                  color: user?.photoProfile ? "inherit" : "gray",
+                  bgcolor: user?.photoProfile ? "transparent" : "var(--bg-secondary)",
+                  color: user?.photoProfile ? "inherit" : "var(--text-tertiary)",
                   width: 32,
                   height: 32,
                 }}

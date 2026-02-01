@@ -52,7 +52,7 @@ const AddressForm = () => {
       <Typography variant="h5" fontWeight="bold" gutterBottom>
         Confirm your address
       </Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+      <Typography variant="body2" color="var(--text-secondary)" sx={{ mb: 2 }}>
         Your address is only shared with guests after they've made a
         reservation.
       </Typography>
@@ -131,7 +131,7 @@ const AddressForm = () => {
         }
         sx={{ mt: 3 }}
       />
-      <Typography variant="body2" color="text.secondary">
+      <Typography variant="body2" color="var(--text-secondary)">
         Make it clear to guests where your place is located. We'll only share
         your address after they've made a reservation.
         <Typography component="span" color="primary" sx={{ cursor: "pointer" }}>
@@ -144,7 +144,7 @@ const AddressForm = () => {
         steps={true}
         latitude={contextLatitude || 30.3753}
         longitude={contextLongitude || 69.3451}
-        // popupText="Karachi, Pakistan"
+      // popupText="Karachi, Pakistan"
       />
     </Box>
   );

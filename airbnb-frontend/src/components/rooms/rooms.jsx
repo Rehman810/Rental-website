@@ -470,7 +470,7 @@ const RoomPage = () => {
           </DialogTitle>
 
           <DialogContent sx={{ pt: 1 }}>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            <Typography variant="body2" color="var(--text-secondary)" sx={{ mb: 2 }}>
               Choose how you want to share this place.
             </Typography>
 
@@ -558,32 +558,38 @@ const RoomPage = () => {
               </Typography>
             )}
 
-            <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 0.5, flexWrap: "wrap" }}>
-              <Chip
-                icon={<LocationOnIcon />}
-                label={formatAddress(place)}
-                size="small"
-                sx={{ borderRadius: 2 }}
-              />
-              <Chip
-                icon={<GroupIcon />}
-                label={`${place?.guestCapacity || 0} guests`}
-                size="small"
-                sx={{ borderRadius: 2 }}
-              />
-              <Chip
-                icon={<BedIcon />}
-                label={`${place?.bedrooms || 0} bedrooms`}
-                size="small"
-                sx={{ borderRadius: 2 }}
-              />
-              <Chip
-                icon={<HotelIcon />}
-                label={`${place?.guestCapacity || 0} beds`}
-                size="small"
-                sx={{ borderRadius: 2 }}
-              />
+            <Stack
+              direction="row"
+              spacing={1}
+              alignItems="center"
+              sx={{ mt: 0.5, flexWrap: "wrap" }}
+            >
+              {[
+                { icon: <LocationOnIcon />, label: formatAddress(place) },
+                { icon: <GroupIcon />, label: `${place?.guestCapacity || 0} guests` },
+                { icon: <BedIcon />, label: `${place?.bedrooms || 0} bedrooms` },
+                { icon: <HotelIcon />, label: `${place?.guestCapacity || 0} beds` },
+              ].map((item, index) => (
+                <Chip
+                  key={index}
+                  icon={item.icon}
+                  label={item.label}
+                  size="small"
+                  sx={{
+                    borderRadius: 2,
+
+                    backgroundColor: "var(--bg-tertiary)",
+                    color: "var(--text-primary)",
+                    border: "1px solid var(--border-light)",
+
+                    "& .MuiChip-icon": {
+                      color: "var(--icon-primary)",
+                    },
+                  }}
+                />
+              ))}
             </Stack>
+
           </Box>
 
           <Button
@@ -761,7 +767,7 @@ const RoomPage = () => {
               {place?.roomType || "Room"} in {formatAddress(place)}
             </Typography>
 
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.8 }}>
+            <Typography variant="body2" color="" sx={{ mt: 0.8 }}>
               <b>{place?.guestCapacity || 0}</b> guests •{" "}
               <b>{place?.guestCapacity || 0}</b> beds •{" "}
               <b>{place?.bedrooms || 0}</b> bedrooms
@@ -772,7 +778,7 @@ const RoomPage = () => {
             <Typography variant="subtitle1" fontWeight={900}>
               About this place
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.8, lineHeight: 1.8 }}>
+            <Typography variant="body2" color="" sx={{ mt: 0.8, lineHeight: 1.8 }}>
               {place?.description || "No description available."}
             </Typography>
           </Paper>
@@ -795,7 +801,7 @@ const RoomPage = () => {
                 <Typography variant="h6" fontWeight={900}>
                   What this place offers
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" color="">
                   Amenities included with your stay
                 </Typography>
               </Box>
@@ -827,18 +833,24 @@ const RoomPage = () => {
                         p: 1.4,
                         borderRadius: 2.5,
                         border: "1px solid",
-                        borderColor: "divider",
-                        bgcolor: "rgba(255,255,255,0.70)",
+                        borderColor: "var(--border-light)",
+
+                        /* ✅ theme-aware background */
+                        bgcolor: "var(--bg-card)",
+
                         display: "flex",
                         alignItems: "center",
                         gap: 1.2,
                         transition: "all 0.18s ease",
+
                         "&:hover": {
                           transform: "translateY(-1px)",
-                          boxShadow: "0 12px 28px rgba(0,0,0,0.08)",
+                          boxShadow: "var(--shadow-md)",
+                          backgroundColor: "var(--bg-tertiary)",
                         },
                       }}
                     >
+
                       <Box
                         sx={{
                           width: 34,
@@ -854,7 +866,10 @@ const RoomPage = () => {
                         {getAmenityIcon(amenity)}
                       </Box>
 
-                      <Typography fontWeight={900} sx={{ fontSize: "0.95rem" }}>
+                      <Typography sx={{
+                        fontSize: "0.95rem",
+                        color: "var(--text-primary)",
+                      }} fontWeight={900}   >
                         {amenity}
                       </Typography>
                     </Box>
@@ -862,7 +877,7 @@ const RoomPage = () => {
                 ))}
               </Grid>
             ) : (
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" color="var(--text-secondary)">
                 No amenities listed.
               </Typography>
             )}
@@ -870,7 +885,7 @@ const RoomPage = () => {
             {place?.amenities?.length > 6 && (
               <Typography
                 variant="caption"
-                color="text.secondary"
+                color="var(--text-secondary)"
                 sx={{ display: "block", mt: 1.8, fontWeight: 700 }}
               >
                 Showing 6 of {place?.amenities?.length} amenities
@@ -921,11 +936,11 @@ const RoomPage = () => {
               <Box>
                 <Typography variant="h4" fontWeight={900} sx={{ color: "primary.main" }}>
                   Rs {weekDayPrice}
-                  <Typography component="span" variant="body2" color="text.secondary" sx={{ ml: 1 }}>
+                  <Typography component="span" variant="body2" color="var(--text-secondary)" sx={{ ml: 1 }}>
                     / night
                   </Typography>
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.4 }}>
+                <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.4 }}>
                   Weekends may have different pricing.
                 </Typography>
               </Box>
@@ -991,7 +1006,7 @@ const RoomPage = () => {
                       {guests.adults} Guest{guests.adults !== 1 && "s"}
                     </Typography>
                   </Box>
-                  <ArrowForwardIcon2 sx={{ transform: "rotate(90deg)", fontSize: 18, color: "text.secondary" }} />
+                  <ArrowForwardIcon2 sx={{ transform: "rotate(90deg)", fontSize: 18, color: "var(--text-secondary)" }} />
                 </Box>
                 <Menu
                   anchorEl={guestsAnchorEl}
@@ -1003,7 +1018,7 @@ const RoomPage = () => {
                     <Stack direction="row" justifyContent="space-between" alignItems="center">
                       <Box>
                         <Typography fontWeight={800}>Adults</Typography>
-                        <Typography variant="caption" color="text.secondary">Age 13+</Typography>
+                        <Typography variant="caption" color="var(--text-secondary)">Age 13+</Typography>
                       </Box>
                       <Stack direction="row" alignItems="center" spacing={1}>
                         <IconButton size="small" onClick={() => decrementGuest('adults')} disabled={guests.adults <= 1}>-</IconButton>
@@ -1017,21 +1032,21 @@ const RoomPage = () => {
 
               {/* Availability Info */}
               {place?.effectiveAvailability && (
-                <Box sx={{ p: 1.5, bgcolor: '#f7f7f7', borderRadius: 2 }}>
+                <Box sx={{ p: 1.5, bgcolor: 'var(--bg-secondary)', borderRadius: 2 }}>
                   <Typography variant="caption" display="block" fontWeight={700} sx={{ mb: 0.5 }}>
                     Planning your trip?
                   </Typography>
                   <Stack spacing={0.5}>
-                    <Typography variant="caption" display="block" color="text.secondary">
+                    <Typography variant="caption" display="block" color="var(--text-secondary)">
                       • Minimum stay: {place?.effectiveAvailability?.minNights ?? 1} nights
                     </Typography>
-                    <Typography variant="caption" display="block" color="text.secondary">
+                    <Typography variant="caption" display="block" color="var(--text-secondary)">
                       • Maximum stay: {place?.effectiveAvailability?.maxNights ?? 1} nights
                     </Typography>
-                    <Typography variant="caption" display="block" color="text.secondary">
+                    <Typography variant="caption" display="block" color="var(--text-secondary)">
                       • Check-in: {place?.effectiveAvailability?.checkInFrom ?? "14:00"}
                     </Typography>
-                    <Typography variant="caption" display="block" color="text.secondary">
+                    <Typography variant="caption" display="block" color="var(--text-secondary)">
                       • Check-out: {place?.effectiveAvailability?.checkOutBy ?? "11:00"}
                     </Typography>
                   </Stack>
@@ -1065,22 +1080,45 @@ const RoomPage = () => {
                   borderRadius: 2,
                   textTransform: "none",
                   fontWeight: 900,
-                  boxShadow: "0 12px 30px rgba(25,118,210,0.25)",
+
+                  /* normal state */
+                  boxShadow: "var(--shadow-md)",
+
                   "&:hover": {
                     transform: "translateY(-1px)",
-                    boxShadow: "0 16px 35px rgba(25,118,210,0.35)",
+                    boxShadow: "var(--shadow-lg)",
                   },
+
+                  "&.Mui-disabled": {
+                    backgroundColor: "var(--bg-tertiary)",
+                    color: "var(--text-tertiary)",
+                    border: "1px solid var(--border-muted)",
+                    boxShadow: "none",
+                    cursor: "not-allowed",
+                  },
+
+                  "&.Mui-disabled:hover": {
+                    transform: "none",
+                    boxShadow: "none",
+                  },
+
+                  /* disabled text & icon */
+                  "&.Mui-disabled .MuiButton-startIcon": {
+                    color: "var(--text-tertiary)",
+                  },
+
                   transition: "all 0.18s ease",
                 }}
               >
-                {place?.effectiveBookingMode === 'instant' ? "Reserve" : "Request to Book"}
+                {place?.effectiveBookingMode === "instant" ? "Reserve" : "Request to Book"}
               </Button>
 
-              <Typography variant="body2" color="text.secondary" textAlign="center">
+
+              <Typography variant="body2" color="var(--text-secondary)" textAlign="center">
                 You won’t be charged yet.
               </Typography>
 
-              <Typography variant="caption" color="text.secondary" textAlign="center">
+              <Typography variant="caption" color="var(--text-secondary)" textAlign="center">
                 Weekdays: Mon–Thu • Weekend: Fri–Sun
               </Typography>
             </Stack>
@@ -1142,7 +1180,7 @@ const RoomPage = () => {
         </DialogTitle>
 
         <DialogContent sx={{ pt: 1 }}>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          <Typography variant="body2" color="var(--text-secondary)" sx={{ mb: 2 }}>
             Everything included with this place.
           </Typography>
 
@@ -1207,7 +1245,7 @@ const RoomPage = () => {
 const Row = ({ label, value }) => {
   return (
     <Stack direction="row" alignItems="center" justifyContent="space-between">
-      <Typography variant="body2" color="text.secondary">
+      <Typography variant="body2" color="var(--text-secondary)">
         {label}
       </Typography>
       <Typography variant="body2" fontWeight={800}>

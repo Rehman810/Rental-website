@@ -46,6 +46,7 @@ import {
 import axios from "axios";
 import { APP_NAME } from "../../config/env";
 import NotificationBell from "../notifications/NotificationBell";
+import ThemeToggle from "../ThemeToggle/ThemeToggle";
 
 initializeSocket();
 
@@ -71,48 +72,16 @@ const NavbarHost = () => {
 
   const menuItems = useMemo(
     () => [
-      { name: "Dashboard", route: "/hosting/dashboard", icon: <DashboardIcon fontSize="small" /> },
-      { name: t("menu.hostMenu.today"), route: "/hosting/today", icon: <DashboardIcon fontSize="small" /> },
-      { name: t("menu.hostMenu.calendar"), route: "/hosting/calendar", icon: <CalendarIcon fontSize="small" /> },
-      { name: t("menu.hostMenu.listings"), route: "/hosting/listings", icon: <ListingsIcon fontSize="small" /> },
-      { name: t("menu.hostMenu.messages"), route: "/hosting/messages", icon: <MailIcon fontSize="small" /> },
-      { name: "Payments", route: "/hosting/payments", icon: <PaymentsIcon fontSize="small" /> },
-      { name: "Settings", route: "/hosting/settings", icon: <SettingsIcon fontSize="small" /> },
+      { name: "Dashboard", route: "/hosting/dashboard", icon: <DashboardIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} /> },
+      { name: t("menu.hostMenu.today"), route: "/hosting/today", icon: <DashboardIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} /> },
+      { name: t("menu.hostMenu.calendar"), route: "/hosting/calendar", icon: <CalendarIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} /> },
+      { name: t("menu.hostMenu.listings"), route: "/hosting/listings", icon: <ListingsIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} /> },
+      { name: t("menu.hostMenu.messages"), route: "/hosting/messages", icon: <MailIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} /> },
+      { name: "Payments", route: "/hosting/payments", icon: <PaymentsIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} /> },
+      { name: "Settings", route: "/hosting/settings", icon: <SettingsIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} /> },
     ],
     [t]
   );
-
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      };
-
-      try {
-        const response = await axios.get(`http://192.168.18.45:5000/notifications`, config);
-        setNotifications(response?.data?.notifications || []);
-      } catch (error) {
-        console.error("Error fetching notifications:", error);
-      }
-    };
-
-    fetchNotifications();
-
-    const handleNewNotification = (payload) => {
-      // If you want realtime add:
-      // setNotifications((prev) => [payload, ...prev]);
-      console.log("Received new notification:", payload);
-    };
-
-    subscribeToUpdates("new_notification", handleNewNotification);
-
-    return () => {
-      unsubscribeFromUpdates("new_notification");
-    };
-  }, [token]);
 
   const toggleDrawer = (open) => () => setDrawerOpen(open);
 
@@ -130,11 +99,11 @@ const NavbarHost = () => {
       sx={{
         top: 0,
         zIndex: 30,
-        backgroundColor: "rgba(255,255,255,0.92)",
-        color: "black",
+        backgroundColor: "var(--bg-primary)",
+        color: "var(--text-primary)",
         backdropFilter: "blur(10px)",
         borderBottom: "1px solid",
-        borderColor: "divider",
+        borderColor: "var(--border-light)",
         boxShadow: "none",
       }}
     >
@@ -200,8 +169,8 @@ const NavbarHost = () => {
                 py: 0.6,
                 borderRadius: 999,
                 border: "1px solid",
-                borderColor: "divider",
-                backgroundColor: "rgba(0,0,0,0.02)",
+                borderColor: "var(--border-light)",
+                backgroundColor: "var(--bg-secondary)",
               }}
             >
               {menuItems.map((menu) => {
@@ -223,14 +192,14 @@ const NavbarHost = () => {
                         borderRadius: 999,
                         fontWeight: 900,
                         fontSize: "13px",
-                        color: active ? "text.primary" : "text.secondary",
-                        backgroundColor: active ? "white" : "transparent",
+                        color: active ? "var(--text-primary)" : "var(--text-secondary)",
+                        backgroundColor: active ? "var(--bg-card)" : "transparent",
                         border: active ? "1px solid" : "1px solid transparent",
-                        borderColor: active ? "divider" : "transparent",
-                        boxShadow: active ? "0 10px 25px rgba(0,0,0,0.08)" : "none",
+                        borderColor: active ? "var(--border-light)" : "transparent",
+                        boxShadow: active ? "var(--shadow-sm)" : "none",
                         transition: "all 0.18s ease",
                         "&:hover": {
-                          backgroundColor: active ? "white" : "rgba(0,0,0,0.04)",
+                          backgroundColor: "var(--bg-tertiary)",
                         },
                       }}
                     >
@@ -248,20 +217,7 @@ const NavbarHost = () => {
 
         {/* Right - Actions */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          {/* Notifications */}
-          <Tooltip title="Notifications">
-            <IconButton
-              onClick={handleNotificationsMenuOpen}
-              sx={{
-                borderRadius: 999,
-                "&:hover": { backgroundColor: "rgba(0,0,0,0.04)" },
-              }}
-            >
-              <Badge badgeContent={unreadCount} color="error">
-                <NotificationsIcon sx={{ fontSize: 24, color: "text.secondary" }} />
-              </Badge>
-            </IconButton>
-          </Tooltip>
+          <ThemeToggle />
 
           {token && <NotificationBell />}
 
@@ -279,7 +235,7 @@ const NavbarHost = () => {
                   py: 0.6,
                   borderRadius: 999,
                   border: "1px solid",
-                  borderColor: "divider",
+                  borderColor: "var(--border-light)",
                   cursor: "pointer",
                   transition: "all 0.18s ease",
                   "&:hover": {
@@ -321,7 +277,7 @@ const NavbarHost = () => {
               >
                 <Box sx={{ px: 2, py: 1.5 }}>
                   <Typography fontWeight={900}>{user?.userName || "Host"}</Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" color="var(--text-secondary)">
                     {user?.email || "Host account"}
                   </Typography>
                 </Box>
@@ -330,14 +286,14 @@ const NavbarHost = () => {
 
                 <MenuItem onClick={() => navigate("/user/profile")} sx={{ py: 1.2, px: 2 }}>
                   <ListItemIcon>
-                    <PersonIcon fontSize="small" />
+                    <PersonIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} />
                   </ListItemIcon>
                   <ListItemText primary={t("menu.hostMenu2.userProfile")} />
                 </MenuItem>
 
                 <MenuItem onClick={() => navigate("/user/help/feature")} sx={{ py: 1.2, px: 2 }}>
                   <ListItemIcon>
-                    <HelpIcon fontSize="small" />
+                    <HelpIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} />
                   </ListItemIcon>
                   <ListItemText primary={t("menu.hostMenu2.visitHelpCenter")} />
                 </MenuItem>
@@ -346,7 +302,7 @@ const NavbarHost = () => {
 
                 <MenuItem onClick={() => navigate("/")} sx={{ py: 1.2, px: 2 }}>
                   <ListItemIcon>
-                    <TravelIcon fontSize="small" />
+                    <TravelIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} />
                   </ListItemIcon>
                   <ListItemText primary={t("menu.hostMenu2.switchToTravelling")} />
                 </MenuItem>
@@ -402,7 +358,7 @@ const NavbarHost = () => {
               </Avatar>
               <Box>
                 <Typography fontWeight={900}>{user?.userName || "Host"}</Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" color="var(--text-secondary)">
                   Host dashboard
                 </Typography>
               </Box>
@@ -415,7 +371,7 @@ const NavbarHost = () => {
 
           <Divider sx={{ my: 2 }} />
 
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+          <Typography variant="body2" color="var(--text-secondary)" sx={{ mb: 1 }}>
             Navigation
           </Typography>
 
@@ -447,18 +403,18 @@ const NavbarHost = () => {
 
           <Divider sx={{ my: 2 }} />
 
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+          <Typography variant="body2" color="var(--text-secondary)" sx={{ mb: 1 }}>
             Account
           </Typography>
 
-          <Stack spacing={0.8}>
+          {/* <Stack spacing={0.8}>
             <Button
               onClick={() => {
                 setDrawerOpen(false);
                 navigate("/user/profile");
               }}
-              startIcon={<PersonIcon />}
-              sx={{ justifyContent: "flex-start", textTransform: "none", fontWeight: 900, borderRadius: 2, py: 1.2 }}
+              startIcon={<PersonIcon color="var(--text-secondary)" />}
+              sx={{ justifyContent: "flex-start", textTransform: "none", fontWeight: 900, borderRadius: 2, py: 1.2, color: "var(--text-secondary)" }}
             >
               {t("menu.hostMenu2.userProfile")}
             </Button>
@@ -468,12 +424,12 @@ const NavbarHost = () => {
                 setDrawerOpen(false);
                 navigate("/user/help/feature");
               }}
-              startIcon={<HelpIcon />}
-              sx={{ justifyContent: "flex-start", textTransform: "none", fontWeight: 900, borderRadius: 2, py: 1.2 }}
+              startIcon={<HelpIcon color="var(--text-secondary)" />}
+              sx={{ justifyContent: "flex-start", textTransform: "none", fontWeight: 900, borderRadius: 2, py: 1.2, color: "var(--text-secondary)" }}
             >
               {t("menu.hostMenu2.visitHelpCenter")}
             </Button>
-          </Stack>
+          </Stack> */}
 
           <Divider sx={{ my: 2 }} />
 
@@ -484,8 +440,8 @@ const NavbarHost = () => {
                 setDrawerOpen(false);
                 navigate("/");
               }}
-              startIcon={<TravelIcon />}
-              sx={{ textTransform: "none", fontWeight: 900, borderRadius: 2, py: 1.2 }}
+              startIcon={<TravelIcon color="var(--text-secondary)" />}
+              sx={{ textTransform: "none", fontWeight: 900, borderRadius: 2, py: 1.2, color: "var(--text-secondary)" }}
             >
               {t("menu.hostMenu2.switchToTravelling")}
             </Button>
@@ -518,9 +474,9 @@ const ChipLike = ({ label }) => (
       fontSize: 12,
       fontWeight: 900,
       border: "1px solid",
-      borderColor: "divider",
-      backgroundColor: "rgba(0,0,0,0.02)",
-      color: "text.secondary",
+      borderColor: "var(--border-light)",
+      backgroundColor: "var(--bg-secondary)",
+      color: "var(--text-secondary)",
       display: { xs: "none", sm: "inline-flex" },
     }}
   >

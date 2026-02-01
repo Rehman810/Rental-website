@@ -29,7 +29,7 @@ const HostSection = ({ data, listing }) => {
         <Typography variant="h6" fontWeight={800}>
           Meet your Host
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" color="var(--text-secondary)">
           Get to know who you’ll be staying with.
         </Typography>
       </Stack>
@@ -127,8 +127,8 @@ const HostSection = ({ data, listing }) => {
 
             {/* Location */}
             <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 2 }}>
-              <LocationOnIcon sx={{ fontSize: 18, color: "text.secondary" }} />
-              <Typography variant="body2" color="text.secondary">
+              <LocationOnIcon sx={{ fontSize: 18, color: "var(--text-secondary)" }} />
+              <Typography variant="body2" color="var(--text-secondary)">
                 Lives in <b>{listing?.city || "Pakistan"}</b>, Pakistan
               </Typography>
             </Stack>
@@ -168,7 +168,7 @@ const HostSection = ({ data, listing }) => {
                 <Typography variant="subtitle1" fontWeight={900}>
                   {data?.userName || "Host"} is a Superhost
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
                   Superhosts are experienced, highly rated hosts who are committed
                   to providing great stays for guests.
                 </Typography>
@@ -214,7 +214,7 @@ const HostSection = ({ data, listing }) => {
               >
                 <Box>
                   <Typography fontWeight={900}>Have a question?</Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" color="var(--text-secondary)">
                     Message the host before booking to confirm details.
                   </Typography>
                 </Box>
@@ -258,16 +258,18 @@ const StatPill = ({ icon, value, label }) => {
         p: 1.2,
         borderRadius: 2,
         border: "1px solid",
-        borderColor: "divider",
-        backgroundColor: "rgba(255,255,255,0.55)",
+        borderColor: "var(--border-light)",
+        backgroundColor: "var(--bg-card)", // ✅ FIX
         textAlign: "center",
       }}
     >
       <Stack direction="row" spacing={0.6} alignItems="center" justifyContent="center">
-        <Box sx={{ color: "text.secondary" }}>{icon}</Box>
-        <Typography fontWeight={900}>{value}</Typography>
+        <Box sx={{ color: "var(--icon-primary)" }}>{icon}</Box>
+        <Typography fontWeight={900} sx={{ color: "var(--text-primary)" }}>
+          {value}
+        </Typography>
       </Stack>
-      <Typography variant="caption" color="text.secondary">
+      <Typography variant="caption" sx={{ color: "var(--text-secondary)" }}>
         {label}
       </Typography>
     </Box>
@@ -295,7 +297,7 @@ const DetailRow = ({ icon, title, value }) => {
         <Typography variant="body2" fontWeight={900}>
           {title}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" color="var(--text-secondary)">
           {value}
         </Typography>
       </Box>

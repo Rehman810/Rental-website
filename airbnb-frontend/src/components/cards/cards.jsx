@@ -94,10 +94,10 @@ const CardItem = React.memo(({ data }) => {
           borderColor: "divider",
           cursor: "pointer",
           transition: "all 0.18s ease",
-          backgroundColor: "background.paper",
+          backgroundColor: "var(--bg-card)",
           "&:hover": {
             transform: "translateY(-3px)",
-            boxShadow: "0 16px 45px rgba(0,0,0,0.12)",
+            boxShadow: "var(--shadow-lg)",
           },
         }}
       >
@@ -135,11 +135,11 @@ const CardItem = React.memo(({ data }) => {
               width: 42,
               height: 42,
               borderRadius: 3,
-              backgroundColor: "rgba(255,255,255,0.92)",
-              border: "1px solid rgba(0,0,0,0.06)",
-              boxShadow: "0 10px 25px rgba(0,0,0,0.12)",
+              backgroundColor: "var(--bg-input)",
+              border: "1px solid var(--border-light)",
+              boxShadow: "var(--shadow-sm)",
               "&:hover": {
-                backgroundColor: "rgba(255,255,255,1)",
+                backgroundColor: "var(--bg-secondary)",
               },
             }}
           >
@@ -162,8 +162,9 @@ const CardItem = React.memo(({ data }) => {
                 zIndex: 5,
                 borderRadius: 999,
                 fontWeight: 900,
-                backgroundColor: "rgba(255,255,255,0.92)",
-                border: "1px solid rgba(0,0,0,0.06)",
+                color: "var(--text-primary)",
+                backgroundColor: "var(--bg-input)",
+                border: "1px solid var(--border-light)",
               }}
             />
           )}
@@ -200,7 +201,7 @@ const CardItem = React.memo(({ data }) => {
                 display: "flex",
                 alignItems: "center",
                 gap: 1,
-                backgroundColor: "rgba(255, 255, 255, 0.9)",
+                backgroundColor: "var(--bg-card)",
                 borderRadius: "8px",
                 px: 1.5,
                 py: 2.5,
@@ -250,8 +251,8 @@ const CardItem = React.memo(({ data }) => {
           {/* Location / small meta */}
           <Typography
             variant="body2"
-            color="text.secondary"
             sx={{
+              color: "var(--text-secondary)",
               mt: 0.4,
               display: "-webkit-box",
               WebkitLineClamp: 1,
@@ -265,8 +266,8 @@ const CardItem = React.memo(({ data }) => {
           {/* Description (truncate) */}
           <Typography
             variant="body2"
-            color="text.secondary"
             sx={{
+              color: "var(--text-secondary)",
               mt: 0.6,
               display: "-webkit-box",
               WebkitLineClamp: 2,

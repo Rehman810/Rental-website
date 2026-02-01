@@ -12,7 +12,8 @@ import {
 } from "@mui/material";
 import { fetchData } from "../../config/ServiceApi/serviceApi";
 import { useBookingContext } from "../../context/booking";
-import { SentimentDissatisfied, EventAvailable } from "@mui/icons-material";
+import { EventAvailable } from "@mui/icons-material";
+import SentimentDissatisfiedIcon from "@mui/icons-material/SentimentDissatisfied";
 
 const Upcoming = () => {
   const [upcomingBookings, setUpcomingBookings] = useState([]);
@@ -49,7 +50,7 @@ const Upcoming = () => {
         }}
       >
         <CircularProgress />
-        <Typography variant="body1" color="text.secondary">
+        <Typography variant="body1" color="var(--text-secondary)">
           Loading upcoming arrivals...
         </Typography>
       </Box>
@@ -68,11 +69,11 @@ const Upcoming = () => {
           gap: 1,
         }}
       >
-        <SentimentDissatisfied color="action" sx={{ fontSize: 52 }} />
-        <Typography variant="h6" fontWeight={800} color="text.primary">
+        <SentimentDissatisfiedIcon sx={{ fontSize: 52, color: "var(--text-secondary)" }} />
+        <Typography variant="h6" fontWeight={900} sx={{ mt: 1 }}>
           No upcoming arrivals
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 520 }}>
+        <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
           There are no upcoming bookings scheduled right now. Check back later.
         </Typography>
       </Box>
@@ -94,11 +95,11 @@ const Upcoming = () => {
                 p: 2.5,
                 borderRadius: 3,
                 border: "1px solid",
-                borderColor: "divider",
-                background: "linear-gradient(180deg, #ffffff 0%, #fafafa 100%)",
+                borderColor: "var(--border-light)",
+                background: "var(--bg-card)",
                 transition: "all 0.2s ease",
                 "&:hover": {
-                  boxShadow: "0px 10px 30px rgba(0,0,0,0.08)",
+                  boxShadow: "var(--shadow-md)",
                   transform: "translateY(-2px)",
                 },
               }}
@@ -118,7 +119,7 @@ const Upcoming = () => {
                   <Typography variant="h6" fontWeight={900}>
                     {listing?.title || "Untitled Listing"}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" color="var(--text-secondary)">
                     {listing?.city || "Pakistan"}
                   </Typography>
                 </Box>
@@ -144,8 +145,8 @@ const Upcoming = () => {
                       borderRadius: 2,
                       overflow: "hidden",
                       border: "1px solid",
-                      borderColor: "divider",
-                      backgroundColor: "#f5f5f5",
+                      borderColor: "var(--border-light)",
+                      backgroundColor: "var(--bg-secondary)",
                     }}
                   >
                     <img
@@ -179,20 +180,20 @@ const Upcoming = () => {
                         width: 56,
                         height: 56,
                         border: "2px solid",
-                        borderColor: "divider",
+                        borderColor: "var(--border-light)",
                       }}
                     />
                     <Box>
                       <Typography fontWeight={800}>
                         {guest?.name || "Guest"}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography variant="body2" color="var(--text-secondary)">
                         Guests: {booking?.guestCapacity || 0}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography variant="body2" color="var(--text-secondary)">
                         {guest?.phoneNumber || "Phone not provided"}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography variant="body2" color="var(--text-secondary)">
                         {guest?.email || "Email not provided"}
                       </Typography>
                     </Box>
@@ -206,15 +207,15 @@ const Upcoming = () => {
                       p: 2,
                       borderRadius: 2,
                       border: "1px solid",
-                      borderColor: "divider",
-                      backgroundColor: "rgba(0,0,0,0.02)",
+                      borderColor: "var(--border-light)",
+                      backgroundColor: "var(--bg-secondary)",
                     }}
                   >
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" color="var(--text-secondary)">
                       Check-in:{" "}
                       <b>{new Date(booking?.startDate).toLocaleDateString()}</b>
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                    <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
                       Check-out:{" "}
                       <b>{new Date(booking?.endDate).toLocaleDateString()}</b>
                     </Typography>

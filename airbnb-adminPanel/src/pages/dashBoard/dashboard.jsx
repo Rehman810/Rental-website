@@ -52,7 +52,7 @@ const Dashboard = () => {
         setTotalSales(respons2.totalSales);
 
         const currentDate = new Date();
-        const currentMonth = currentDate.getMonth(); 
+        const currentMonth = currentDate.getMonth();
         const currentYear = currentDate.getFullYear();
 
         const filteredOrders = products.filter((order) => {
@@ -100,7 +100,7 @@ const Dashboard = () => {
               const dayOfMonth = format(orderDate, "d");
               acc.orders[dayOfMonth] = (acc.orders[dayOfMonth] || 0) + 1;
               if (order.orderStatus === "Fullfilled") {
-                acc.sales[dayOfMonth] = (acc.sales[dayOfMonth] || 0) + 1; 
+                acc.sales[dayOfMonth] = (acc.sales[dayOfMonth] || 0) + 1;
               }
             } else {
               console.warn(`Invalid date format: ${order.orderDate}`);
@@ -264,7 +264,7 @@ const Dashboard = () => {
                   >
                     {card.icon}
                     <CardContent>
-                      <Typography variant="body1" color="text.secondary">
+                      <Typography variant="body1" color="var(--text-secondary)">
                         {card.label}
                       </Typography>
                       <Typography variant="h6" color="text.primary">
@@ -282,7 +282,7 @@ const Dashboard = () => {
             <Grid container spacing={5}>
               <Grid item xs={12} md={7}>
                 <Typography variant="h6" align="center" gutterBottom>
-                Total and Fullfilled Orders of {new Date().toLocaleString('default', { month: 'long' })}
+                  Total and Fullfilled Orders of {new Date().toLocaleString('default', { month: 'long' })}
                 </Typography>
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart

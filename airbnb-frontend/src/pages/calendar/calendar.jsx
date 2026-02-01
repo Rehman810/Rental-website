@@ -64,24 +64,24 @@ const HostBookingsCalendar = () => {
         sx={{
           borderRadius: 4,
           border: "1px solid",
-          borderColor: "divider",
-          background: "linear-gradient(180deg, #ffffff 0%, #fafafa 100%)",
+          borderColor: "var(--border-light)",
+          background: "var(--bg-card)",
           overflow: "hidden",
         }}
       >
         {/* Header */}
         <Box sx={{ p: { xs: 2, md: 3 } }}>
           <Stack spacing={0.5}>
-            <Typography variant="h5" fontWeight={900}>
+            <Typography variant="h5" fontWeight={900} sx={{ color: "var(--text-primary)" }}>
               Bookings Calendar
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: "var(--text-secondary)" }}>
               Track confirmed reservations at a glance • {totalBookings} bookings
             </Typography>
           </Stack>
         </Box>
 
-        <Divider />
+        <Divider sx={{ borderColor: "var(--border-light)" }} />
 
         {/* Calendar Body */}
         <Box sx={{ p: { xs: 1.5, md: 2.5 } }}>
@@ -97,7 +97,7 @@ const HostBookingsCalendar = () => {
               }}
             >
               <CircularProgress />
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" sx={{ color: "var(--text-secondary)" }}>
                 Loading calendar data...
               </Typography>
             </Box>
@@ -106,6 +106,7 @@ const HostBookingsCalendar = () => {
               sx={{
                 "& .fc": {
                   fontFamily: "inherit",
+                  color: "var(--text-primary)",
                 },
 
                 // toolbar
@@ -117,26 +118,28 @@ const HostBookingsCalendar = () => {
                 "& .fc-toolbar-title": {
                   fontSize: "1.1rem",
                   fontWeight: 900,
+                  color: "var(--text-primary)",
                 },
 
                 // buttons
                 "& .fc .fc-button": {
                   borderRadius: "12px",
-                  border: "1px solid rgba(0,0,0,0.12)",
-                  background: "#fff",
-                  color: "#111",
+                  border: "1px solid var(--border-light)",
+                  background: "var(--bg-secondary)",
+                  color: "var(--text-primary)",
                   fontWeight: 800,
                   padding: "8px 12px",
                   textTransform: "capitalize",
                   boxShadow: "none",
                 },
                 "& .fc .fc-button:hover": {
-                  background: "#f5f5f5",
+                  background: "var(--bg-tertiary)",
+                  color: "var(--text-primary)",
                 },
                 "& .fc .fc-button-primary:not(:disabled).fc-button-active": {
-                  background: "#111",
-                  color: "#fff",
-                  borderColor: "#111",
+                  background: "var(--text-primary)",
+                  color: "var(--bg-primary)",
+                  borderColor: "var(--text-primary)",
                 },
 
                 // day cells
@@ -148,16 +151,16 @@ const HostBookingsCalendar = () => {
                 "& .fc .fc-daygrid-event": {
                   borderRadius: "999px",
                   padding: "4px 8px",
-                  border: "1px solid rgba(0,0,0,0.12)",
-                  backgroundColor: "rgba(0,0,0,0.04)",
-                  color: "#111",
+                  border: "1px solid var(--border-light)",
+                  backgroundColor: "var(--bg-input)",
+                  color: "var(--text-primary)",
                   fontWeight: 800,
                   overflow: "hidden",
                 },
 
                 // remove default blue background
                 "& .fc .fc-event-main": {
-                  color: "#111",
+                  color: "var(--text-primary)",
                 },
               }}
             >
@@ -181,8 +184,8 @@ const HostBookingsCalendar = () => {
                           height: 20,
                           fontSize: "0.75rem",
                           fontWeight: 900,
-                          bgcolor: "rgba(0,0,0,0.15)",
-                          color: "#111",
+                          bgcolor: "var(--bg-tertiary)",
+                          color: "var(--text-primary)",
                         }}
                       >
                         {title.charAt(0).toUpperCase()}
@@ -195,6 +198,7 @@ const HostBookingsCalendar = () => {
                           overflow: "hidden",
                           textOverflow: "ellipsis",
                           maxWidth: 120,
+                          color: "var(--text-primary)",
                         }}
                       >
                         {title}

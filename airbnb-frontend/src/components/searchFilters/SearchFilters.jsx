@@ -137,7 +137,7 @@ const SearchFilters = ({
                         borderRadius: '50px',
                         textTransform: 'none',
                         fontWeight: 'bold',
-                        color: 'text.primary',
+                        color: 'primary.main',
                         borderColor: 'divider',
                         whiteSpace: 'nowrap',
                         minWidth: 'auto'
@@ -169,7 +169,7 @@ const SearchFilters = ({
                                 <Typography fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                     <MyLocationIcon fontSize="small" color="action" /> Search as I move map
                                 </Typography>
-                                <Typography variant="caption" color="text.secondary">Automatically update results when dragging the map</Typography>
+                                <Typography variant="caption" color="var(--text-secondary)">Automatically update results when dragging the map</Typography>
                             </Box>
                             <Switch
                                 checked={searchAsMove}
@@ -196,7 +196,7 @@ const SearchFilters = ({
                                     InputProps={{ readOnly: true, startAdornment: <InputAdornment position="start">{CURRENCY}</InputAdornment> }}
                                     sx={{ width: 120 }}
                                 />
-                                <Typography color="text.secondary">-</Typography>
+                                <Typography color="var(--text-secondary)">-</Typography>
                                 <TextField
                                     size="small"
                                     value={filters.priceRange?.[1] || 100000}

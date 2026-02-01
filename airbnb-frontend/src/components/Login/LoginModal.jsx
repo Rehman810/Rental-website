@@ -104,7 +104,7 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
           left: "50%",
           transform: "translate(-50%, -50%)",
           width: { xs: "92%", sm: 420 },
-          bgcolor: "background.paper",
+          bgcolor: "var(--bg-card)",
           borderRadius: "18px",
           boxShadow: "0 20px 60px rgba(0,0,0,0.18)",
           overflow: "hidden",
@@ -115,7 +115,7 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
           sx={{
             px: 2.5,
             py: 2,
-            borderBottom: "1px solid #eee",
+            borderBottom: "1px solid var(--border-light)",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
@@ -135,7 +135,7 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
           <Typography variant="h5" fontWeight={900} sx={{ mb: 0.5 }}>
             Welcome to {APP_NAME}
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          <Typography variant="body2" color="var(--text-secondary)" sx={{ mb: 2 }}>
             {signUp
               ? "Create your account in a few seconds."
               : "Log in to continue booking and hosting."}
@@ -230,7 +230,7 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
                 component="span"
                 sx={{
                   fontWeight: 800,
-                  color: "#1976d2",
+                  color: "var(--primary)",
                   cursor: "pointer",
                 }}
                 onClick={() => isSignUp(!signUp)}
@@ -259,7 +259,7 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
 
             <Typography
               variant="caption"
-              color="text.secondary"
+              color="var(--text-secondary)"
               sx={{ textAlign: "center", display: "block", mt: 1 }}
             >
               By continuing, you agree to our Terms & Privacy Policy.
@@ -279,14 +279,14 @@ const SocialButton = ({ icon, text }) => {
       startIcon={icon}
       sx={{
         borderRadius: "999px",
-        borderColor: "#e6e6e6",
-        color: "#111",
+        borderColor: "var(--border-light)",
+        color: "var(--text-primary)",
         textTransform: "none",
         fontWeight: 800,
         py: 1.1,
         "&:hover": {
-          borderColor: "#cfcfcf",
-          backgroundColor: "#fafafa",
+          borderColor: "var(--border-medium)",
+          backgroundColor: "var(--bg-secondary)",
         },
       }}
     >

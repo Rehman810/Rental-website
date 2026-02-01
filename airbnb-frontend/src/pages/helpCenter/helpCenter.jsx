@@ -38,8 +38,8 @@ const TermsPoliciesPage = () => {
                   onClick={() => handleLinkClick(policy.id)}
                   sx={{
                     fontWeight: 'bold',
-                    color: 'black', 
-                    textDecoration: 'underline', 
+                    color: 'var(--text-primary)',
+                    textDecoration: 'underline',
                   }}
                 >
                   {policy.title}
@@ -59,8 +59,8 @@ const TermsPoliciesPage = () => {
                   onClick={() => handleLinkClick(policy.id)}
                   sx={{
                     fontWeight: 'bold',
-                    color: 'black',
-                    textDecoration: 'underline', 
+                    color: 'var(--text-primary)',
+                    textDecoration: 'underline',
                   }}
                 >
                   {policy.title}

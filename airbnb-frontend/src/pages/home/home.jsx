@@ -317,6 +317,7 @@ const Home = () => {
               alignItems="center"
               justifyContent="space-between"
               mb={2}
+              sx={{ color: "primary.main" }}
             >
               <Typography variant="h6" fontWeight={900}>
                 {listings.length > 0
@@ -365,7 +366,7 @@ const Home = () => {
                     <Typography variant="h6" fontWeight={900}>
                       No listings found
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" color="var(--text-secondary)">
                       Try adjusting your filters or area.
                     </Typography>
                   </Paper>

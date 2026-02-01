@@ -65,7 +65,7 @@ const ReservationSection = () => {
         return <PendingBooking />;
       default:
         return (
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="var(--text-secondary)">
             No data available.
           </Typography>
         );
@@ -144,7 +144,7 @@ const ReservationSection = () => {
             <Typography variant="h5" fontWeight={900}>
               Welcome, {formatUserName(user?.userName)} 👋
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
               Manage your bookings and stay on top of upcoming guests.
             </Typography>
           </Box>
@@ -156,6 +156,10 @@ const ReservationSection = () => {
               sx={{
                 borderRadius: 999,
                 fontWeight: 900,
+
+                bgcolor: "transparent",
+                borderColor: "var(--border-light)",
+                color: "var(--text-primary)",
               }}
             />
             <Button
@@ -188,7 +192,7 @@ const ReservationSection = () => {
           <Typography variant="h6" fontWeight={900}>
             Your reservations
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.3 }}>
+          <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.3 }}>
             Filter bookings by status to take quick actions.
           </Typography>
         </Box>
@@ -200,7 +204,7 @@ const ReservationSection = () => {
             fontWeight: 900,
             borderRadius: 999,
             px: 2,
-            color: "text.secondary",
+            color: "var(--text-secondary)",
             "&:hover": { backgroundColor: "rgba(0,0,0,0.04)" },
           }}
         >
@@ -236,7 +240,7 @@ const ReservationSection = () => {
                   fontWeight: 900,
                   textTransform: "none",
                   backgroundColor: active ? "text.primary" : "transparent",
-                  color: active ? "white" : "text.secondary",
+                  color: active ? "white" : "var(--text-secondary)",
                   "&:hover": {
                     backgroundColor: active
                       ? "text.primary"

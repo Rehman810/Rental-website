@@ -106,7 +106,7 @@ const Payments = () => {
             >
                 <Stack alignItems="center" spacing={2}>
                     <CircularProgress />
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" color="var(--text-secondary)">
                         Loading payment settings...
                     </Typography>
                 </Stack>
@@ -150,7 +150,7 @@ const Payments = () => {
                             <Typography variant="h5" fontWeight={800}>
                                 Payments & Payouts
                             </Typography>
-                            <Typography variant="body2" color="text.secondary">
+                            <Typography variant="body2" color="var(--text-secondary)">
                                 Connect Stripe to securely manage onboarding, verification, and
                                 payouts.
                             </Typography>
@@ -187,7 +187,7 @@ const Payments = () => {
                         <Typography variant="h6" fontWeight={800}>
                             Stripe Connect Status
                         </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                        <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
                             {statusConfig.description}
                         </Typography>
                     </Box>
@@ -198,7 +198,7 @@ const Payments = () => {
                     <Box>
                         <Typography
                             variant="subtitle2"
-                            color="text.secondary"
+                            color="var(--text-secondary)"
                             sx={{ mb: 1.2 }}
                         >
                             Requirements
@@ -246,7 +246,7 @@ const Payments = () => {
                                         ? "Finish your Stripe onboarding"
                                         : "Connect your Stripe account"}
                                 </Typography>
-                                <Typography variant="body2" color="text.secondary">
+                                <Typography variant="body2" color="var(--text-secondary)">
                                     {status.details_submitted
                                         ? "Continue from where you left off to enable payouts."
                                         : "It takes only a minute to get started."}
@@ -308,7 +308,7 @@ const Payments = () => {
                                     <Typography fontWeight={800}>
                                         Stripe is fully connected 🎉
                                     </Typography>
-                                    <Typography variant="body2" color="text.secondary">
+                                    <Typography variant="body2" color="var(--text-secondary)">
                                         You’re good to go — payouts will be processed automatically
                                         based on Stripe schedule.
                                     </Typography>
@@ -338,7 +338,7 @@ const RequirementRow = ({ title, ok, hint }) => {
         >
             <Stack spacing={0.2}>
                 <Typography fontWeight={800}>{title}</Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" color="var(--text-secondary)">
                     {hint}
                 </Typography>
             </Stack>

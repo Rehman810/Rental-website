@@ -1,19 +1,55 @@
+@import "./styles/theme.css";
+
 @font-face {
   font-family: "Airbnb";
-  src: url("./assets/fonts/Airbnb/AirbnbCereal_W_Lt.otf") format("woff2"),
+  src: url("./assets/fonts/Airbnb/AirbnbCereal_W_Lt.otf") format("woff2");
 }
 
 @font-face {
   font-family: "AirbnbBold";
-  src: url("./assets/fonts/Airbnb/AirbnbCereal_W_Bd.otf") format("woff2"),
+  src: url("./assets/fonts/Airbnb/AirbnbCereal_W_Bd.otf") format("woff2");
 }
 
-*{
+.css-zc3542 {
+  background-color: var(--bg-secondary) !important;
+}
+
+.css-19i7e4c {
+  background-color: var(--bg-secondary) !important;
+}
+
+* {
   margin: 0;
   padding: 0;
-  font-family: Airbnb !important;
+  box-sizing: border-box;
+  /* Good practice */
+  font-family: Airbnb, sans-serif !important;
 }
 
-.airbnbBold{
-  font-family: AirbnbBold !important;
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+.airbnbBold {
+  font-family: AirbnbBold, sans-serif !important;
+}
+
+/* Scrollbar Styling for Dark Mode */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-medium);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
 }

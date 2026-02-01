@@ -40,7 +40,7 @@ const NotFoundPage = () => {
       </Typography>
       <Typography
         variant="body1"
-        color="text.secondary"
+        color="var(--text-secondary)"
         sx={{ mb: 3 }}>
         It seems you're lost. But don't worry, we
         can guide you back!

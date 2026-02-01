@@ -39,16 +39,15 @@ const Footer = () => {
                 p: 2.5,
                 borderRadius: 3,
                 border: "1px solid",
-                borderColor: "divider",
-                background:
-                  "linear-gradient(135deg, rgba(25,118,210,0.06), rgba(156,39,176,0.04))",
+                borderColor: "var(--border-light)",
+                background: "var(--bg-secondary)",
               }}
             >
               <Typography variant="h6" fontWeight={900}>
                 {APP_NAME}
               </Typography>
 
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.8, lineHeight: 1.7 }}>
+              <Typography variant="body2" sx={{ color: "var(--text-secondary)", mt: 0.8, lineHeight: 1.7 }}>
                 Book trusted stays across Pakistan. Simple checkout, secure hosting,
                 and a smooth guest experience.
               </Typography>
@@ -110,7 +109,7 @@ const Footer = () => {
         >
           {/* Left */}
           <Stack direction={{ xs: "column", sm: "row" }} spacing={1} alignItems={{ xs: "flex-start", sm: "center" }}>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{ color: "var(--text-secondary)" }}>
               © {currentYear} {APP_NAME}, Inc.
             </Typography>
 
@@ -133,11 +132,11 @@ const Footer = () => {
                 py: 0.7,
                 borderRadius: 2,
                 border: "1px solid",
-                borderColor: "divider",
-                backgroundColor: "rgba(255,255,255,0.55)",
+                borderColor: "var(--border-light)",
+                backgroundColor: "var(--bg-secondary)",
                 "&:hover": {
-                  backgroundColor: "rgba(25,118,210,0.06)",
-                  borderColor: "rgba(25,118,210,0.35)",
+                  backgroundColor: "var(--bg-tertiary)",
+                  borderColor: "var(--text-secondary)",
                 },
                 transition: "all 0.18s ease",
               }}
@@ -182,7 +181,7 @@ const FooterLink = ({ text, onClick }) => {
       sx={{
         textAlign: "left",
         width: "fit-content",
-        color: "text.secondary",
+        color: "var(--text-secondary)",
         fontSize: "0.92rem",
         fontWeight: 600,
         background: "transparent",
@@ -190,7 +189,7 @@ const FooterLink = ({ text, onClick }) => {
         p: 0,
         cursor: "pointer",
         "&:hover": {
-          color: "text.primary",
+          color: "var(--text-primary)",
           textDecoration: "underline",
         },
         transition: "all 0.15s ease",
@@ -208,7 +207,7 @@ const FooterMiniLink = ({ text, onClick }) => {
       onClick={onClick}
       underline="none"
       sx={{
-        color: "text.secondary",
+        color: "var(--text-secondary)",
         fontSize: "0.88rem",
         fontWeight: 700,
         background: "transparent",
@@ -216,7 +215,7 @@ const FooterMiniLink = ({ text, onClick }) => {
         p: 0,
         cursor: "pointer",
         "&:hover": {
-          color: "primary.main",
+          color: "var(--primary)",
           textDecoration: "underline",
         },
       }}
@@ -227,7 +226,7 @@ const FooterMiniLink = ({ text, onClick }) => {
 };
 
 const DotDivider = () => (
-  <Typography variant="body2" color="text.disabled" sx={{ mx: 0.5 }}>
+  <Typography variant="body2" sx={{ color: "var(--text-tertiary)", mx: 0.5 }}>
     ·
   </Typography>
 );
@@ -240,11 +239,11 @@ const ChipLike = ({ label }) => {
         py: 0.7,
         borderRadius: 2,
         border: "1px solid",
-        borderColor: "divider",
-        backgroundColor: "rgba(255,255,255,0.55)",
+        borderColor: "var(--border-light)",
+        backgroundColor: "var(--bg-secondary)",
         fontWeight: 900,
         fontSize: "0.9rem",
-        color: "text.secondary",
+        color: "var(--text-secondary)",
       }}
     >
       {label}
@@ -262,12 +261,14 @@ const SocialIconButton = ({ children, label, onClick }) => {
         height: 38,
         borderRadius: 2,
         border: "1px solid",
-        borderColor: "divider",
-        backgroundColor: "rgba(255,255,255,0.55)",
+        borderColor: "var(--border-light)",
+        backgroundColor: "var(--bg-secondary)",
+        color: "var(--text-secondary)",
         "&:hover": {
-          backgroundColor: "rgba(25,118,210,0.08)",
-          borderColor: "rgba(25,118,210,0.35)",
+          backgroundColor: "var(--bg-tertiary)",
+          borderColor: "var(--text-primary)",
           transform: "translateY(-1px)",
+          color: "var(--text-primary)",
         },
         transition: "all 0.18s ease",
       }}

@@ -62,10 +62,10 @@ const SearchBar2 = () => {
               display: "flex",
               alignItems: "center",
               borderRadius: "40px",
-              border: "1px solid #ddd",
-              boxShadow: "0px 1px 6px rgba(0, 0, 0, 0.1)",
+              border: "1px solid var(--border-light)",
+              boxShadow: "var(--shadow-sm)",
               overflow: "hidden",
-              backgroundColor: "white",
+              backgroundColor: "var(--bg-card)",
               width: "100%",
               height: "40px",
               position: "relative",
@@ -118,9 +118,9 @@ const SearchBar2 = () => {
             <Box sx={{ marginLeft: "8px" }}>
               <IconButton
                 sx={{
-                  backgroundColor: "#FF385C",
+                  backgroundColor: "var(--primary)",
                   color: "white",
-                  "&:hover": { backgroundColor: "#FF385E" },
+                  "&:hover": { backgroundColor: "var(--primary-hover)" },
                   width: 30,
                   height: 30,
                 }}

@@ -63,12 +63,12 @@ const Language = ({ open, toggleModal }) => {
           },
         }}
       >
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
+        <Stack direction="row" alignItems="center" justifyContent="space-between" >
           <Box>
-            <Typography sx={{ fontWeight: 900, fontSize: 14 }}>
+            <Typography sx={{ fontWeight: 900, fontSize: 16 }}>
               {lng.lang}
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.3 }}>
+            <Typography variant="body2" color="" sx={{ mt: 0.3 }}>
               {lng.region}
             </Typography>
           </Box>
@@ -104,7 +104,8 @@ const Language = ({ open, toggleModal }) => {
           justifyContent: "space-between",
           borderBottom: "1px solid",
           borderColor: "divider",
-          backgroundColor: "rgba(255,255,255,0.92)",
+          // backgroundColor: "rgba(255,255,255,0.92)",
+          backgroundColor: "var(--bg-card)",
           backdropFilter: "blur(10px)",
         }}
       >
@@ -112,7 +113,7 @@ const Language = ({ open, toggleModal }) => {
           <Typography variant="h6" fontWeight={900}>
             Language & Region
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.3 }}>
+          <Typography variant="body2" color="" sx={{ mt: 0.3 }}>
             Select your preferred language for a better experience.
           </Typography>
         </Box>

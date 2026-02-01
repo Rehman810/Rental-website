@@ -138,7 +138,7 @@ const HostSettings = () => {
     };
 
     const sectionDescSx = {
-        color: 'text.secondary',
+        color: 'var(--text-secondary)',
         mt: 0.25,
         maxWidth: 720,
         lineHeight: 1.6,
@@ -192,7 +192,7 @@ const HostSettings = () => {
                         Host Settings
                     </Typography>
 
-                    <Typography variant="body1" sx={{ color: 'text.secondary', lineHeight: 1.7 }}>
+                    <Typography variant="body1" sx={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
                         Manage booking rules, availability, guest requirements, and notifications — clean and simple.
                     </Typography>
                 </Box>
@@ -239,7 +239,7 @@ const HostSettings = () => {
                                     label={
                                         <Box>
                                             <Typography fontWeight={900}>Instant Book (Recommended)</Typography>
-                                            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25, lineHeight: 1.6 }}>
+                                            <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.25, lineHeight: 1.6 }}>
                                                 Guests who meet your requirements can book instantly. Status becomes <b>CONFIRMED</b> immediately.
                                             </Typography>
                                         </Box>
@@ -251,7 +251,7 @@ const HostSettings = () => {
                                     label={
                                         <Box>
                                             <Typography fontWeight={900}>Request to Book</Typography>
-                                            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25, lineHeight: 1.6 }}>
+                                            <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.25, lineHeight: 1.6 }}>
                                                 Guests must send a reservation request. You have <b>24 hours</b> to approve or decline. Status starts as <b>PENDING</b>.
                                             </Typography>
                                         </Box>
@@ -595,29 +595,38 @@ const HostSettings = () => {
                         mt: 3,
                         pb: 2,
                         pt: 2,
-                        background: 'linear-gradient(180deg, rgba(248,250,252,0) 0%, rgba(248,250,252,1) 30%)',
+                        background: `
+  linear-gradient(
+    180deg,
+    transparent 0%,
+    var(--bg-secondary) 40%,
+    var(--bg-primary) 100%
+  )
+`,
                         backdropFilter: 'blur(6px)',
                     }}
                 >
                     <Box
                         sx={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
                             gap: 2,
                             borderRadius: 4,
-                            border: '1px solid rgba(15, 23, 42, 0.08)',
-                            background: 'rgba(255,255,255,0.95)',
+
+                            border: "1px solid var(--border-light)",
+                            backgroundColor: "var(--bg-card)",
+                            boxShadow: "var(--shadow-md)",
+
                             px: { xs: 2, md: 3 },
                             py: 1.5,
-                            boxShadow: '0 12px 30px rgba(15, 23, 42, 0.10)',
                         }}
                     >
                         <Box>
                             <Typography sx={{ fontWeight: 900, lineHeight: 1.2 }}>
                                 Ready to apply changes?
                             </Typography>
-                            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                            <Typography variant="body2" sx={{ color: 'var(--text-secondary)' }}>
                                 Save once and you’re good to go.
                             </Typography>
                         </Box>

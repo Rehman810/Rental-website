@@ -228,7 +228,7 @@ const Listings = () => {
                   </Typography>
                   <Typography
                     variant="body1"
-                    color="text.secondary"
+                    color="var(--text-secondary)"
                     sx={{ textAlign: "center", mb: 3 }}
                   >
                     {selectedListing.description || "No description available"}
@@ -360,16 +360,14 @@ const Listings = () => {
                       Address
                     </Typography>
                     <Typography variant="body1">
-                      {`${selectedListing.flat || ""}, ${
-                        selectedListing.street || ""
-                      }, ${selectedListing.town || ""}, ${
-                        selectedListing.city || ""
-                      }, ${selectedListing.postcode || ""}`}
+                      {`${selectedListing.flat || ""}, ${selectedListing.street || ""
+                        }, ${selectedListing.town || ""}, ${selectedListing.city || ""
+                        }, ${selectedListing.postcode || ""}`}
                     </Typography>
                   </Box>
 
                   {/* Location (Latitude & Longitude) */}
-{/*                   <Box sx={{ mb: 4 }}>
+                  {/*                   <Box sx={{ mb: 4 }}>
                     <Typography
                       variant="h6"
                       fontWeight="bold"
@@ -388,11 +386,11 @@ const Listings = () => {
 
                   {/* Creation and Update Dates */}
                   <Box>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" color="var(--text-secondary)">
                       Created At:{" "}
                       {new Date(selectedListing.createdAt).toLocaleString()}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" color="var(--text-secondary)">
                       Updated At:{" "}
                       {new Date(selectedListing.updatedAt).toLocaleString()}
                     </Typography>

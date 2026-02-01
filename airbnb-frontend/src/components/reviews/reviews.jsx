@@ -73,7 +73,7 @@ const reviews = () => {
                 <Typography variant="h6" fontWeight="bold">
                   {listing.title}
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ marginY: 1 }}>
+                <Typography variant="body2" color="var(--text-secondary)" sx={{ marginY: 1 }}>
                   {listing.description}
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', marginTop: 2 }}>

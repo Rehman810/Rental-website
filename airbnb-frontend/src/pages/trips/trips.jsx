@@ -126,7 +126,7 @@ const Trips = () => {
               <Typography variant="h5" fontWeight={900}>
                 Your Trips
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
                 {trips?.length ? `${trips.length} bookings found` : "Your bookings will appear here."}
               </Typography>
             </Box>
@@ -237,7 +237,7 @@ const Trips = () => {
 
                       <Typography
                         variant="body2"
-                        color="text.secondary"
+                        color="var(--text-secondary)"
                         sx={{
                           mt: 0.4,
                           display: "-webkit-box",
@@ -252,7 +252,7 @@ const Trips = () => {
                       {/* Description (short) */}
                       <Typography
                         variant="body2"
-                        color="text.secondary"
+                        color="var(--text-secondary)"
                         sx={{
                           mt: 0.8,
                           display: "-webkit-box",
@@ -270,7 +270,7 @@ const Trips = () => {
                       {/* Dates + Total */}
                       <Stack spacing={1}>
                         <Stack direction="row" spacing={1} alignItems="center">
-                          <CalendarMonthIcon sx={{ fontSize: 18, color: "text.secondary" }} />
+                          <CalendarMonthIcon sx={{ fontSize: 18, color: "var(--text-secondary)" }} />
                           <Typography variant="body2" fontWeight={800}>
                             {new Date(trip.startDate).toLocaleDateString()} →{" "}
                             {new Date(trip.endDate).toLocaleDateString()}
@@ -278,7 +278,7 @@ const Trips = () => {
                         </Stack>
 
                         <Stack direction="row" spacing={1} alignItems="center">
-                          <PaymentsIcon sx={{ fontSize: 18, color: "text.secondary" }} />
+                          <PaymentsIcon sx={{ fontSize: 18, color: "var(--text-secondary)" }} />
                           <Typography variant="body2" fontWeight={900}>
                             Total: Rs {trip?.totalPrice || 0}
                           </Typography>
@@ -357,7 +357,7 @@ const Trips = () => {
                 <Typography variant="h6" fontWeight={900}>
                   No trips available
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.6 }}>
+                <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.6 }}>
                   Once you book a stay, it will show up here.
                 </Typography>
               </Paper>

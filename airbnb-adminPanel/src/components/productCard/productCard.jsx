@@ -15,7 +15,7 @@ import {
   Select,
   MenuItem,
   InputLabel,
-  FormControl, 
+  FormControl,
   CircularProgress,
   Box,
 } from "@mui/material";
@@ -55,7 +55,7 @@ const ProductCard = ({ product }) => {
           image={product.Imageurl}
           alt={product.title}
           loading="lazy"
-          style={{borderBottom: ".1px solid gray"}}
+          style={{ borderBottom: ".1px solid gray" }}
         />
         {product.discountprice && (
           <Badge
@@ -83,7 +83,7 @@ const ProductCard = ({ product }) => {
             }}
           />
         )}
-         {product.stockStatus == "Out of Stock" && (
+        {product.stockStatus == "Out of Stock" && (
           <Badge
             badgeContent={`Out of Stock`}
             color="error"
@@ -102,7 +102,7 @@ const ProductCard = ({ product }) => {
             gutterBottom
             variant="h6"
             onClick={handleTitleClick}
-            component="div"  sx={{
+            component="div" sx={{
               display: "-webkit-box",
               overflow: "hidden",
               WebkitBoxOrient: "vertical",
@@ -154,7 +154,7 @@ export default function ProductCardWrapper() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filteredData, setFilteredData] =
-  useState([]);
+    useState([]);
   const { searchQuery } = useContext(
     SearchContext
   );
@@ -169,30 +169,30 @@ export default function ProductCardWrapper() {
 
   useEffect(() => {
     if (products.length === 0) {
-      setFilteredData([]); 
+      setFilteredData([]);
       return;
     }
-  
+
     const filteredProducts = products.filter((product) => {
       const categoryMatch = category === "All" || product.category === category;
-  
+
       const stockMatch = stock === "All" || product.stockStatus === stock;
-  
-      let orderIdMatch = true; 
+
+      let orderIdMatch = true;
       if (searchQuery) {
         orderIdMatch = product.title?.toLowerCase().includes(searchQuery.toLowerCase());
       }
-  
+
       return categoryMatch && stockMatch && orderIdMatch;
     });
-  
+
     setFilteredData(filteredProducts);
     console.log(filteredProducts);
-  
+
   }, [category, stock, searchQuery, products]);
-  
-  
-  
+
+
+
 
   // const filteredProducts = products.filter(
   //   (product) => {
@@ -247,15 +247,15 @@ export default function ProductCardWrapper() {
               onChange={handleCategoryChange}
               label="Category">
               <MenuItem value="All">All</MenuItem>
-                <MenuItem value="Clothes">
-                  Clothes
-                </MenuItem>
-                <MenuItem value="Watches">
-                  Watches
-                </MenuItem>
-                <MenuItem value="Jackets">
-                  Jackets
-                </MenuItem>
+              <MenuItem value="Clothes">
+                Clothes
+              </MenuItem>
+              <MenuItem value="Watches">
+                Watches
+              </MenuItem>
+              <MenuItem value="Jackets">
+                Jackets
+              </MenuItem>
             </Select>
           </FormControl>
 
@@ -298,14 +298,14 @@ export default function ProductCardWrapper() {
               )
             ) : (
               <Box sx={{ textAlign: "center", mt: 4 }}>
-              <SentimentDissatisfied sx={{ fontSize: 50, color: "gray" }} />
-              <Typography variant="h5" sx={{ mt: 2 }}>
-                Oops! No Products Found
-              </Typography>
-              <Typography variant="body1" sx={{ color: "text.secondary" }}>
-                It seems we couldn't find any products that match your criteria. Please try adjusting your filters or search term.
-              </Typography>
-            </Box>
+                <SentimentDissatisfied sx={{ fontSize: 50, color: "gray" }} />
+                <Typography variant="h5" sx={{ mt: 2 }}>
+                  Oops! No Products Found
+                </Typography>
+                <Typography variant="body1" sx={{ color: "var(--text-secondary)" }}>
+                  It seems we couldn't find any products that match your criteria. Please try adjusting your filters or search term.
+                </Typography>
+              </Box>
             )}
           </Grid>
         </>

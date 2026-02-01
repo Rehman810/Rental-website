@@ -94,7 +94,7 @@ const PendingBooking = () => {
         <Typography sx={{ mt: 2 }} fontWeight={900}>
           Loading pending bookings...
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" color="var(--text-secondary)">
           Fetching latest requests.
         </Typography>
       </Box>
@@ -114,17 +114,13 @@ const PendingBooking = () => {
           backgroundColor: "rgba(0,0,0,0.015)",
         }}
       >
-        <SentimentDissatisfiedIcon sx={{ fontSize: 52, color: "text.secondary" }} />
+        <SentimentDissatisfiedIcon sx={{ fontSize: 52, color: "var(--text-secondary)" }} />
         <Typography variant="h6" fontWeight={900} sx={{ mt: 1 }}>
           No pending bookings
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+        <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
           Nothing is waiting for approval right now.
         </Typography>
-
-        <Button variant="outlined" sx={{ mt: 3 }} onClick={fetchBookings}>
-          Refresh
-        </Button>
       </Paper>
     );
   }
@@ -208,8 +204,8 @@ const PendingBooking = () => {
                       </Typography>
 
                       <Stack direction="row" spacing={0.8} alignItems="center" sx={{ mt: 0.4 }}>
-                        <LocationOnIcon sx={{ fontSize: 18, color: "text.secondary" }} />
-                        <Typography variant="body2" color="text.secondary">
+                        <LocationOnIcon sx={{ fontSize: 18, color: "var(--text-secondary)" }} />
+                        <Typography variant="body2" color="var(--text-secondary)">
                           {listing?.city || "Pakistan"}
                         </Typography>
                       </Stack>
@@ -255,7 +251,7 @@ const PendingBooking = () => {
                             <Typography fontWeight={900}>
                               {guest?.name || "Guest"}
                             </Typography>
-                            <Typography variant="body2" color="text.secondary">
+                            <Typography variant="body2" color="var(--text-secondary)">
                               Guests: {booking?.guestCapacity || 0}
                             </Typography>
                           </Box>
@@ -276,11 +272,11 @@ const PendingBooking = () => {
                         }}
                       >
                         <Stack direction="row" spacing={1} alignItems="center">
-                          <CalendarMonthIcon sx={{ color: "text.secondary" }} />
+                          <CalendarMonthIcon sx={{ color: "var(--text-secondary)" }} />
                           <Typography fontWeight={900}>Dates</Typography>
                         </Stack>
 
-                        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                        <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 1 }}>
                           Check-in:{" "}
                           <strong>
                             {booking?.startDate
@@ -289,7 +285,7 @@ const PendingBooking = () => {
                           </strong>
                         </Typography>
 
-                        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                        <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
                           Check-out:{" "}
                           <strong>
                             {booking?.endDate

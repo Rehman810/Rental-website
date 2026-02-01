@@ -41,8 +41,8 @@ const RatingPill = ({ value }) => {
             sx={{
                 borderRadius: 2,
                 fontWeight: 900,
-                bgcolor: "rgba(255,193,7,0.14)",
-                color: "text.primary",
+                bgcolor: "var(--bg-secondary)",
+                color: "var(--text-primary)",
                 px: 0.5,
             }}
         />
@@ -60,7 +60,7 @@ const ReviewBar = ({ label, value }) => {
                     minWidth: 140,
                     fontSize: "0.92rem",
                     fontWeight: 800,
-                    color: "text.primary",
+                    color: "var(--text-primary)",
                 }}
             >
                 {label}
@@ -73,9 +73,11 @@ const ReviewBar = ({ label, value }) => {
                     sx={{
                         height: 8,
                         borderRadius: 10,
-                        bgcolor: "rgba(0,0,0,0.06)",
+                        bgcolor: "var(--bg-tertiary)",
+
                         "& .MuiLinearProgress-bar": {
                             borderRadius: 10,
+                            backgroundColor: "var(--primary)",
                         },
                     }}
                 />
@@ -196,7 +198,7 @@ const ReviewsSection = ({ listingId, currentUser, listingHostId }) => {
                     borderColor: "divider",
                     mb: 3,
                     background:
-                        "linear-gradient(135deg, rgba(25,118,210,0.06), rgba(156,39,176,0.04))",
+                        "linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary))",
                 }}
             >
                 <Stack
@@ -212,7 +214,7 @@ const ReviewsSection = ({ listingId, currentUser, listingHostId }) => {
 
                         <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 0.8 }}>
                             <RatingPill value={ratingAvg} />
-                            <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 700 }}>
+                            <Typography variant="body2" color="var(--text-secondary)" sx={{ fontWeight: 700 }}>
                                 {totalReviews} {totalReviews === 1 ? "review" : "reviews"}
                             </Typography>
                             {ratingAvg > 0 && (
@@ -232,7 +234,7 @@ const ReviewsSection = ({ listingId, currentUser, listingHostId }) => {
                     </Box>
 
                     <Box sx={{ textAlign: { xs: "left", sm: "right" } }}>
-                        <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 700 }}>
+                        <Typography variant="body2" color="var(--text-secondary)" sx={{ fontWeight: 700 }}>
                             Overall rating
                         </Typography>
                         <Typography variant="h6" sx={{ fontWeight: 900, mt: 0.3 }}>
@@ -266,7 +268,7 @@ const ReviewsSection = ({ listingId, currentUser, listingHostId }) => {
                             </Typography>
 
                             <Stack direction="row" spacing={1} alignItems="center">
-                                <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 700 }}>
+                                <Typography variant="body2" color="var(--text-secondary)" sx={{ fontWeight: 700 }}>
                                     Average
                                 </Typography>
                                 <RatingPill value={ratingAvg} />
@@ -340,7 +342,7 @@ const ReviewsSection = ({ listingId, currentUser, listingHostId }) => {
                         }}
                     >
                         <Typography sx={{ fontWeight: 900 }}>No reviews yet</Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.6 }}>
+                        <Typography variant="body2" color="" sx={{ mt: 0.6 }}>
                             Be the first to share your experience.
                         </Typography>
                     </Paper>
@@ -369,7 +371,7 @@ const ReviewsSection = ({ listingId, currentUser, listingHostId }) => {
                                     borderColor: "divider",
                                     transition: "all 0.18s ease",
                                     "&:hover": {
-                                        boxShadow: "0 14px 34px rgba(0,0,0,0.08)",
+                                        boxShadow: "var(--shadow-md)",
                                         transform: "translateY(-1px)",
                                     },
                                 }}
@@ -398,7 +400,7 @@ const ReviewsSection = ({ listingId, currentUser, listingHostId }) => {
                                                 <Typography sx={{ fontWeight: 900, fontSize: "1.05rem" }}>
                                                     {guestName}
                                                 </Typography>
-                                                <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700 }}>
+                                                <Typography variant="caption" color="var(--text-secondary)" sx={{ fontWeight: 700 }}>
                                                     {createdAt}
                                                 </Typography>
                                             </Box>
@@ -412,7 +414,7 @@ const ReviewsSection = ({ listingId, currentUser, listingHostId }) => {
                                                         sx={{
                                                             borderRadius: 2,
                                                             fontWeight: 900,
-                                                            bgcolor: "rgba(255,193,7,0.14)",
+                                                            bgcolor: "var(--bg-secondary)",
                                                         }}
                                                     />
                                                 )}
@@ -480,8 +482,8 @@ const ReviewsSection = ({ listingId, currentUser, listingHostId }) => {
                                                     p: 2,
                                                     borderRadius: 2.5,
                                                     border: "1px solid",
-                                                    borderColor: "divider",
-                                                    bgcolor: "rgba(25,118,210,0.05)",
+                                                    bgcolor: "var(--bg-secondary)",
+                                                    borderColor: "var(--border-light)",
                                                 }}
                                             >
                                                 <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 0.8 }}>
@@ -497,7 +499,7 @@ const ReviewsSection = ({ listingId, currentUser, listingHostId }) => {
 
                                                 <Typography
                                                     variant="caption"
-                                                    color="text.secondary"
+                                                    color="var(--text-secondary)"
                                                     sx={{ display: "block", mt: 0.8, fontWeight: 700 }}
                                                 >
                                                     {review.hostResponse.respondedAt
@@ -531,7 +533,7 @@ const ReviewsSection = ({ listingId, currentUser, listingHostId }) => {
                 <DialogTitle sx={{ fontWeight: 900 }}>Reply to Review</DialogTitle>
 
                 <DialogContent>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1.2 }}>
+                    <Typography variant="body2" color="var(--text-secondary)" sx={{ mb: 1.2 }}>
                         Keep it professional. This response will be visible to guests.
                     </Typography>
 

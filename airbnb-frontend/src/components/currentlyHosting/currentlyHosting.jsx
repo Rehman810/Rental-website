@@ -58,7 +58,7 @@ const CurrentlyHosting = () => {
         <Typography sx={{ mt: 2 }} fontWeight={900}>
           Loading currently hosting...
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" color="var(--text-secondary)">
           Pulling live reservations.
         </Typography>
       </Box>
@@ -73,11 +73,11 @@ const CurrentlyHosting = () => {
           textAlign: "center",
         }}
       >
-        <SentimentDissatisfiedIcon sx={{ fontSize: 52, color: "text.secondary" }} />
+        <SentimentDissatisfiedIcon sx={{ fontSize: 52, color: "var(--text-secondary)" }} />
         <Typography variant="h6" fontWeight={900} sx={{ mt: 1 }}>
           No guests currently hosting
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+        <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
           You don’t have any active stays right now.
         </Typography>
 
@@ -162,8 +162,8 @@ const CurrentlyHosting = () => {
                       </Typography>
 
                       <Stack direction="row" spacing={0.8} alignItems="center" sx={{ mt: 0.4 }}>
-                        <LocationOnIcon sx={{ fontSize: 18, color: "text.secondary" }} />
-                        <Typography variant="body2" color="text.secondary">
+                        <LocationOnIcon sx={{ fontSize: 18, color: "var(--text-secondary)" }} />
+                        <Typography variant="body2" color="var(--text-secondary)">
                           {listing?.city || "Unknown city"}
                         </Typography>
                       </Stack>
@@ -209,7 +209,7 @@ const CurrentlyHosting = () => {
                             <Typography fontWeight={900}>
                               {guest?.name || "Guest"}
                             </Typography>
-                            <Typography variant="body2" color="text.secondary">
+                            <Typography variant="body2" color="var(--text-secondary)">
                               Guests: {checkout?.guestCapacity || 0}
                             </Typography>
                           </Box>
@@ -217,15 +217,15 @@ const CurrentlyHosting = () => {
 
                         <Stack spacing={0.6} sx={{ mt: 1.5 }}>
                           <Stack direction="row" spacing={1} alignItems="center">
-                            <PhoneIcon sx={{ fontSize: 16, color: "text.secondary" }} />
-                            <Typography variant="body2" color="text.secondary">
+                            <PhoneIcon sx={{ fontSize: 16, color: "var(--text-secondary)" }} />
+                            <Typography variant="body2" color="var(--text-secondary)">
                               {guest?.phoneNumber || "N/A"}
                             </Typography>
                           </Stack>
 
                           <Stack direction="row" spacing={1} alignItems="center">
-                            <EmailIcon sx={{ fontSize: 16, color: "text.secondary" }} />
-                            <Typography variant="body2" color="text.secondary">
+                            <EmailIcon sx={{ fontSize: 16, color: "var(--text-secondary)" }} />
+                            <Typography variant="body2" color="var(--text-secondary)">
                               {guest?.email || "N/A"}
                             </Typography>
                           </Stack>
@@ -246,12 +246,12 @@ const CurrentlyHosting = () => {
                         }}
                       >
                         <Stack direction="row" spacing={1} alignItems="center">
-                          <CalendarMonthIcon sx={{ color: "text.secondary" }} />
+                          <CalendarMonthIcon sx={{ color: "var(--text-secondary)" }} />
                           <Typography fontWeight={900}>Trip dates</Typography>
                         </Stack>
 
                         <Box sx={{ mt: 1.2 }}>
-                          <Typography variant="body2" color="text.secondary">
+                          <Typography variant="body2" color="var(--text-secondary)">
                             Check-in:{" "}
                             <strong>
                               {checkout?.startDate
@@ -260,7 +260,7 @@ const CurrentlyHosting = () => {
                             </strong>
                           </Typography>
 
-                          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                          <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
                             Check-out:{" "}
                             <strong>
                               {checkout?.endDate

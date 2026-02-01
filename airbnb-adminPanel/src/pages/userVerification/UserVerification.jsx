@@ -122,7 +122,7 @@ const UserVerification = () => {
                                                 />
                                                 <Box>
                                                     <Typography fontWeight={700} variant="body2">{user.userName || "No Name"}</Typography>
-                                                    <Typography variant="caption" color="text.secondary">{user.email}</Typography>
+                                                    <Typography variant="caption" color="var(--text-secondary)">{user.email}</Typography>
                                                 </Box>
                                             </Box>
                                         </TableCell>
@@ -176,7 +176,7 @@ const UserVerification = () => {
                                                     ))}
                                                 </Box>
                                             ) : (
-                                                <Typography variant="caption" color="text.secondary">No Docs</Typography>
+                                                <Typography variant="caption" color="var(--text-secondary)">No Docs</Typography>
                                             )}
                                         </TableCell>
 

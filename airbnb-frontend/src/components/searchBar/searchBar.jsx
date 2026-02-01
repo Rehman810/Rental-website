@@ -224,11 +224,11 @@ const SearchBar = () => {
             maxWidth: 980,
             borderRadius: 999,
             border: "1px solid",
-            borderColor: "divider",
+            borderColor: "var(--border-light)",
             px: 1,
             py: 0.6,
-            backgroundColor: "white",
-            boxShadow: "0 14px 45px rgba(0,0,0,0.08)",
+            backgroundColor: "var(--bg-card)",
+            boxShadow: "var(--shadow-lg)",
           }}
         >
           <Stack direction="row" alignItems="center" sx={{ width: "100%" }}>
@@ -258,7 +258,7 @@ const SearchBar = () => {
                   "& input": {
                     fontWeight: 700,
                     fontSize: 13,
-                    color: selectedDestination ? "text.primary" : "text.secondary",
+                    color: selectedDestination ? "var(--text-primary)" : "var(--text-secondary)",
                     cursor: "pointer",
                   },
                 }}
@@ -331,7 +331,7 @@ const SearchBar = () => {
                       "& input": {
                         fontWeight: 700,
                         fontSize: 13,
-                        color: guestsText ? "text.primary" : "text.secondary",
+                        color: guestsText ? "var(--text-primary)" : "var(--text-secondary)",
                         cursor: "pointer",
                       },
                     }}
@@ -353,7 +353,7 @@ const SearchBar = () => {
                     fontWeight: 900,
                     borderRadius: 999,
                     px: 2,
-                    color: "text.secondary",
+                    color: "var(--text-secondary)",
                     "&:hover": { backgroundColor: "rgba(0,0,0,0.04)" },
                   }}
                 >
@@ -368,11 +368,11 @@ const SearchBar = () => {
                   width: 48,
                   height: 48,
                   borderRadius: 999,
-                  backgroundColor: isSearchDisabled ? "#f3f4f6" : "#FF385C",
-                  color: isSearchDisabled ? "#9ca3af" : "white",
+                  backgroundColor: isSearchDisabled ? "var(--bg-secondary)" : "var(--primary)",
+                  color: isSearchDisabled ? "var(--text-tertiary)" : "white",
                   transition: "all 0.18s ease",
                   "&:hover": {
-                    backgroundColor: isSearchDisabled ? "#f3f4f6" : "#e11d48",
+                    backgroundColor: isSearchDisabled ? "var(--bg-secondary)" : "var(--primary-hover)",
                   },
                 }}
               >
@@ -392,9 +392,11 @@ const SearchBar = () => {
             sx: {
               mt: 1,
               borderRadius: 3,
-              boxShadow: "0 18px 60px rgba(0,0,0,0.18)",
+              boxShadow: "var(--shadow-lg)",
               p: 1,
               minWidth: 360,
+              backgroundColor: "var(--bg-card)",
+              color: "var(--text-primary)",
             },
           }}
         >
@@ -405,7 +407,7 @@ const SearchBar = () => {
               pb: 1,
               fontWeight: 900,
               fontSize: 13,
-              color: "text.secondary",
+              color: "var(--text-secondary)",
             }}
           >
             Popular destinations
@@ -422,7 +424,7 @@ const SearchBar = () => {
                 borderRadius: 2,
                 py: 1.2,
                 px: 1.5,
-                "&:hover": { backgroundColor: "rgba(0,0,0,0.04)" },
+                "&:hover": { backgroundColor: "var(--bg-secondary)" },
               }}
             >
               <Stack direction="row" alignItems="center" spacing={1.5}>
@@ -435,7 +437,7 @@ const SearchBar = () => {
                   <Typography sx={{ fontWeight: 900, fontSize: 14 }}>
                     {city.name}, {t("country")}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                  <Typography variant="body2" sx={{ color: "var(--text-secondary)" }}>
                     {city.text}
                   </Typography>
                 </Box>
@@ -495,7 +497,7 @@ const SearchBar = () => {
                 textTransform: "none",
                 fontWeight: 900,
                 borderRadius: 999,
-                color: "text.secondary",
+                color: "var(--text-secondary)",
                 "&:hover": { backgroundColor: "rgba(0,0,0,0.04)" },
               }}
             >

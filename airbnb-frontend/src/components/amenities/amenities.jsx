@@ -94,7 +94,7 @@ const Amenities = ({ backendAmenities = [] }) => {
 
   if (!finalAmenities.length) {
     return (
-      <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+      <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 2 }}>
         No amenities listed.
       </Typography>
     );

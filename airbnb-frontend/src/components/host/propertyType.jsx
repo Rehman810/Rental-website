@@ -7,12 +7,13 @@ const StyledPaper = styled(Paper)(({ theme, selected }) => ({
   padding: theme.spacing(3),
   textAlign: "center",
   cursor: "pointer",
-  border: selected ? "2px solid black" : "1px solid #ddd",
-  backgroundColor: selected ? "#F7F7F7" : "white",
+  border: selected ? "2px solid var(--text-primary)" : "1px solid var(--border-light)",
+  backgroundColor: selected ? "var(--bg-secondary)" : "var(--bg-card)",
+  color: "var(--text-primary)",
   transition: "0.3s",
   borderRadius: "10px",
   "&:hover": {
-    border: "2px solid black",
+    border: "2px solid var(--text-primary)",
   },
 }));
 
@@ -55,9 +56,9 @@ const PropertyType = ({ type = [], heading, isAmenties }) => {
             {console.log(property.name)}
             <StyledPaper
               selected={
-                
+
                 isAmenties
-                  ? selected.includes(property.name) 
+                  ? selected.includes(property.name)
                   : selected === property.name
               }
               onClick={() => select(property.name)}
@@ -67,8 +68,8 @@ const PropertyType = ({ type = [], heading, isAmenties }) => {
                     ? 6
                     : 2
                   : selected === property.name
-                  ? 6
-                  : 2
+                    ? 6
+                    : 2
               }
             >
               {property.icon}

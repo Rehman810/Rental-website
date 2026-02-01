@@ -193,7 +193,7 @@ const BookingComponent = () => {
           <Typography variant="h5" fontWeight={900}>
             {bookListing?.effectiveBookingMode === 'instant' ? "Confirm and Pay" : "Request to Book"}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="var(--text-secondary)">
             Review your trip details and complete payment securely.
           </Typography>
         </Stack>
@@ -258,7 +258,7 @@ const BookingComponent = () => {
                   />
                 </Box>
 
-                <Typography variant="caption" color="text.secondary">
+                <Typography variant="caption" color="var(--text-secondary)">
                   Your card details are encrypted and processed by Stripe.
                 </Typography>
               </Stack>
@@ -313,7 +313,7 @@ const BookingComponent = () => {
                 Required for your trip
               </Typography>
 
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.6 }}>
+              <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.6 }}>
                 Complete these items before requesting a booking.
               </Typography>
 
@@ -368,7 +368,7 @@ const BookingComponent = () => {
                 backgroundColor: "rgba(0,0,0,0.02)",
               }}
             >
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" color="var(--text-secondary)">
                 <b>Cancellation policy:</b> This reservation is non-refundable.
               </Typography>
             </Paper>
@@ -401,7 +401,7 @@ const BookingComponent = () => {
                 <Typography variant="subtitle1" fontWeight={900}>
                   {bookListing?.title || "Listing"}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" color="var(--text-secondary)">
                   {bookListing?.roomType || ""}
                 </Typography>
 
@@ -432,37 +432,62 @@ const BookingComponent = () => {
                   fullWidth
                   onClick={handleReserve}
                   disabled={isLoading || missingPhone || missingPhoto}
-                  endIcon={
-                    isLoading ? null : <ArrowForwardIcon />
-                  }
+                  endIcon={!isLoading && <ArrowForwardIcon />}
                   sx={{
                     py: 1.35,
                     borderRadius: 2,
                     textTransform: "none",
                     fontWeight: 900,
-                    boxShadow: "0 12px 30px rgba(25,118,210,0.25)",
+
+                    /* ✅ normal state */
+                    boxShadow: "var(--shadow-md)",
+
                     "&:hover": {
-                      transform: isLoading ? "none" : "translateY(-1px)",
-                      boxShadow: isLoading
-                        ? "0 12px 30px rgba(25,118,210,0.25)"
-                        : "0 16px 35px rgba(25,118,210,0.35)",
+                      transform: "translateY(-1px)",
+                      boxShadow: "var(--shadow-lg)",
                     },
+
+                    /* 🔑 DISABLED / LOADING STATE */
+                    "&.Mui-disabled": {
+                      backgroundColor: "var(--bg-tertiary)",
+                      color: "var(--text-tertiary)",
+                      border: "1px solid var(--border-muted)",
+                      boxShadow: "none",
+                      cursor: "not-allowed",
+                    },
+
+                    "&.Mui-disabled:hover": {
+                      transform: "none",
+                      boxShadow: "none",
+                    },
+
+                    /* disabled icon */
+                    "&.Mui-disabled .MuiButton-endIcon": {
+                      color: "var(--text-tertiary)",
+                    },
+
                     transition: "all 0.18s ease",
                   }}
                 >
                   {isLoading ? (
                     <Stack direction="row" spacing={1} alignItems="center">
-                      <CircularProgress size={18} color="inherit" />
+                      <CircularProgress
+                        size={18}
+                        sx={{ color: "var(--text-tertiary)" }}
+                      />
                       <span>Processing...</span>
                     </Stack>
                   ) : (
-                    bookListing?.effectiveBookingMode === 'instant' ? "Confirm and Pay" : "Request to Book"
+                    bookListing?.effectiveBookingMode === "instant"
+                      ? "Confirm and Pay"
+                      : "Request to Book"
                   )}
                 </Button>
 
+
                 <Typography
                   variant="caption"
-                  color="text.secondary"
+                  color="var(--text-secondary)"
                   sx={{ display: "block", mt: 1.3, textAlign: "center", lineHeight: 1.6 }}
                 >
                   {bookListing?.effectiveBookingMode === 'instant'
@@ -489,7 +514,7 @@ const InfoTile = ({ icon, title, value }) => {
         borderRadius: 2.5,
         border: "1px solid",
         borderColor: "divider",
-        backgroundColor: "rgba(255,255,255,0.55)",
+        backgroundColor: "var(--bg-secondary)",
         display: "flex",
         gap: 1.2,
         alignItems: "flex-start",
@@ -511,7 +536,7 @@ const InfoTile = ({ icon, title, value }) => {
       </Box>
 
       <Box>
-        <Typography variant="caption" color="text.secondary" fontWeight={800}>
+        <Typography variant="caption" color="var(--text-secondary)" fontWeight={800}>
           {title}
         </Typography>
         <Typography fontWeight={900} sx={{ mt: 0.2 }}>
@@ -549,7 +574,7 @@ const RequirementRow = ({ title, description, actionLabel, onAction, status }) =
 
         <Box>
           <Typography fontWeight={900}>{title}</Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.2 }}>
+          <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.2 }}>
             {description}
           </Typography>
         </Box>
@@ -575,7 +600,7 @@ const RequirementRow = ({ title, description, actionLabel, onAction, status }) =
 const PriceRow = ({ label, value }) => {
   return (
     <Stack direction="row" justifyContent="space-between" alignItems="center">
-      <Typography variant="body2" color="text.secondary">
+      <Typography variant="body2" color="var(--text-secondary)">
         {label}
       </Typography>
       <Typography variant="body2" fontWeight={900}>

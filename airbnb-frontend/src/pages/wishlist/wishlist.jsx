@@ -45,7 +45,7 @@ const Wishlist = () => {
               <Typography variant="h5" fontWeight={900}>
                 Wishlist
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
                 Your saved stays — ready when you are.
               </Typography>
             </Box>
@@ -54,7 +54,19 @@ const Wishlist = () => {
               icon={<FavoriteIcon />}
               label={`${wishlist?.length || 0} saved`}
               variant="outlined"
-              sx={{ borderRadius: 999, fontWeight: 900 }}
+              sx={{
+                borderRadius: 999,
+                fontWeight: 900,
+
+                /* ✅ dark-mode safe */
+                bgcolor: "transparent",
+                borderColor: "var(--border-light)",
+                color: "var(--text-primary)",
+
+                "& .MuiChip-icon": {
+                  color: "var(--icon-primary)",
+                },
+              }}
             />
           </Stack>
         </Paper>
@@ -102,7 +114,7 @@ const Wishlist = () => {
 
             <Typography
               variant="body2"
-              color="text.secondary"
+              color="var(--text-secondary)"
               sx={{ mt: 0.8, maxWidth: 520, mx: "auto" }}
             >
               Start saving your favorite stays so you can compare and book faster later.

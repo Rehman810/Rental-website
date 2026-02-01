@@ -94,7 +94,7 @@ const NotificationsPage = () => {
                     <Typography variant="h4" fontWeight={700} letterSpacing="-0.5px">
                         Notifications
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" color="var(--text-secondary)">
                         Stay in the loop. Act fast.
                     </Typography>
                 </Box>
@@ -105,10 +105,26 @@ const NotificationsPage = () => {
                     onClick={markAllRead}
                     disabled={loading || unreadCount === 0}
                     sx={{
-                        textTransform: 'none',
+                        textTransform: "none",
                         borderRadius: 2,
                         px: 2.5,
-                        boxShadow: 'none',
+
+                        /* normal state */
+                        boxShadow: "var(--shadow-sm)",
+
+                        /* 🌙 disabled state – THIS IS THE KEY */
+                        "&.Mui-disabled": {
+                            backgroundColor: "var(--bg-tertiary)",
+                            color: "var(--text-tertiary)",
+                            border: "1px solid var(--border-muted)",
+                            boxShadow: "none",
+                            cursor: "not-allowed",
+                        },
+
+                        /* disabled icon */
+                        "&.Mui-disabled .MuiButton-startIcon": {
+                            color: "var(--text-tertiary)",
+                        },
                     }}
                 >
                     Mark all as read
@@ -139,11 +155,11 @@ const NotificationsPage = () => {
                         },
                     }}
                 >
-                    <Tab label="All notifications" value="all" />
+                    <Tab label="All notifications" value="all" sx={{ color: "var(--text-primary)" }} />
                     <Tab
                         value="unread"
                         label={
-                            <Badge badgeContent={unreadCount} color="error">
+                            <Badge badgeContent={unreadCount} color="error" sx={{ color: "var(--text-primary)" }}>
                                 Unread
                             </Badge>
                         }
@@ -170,11 +186,11 @@ const NotificationsPage = () => {
                         sx={{
                             py: 8,
                             textAlign: 'center',
-                            color: 'text.secondary',
+                            color: 'var(--text-secondary)',
                         }}
                     >
-                        <NotificationsIcon sx={{ fontSize: 56, mb: 2, opacity: 0.4 }} />
-                        <Typography>No notifications yet</Typography>
+                        <NotificationsIcon sx={{ fontSize: 56, mb: 2, opacity: 0.4, color: "var(--text-primary)" }} />
+                        <Typography sx={{ color: "var(--text-primary)" }}>No notifications yet</Typography>
                     </Box>
                 ) : (
                     <List disablePadding>
@@ -214,7 +230,7 @@ const NotificationsPage = () => {
                                                 bgcolor: notification.isRead
                                                     ? 'grey.200'
                                                     : 'primary.main',
-                                                color: notification.isRead ? 'text.secondary' : '#fff',
+                                                color: notification.isRead ? 'var(--text-secondary)' : '#fff',
                                             }}
                                         >
                                             {notification.isRead ? (
@@ -243,7 +259,7 @@ const NotificationsPage = () => {
                                                 </Typography>
                                                 <Typography
                                                     variant="caption"
-                                                    color="text.secondary"
+                                                    color="var(--text-secondary)"
                                                     sx={{ whiteSpace: 'nowrap' }}
                                                 >
                                                     {dayjs(notification.createdAt).fromNow()}
@@ -252,7 +268,7 @@ const NotificationsPage = () => {
                                         }
                                         secondary={
                                             <Box sx={{ mt: 0.5 }}>
-                                                <Typography variant="body2" color="text.secondary">
+                                                <Typography variant="body2" color="var(--text-secondary)">
                                                     {notification.message}
                                                 </Typography>
 

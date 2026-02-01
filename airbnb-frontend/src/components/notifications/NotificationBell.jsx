@@ -86,7 +86,7 @@ const NotificationBell = () => {
                 <Box sx={{ px: 2, py: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Box>
                         <Typography fontWeight={900}>Notifications</Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" color="var(--text-secondary)">
                             {unreadCount ? `${unreadCount} unread` : "All caught up 🎉"}
                         </Typography>
                     </Box>
@@ -121,7 +121,7 @@ const NotificationBell = () => {
                                 <Typography fontWeight={900} sx={{ fontSize: 13 }}>
                                     {notification.title || "Update"}
                                 </Typography>
-                                <Typography variant="body2" color="text.secondary">
+                                <Typography variant="body2" color="var(--text-secondary)">
                                     {notification.message || "You have a new notification."}
                                 </Typography>
                                 <Typography variant="caption" color="text.disabled">
@@ -132,7 +132,7 @@ const NotificationBell = () => {
                     ))
                 ) : (
                     <MenuItem sx={{ py: 2, px: 2 }}>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="body2" color="var(--text-secondary)">
                             No new notifications
                         </Typography>
                     </MenuItem>

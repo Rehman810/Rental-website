@@ -125,7 +125,7 @@ const HostBookings = () => {
 
             <TabPanel value={value} index={0}>
                 {bookings.length === 0 ? (
-                    <Typography color="text.secondary">No pending requests.</Typography>
+                    <Typography color="var(--text-secondary)">No pending requests.</Typography>
                 ) : (
                     <Stack spacing={3}>
                         {bookings.map((booking) => (
@@ -142,7 +142,7 @@ const HostBookings = () => {
                                                     <Typography variant="h6" fontWeight={800}>
                                                         {booking.userSpecificData?.name || "Guest"}
                                                     </Typography>
-                                                    <Typography variant="body2" color="text.secondary">
+                                                    <Typography variant="body2" color="var(--text-secondary)">
                                                         wants to book <b>{booking.listingId?.title}</b>
                                                     </Typography>
                                                 </Box>
@@ -150,17 +150,17 @@ const HostBookings = () => {
 
                                             <Grid container spacing={2}>
                                                 <Grid item xs={6} sm={4}>
-                                                    <Typography variant="caption" color="text.secondary">Dates</Typography>
+                                                    <Typography variant="caption" color="var(--text-secondary)">Dates</Typography>
                                                     <Typography fontWeight={600}>
                                                         {new Date(booking.startDate).toLocaleDateString()} - {new Date(booking.endDate).toLocaleDateString()}
                                                     </Typography>
                                                 </Grid>
                                                 <Grid item xs={6} sm={4}>
-                                                    <Typography variant="caption" color="text.secondary">Guests</Typography>
+                                                    <Typography variant="caption" color="var(--text-secondary)">Guests</Typography>
                                                     <Typography fontWeight={600}>{booking.guestCapacity}</Typography>
                                                 </Grid>
                                                 <Grid item xs={6} sm={4}>
-                                                    <Typography variant="caption" color="text.secondary">Total Payout</Typography>
+                                                    <Typography variant="caption" color="var(--text-secondary)">Total Payout</Typography>
                                                     <Typography fontWeight={600} color="success.main">{CURRENCY} {booking.totalPrice}</Typography>
                                                 </Grid>
                                             </Grid>
@@ -194,7 +194,7 @@ const HostBookings = () => {
 
             <TabPanel value={value} index={1}>
                 {confirmedBookings.length === 0 ? (
-                    <Typography color="text.secondary">No confirmed bookings yet.</Typography>
+                    <Typography color="var(--text-secondary)">No confirmed bookings yet.</Typography>
                 ) : (
                     <Stack spacing={2}>
                         {confirmedBookings.map((booking) => (
@@ -205,7 +205,7 @@ const HostBookings = () => {
                                             <Typography fontWeight={700}>
                                                 {booking.listingId?.title}
                                             </Typography>
-                                            <Typography variant="body2" color="text.secondary">
+                                            <Typography variant="body2" color="var(--text-secondary)">
                                                 {new Date(booking.startDate).toLocaleDateString()} - {new Date(booking.endDate).toLocaleDateString()}
                                             </Typography>
                                         </Box>

@@ -108,7 +108,7 @@ const PriceSection = ({ pricing, heading, para, isWeekDay }) => {
         Guest price before taxes Rs{(price * 1.11).toFixed(2)}
       </Typography>
 
-      <Typography variant="body2" sx={{ color: "text.secondary", mt: 1 }}>
+      <Typography variant="body2" sx={{ color: "var(--text-secondary)", mt: 1 }}>
         Weekdays are from Monday to Thursday, while the weekend includes Friday
         through Sunday.
       </Typography>

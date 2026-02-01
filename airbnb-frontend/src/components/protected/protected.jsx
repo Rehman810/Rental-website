@@ -47,7 +47,7 @@ const Protected = ({ Component, allowedRoles }) => {
 
   const handleLoginModalClose = () => {
     setIsLoginModalOpen(false);
-    navigate(-1);
+    navigate("/");
   };
 
   return (

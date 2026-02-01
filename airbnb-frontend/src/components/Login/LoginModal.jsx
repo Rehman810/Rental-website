@@ -20,6 +20,7 @@ import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
 import { loginUser } from "../../config/ServiceApi/serviceApi";
 import toast from "react-hot-toast";
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 import { GoogleLogin } from '@react-oauth/google';
 import { googleLogin } from '../../config/ServiceApi/serviceApi';
@@ -242,21 +243,25 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
 
             <Grid container spacing={1.5}>
               <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center' }}>
-                <GoogleLogin
-                  onSuccess={handleGoogleSuccess}
-                  onError={() => {
-                    console.log('Login Failed');
-                    toast.error("Google Login was unsuccessful", {
-                      duration: 2000,
-                    });
-                  }}
-                  shape="pill"
-                  width="350px"
-                  text="continue_with"
-                  theme="filled_blue"
-                  useOneTap={false}
-                  auto_select={false}
-                />
+                <GoogleOAuthProvider
+                  clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
+                  useFedCM={true}
+                >
+                  <GoogleLogin
+                    onSuccess={handleGoogleSuccess}
+                    onError={() => {
+                      console.log('Login Failed');
+                      toast.error("Google Login was unsuccessful", {
+                        duration: 2000,
+                      });
+                    }}
+                    shape="pill"
+                    width="350px"
+                    text="continue_with"
+                    theme="filled_blue"
+                    useOneTap={false}
+                    auto_select={false}
+                  /></GoogleOAuthProvider>
               </Grid>
             </Grid>
 

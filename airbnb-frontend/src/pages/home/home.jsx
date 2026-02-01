@@ -206,7 +206,7 @@ const Home = () => {
   };
 
   return (
-    <Box sx={{ minHeight: "100vh", pb: 6, bgcolor: "#fff" }}>
+    <Box sx={{ minHeight: "100vh", pb: 6, bgcolor: "var(--bg-primary)" }}>
       {/* ===================== MAP OVERLAY VIEW ===================== */}
       {mapVisible ? (
         <Box

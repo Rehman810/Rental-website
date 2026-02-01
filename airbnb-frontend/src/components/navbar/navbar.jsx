@@ -257,6 +257,8 @@ const Navbar = () => {
         zIndex: 10,
         borderBottom: "1px solid var(--border-light)",
         transition: "background-color 0.2s ease, color 0.2s ease",
+
+        backdropFilter: "none",
       }}
     >
       <Toolbar

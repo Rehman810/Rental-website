@@ -408,13 +408,14 @@ const ReviewsSection = ({ listingId, currentUser, listingHostId }) => {
                                             <Stack direction="row" spacing={1} alignItems="center">
                                                 {perReviewOverall && (
                                                     <Chip
-                                                        icon={<StarIcon sx={{ fontSize: 18 }} />}
+                                                        icon={<StarIcon sx={{ fontSize: 18 }} color="var(--text-primary)" />}
                                                         label={`${formatNumber(perReviewOverall, 1)} / 5`}
                                                         size="small"
                                                         sx={{
                                                             borderRadius: 2,
                                                             fontWeight: 900,
                                                             bgcolor: "var(--bg-secondary)",
+                                                            color: "var(--text-primary)",
                                                         }}
                                                     />
                                                 )}

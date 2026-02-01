@@ -22,8 +22,8 @@ const Footer = () => {
       component="footer"
       sx={{
         mt: 6,
-        // background:
-        //   "linear-gradient(180deg, rgba(25,118,210,0.03), rgba(0,0,0,0.02))",
+        background:
+          "linear-gradient(180deg, rgba(25,118,210,0.03), rgba(0,0,0,0.02))",
         borderTop: "1px solid",
         borderColor: "divider",
       }}

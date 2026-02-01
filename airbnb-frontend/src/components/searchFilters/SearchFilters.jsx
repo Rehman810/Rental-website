@@ -164,10 +164,10 @@ const SearchFilters = ({
                     <Box sx={{ py: 2 }}>
 
                         {/* Search as Move */}
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, p: 2, bgcolor: 'grey.50', borderRadius: 2, backgroundColor: "var(--bg-secondary)" }}>
                             <Box>
                                 <Typography fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                    <MyLocationIcon fontSize="small" color="action" /> Search as I move map
+                                    <MyLocationIcon fontSize="small" color="action" sx={{ color: "var(--text-primary)" }} /> Search as I move map
                                 </Typography>
                                 <Typography variant="caption" color="var(--text-secondary)">Automatically update results when dragging the map</Typography>
                             </Box>
@@ -193,15 +193,15 @@ const SearchFilters = ({
                                 <TextField
                                     size="small"
                                     value={filters.priceRange?.[0] || 0}
-                                    InputProps={{ readOnly: true, startAdornment: <InputAdornment position="start">{CURRENCY}</InputAdornment> }}
-                                    sx={{ width: 120 }}
+                                    InputProps={{ readOnly: true, startAdornment: <InputAdornment sx={{ color: "var(--text-primary)" }} position="start">{CURRENCY}</InputAdornment> }}
+                                    sx={{ width: 120, color: "var(--text-primary)" }}
                                 />
                                 <Typography color="var(--text-secondary)">-</Typography>
                                 <TextField
                                     size="small"
                                     value={filters.priceRange?.[1] || 100000}
-                                    InputProps={{ readOnly: true, startAdornment: <InputAdornment position="start">{CURRENCY}</InputAdornment> }}
-                                    sx={{ width: 120 }}
+                                    InputProps={{ readOnly: true, startAdornment: <InputAdornment sx={{ color: "var(--text-primary)" }} position="start">{CURRENCY}</InputAdornment> }}
+                                    sx={{ width: 120, color: "var(--text-primary)" }}
                                 />
                             </Box>
                         </Box>
@@ -215,11 +215,32 @@ const SearchFilters = ({
                                         key={amenity}
                                         label={amenity}
                                         onClick={() => handleAmenityToggle(amenity)}
-                                        color={(filters.amenities || []).includes(amenity) ? "primary" : "default"}
-                                        variant={(filters.amenities || []).includes(amenity) ? "filled" : "outlined"}
                                         clickable
-                                        sx={{ borderRadius: 2, fontWeight: 500 }}
+                                        variant={(filters.amenities || []).includes(amenity) ? "filled" : "outlined"}
+                                        sx={{
+                                            borderRadius: 2,
+                                            fontWeight: 700,
+
+                                            backgroundColor: (filters.amenities || []).includes(amenity)
+                                                ? "var(--bg-tertiary)"
+                                                : "transparent",
+
+                                            color: "var(--text-primary)",
+
+                                            borderColor: (filters.amenities || []).includes(amenity)
+                                                ? "var(--border-focus)"
+                                                : "var(--border-light)",
+
+                                            "&:hover": {
+                                                backgroundColor: "var(--bg-secondary)",
+                                            },
+
+                                            "&.MuiChip-filled": {
+                                                backgroundColor: "var(--bg-tertiary)",
+                                            },
+                                        }}
                                     />
+
                                 ))}
                             </Box>
                         </Box>

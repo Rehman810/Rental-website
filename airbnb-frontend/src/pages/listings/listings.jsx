@@ -423,7 +423,7 @@ const ListingPage = () => {
   };
 
   return (
-    <Box sx={{ bgcolor: "#fff", minHeight: "100vh" }}>
+    <Box sx={{ bgcolor: "var(--bg-primary)", minHeight: "100vh" }}>
       {/* Header */}
       <AppBar
         position="sticky"

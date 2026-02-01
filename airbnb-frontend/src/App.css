@@ -10,14 +10,6 @@
   src: url("./assets/fonts/Airbnb/AirbnbCereal_W_Bd.otf") format("woff2");
 }
 
-.css-zc3542 {
-  background-color: var(--bg-secondary) !important;
-}
-
-.css-19i7e4c {
-  background-color: var(--bg-secondary) !important;
-}
-
 * {
   margin: 0;
   padding: 0;

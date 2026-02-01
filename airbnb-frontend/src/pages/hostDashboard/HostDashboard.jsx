@@ -43,15 +43,14 @@ const money = (val) => `${CURRENCY} ${Number(val || 0).toLocaleString()}`;
 const pageShell = {
     minHeight: "100vh",
     padding: "24px",
-    background:
-        "radial-gradient(1200px 600px at 10% 0%, rgba(59, 59, 59, 0.12), transparent 55%), radial-gradient(900px 500px at 90% 10%, rgba(82, 196, 26, 0.10), transparent 60%), linear-gradient(180deg, #F7F9FC, #F7F9FC)",
+    background: "var(--bg-primary)",
 };
 
 const glassCard = {
     borderRadius: 16,
-    border: "1px solid rgba(15, 23, 42, 0.08)",
-    boxShadow: "0 14px 40px rgba(15, 23, 42, 0.08)",
-    background: "rgba(255,255,255,0.85)",
+    border: "1px solid var(--border-light)",
+    boxShadow: "var(--shadow-md)",
+    background: "var(--bg-card)",
     backdropFilter: "blur(10px)",
 };
 
@@ -234,7 +233,7 @@ const HostDashboardAntd = () => {
             <div style={{ ...pageShell, display: "grid", placeItems: "center" }}>
                 <Space direction="vertical" align="center" size={12}>
                     <Spin size="large" />
-                    <Text type="secondary" style={{ fontWeight: 700 }}>
+                    <Text type="secondary" style={{ fontWeight: 700, color: "var(--text-secondary)" }}>
                         Loading dashboard insights...
                     </Text>
                 </Space>
@@ -257,18 +256,18 @@ const HostDashboardAntd = () => {
                                         borderRadius: 14,
                                         display: "grid",
                                         placeItems: "center",
-                                        background: "rgba(22, 119, 255, 0.10)",
+                                        background: "var(--color-blue)",
                                         border: "1px solid rgba(22, 119, 255, 0.20)",
                                     }}
                                 >
-                                    <HomeOutlined style={{ fontSize: 18, color: "#1677ff" }} />
+                                    <HomeOutlined style={{ fontSize: 18, color: "var(--text-primary)" }} />
                                 </div>
 
                                 <div>
-                                    <Title level={3} style={{ margin: 0, fontWeight: 900, letterSpacing: "-0.02em" }}>
+                                    <Title level={3} style={{ margin: 0, fontWeight: 900, letterSpacing: "-0.02em", color: "var(--color-blue)" }}>
                                         Host Dashboard
                                     </Title>
-                                    <Text type="secondary" style={{ fontWeight: 650 }}>
+                                    <Text type="secondary" style={{ fontWeight: 650, color: "var(--text-primary)" }}>
                                         Bookings, revenue, approvals — everything in one clean control room.
                                     </Text>
                                 </div>
@@ -279,7 +278,7 @@ const HostDashboardAntd = () => {
                             <Space>
                                 <Tooltip title="Refresh">
                                     <Button
-                                        icon={<ReloadOutlined />}
+                                        icon={<ReloadOutlined style={{ color: "var(--text-secondary)" }} />}
                                         onClick={fetchDashboardData}
                                         style={{ borderRadius: 12, fontWeight: 800 }}
                                     >
@@ -324,12 +323,12 @@ const HostDashboardAntd = () => {
                                         border: "1px solid rgba(22, 119, 255, 0.20)",
                                     }}
                                 >
-                                    <FilterOutlined style={{ color: "#1677ff" }} />
+                                    <FilterOutlined style={{ color: "var(--color-blue)" }} />
                                 </div>
 
                                 <Space direction="vertical" size={0}>
-                                    <Text style={{ fontWeight: 950, fontSize: 14 }}>Filters</Text>
-                                    <Text type="secondary" style={{ fontSize: 12, fontWeight: 650 }}>
+                                    <Text style={{ fontWeight: 950, fontSize: 16, color: "var(--text-primary)" }}>Filters</Text>
+                                    <Text type="secondary" style={{ fontSize: 12, fontWeight: 650, color: "var(--text-secondary)" }}>
                                         Narrow down bookings & revenue
                                     </Text>
                                 </Space>
@@ -403,6 +402,8 @@ const HostDashboardAntd = () => {
                                                     borderRadius: 999,
                                                     padding: "4px 10px",
                                                     fontWeight: 800,
+                                                    color: "var(--text-primary)",
+                                                    backgroundColor: "var(--bg-secondary)",
                                                 }}
                                             >
                                                 No filters applied
@@ -434,6 +435,8 @@ const HostDashboardAntd = () => {
                                         borderRadius: 12,
                                         fontWeight: 900,
                                         height: 40,
+                                        color: "var(--text-primary)",
+                                        backgroundColor: "var(--bg-secondary)",
                                     }}
                                 >
                                     Reset
@@ -498,15 +501,15 @@ const HostDashboardAntd = () => {
                                 <Row align="middle" justify="space-between">
                                     <Col>
                                         <Space direction="vertical" size={2}>
-                                            <Text type="secondary" style={{ fontWeight: 800, fontSize: 12 }}>
+                                            <Text type="secondary" style={{ fontWeight: 800, fontSize: 12, color: "var(--text-secondary)" }}>
                                                 {kpi.title}
                                             </Text>
 
-                                            <Text style={{ fontWeight: 950, fontSize: 26, letterSpacing: "-0.02em" }}>
+                                            <Text style={{ fontWeight: 950, fontSize: 26, letterSpacing: "-0.02em", color: "var(--text-primary)" }}>
                                                 {kpi.value}
                                             </Text>
 
-                                            <Text type="secondary" style={{ fontWeight: 650, fontSize: 12 }}>
+                                            <Text type="secondary" style={{ fontWeight: 650, fontSize: 12, color: "var(--text-secondary)" }}>
                                                 {kpi.meta}
                                             </Text>
                                         </Space>
@@ -537,7 +540,7 @@ const HostDashboardAntd = () => {
                 {/* Revenue + Top Listings */}
                 <Row gutter={[16, 16]} style={{ marginBottom: 18 }}>
                     <Col xs={24} lg={16}>
-                        <Card style={glassCard} title={<Text style={{ fontWeight: 950 }}>Revenue Breakdown</Text>}>
+                        <Card style={glassCard} title={<Text style={{ fontWeight: 950, color: "var(--text-primary)" }}>Revenue Breakdown</Text>}>
                             <Space style={{ marginBottom: 12 }}>
                                 <Tag
                                     color="blue"
@@ -551,6 +554,7 @@ const HostDashboardAntd = () => {
                                 size="middle"
                                 bordered={false}
                                 columns={revenueColumns}
+
                                 dataSource={revenueRows.map((r, i) => ({ ...r, key: r.date || i }))}
                                 pagination={{ pageSize: 6 }}
                                 style={{ borderRadius: 14, overflow: "hidden" }}
@@ -565,8 +569,8 @@ const HostDashboardAntd = () => {
                             <Row gutter={[16, 12]} justify="end">
                                 <Col>
                                     <Space direction="vertical" size={0}>
-                                        <Text type="secondary" style={{ fontWeight: 700 }}>Total Gross</Text>
-                                        <Text style={{ fontWeight: 950, fontSize: 16 }}>
+                                        <Text type="secondary" style={{ fontWeight: 700, color: "var(--text-secondary)" }}>Total Gross</Text>
+                                        <Text style={{ fontWeight: 950, fontSize: 16, color: "var(--text-primary)" }}>
                                             {money(data?.kpis?.totalGross)}
                                         </Text>
                                     </Space>
@@ -574,7 +578,7 @@ const HostDashboardAntd = () => {
 
                                 <Col>
                                     <Space direction="vertical" size={0}>
-                                        <Text type="secondary" style={{ fontWeight: 700 }}>Total Fees</Text>
+                                        <Text type="secondary" style={{ fontWeight: 700, color: "var(--text-secondary)" }}>Total Fees</Text>
                                         <Text style={{ fontWeight: 950, fontSize: 16, color: "#cf1322" }}>
                                             {money(data?.kpis?.platformFeeTotal)}
                                         </Text>
@@ -583,7 +587,7 @@ const HostDashboardAntd = () => {
 
                                 <Col>
                                     <Space direction="vertical" size={0}>
-                                        <Text type="secondary" style={{ fontWeight: 700 }}>Net Income</Text>
+                                        <Text type="secondary" style={{ fontWeight: 700, color: "var(--text-secondary)" }}>Net Income</Text>
                                         <Text style={{ fontWeight: 950, fontSize: 16, color: "#237804" }}>
                                             {money(data?.kpis?.hostNetEarnings)}
                                         </Text>

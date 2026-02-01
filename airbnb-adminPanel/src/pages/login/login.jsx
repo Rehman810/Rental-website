@@ -8,6 +8,7 @@ import Swal from "sweetalert2";
 import "../../assets/styles/mainScreen.css";
 import { postData } from "../../config/apiServices/apiServices";
 import LoadingBar from "react-top-loading-bar";
+import toast from "react-hot-toast";
 
 const Login = () => {
   const {
@@ -35,16 +36,14 @@ const Login = () => {
       );
       setProgress(100);
       console.log(response);
-      
+
       setTimeout(() => {
         navigate("/");
       }, 100);
     } catch (error) {
       setError(error.message);
-      Swal.fire({
-        icon: "error",
-        title: "Login Failed",
-        text: error.message,
+      toast.error("Login Failed", {
+        duration: 2000,
       });
     } finally {
       setLoading(false);
@@ -60,7 +59,7 @@ const Login = () => {
         onLoaderFinished={() => setProgress(0)}
       />
       <div className="form-container">
-        <div className="logo-container inputColor" style={{fontSize: "20px"}}>
+        <div className="logo-container inputColor" style={{ fontSize: "20px" }}>
           Admin Login
         </div>
 

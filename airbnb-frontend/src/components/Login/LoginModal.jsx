@@ -19,6 +19,7 @@ import { FaGoogle, FaFacebookF } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
 import { loginUser } from "../../config/ServiceApi/serviceApi";
+import toast from "react-hot-toast";
 
 import { GoogleLogin } from '@react-oauth/google';
 import { googleLogin } from '../../config/ServiceApi/serviceApi';
@@ -45,20 +46,16 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
 
         await mergeLocalToBackend();
 
-        Swal.fire({
-          icon: "success",
-          title: "Login Successful",
-          text: `Welcome ${res.user.userName}!`,
+        toast.success("Welcome back 👋", {
+          duration: 2000,
         });
 
         onClose();
       }
     } catch (error) {
       onClose();
-      Swal.fire({
-        icon: "error",
-        title: "Google Login Failed",
-        text: error.message || "Something went wrong.",
+      toast.error("Google Login Failed", {
+        duration: 2000,
       });
       console.error("Google Login Error:", error);
     }
@@ -80,20 +77,16 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
 
         await mergeLocalToBackend();
 
-        Swal.fire({
-          icon: "success",
-          title: signUp ? "Account Created" : "Login Successful",
-          text: `Welcome ${res.user.userName}!`,
+        toast.success("Welcome back 👋", {
+          duration: 2000,
         });
 
         onClose();
       }
     } catch (error) {
       // onClose(); // Don't close on error so they can retry
-      Swal.fire({
-        icon: "error",
-        title: signUp ? "Signup Failed" : "Login Failed",
-        text: "Invalid credentials. Please try again.",
+      toast.error("Login Failed", {
+        duration: 2000,
       });
       console.error("Login Error:", error);
     }
@@ -253,7 +246,9 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
                   onSuccess={handleGoogleSuccess}
                   onError={() => {
                     console.log('Login Failed');
-                    Swal.fire({ icon: 'error', title: 'Login Failed', text: 'Google Login was unsuccessful' });
+                    toast.error("Google Login was unsuccessful", {
+                      duration: 2000,
+                    });
                   }}
                   shape="pill"
                   width="350px"

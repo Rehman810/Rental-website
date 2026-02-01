@@ -4,6 +4,7 @@ import temporaryListingSchema from '../../model/temporaryLIsting/index.js';
 import Host from '../../model/hostModel/index.js'
 import Review from '../../model/reviewListings/index.js';
 import Notification from '../../model/notification/index.js';
+import CancellationPolicy from '../../model/cancellationPolicy/index.js';
 
 export const listingController = {
 
@@ -98,7 +99,8 @@ export const listingController = {
   getListingById: async (req, res) => {
     try {
       const id = req.params.id;
-      const listing = await Listing.findById(id).populate('confirmedBookings');
+      const listing = await Listing.findById(id).populate('confirmedBookings').populate('cancellationPolicy');
+
       if (!listing) {
         return res.status(404).json({ message: 'Listing not found' });
       }
@@ -163,17 +165,22 @@ export const listingController = {
         message: 'Listing fetched successfully',
         hostData: hostSelectedData,
         effectiveBookingMode, // Return this!
+        cancellationPolicy: listing.cancellationPolicy, // Explicit return for debugging
         listing: {
           ...listing.toObject(),
           effectiveBookingMode, // Also inside listing object for convenience
           effectiveAvailability, // Return effective rules
           effectiveGuestRequirements, // Return effective requirements
+          cancellationPolicy: listing.cancellationPolicy, // Force include
           bookings: listing.confirmedBookings.map(booking => ({
             userId: booking.userId,
             startDate: booking.startDate,
             endDate: booking.endDate,
             totalPrice: booking.totalPrice,
-            bookingDate: booking.createdAt
+            totalPrice: booking.totalPrice,
+            bookingDate: booking.createdAt,
+            status: booking.status,
+            cancelledBy: booking.cancelledBy
           })),
           reviews: reviewData,
           averageRating: averageRating
@@ -477,6 +484,48 @@ export const listingController = {
 
     } catch (error) {
       console.error('Error updating guest requirements:', error);
+      return res.status(500).json({ message: "Internal Server Error", error: error.message });
+    }
+  },
+
+  updateCancellationPolicy: async (req, res) => {
+    try {
+      const { listingId } = req.params;
+      const { policyId } = req.body;
+
+      const hostId = req.user._id;
+      const listing = await Listing.findOne({ _id: listingId, hostId });
+
+      if (!listing) {
+        return res.status(404).json({ message: "Listing not found or unauthorized." });
+      }
+
+      if (policyId) {
+        const policy = await CancellationPolicy.findById(policyId);
+        if (!policy) return res.status(404).json({ message: "Policy not found." });
+
+        if (policy.type === 'CUSTOM' && policy.createdBy.toString() !== hostId.toString()) {
+          return res.status(403).json({ message: "Unauthorized to use this policy." });
+        }
+
+        listing.cancellationPolicy = policyId;
+      } else {
+        // Fallback to Flexible if nothing provided?
+        // Or specific logic. For now, unset it (will likely fallback to default in logic)
+        // But better to enforce finding 'Flexible' and setting it if user wants to "remove" custom.
+        // Actually, let's just allow setting.
+        listing.cancellationPolicy = undefined;
+      }
+
+      await listing.save();
+      await listing.populate('cancellationPolicy');
+
+      return res.status(200).json({
+        message: "Cancellation policy updated.",
+        cancellationPolicy: listing.cancellationPolicy
+      });
+
+    } catch (error) {
       return res.status(500).json({ message: "Internal Server Error", error: error.message });
     }
   }

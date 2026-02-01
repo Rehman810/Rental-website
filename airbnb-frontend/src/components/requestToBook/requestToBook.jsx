@@ -369,7 +369,9 @@ const BookingComponent = () => {
               }}
             >
               <Typography variant="body2" color="var(--text-secondary)">
-                <b>Cancellation policy:</b> This reservation is non-refundable.
+                <b>Cancellation policy:</b> {bookListing?.cancellationPolicy?.name || "Flexible"}.
+                <br />
+                {bookListing?.cancellationPolicy?.description || "Free cancellation until 24 hours before check-in."}
               </Typography>
             </Paper>
           </Stack>

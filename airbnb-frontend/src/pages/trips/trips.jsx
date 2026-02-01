@@ -27,6 +27,8 @@ import StarIcon from "@mui/icons-material/Star";
 import { fetchData } from "../../config/ServiceApi/serviceApi";
 import toast from "react-hot-toast";
 import LeaveReviewModal from "../../components/reviews/LeaveReviewModal";
+import axios from 'axios';
+import { API_BASE_URL } from "../../config/env";
 
 const Trips = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -99,6 +101,62 @@ const Trips = () => {
   const handleOpenReviewModal = (trip) => {
     setSelectedBooking(trip);
     setLeaveReviewOpen(true);
+  };
+
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [tripToCancel, setTripToCancel] = useState(null);
+  const [refundQuote, setRefundQuote] = useState({ amount: 0, reason: '' });
+
+  const calculateRefund = (trip) => {
+    if (!trip.cancellationPolicy) return { amount: 0, reason: "Standard Policy" }; // Fallback
+    const now = new Date();
+    const bookingDate = new Date(trip.createdAt); // Ensure this is available
+    const checkIn = new Date(trip.startDate);
+    const amountPaid = trip.totalPrice;
+    const rules = trip.cancellationPolicy.rules;
+
+    if (!rules) return { amount: 0, reason: "Policy details unavailable" };
+
+    const hoursSinceBooking = (now - bookingDate) / (1000 * 60 * 60);
+
+    if (rules.fullRefundHours && hoursSinceBooking <= rules.fullRefundHours) {
+      return { amount: amountPaid, reason: "Full refund (within grace period)" };
+    }
+
+    if (rules.noRefundAfterCheckIn && now >= checkIn) {
+      return { amount: 0, reason: "No refund after check-in" };
+    }
+
+    const hoursBeforeCheckIn = (checkIn - now) / (1000 * 60 * 60);
+    if (rules.partialRefundBeforeCheckIn && rules.partialRefundBeforeCheckIn.enabled) {
+      if (hoursBeforeCheckIn >= rules.partialRefundBeforeCheckIn.hoursBeforeCheckIn) {
+        const amt = Math.round((amountPaid * rules.partialRefundBeforeCheckIn.percentage) / 100);
+        return { amount: amt, reason: `Partial refund (${rules.partialRefundBeforeCheckIn.percentage}%)` };
+      }
+    }
+
+    // Default logic if not covered above (e.g. strict policy outside grace period)
+    return { amount: 0, reason: "Cancellation period expired" };
+  };
+
+
+  const handleOpenCancel = (trip) => {
+    setTripToCancel(trip);
+    setRefundQuote(calculateRefund(trip));
+    setCancelDialogOpen(true);
+  };
+
+  const handleConfirmCancel = async () => {
+    try {
+      await axios.post(`${API_BASE_URL}/bookings/${tripToCancel._id}/cancel`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success("Booking cancelled");
+      setCancelDialogOpen(false);
+      fetchTrips();
+    } catch (e) {
+      toast.error(e.response?.data?.message || "Failed to cancel");
+    }
   };
 
   return (
@@ -335,6 +393,21 @@ const Trips = () => {
                             Give review
                           </Button>
                         )}
+
+                        {trip.status !== 'Cancelled' && trip.status !== 'CANCELLED' && new Date(trip.startDate) > new Date() && (
+                          <Button
+                            variant="text"
+                            size="small"
+                            color="error"
+                            onClick={() => handleOpenCancel(trip)}
+                            sx={{
+                              textTransform: "none",
+                              fontWeight: 900
+                            }}
+                          >
+                            Cancel
+                          </Button>
+                        )}
                       </Stack>
                     </CardContent>
                   </Card>
@@ -447,7 +520,32 @@ const Trips = () => {
           </Box>
         </DialogContent>
       </Dialog>
-    </Box>
+
+      {/* Cancel Dialog */}
+      < Dialog open={cancelDialogOpen} onClose={() => setCancelDialogOpen(false)} maxWidth="xs" fullWidth >
+        <DialogContent sx={{ p: 3, textAlign: 'center' }}>
+          <Typography variant="h6" fontWeight={800} gutterBottom>Cancel Booking?</Typography>
+          <Typography color="text.secondary" paragraph variant="body2">
+            Are you sure you want to cancel your stay at <b>{tripToCancel?.listingId?.title}</b>?
+          </Typography>
+
+          <Paper variant="outlined" sx={{ p: 2, mb: 3, bgcolor: 'rgba(0,0,0,0.02)', borderRadius: 3, borderStyle: 'dashed' }}>
+            <Typography variant="caption" display="block" color="text.secondary" fontWeight={700} gutterBottom>ESTIMATED REFUND</Typography>
+            <Typography variant="h4" fontWeight={900} color={refundQuote && refundQuote.amount > 0 ? "success.main" : "text.secondary"}>
+              Rs {refundQuote?.amount || 0}
+            </Typography>
+            <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>{refundQuote?.reason}</Typography>
+          </Paper>
+
+          <Stack direction="row" spacing={1} justifyContent="center" width="100%">
+            <Button onClick={() => setCancelDialogOpen(false)} fullWidth sx={{ borderRadius: 999, fontWeight: 800, color: 'text.primary' }}>Keep Booking</Button>
+            <Button variant="contained" color="error" onClick={handleConfirmCancel} fullWidth sx={{ borderRadius: 999, fontWeight: 800 }}>
+              Confirm
+            </Button>
+          </Stack>
+        </DialogContent>
+      </Dialog >
+    </Box >
   );
 };
 

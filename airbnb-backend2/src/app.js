@@ -1,4 +1,5 @@
 import express from 'express';
+// Force restart
 import cors from 'cors';
 import dotenv from 'dotenv';
 import passport from 'passport';
@@ -68,6 +69,7 @@ const startServer = async () => {
       // Start Cron Job
       startCronJob();
       startReminderCron();
+      import('./controller/cancellationPolicy/seedPolicies.js').then(module => module.default());
     });
   } catch (error) {
     console.error('Error during server initialization:', error.message);

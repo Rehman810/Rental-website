@@ -180,6 +180,8 @@ const RoomPage = () => {
             response.listing.bookings.map((booking) => ({
               startDate: dayjs(booking.startDate),
               endDate: dayjs(booking.endDate),
+              status: booking.status,
+              cancelledBy: booking.cancelledBy,
             }))
           );
 
@@ -302,6 +304,7 @@ const RoomPage = () => {
     const currentDate = dayjs(current).startOf("day");
 
     for (let booked of bookedDates) {
+      if ((booked.status === 'CANCELLED' || booked.status === 'Cancelled') && booked.cancelledBy === 'GUEST') continue;
       const bookedStart = dayjs(booked.startDate).startOf("day");
       const bookedEnd = dayjs(booked.endDate).startOf("day");
 
@@ -780,6 +783,17 @@ const RoomPage = () => {
             </Typography>
             <Typography variant="body2" color="" sx={{ mt: 0.8, lineHeight: 1.8 }}>
               {place?.description || "No description available."}
+            </Typography>
+            {console.log(place)}
+            <Divider sx={{ my: 2 }} />
+            <Typography variant="subtitle1" fontWeight={900}>
+              Cancellation Policy
+            </Typography>
+            <Typography variant="body2" sx={{ mt: 0.8, fontWeight: 700 }}>
+              {place?.cancellationPolicy?.name || "Flexible"}
+            </Typography>
+            <Typography variant="body2" color="var(--text-secondary)">
+              {place?.cancellationPolicy?.description || "Free cancellation for 48 hours."}
             </Typography>
           </Paper>
 

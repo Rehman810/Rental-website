@@ -100,6 +100,11 @@ const listingSchema = new mongoose.Schema({
     communication: { type: Number, default: 0 },
     value: { type: Number, default: 0 }
   },
+  cancellationPolicy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'CancellationPolicy',
+    required: false
+  }
 }, {
   timestamps: true,
   toJSON: { virtuals: true },

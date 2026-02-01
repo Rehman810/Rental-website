@@ -192,12 +192,151 @@ const AvailabilityModal = ({ open, onClose, listing, token, onUpdate }) => {
   );
 };
 
+const CancellationPolicyModal = ({ open, onClose, listing, token, onUpdate }) => {
+  const [policies, setPolicies] = useState([]);
+  const [selectedPolicyId, setSelectedPolicyId] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [creatingCustom, setCreatingCustom] = useState(false);
+
+  // Custom Flow
+  const [customName, setCustomName] = useState("");
+  const [fullRefundHours, setFullRefundHours] = useState(24);
+  const [partialEnabled, setPartialEnabled] = useState(false);
+  const [partialPercent, setPartialPercent] = useState(50);
+  const [partialHours, setPartialHours] = useState(24);
+
+  useEffect(() => {
+    if (open) fetchPolicies();
+  }, [open]);
+
+  useEffect(() => {
+    if (listing?.cancellationPolicy) {
+      const pid = typeof listing.cancellationPolicy === 'object' ? listing.cancellationPolicy._id : listing.cancellationPolicy;
+      setSelectedPolicyId(pid);
+    }
+  }, [listing]);
+
+  const fetchPolicies = async () => {
+    try {
+      const res = await axios.get(`${API_BASE_URL}/api/cancellation-policies`, { headers: { Authorization: `Bearer ${token}` } });
+      setPolicies(res.data);
+    } catch (err) { console.error(err); }
+  };
+
+  const handleCreateCustom = async () => {
+    if (!customName) return toast.error("Name required");
+    const payload = {
+      type: 'CUSTOM',
+      name: customName,
+      rules: {
+        fullRefundHours: Number(fullRefundHours),
+        partialRefundBeforeCheckIn: {
+          enabled: partialEnabled,
+          percentage: Number(partialPercent),
+          hoursBeforeCheckIn: Number(partialHours)
+        },
+        noRefundAfterCheckIn: true
+      }
+    };
+    try {
+      const res = await axios.post(`${API_BASE_URL}/api/cancellation-policies`, payload, { headers: { Authorization: `Bearer ${token}` } });
+      setPolicies([...policies, res.data]);
+      setSelectedPolicyId(res.data._id);
+      setCreatingCustom(false);
+      toast.success("Custom policy created");
+    } catch (e) { toast.error("Failed to create policy"); }
+  };
+
+  const handleSave = async () => {
+    setLoading(true);
+    try {
+      await axios.put(`${API_BASE_URL}/listing/${listing._id}/cancellation-policy`, { policyId: selectedPolicyId }, { headers: { Authorization: `Bearer ${token}` } });
+      toast.success("Policy updated");
+      onUpdate();
+      onClose();
+    } catch (e) { toast.error("Failed to update policy"); }
+    finally { setLoading(false); }
+  };
+
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+      <DialogTitle fontWeight={800}>Cancellation Policy</DialogTitle>
+      <DialogContent dividers>
+        {!creatingCustom ? (
+          <Stack spacing={2}>
+            <FormControl fullWidth>
+              <InputLabel>Select Policy</InputLabel>
+              <Select
+                value={selectedPolicyId || ""}
+                label="Select Policy"
+                onChange={(e) => setSelectedPolicyId(e.target.value)}
+              >
+                {policies.map(p => (
+                  <MenuItem key={p._id} value={p._id}>
+                    <Stack>
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        <Typography fontWeight={700}>{p.name}</Typography>
+                        {p.type === 'CUSTOM' && <Chip label="Custom" size="small" color="primary" variant="outlined" />}
+                      </Stack>
+                      <Typography variant="caption" color="text.secondary" sx={{ whiteSpace: 'normal' }}>{p.description || `Refund within ${p.rules.fullRefundHours}h`}</Typography>
+                    </Stack>
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <Divider>OR</Divider>
+            <Button variant="outlined" onClick={() => setCreatingCustom(true)}>Create Custom Policy</Button>
+          </Stack>
+        ) : (
+          <Stack spacing={2}>
+            <TextField label="Policy Name" fullWidth value={customName} onChange={e => setCustomName(e.target.value)} />
+            <Typography variant="subtitle2">Full Refund Period</Typography>
+            <TextField
+              label="Hours after booking for 100% refund"
+              type="number" fullWidth
+              value={fullRefundHours} onChange={e => setFullRefundHours(e.target.value)}
+            />
+
+            <FormControlLabel
+              control={<Switch checked={partialEnabled} onChange={e => setPartialEnabled(e.target.checked)} />}
+              label="Tip: Enable Partial Refund before Check-in?"
+            />
+
+            {partialEnabled && (
+              <Stack direction="row" spacing={2}>
+                <TextField
+                  label="Refund %" type="number" fullWidth
+                  value={partialPercent} onChange={e => setPartialPercent(e.target.value)}
+                />
+                <TextField
+                  label="Hours before Check-in" type="number" fullWidth
+                  value={partialHours} onChange={e => setPartialHours(e.target.value)}
+                />
+              </Stack>
+            )}
+
+            <Stack direction="row" spacing={1} justifyContent="flex-end">
+              <Button onClick={() => setCreatingCustom(false)}>Back</Button>
+              <Button variant="contained" onClick={handleCreateCustom}>Create Policy</Button>
+            </Stack>
+          </Stack>
+        )}
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} disabled={loading}>Cancel</Button>
+        {!creatingCustom && <Button onClick={handleSave} variant="contained" disabled={loading || !selectedPolicyId}>{loading ? "Saving..." : "Save Policy"}</Button>}
+      </DialogActions>
+    </Dialog>
+  );
+};
+
 const ListingPage = () => {
   const [listing, setListing] = useState([]);
   const [tempListing, setTempListing] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingAvailability, setEditingAvailability] = useState(null);
   const [editingGuestRequirements, setEditingGuestRequirements] = useState(null);
+  const [editingCancellation, setEditingCancellation] = useState(null);
 
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
@@ -332,7 +471,7 @@ const ListingPage = () => {
             }}
           />
 
-          {/* <IconButton
+          <IconButton
             size="small"
             sx={{ position: "absolute", top: 12, right: 12, bgcolor: "rgba(255,255,255,0.9)", '&:hover': { bgcolor: "white" } }}
             onClick={(e) => {
@@ -341,7 +480,7 @@ const ListingPage = () => {
             }}
           >
             <SettingsIcon fontSize="small" />
-          </IconButton> */}
+          </IconButton>
 
           <Menu
             anchorEl={anchorEl}
@@ -378,6 +517,12 @@ const ListingPage = () => {
               <Stack direction="row" alignItems="center" spacing={1} justifyContent="space-between" width="100%">
                 <Typography fontSize={13}>Guest Requirements</Typography>
                 {item.guestRequirementsOverride && Object.keys(item.guestRequirementsOverride).length > 0 && <CheckIcon fontSize="small" color="action" />}
+              </Stack>
+            </MenuItem>
+            <MenuItem onClick={() => { handleClose(); setEditingCancellation(item); }}>
+              <Stack direction="row" alignItems="center" spacing={1} justifyContent="space-between" width="100%">
+                <Typography fontSize={13}>Cancellation Policy</Typography>
+                {item.cancellationPolicy && <CheckIcon fontSize="small" color="primary" />}
               </Stack>
             </MenuItem>
           </Menu>
@@ -656,6 +801,15 @@ const ListingPage = () => {
         open={!!editingGuestRequirements}
         onClose={() => setEditingGuestRequirements(null)}
         listing={editingGuestRequirements}
+        token={token}
+        onUpdate={() => window.location.reload()}
+      />
+
+      {/* Cancellation Policy Dialog */}
+      <CancellationPolicyModal
+        open={!!editingCancellation}
+        onClose={() => setEditingCancellation(null)}
+        listing={editingCancellation}
         token={token}
         onUpdate={() => window.location.reload()}
       />

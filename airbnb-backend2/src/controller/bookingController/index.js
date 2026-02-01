@@ -8,6 +8,7 @@ const stripeClient = Stripe(process.env.STRIPE_KEY);
 import Host from '../../model/hostModel/index.js'
 import { FRONTEND_BASE_URL } from '../../config/appConfig.js';
 import { createNotification, NOTIFICATION_TYPES } from '../../config/notifications/notificationService.js';
+import CancellationPolicy from '../../model/cancellationPolicy/index.js';
 
 export const bookingController = {
 
@@ -325,12 +326,39 @@ export const bookingController = {
         return res.status(400).json({ message: "Booking is not in pending state." });
       }
 
+      // Check overlap
+      const existingConfirmedBooking = await ConfirmedBooking.findOne({
+        listingId: booking.listingId._id,
+        $or: [{ startDate: { $lte: new Date(booking.endDate) }, endDate: { $gte: new Date(booking.startDate) } }],
+        $nor: [{ status: 'CANCELLED', cancelledBy: 'GUEST' }, { status: 'Cancelled', cancelledBy: 'GUEST' }]
+      });
+
+      if (existingConfirmedBooking) {
+        return res.status(400).json({ message: "Dates are no longer available (booked/blocked)." });
+      }
+
       // Capture Payment
       const paymentIntent = await stripeClient.paymentIntents.retrieve(booking.paymentIntentId);
       if (paymentIntent.status === "requires_capture") {
         const capturedIntent = await stripeClient.paymentIntents.capture(booking.paymentIntentId);
         if (capturedIntent.status !== "succeeded") {
           return res.status(400).json({ message: "Payment capture failed.", status: capturedIntent.status });
+        }
+      }
+
+      // Fetch Policy Snapshot
+      const listing = await Listing.findById(booking.listingId._id).populate('cancellationPolicy');
+      let policySnapshot = { name: 'Flexible', rules: {} }; // Default fallback
+
+      if (listing.cancellationPolicy) {
+        policySnapshot = {
+          name: listing.cancellationPolicy.name,
+          rules: listing.cancellationPolicy.rules
+        };
+      } else {
+        const defaultPolicy = await CancellationPolicy.findOne({ name: 'Flexible', type: 'PREDEFINED' });
+        if (defaultPolicy) {
+          policySnapshot = { name: defaultPolicy.name, rules: defaultPolicy.rules };
         }
       }
 
@@ -343,6 +371,8 @@ export const bookingController = {
         guestCapacity: booking.guestCapacity,
         totalPrice: booking.totalPrice,
         paymentIntentId: booking.paymentIntentId,
+        cancellationPolicy: policySnapshot,
+        checkIn: booking.startDate
       });
 
       await TemporaryBooking.findByIdAndDelete(bookingId);
@@ -499,6 +529,7 @@ export const bookingController = {
       const existingConfirmedBooking = await ConfirmedBooking.findOne({
         listingId,
         $or: [{ startDate: { $lte: new Date(endDate) }, endDate: { $gte: new Date(startDate) } }],
+        $nor: [{ status: 'CANCELLED', cancelledBy: 'GUEST' }, { status: 'Cancelled', cancelledBy: 'GUEST' }]
       });
 
       if (existingConfirmedBooking) {
@@ -528,6 +559,21 @@ export const bookingController = {
         });
       }
 
+      // Fetch Policy
+      const listingObj = await Listing.findById(listingId).populate('cancellationPolicy');
+      let policySnapshot = { name: 'Flexible', rules: {} };
+      if (listingObj && listingObj.cancellationPolicy) {
+        policySnapshot = {
+          name: listingObj.cancellationPolicy.name,
+          rules: listingObj.cancellationPolicy.rules
+        };
+      } else {
+        const defaultPolicy = await CancellationPolicy.findOne({ name: 'Flexible', type: 'PREDEFINED' });
+        if (defaultPolicy) {
+          policySnapshot = { name: defaultPolicy.name, rules: defaultPolicy.rules };
+        }
+      }
+
       const confirmedBooking = await ConfirmedBooking.create({
         userId,
         listingId,
@@ -536,6 +582,8 @@ export const bookingController = {
         guestCapacity: temporaryBooking.guestCapacity,
         totalPrice: temporaryBooking.totalPrice,
         paymentIntentId,
+        cancellationPolicy: policySnapshot,
+        checkIn: startDate
       });
 
       await TemporaryBooking.findByIdAndDelete(bookingId);
@@ -543,6 +591,91 @@ export const bookingController = {
       return res.status(201).json({ message: "Booking confirmed.", confirmedBooking });
     } catch (error) {
       return res.status(500).json({ message: "Internal Server Error", error: error.message });
+    }
+  },
+
+  cancelBooking: async (req, res) => {
+    try {
+      const { bookingId } = req.params;
+      const booking = await ConfirmedBooking.findById(bookingId).populate('listingId');
+      if (!booking) return res.status(404).json({ message: "Booking not found." });
+
+      const isGuest = booking.userId.toString() === req.user._id.toString();
+      const listingHostId = booking.listingId.hostId.toString();
+      const isHost = listingHostId === req.user._id.toString();
+
+      if (!isGuest && !isHost) {
+        return res.status(403).json({ message: "Not authorized." });
+      }
+
+      if (booking.status === 'CANCELLED') {
+        return res.status(400).json({ message: "Booking already cancelled." });
+      }
+
+      const now = new Date();
+      const checkIn = new Date(booking.startDate);
+      const bookingDate = new Date(booking.createdAt);
+
+      const policy = booking.cancellationPolicy;
+      let refundAmount = 0;
+      let notes = "";
+
+      if (isGuest) {
+        const hoursSinceBooking = (now - bookingDate) / (1000 * 60 * 60);
+        const hoursBeforeCheckIn = (checkIn - now) / (1000 * 60 * 60);
+        const amountPaid = booking.totalPrice;
+
+        // Ensure policy exists, fallback if missing
+        const rules = policy ? policy.rules : { fullRefundHours: 24, noRefundAfterCheckIn: true };
+
+        if (rules.fullRefundHours && hoursSinceBooking <= rules.fullRefundHours) {
+          refundAmount = amountPaid;
+          notes = "Full refund (within grace period)";
+        } else if (rules.noRefundAfterCheckIn && now >= checkIn) {
+          refundAmount = 0;
+          notes = "No refund after check-in";
+        } else {
+          if (rules.partialRefundBeforeCheckIn && rules.partialRefundBeforeCheckIn.enabled) {
+            if (hoursBeforeCheckIn >= rules.partialRefundBeforeCheckIn.hoursBeforeCheckIn) {
+              refundAmount = Math.round((amountPaid * rules.partialRefundBeforeCheckIn.percentage) / 100);
+              notes = `Partial refund (${rules.partialRefundBeforeCheckIn.percentage}%)`;
+            } else {
+              refundAmount = 0;
+              notes = "Past partial refund cutoff";
+            }
+          } else {
+            refundAmount = 0;
+            notes = "No refund per policy";
+          }
+        }
+      } else {
+        refundAmount = booking.totalPrice;
+        notes = "Host cancelled (Full Refund)";
+        // Host penalty logic here
+      }
+
+      // Process Refund via Stripe (Mocked/Commented)
+      if (refundAmount > 0 && booking.paymentIntentId) {
+        try {
+          // await stripeClient.refunds.create({
+          //   payment_intent: booking.paymentIntentId,
+          //   amount: Math.round(refundAmount * 100),
+          // });
+        } catch (err) {
+          console.error("Stripe refund failed", err);
+        }
+      }
+
+      booking.status = 'CANCELLED';
+      booking.cancelledBy = isGuest ? 'GUEST' : 'HOST';
+      booking.refundAmount = refundAmount;
+      await booking.save();
+
+      return res.status(200).json({ message: "Booking cancelled.", refundAmount, notes });
+
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: error.message });
     }
   },
 
@@ -796,6 +929,7 @@ export const bookingController = {
           totalPrice: bookingData.totalPrice,
           paymentIntentId: bookingData.paymentIntentId,
           createdAt: bookingData.createdAt,
+          cancellationPolicy: bookingData.cancellationPolicy,
           __v: bookingData.__v,
           status,
           hostData: hostData

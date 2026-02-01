@@ -22,8 +22,10 @@ import { loginUser } from "../../config/ServiceApi/serviceApi";
 
 import { GoogleLogin } from '@react-oauth/google';
 import { googleLogin } from '../../config/ServiceApi/serviceApi';
+import { useWishlist } from "../../context/wishlistProvider";
 
 const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
+  const { mergeLocalToBackend } = useWishlist();
   const [showPassword, setShowPassword] = useState(false);
 
   const {
@@ -40,6 +42,8 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
       if (res) {
         localStorage.setItem("token", res.token);
         localStorage.setItem("user", JSON.stringify(res.user));
+
+        await mergeLocalToBackend();
 
         Swal.fire({
           icon: "success",
@@ -73,6 +77,8 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
       if (res) {
         localStorage.setItem("token", res.token);
         localStorage.setItem("user", JSON.stringify(res.user));
+
+        await mergeLocalToBackend();
 
         Swal.fire({
           icon: "success",

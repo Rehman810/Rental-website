@@ -126,6 +126,8 @@ export const patchDataById = async (endpoint, token, id, data) => {
   const url = `${apiKey}/${endpoint}/${id}`;
   try {
     const response = await axios.patch(url, data, config);
+    console.log(response)
+
     return response.data;
   } catch (error) {
     throw new Error('Error patching data: ' + error.message);

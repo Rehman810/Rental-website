@@ -63,7 +63,10 @@ const CardItem = React.memo(({ data }) => {
     setIsLoginModalOpen(true);
   };
 
-  const handleLoginModalClose = () => setIsLoginModalOpen(false);
+  const handleLoginModalClose = () => {
+    setIsLoginModalOpen(false);
+    navigate("/");
+  };
 
   const VerifiedComponent = () =>
     isWishlisted ? (

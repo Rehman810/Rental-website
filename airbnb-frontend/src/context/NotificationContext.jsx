@@ -6,7 +6,7 @@ import {
     emitEvent,
     disconnectSocket
 } from '../webSockets/webSockets';
-import { fetchData, patchDataById, updateDataById } from '../config/ServiceApi/serviceApi';
+import { fetchData, patchDataById, updateDataById, deleteDataById } from '../config/ServiceApi/serviceApi';
 import toast from 'react-hot-toast';
 
 const NotificationContext = createContext();
@@ -21,18 +21,27 @@ export const NotificationProvider = ({ children }) => {
     const user = JSON.parse(localStorage.getItem('user'));
     const token = localStorage.getItem('token');
 
-    const fetchNotifications = async (page = 1) => {
+    const fetchNotifications = async (page = 1, filters = {}) => {
         if (!token) return;
         setLoading(true);
         try {
             // Backend GET /notifications
-            const data = await fetchData(`notifications?page=${page}`, token);
+            let query = `notifications?page=${page}`;
+            if (filters.isRead !== undefined) {
+                query += `&isRead=${filters.isRead}`;
+            }
+
+            const data = await fetchData(query, token);
             if (page === 1) {
                 setNotifications(data.notifications);
             } else {
                 setNotifications(prev => [...prev, ...data.notifications]);
             }
-            setUnreadCount(data.unreadCount);
+            // Always update unread count regardless of list filter
+            // data.unreadCount comes from backend response
+            if (data.unreadCount !== undefined) {
+                setUnreadCount(data.unreadCount);
+            }
         } catch (error) {
             console.error("Failed to fetch notifications", error);
         } finally {
@@ -58,7 +67,7 @@ export const NotificationProvider = ({ children }) => {
             ));
             setUnreadCount(prev => Math.max(0, prev - 1));
 
-            await patchDataById('notifications', token, `${notificationId}/read`, {});
+            await updateDataById('notifications', token, `${notificationId}/read`, {});
         } catch (error) {
             console.error("Failed to mark read", error);
             fetchNotifications(); // Revert on error
@@ -69,9 +78,26 @@ export const NotificationProvider = ({ children }) => {
         try {
             setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
             setUnreadCount(0);
-            await patchDataById('notifications', token, 'read-all', {});
+            await updateDataById('notifications', token, 'read-all', {});
         } catch (error) {
             console.error("Failed to mark all read", error);
+            fetchNotifications();
+        }
+    };
+
+    const deleteNotification = async (notificationId) => {
+        try {
+            // Optimistic update
+            const notification = notifications.find(n => n._id === notificationId);
+            setNotifications(prev => prev.filter(n => n._id !== notificationId));
+
+            if (notification && !notification.isRead) {
+                setUnreadCount(prev => Math.max(0, prev - 1));
+            }
+
+            await deleteDataById('notifications', token, notificationId);
+        } catch (error) {
+            console.error("Failed to delete notification", error);
             fetchNotifications();
         }
     };
@@ -111,7 +137,8 @@ export const NotificationProvider = ({ children }) => {
             fetchNotifications,
             markRead,
             markAllRead,
-            fetchUnreadCount
+            fetchUnreadCount,
+            deleteNotification
         }}>
             {children}
         </NotificationContext.Provider>

@@ -6,6 +6,9 @@ const Rooms = lazy(() => import("../../components/rooms/rooms"));
 const Navbar = lazy(() => import("../../components/navbar/navbar"));
 const Footer = lazy(() => import("../../components/footer/footer"));
 
+const Protected = lazy(() => import("../../components/protected/protected"));
+const NotificationsPage = lazy(() => import("../../pages/notifications/NotificationsPage"));
+
 const NotFoundPage = lazy(() => import("../../components/notFound/notFound"));
 
 const Guests = () => {
@@ -20,10 +23,14 @@ const Guests = () => {
           {/* Rooms Page */}
           <Route path="/rooms/:roomId" element={<Rooms />} />
 
+          {/* Notifications Page */}
+          <Route path="/notifications" element={<Protected Component={NotificationsPage} />} />
+
           {/* 404 Page */}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>
+      {/* <Footer /> */}{/* Footer was outside in original, wait, it is closing Fragments */}
       <Footer />
     </>
   );

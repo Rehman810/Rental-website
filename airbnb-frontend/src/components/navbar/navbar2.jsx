@@ -45,6 +45,7 @@ import {
 } from "../../webSockets/webSockets";
 import axios from "axios";
 import { APP_NAME } from "../../config/env";
+import NotificationBell from "../notifications/NotificationBell";
 
 initializeSocket();
 
@@ -262,64 +263,7 @@ const NavbarHost = () => {
             </IconButton>
           </Tooltip>
 
-          <Menu
-            anchorEl={notificationsMenuAnchorEl}
-            open={Boolean(notificationsMenuAnchorEl)}
-            onClose={handleNotificationsMenuClose}
-            sx={{
-              mt: 1.2,
-              "& .MuiPaper-root": {
-                borderRadius: 3,
-                minWidth: 320,
-                border: "1px solid",
-                borderColor: "divider",
-                boxShadow: "0 18px 60px rgba(0,0,0,0.12)",
-                overflow: "hidden",
-              },
-            }}
-            transformOrigin={{ horizontal: "right", vertical: "top" }}
-            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-          >
-            <Box sx={{ px: 2, py: 1.5 }}>
-              <Typography fontWeight={900}>Notifications</Typography>
-              <Typography variant="body2" color="text.secondary">
-                {unreadCount ? `${unreadCount} unread` : "All caught up 🎉"}
-              </Typography>
-            </Box>
-
-            <Divider />
-
-            {notifications?.length > 0 ? (
-              notifications.slice(0, 8).map((notification, index) => (
-                <MenuItem
-                  key={index}
-                  onClick={handleNotificationsMenuClose}
-                  sx={{
-                    py: 1.2,
-                    px: 2,
-                    alignItems: "flex-start",
-                    whiteSpace: "normal",
-                    "&:hover": { backgroundColor: "rgba(0,0,0,0.04)" },
-                  }}
-                >
-                  <Stack spacing={0.4}>
-                    <Typography fontWeight={900} sx={{ fontSize: 13 }}>
-                      {notification?.title || "Update"}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {notification?.message || "You have a new notification."}
-                    </Typography>
-                  </Stack>
-                </MenuItem>
-              ))
-            ) : (
-              <MenuItem onClick={handleNotificationsMenuClose} sx={{ py: 2, px: 2 }}>
-                <Typography variant="body2" color="text.secondary">
-                  No new notifications
-                </Typography>
-              </MenuItem>
-            )}
-          </Menu>
+          {token && <NotificationBell />}
 
           {/* Avatar Menu (Desktop) */}
           {!isMobile && (

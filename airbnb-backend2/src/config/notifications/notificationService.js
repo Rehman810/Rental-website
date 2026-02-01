@@ -75,7 +75,7 @@ export const getUserNotifications = async (userId, { page = 1, limit = 10, isRea
     const skip = (page - 1) * limit;
 
     const notifications = await Notification.find(query)
-        .sort({ createdAt: -1 })
+        .sort({ isRead: 1, createdAt: -1 })
         .skip(skip)
         .limit(parseInt(limit));
 
@@ -87,4 +87,8 @@ export const getUserNotifications = async (userId, { page = 1, limit = 10, isRea
 
 export const getUnreadCount = async (userId) => {
     return await Notification.countDocuments({ userId, isRead: false });
+};
+
+export const deleteNotification = async (userId, notificationId) => {
+    return await Notification.findOneAndDelete({ _id: notificationId, userId });
 };

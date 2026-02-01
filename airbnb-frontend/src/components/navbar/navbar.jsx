@@ -238,6 +238,7 @@ const Navbar = () => {
 
   const handleLoginModalClose = () => {
     setIsLoginModalOpen(false);
+    navigate("/");
   };
   const toggleModal = () => {
     setOpen(!open);

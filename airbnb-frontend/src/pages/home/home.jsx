@@ -86,7 +86,12 @@ const Home = () => {
     const query = new URLSearchParams();
 
     if (currentFilters.q) query.append("q", currentFilters.q);
-    if (currentFilters.guests) query.append("guests", currentFilters.guests);
+    if (
+      typeof currentFilters.guests === "number" &&
+      !isNaN(currentFilters.guests)
+    ) {
+      query.append("guests", currentFilters.guests);
+    }
     if (currentFilters.checkIn) query.append("checkIn", currentFilters.checkIn);
     if (currentFilters.checkOut) query.append("checkOut", currentFilters.checkOut);
 

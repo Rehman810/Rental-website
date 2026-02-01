@@ -21,6 +21,7 @@ import Card from "../../components/cards/cards";
 import LeafletMap from "../../components/map/map";
 import SearchFilters from "../../components/searchFilters/SearchFilters";
 import { toast } from "react-hot-toast";
+import { useAppContext } from "../../context/context";
 
 const MemoizedCard = React.memo(({ data }) => <Card data={data} />);
 
@@ -38,6 +39,7 @@ const DEFAULT_FILTERS = {
 const Home = () => {
   const { t } = useTranslation();
   const token = localStorage.getItem("token");
+  const { searchParams } = useAppContext(); // Get searchParams from context
 
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -53,6 +55,27 @@ const Home = () => {
 
   const [searchAsMove, setSearchAsMove] = useState(false);
 
+  // Sync Global Search Bar with Local Filters
+  useEffect(() => {
+    // 🔥 CLEAR SEARCH CASE
+    if (!searchParams || Object.keys(searchParams).length === 0) {
+      setFilters(DEFAULT_FILTERS);
+      return;
+    }
+
+    // 🔍 APPLY SEARCH PARAMS
+    setFilters((prev) => ({
+      ...prev,
+      q: searchParams.destination ?? "",
+      guests: searchParams.guests ?? DEFAULT_FILTERS.guests,
+      checkIn: searchParams.checkIn ?? null,
+      checkOut: searchParams.checkOut ?? null,
+      bounds: null,
+      polygon: null,
+    }));
+  }, [searchParams]);
+
+
   // Persist filters
   useEffect(() => {
     sessionStorage.setItem("searchFilters", JSON.stringify(filters));
@@ -63,6 +86,9 @@ const Home = () => {
     const query = new URLSearchParams();
 
     if (currentFilters.q) query.append("q", currentFilters.q);
+    if (currentFilters.guests) query.append("guests", currentFilters.guests);
+    if (currentFilters.checkIn) query.append("checkIn", currentFilters.checkIn);
+    if (currentFilters.checkOut) query.append("checkOut", currentFilters.checkOut);
 
     if (currentFilters.priceRange) {
       query.append("minPrice", currentFilters.priceRange[0]);

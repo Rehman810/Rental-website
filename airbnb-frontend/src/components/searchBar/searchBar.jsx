@@ -142,7 +142,7 @@ const SearchBar = () => {
       pets: 0,
     });
 
-    setSearchParams(null);
+    setSearchParams({});
     setHasActiveSearch(false);
   };
 

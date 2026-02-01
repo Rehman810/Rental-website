@@ -1,4 +1,5 @@
 import Listing from '../model/listingModel/index.js';
+import ConfirmedBooking from '../model/confirmBooking/index.js';
 
 export const searchListings = async (req, res) => {
     try {
@@ -8,6 +9,8 @@ export const searchListings = async (req, res) => {
             maxPrice,
             guests,
             amenities,
+            checkIn,
+            checkOut,
             bounds, // { north, south, east, west }
             polygon, // GeoJSON coordinates for polygon
             sortBy,
@@ -17,14 +20,38 @@ export const searchListings = async (req, res) => {
 
         const query = {};
 
-        // Text Search (updated to be more inclusive)
+        // Text Search (updated to be more inclusive and handle "City, Country" format)
         if (q) {
+            // If the query is "Karachi, Pakistan", users likely want "Karachi"
+            // We split by comma and take the first part, or use the whole string if no comma
+            const searchTerm = q.includes(',') ? q.split(',')[0].trim() : q;
+
             query.$or = [
-                { title: { $regex: q, $options: 'i' } },
-                { city: { $regex: q, $options: 'i' } },
-                { town: { $regex: q, $options: 'i' } },
-                { description: { $regex: q, $options: 'i' } }
+                { title: { $regex: searchTerm, $options: 'i' } },
+                { city: { $regex: searchTerm, $options: 'i' } },
+                { town: { $regex: searchTerm, $options: 'i' } },
+                { description: { $regex: searchTerm, $options: 'i' } }
             ];
+        }
+
+        // Availability Filter
+        if (checkIn && checkOut) {
+            const startDate = new Date(checkIn);
+            const endDate = new Date(checkOut);
+
+            if (!isNaN(startDate) && !isNaN(endDate)) {
+                const overlapBookings = await ConfirmedBooking.find({
+                    $or: [
+                        { startDate: { $lt: endDate }, endDate: { $gt: startDate } }
+                    ]
+                }).select('listingId');
+
+                const bookedListingIds = overlapBookings.map(b => b.listingId);
+
+                if (bookedListingIds.length > 0) {
+                    query._id = { $nin: bookedListingIds };
+                }
+            }
         }
 
         // Price Range

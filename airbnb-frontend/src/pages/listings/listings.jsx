@@ -90,105 +90,191 @@ const AvailabilityModal = ({ open, onClose, listing, token, onUpdate }) => {
   const getBoolValue = (val) => val === undefined || val === null ? "default" : (val ? "true" : "false");
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle fontWeight={800}>Availability Overrides</DialogTitle>
-      <DialogContent dividers>
-        <Typography variant="body2" color="var(--text-secondary)" paragraph>
-          Leave fields empty or select "Host Default" to use your global settings.
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      sx={{
+        "& .MuiPaper-root": {
+          borderRadius: 4,
+        },
+      }}
+    >
+      {/* Header */}
+      <DialogTitle sx={{ pb: 1 }}>
+        <Typography fontWeight={900} fontSize={18}>
+          Availability Overrides
         </Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <TextField
-              fullWidth label="Min Nights" type="number"
-              value={formData.minNights}
-              onChange={(e) => handleChange('minNights', e.target.value)}
-              placeholder="Host Default"
-              InputLabelProps={{ shrink: true }}
-            />
+        <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
+          Customize availability rules for this listing only.
+        </Typography>
+      </DialogTitle>
+
+      <DialogContent dividers sx={{ pt: 3 }}>
+        {/* Stay Length */}
+        <Box sx={{ mb: 3 }}>
+          <Typography fontSize={12} fontWeight={900} color="var(--text-secondary)" gutterBottom>
+            STAY LENGTH
+          </Typography>
+
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                label="Minimum nights"
+                type="number"
+                value={formData.minNights}
+                onChange={(e) => handleChange("minNights", e.target.value)}
+                placeholder="Host default"
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                label="Maximum nights"
+                type="number"
+                value={formData.maxNights}
+                onChange={(e) => handleChange("maxNights", e.target.value)}
+                placeholder="Host default"
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
           </Grid>
-          <Grid item xs={6}>
-            <TextField
-              fullWidth label="Max Nights" type="number"
-              value={formData.maxNights}
-              onChange={(e) => handleChange('maxNights', e.target.value)}
-              placeholder="Host Default"
-              InputLabelProps={{ shrink: true }}
-            />
+        </Box>
+
+        {/* Booking Rules */}
+        <Box sx={{ mb: 3 }}>
+          <Typography fontSize={12} fontWeight={900} color="var(--text-secondary)" gutterBottom>
+            BOOKING RULES
+          </Typography>
+
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <FormControl fullWidth>
+                <InputLabel shrink>Allow same-day booking</InputLabel>
+                <Select
+                  value={getBoolValue(formData.allowSameDayBooking)}
+                  onChange={(e) =>
+                    handleChange(
+                      "allowSameDayBooking",
+                      e.target.value === "default"
+                        ? undefined
+                        : e.target.value === "true"
+                    )
+                  }
+                  displayEmpty
+                >
+                  <MenuItem value="default">
+                    <em>Use host default</em>
+                  </MenuItem>
+                  <MenuItem value="true">Yes</MenuItem>
+                  <MenuItem value="false">No</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={6}>
+              <FormControl fullWidth>
+                <InputLabel shrink>Minimum notice</InputLabel>
+                <Select
+                  value={formData.minNoticeDays}
+                  onChange={(e) => handleChange("minNoticeDays", e.target.value)}
+                  displayEmpty
+                >
+                  <MenuItem value="default">
+                    <em>Use host default</em>
+                  </MenuItem>
+                  <MenuItem value={0}>Same day</MenuItem>
+                  <MenuItem value={1}>1 day</MenuItem>
+                  <MenuItem value={2}>2 days</MenuItem>
+                  <MenuItem value={7}>7 days</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={6}>
+              <FormControl fullWidth>
+                <InputLabel shrink>Booking window</InputLabel>
+                <Select
+                  value={formData.bookingWindowMonths}
+                  onChange={(e) =>
+                    handleChange("bookingWindowMonths", e.target.value)
+                  }
+                  displayEmpty
+                >
+                  <MenuItem value="default">
+                    <em>Use host default</em>
+                  </MenuItem>
+                  <MenuItem value={1}>1 month</MenuItem>
+                  <MenuItem value={3}>3 months</MenuItem>
+                  <MenuItem value={6}>6 months</MenuItem>
+                  <MenuItem value={12}>12 months</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
           </Grid>
-          <Grid item xs={12}>
-            <FormControl fullWidth>
-              <InputLabel shrink>Allow Same Day Booking</InputLabel>
-              <Select
-                value={getBoolValue(formData.allowSameDayBooking)}
-                onChange={(e) => handleChange('allowSameDayBooking', e.target.value === "default" ? undefined : (e.target.value === "true"))}
-                label="Allow Same Day Booking"
-                displayEmpty
-              >
-                <MenuItem value="default"><em>Use Host Default</em></MenuItem>
-                <MenuItem value="true">Yes</MenuItem>
-                <MenuItem value="false">No</MenuItem>
-              </Select>
-            </FormControl>
+        </Box>
+
+        {/* Check-in / Check-out */}
+        <Box>
+          <Typography fontSize={12} fontWeight={900} color="var(--text-secondary)" gutterBottom>
+            CHECK-IN & CHECK-OUT
+          </Typography>
+
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                label="Check-in from"
+                type="time"
+                value={formData.checkInFrom}
+                onChange={(e) => handleChange("checkInFrom", e.target.value)}
+                InputLabelProps={{ shrink: true }}
+                inputProps={{ step: 300 }}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                label="Check-out by"
+                type="time"
+                value={formData.checkOutBy}
+                onChange={(e) => handleChange("checkOutBy", e.target.value)}
+                InputLabelProps={{ shrink: true }}
+                inputProps={{ step: 300 }}
+              />
+            </Grid>
           </Grid>
-          <Grid item xs={6}>
-            <FormControl fullWidth>
-              <InputLabel shrink>Min Notice</InputLabel>
-              <Select
-                value={formData.minNoticeDays}
-                onChange={(e) => handleChange('minNoticeDays', e.target.value)}
-                label="Min Notice"
-                displayEmpty
-              >
-                <MenuItem value="default"><em>Use Host Default</em></MenuItem>
-                <MenuItem value={0}>Same Day (0)</MenuItem>
-                <MenuItem value={1}>1 Day</MenuItem>
-                <MenuItem value={2}>2 Days</MenuItem>
-                <MenuItem value={7}>7 Days</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={6}>
-            <FormControl fullWidth>
-              <InputLabel shrink>Booking Window</InputLabel>
-              <Select
-                value={formData.bookingWindowMonths}
-                onChange={(e) => handleChange('bookingWindowMonths', e.target.value)}
-                label="Booking Window"
-                displayEmpty
-              >
-                <MenuItem value="default"><em>Use Host Default</em></MenuItem>
-                <MenuItem value={1}>1 Month</MenuItem>
-                <MenuItem value={3}>3 Months</MenuItem>
-                <MenuItem value={6}>6 Months</MenuItem>
-                <MenuItem value={12}>12 Months</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              fullWidth label="Check-in From" type="time"
-              value={formData.checkInFrom}
-              onChange={(e) => handleChange('checkInFrom', e.target.value)}
-              InputLabelProps={{ shrink: true }}
-              inputProps={{ step: 300 }}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              fullWidth label="Check-out By" type="time"
-              value={formData.checkOutBy}
-              onChange={(e) => handleChange('checkOutBy', e.target.value)}
-              InputLabelProps={{ shrink: true }}
-              inputProps={{ step: 300 }}
-            />
-          </Grid>
-        </Grid>
+        </Box>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} disabled={saving}>Cancel</Button>
-        <Button onClick={handleSave} variant="contained" disabled={saving}>{saving ? "Saving..." : "Save Overrides"}</Button>
+
+      {/* Actions */}
+      <DialogActions sx={{ px: 3, py: 2 }}>
+        <Button
+          onClick={onClose}
+          disabled={saving}
+          sx={{ textTransform: "none", fontWeight: 700 }}
+        >
+          Cancel
+        </Button>
+        <Button
+          onClick={handleSave}
+          variant="contained"
+          disabled={saving}
+          sx={{
+            textTransform: "none",
+            fontWeight: 900,
+            borderRadius: "999px",
+            px: 3,
+          }}
+        >
+          {saving ? "Saving…" : "Save changes"}
+        </Button>
       </DialogActions>
     </Dialog>
+
   );
 };
 
@@ -259,72 +345,212 @@ const CancellationPolicyModal = ({ open, onClose, listing, token, onUpdate }) =>
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle fontWeight={800}>Cancellation Policy</DialogTitle>
-      <DialogContent dividers>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      sx={{
+        "& .MuiPaper-root": {
+          borderRadius: 4,
+        },
+      }}
+    >
+      {/* Header */}
+      <DialogTitle sx={{ pb: 1 }}>
+        <Typography fontWeight={900} fontSize={18}>
+          Cancellation Policy
+        </Typography>
+        <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
+          Choose how cancellations and refunds are handled for this listing.
+        </Typography>
+      </DialogTitle>
+
+      <DialogContent dividers sx={{ pt: 3 }}>
         {!creatingCustom ? (
-          <Stack spacing={2}>
-            <FormControl fullWidth>
-              <InputLabel>Select Policy</InputLabel>
-              <Select
-                value={selectedPolicyId || ""}
-                label="Select Policy"
-                onChange={(e) => setSelectedPolicyId(e.target.value)}
+          <Stack spacing={3}>
+            {/* Select Policy */}
+            <Box>
+              <Typography
+                fontSize={12}
+                fontWeight={900}
+                color="var(--text-secondary)"
+                gutterBottom
+                mb={2}
               >
-                {policies.map(p => (
-                  <MenuItem key={p._id} value={p._id}>
-                    <Stack>
-                      <Stack direction="row" spacing={1} alignItems="center">
-                        <Typography fontWeight={700}>{p.name}</Typography>
-                        {p.type === 'CUSTOM' && <Chip label="Custom" size="small" color="primary" variant="outlined" />}
+                SELECT A POLICY
+              </Typography>
+
+              <FormControl fullWidth>
+                <InputLabel shrink>Policy</InputLabel>
+                <Select
+                  value={selectedPolicyId || ""}
+                  onChange={(e) => setSelectedPolicyId(e.target.value)}
+                  displayEmpty
+                >
+                  {policies.map((p) => (
+                    <MenuItem key={p._id} value={p._id}>
+                      <Stack spacing={0.4}>
+                        <Stack direction="row" spacing={1} alignItems="center">
+                          <Typography fontWeight={800}>{p.name}</Typography>
+                          {p.type === "CUSTOM" && (
+                            <Chip
+                              label="Custom"
+                              size="small"
+                              variant="outlined"
+                              color="primary"
+                            />
+                          )}
+                        </Stack>
+                        <Typography
+                          variant="caption"
+                          color="var(--text-secondary)"
+                          sx={{ whiteSpace: "normal" }}
+                        >
+                          {p.description ||
+                            `Free cancellation within ${p.rules?.fullRefundHours} hours`}
+                        </Typography>
                       </Stack>
-                      <Typography variant="caption" color="text.secondary" sx={{ whiteSpace: 'normal' }}>{p.description || `Refund within ${p.rules.fullRefundHours}h`}</Typography>
-                    </Stack>
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <Divider>OR</Divider>
-            <Button variant="outlined" onClick={() => setCreatingCustom(true)}>Create Custom Policy</Button>
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+
+            <Divider sx={{ fontSize: 12, fontWeight: 800 }}>OR</Divider>
+
+            {/* Create Custom */}
+            <Button
+              variant="outlined"
+              onClick={() => setCreatingCustom(true)}
+              sx={{
+                textTransform: "none",
+                fontWeight: 800,
+                borderRadius: "999px",
+                alignSelf: "flex-start",
+              }}
+            >
+              Create custom policy
+            </Button>
           </Stack>
         ) : (
-          <Stack spacing={2}>
-            <TextField label="Policy Name" fullWidth value={customName} onChange={e => setCustomName(e.target.value)} />
-            <Typography variant="subtitle2">Full Refund Period</Typography>
-            <TextField
-              label="Hours after booking for 100% refund"
-              type="number" fullWidth
-              value={fullRefundHours} onChange={e => setFullRefundHours(e.target.value)}
-            />
+          <Stack spacing={3}>
+            {/* Custom Policy */}
+            <Box>
+              <Typography
+                fontSize={12}
+                fontWeight={900}
+                color="var(--text-secondary)"
+                gutterBottom
+              >
+                CUSTOM POLICY DETAILS
+              </Typography>
 
-            <FormControlLabel
-              control={<Switch checked={partialEnabled} onChange={e => setPartialEnabled(e.target.checked)} />}
-              label="Tip: Enable Partial Refund before Check-in?"
-            />
-
-            {partialEnabled && (
-              <Stack direction="row" spacing={2}>
+              <Stack spacing={2}>
                 <TextField
-                  label="Refund %" type="number" fullWidth
-                  value={partialPercent} onChange={e => setPartialPercent(e.target.value)}
+                  label="Policy name"
+                  fullWidth
+                  value={customName}
+                  onChange={(e) => setCustomName(e.target.value)}
+                  placeholder="e.g. Weekend Friendly"
                 />
+
                 <TextField
-                  label="Hours before Check-in" type="number" fullWidth
-                  value={partialHours} onChange={e => setPartialHours(e.target.value)}
+                  label="Full refund period (hours after booking)"
+                  type="number"
+                  fullWidth
+                  value={fullRefundHours}
+                  onChange={(e) => setFullRefundHours(e.target.value)}
                 />
               </Stack>
-            )}
+            </Box>
 
+            {/* Partial Refund */}
+            <Box>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={partialEnabled}
+                    onChange={(e) => setPartialEnabled(e.target.checked)}
+                  />
+                }
+                label={
+                  <Typography fontWeight={700}>
+                    Enable partial refund before check-in
+                  </Typography>
+                }
+              />
+
+              {partialEnabled && (
+                <Stack direction="row" spacing={2} sx={{ mt: 1 }}>
+                  <TextField
+                    label="Refund %"
+                    type="number"
+                    fullWidth
+                    value={partialPercent}
+                    onChange={(e) => setPartialPercent(e.target.value)}
+                  />
+                  <TextField
+                    label="Hours before check-in"
+                    type="number"
+                    fullWidth
+                    value={partialHours}
+                    onChange={(e) => setPartialHours(e.target.value)}
+                  />
+                </Stack>
+              )}
+            </Box>
+
+            {/* Actions */}
             <Stack direction="row" spacing={1} justifyContent="flex-end">
-              <Button onClick={() => setCreatingCustom(false)}>Back</Button>
-              <Button variant="contained" onClick={handleCreateCustom}>Create Policy</Button>
+              <Button
+                onClick={() => setCreatingCustom(false)}
+                sx={{ textTransform: "none", fontWeight: 700 }}
+              >
+                Back
+              </Button>
+              <Button
+                variant="contained"
+                onClick={handleCreateCustom}
+                sx={{
+                  textTransform: "none",
+                  fontWeight: 900,
+                  borderRadius: "999px",
+                  px: 3,
+                }}
+              >
+                Create policy
+              </Button>
             </Stack>
           </Stack>
         )}
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} disabled={loading}>Cancel</Button>
-        {!creatingCustom && <Button onClick={handleSave} variant="contained" disabled={loading || !selectedPolicyId}>{loading ? "Saving..." : "Save Policy"}</Button>}
+
+      {/* Footer */}
+      <DialogActions sx={{ px: 3, py: 2 }}>
+        <Button
+          onClick={onClose}
+          disabled={loading}
+          sx={{ textTransform: "none", fontWeight: 700 }}
+        >
+          Cancel
+        </Button>
+
+        {!creatingCustom && (
+          <Button
+            onClick={handleSave}
+            variant="contained"
+            disabled={loading || !selectedPolicyId}
+            sx={{
+              textTransform: "none",
+              fontWeight: 900,
+              borderRadius: "999px",
+              px: 3,
+            }}
+          >
+            {loading ? "Saving…" : "Save policy"}
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );
@@ -404,6 +630,27 @@ const ListingPage = () => {
         </Card>
       </Grid>
     ));
+
+  const MenuRow = ({ label, active = false, checked = false }) => (
+    <Stack
+      direction="row"
+      alignItems="center"
+      justifyContent="space-between"
+      width="100%"
+    >
+      <Typography
+        fontSize={13}
+        fontWeight={active ? 800 : 500}
+        color={active ? "var(--text-primary)" : "var(--text-secondary)"}
+      >
+        {label}
+      </Typography>
+
+      {(active || checked) && (
+        <CheckIcon fontSize="small" color="var(--text-primary)" />
+      )}
+    </Stack>
+  );
 
   const ListingCard = ({ item, status }) => {
     const isVerified = status === "verified";
@@ -485,47 +732,82 @@ const ListingPage = () => {
           <Menu
             anchorEl={anchorEl}
             open={Boolean(anchorEl)}
-            onClose={(e) => { e.stopPropagation(); handleClose(); }}
+            onClose={(e) => {
+              e.stopPropagation();
+              handleClose();
+            }}
             onClick={(e) => e.stopPropagation()}
+            sx={{
+              mt: 1,
+              "& .MuiPaper-root": {
+                borderRadius: 3,
+                minWidth: 240,
+                border: "1px solid",
+                borderColor: "divider",
+                boxShadow: "0 18px 60px rgba(0,0,0,0.12)",
+                overflow: "hidden",
+              },
+            }}
           >
+            {/* Section: Booking Mode */}
+            <Box sx={{ px: 2, py: 1.2 }}>
+              <Typography fontSize={11} fontWeight={900} color="var(--text-secondary)">
+                BOOKING MODE
+              </Typography>
+            </Box>
+
             <MenuItem onClick={() => handleUpdateMode(null)}>
-              <Stack direction="row" alignItems="center" spacing={1} justifyContent="space-between" width="100%">
-                <Typography fontSize={13} fontWeight={!item.bookingMode ? 800 : 400}>Use Host Default</Typography>
-                {!item.bookingMode && <CheckIcon fontSize="small" color="primary" />}
-              </Stack>
+              <MenuRow
+                label="Use Host Default"
+                active={!item.bookingMode}
+              />
             </MenuItem>
-            <MenuItem onClick={() => handleUpdateMode('instant')}>
-              <Stack direction="row" alignItems="center" spacing={1} justifyContent="space-between" width="100%">
-                <Typography fontSize={13} fontWeight={item.bookingMode === 'instant' ? 800 : 400}>Instant Book</Typography>
-                {item.bookingMode === 'instant' && <CheckIcon fontSize="small" color="primary" />}
-              </Stack>
+
+            <MenuItem onClick={() => handleUpdateMode("instant")}>
+              <MenuRow
+                label="Instant Book"
+                active={item.bookingMode === "instant"}
+              />
             </MenuItem>
-            <MenuItem onClick={() => handleUpdateMode('request')}>
-              <Stack direction="row" alignItems="center" spacing={1} justifyContent="space-between" width="100%">
-                <Typography fontSize={13} fontWeight={item.bookingMode === 'request' ? 800 : 400}>Request to Book</Typography>
-                {item.bookingMode === 'request' && <CheckIcon fontSize="small" color="primary" />}
-              </Stack>
+
+            <MenuItem onClick={() => handleUpdateMode("request")}>
+              <MenuRow
+                label="Request to Book"
+                active={item.bookingMode === "request"}
+              />
             </MenuItem>
+
+            <Divider />
+
+            {/* Section: Rules */}
+            <Box sx={{ px: 2, py: 1.2 }}>
+              <Typography fontSize={11} fontWeight={900} color="var(--text-secondary)">
+                LISTING RULES
+              </Typography>
+            </Box>
+
             <MenuItem onClick={() => { handleClose(); setEditingAvailability(item); }}>
-              <Stack direction="row" alignItems="center" spacing={1} justifyContent="space-between" width="100%">
-                <Typography fontSize={13}>Availability Rules</Typography>
-                {/* Show check if any override exists? */}
-                {(item.minNights || item.maxNights || item.checkInFrom) && <CheckIcon fontSize="small" color="action" />}
-              </Stack>
+              <MenuRow
+                label="Availability Rules"
+                checked={item.minNights || item.maxNights || item.checkInFrom}
+              />
             </MenuItem>
+
             <MenuItem onClick={() => { handleClose(); setEditingGuestRequirements(item); }}>
-              <Stack direction="row" alignItems="center" spacing={1} justifyContent="space-between" width="100%">
-                <Typography fontSize={13}>Guest Requirements</Typography>
-                {item.guestRequirementsOverride && Object.keys(item.guestRequirementsOverride).length > 0 && <CheckIcon fontSize="small" color="action" />}
-              </Stack>
+              <MenuRow
+                label="Guest Requirements"
+                checked={item.guestRequirementsOverride && Object.keys(item.guestRequirementsOverride).length > 0}
+              />
             </MenuItem>
+
             <MenuItem onClick={() => { handleClose(); setEditingCancellation(item); }}>
-              <Stack direction="row" alignItems="center" spacing={1} justifyContent="space-between" width="100%">
-                <Typography fontSize={13}>Cancellation Policy</Typography>
-                {item.cancellationPolicy && <CheckIcon fontSize="small" color="primary" />}
-              </Stack>
+              <MenuRow
+                label="Cancellation Policy"
+                checked={!!item.cancellationPolicy}
+              />
             </MenuItem>
           </Menu>
+
         </Box>
 
         <CardContent sx={{ p: 2 }}>

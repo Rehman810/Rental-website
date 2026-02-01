@@ -431,6 +431,39 @@ const RoomPage = () => {
     );
   };
 
+  const getCancellationName = (policy) => {
+    return policy?.name || "Flexible";
+  };
+
+  const getCancellationDescription = (policy) => {
+    if (!policy) {
+      return "Free cancellation for a limited time.";
+    }
+
+    if (policy.type === "PREDEFINED" && policy.description) {
+      return policy.description;
+    }
+    const rules = policy.rules;
+    if (!rules) return "Cancellation policy applies.";
+
+    const parts = [];
+
+    if (rules.fullRefundHours) {
+      parts.push(`Free cancellation within ${rules.fullRefundHours} hours of booking`);
+    }
+
+    if (rules.partialRefundBeforeCheckIn?.enabled) {
+      parts.push(
+        `${rules.partialRefundBeforeCheckIn.percentage}% refund up to ${rules.partialRefundBeforeCheckIn.hoursBeforeCheckIn} hours before check-in`
+      );
+    }
+
+    if (rules.noRefundAfterCheckIn) {
+      parts.push("No refund after check-in");
+    }
+
+    return parts.join(". ") + ".";
+  };
 
   return (
     <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1200, mx: "auto" }}>
@@ -790,11 +823,13 @@ const RoomPage = () => {
               Cancellation Policy
             </Typography>
             <Typography variant="body2" sx={{ mt: 0.8, fontWeight: 700 }}>
-              {place?.cancellationPolicy?.name || "Flexible"}
+              {getCancellationName(place?.cancellationPolicy)}
             </Typography>
+
             <Typography variant="body2" color="var(--text-secondary)">
-              {place?.cancellationPolicy?.description || "Free cancellation for 48 hours."}
+              {getCancellationDescription(place?.cancellationPolicy)}
             </Typography>
+
           </Paper>
 
           {/* Amenities Section */}

@@ -7,6 +7,7 @@ import Stripe from 'stripe'; // Import the Stripe module
 const stripeClient = Stripe(process.env.STRIPE_KEY);
 import Host from '../../model/hostModel/index.js'
 import { FRONTEND_BASE_URL } from '../../config/appConfig.js';
+import { createNotification, NOTIFICATION_TYPES } from '../../config/notifications/notificationService.js';
 
 export const bookingController = {
 
@@ -273,6 +274,34 @@ export const bookingController = {
         }
       });
 
+      // Notification to Host
+      await createNotification({
+        userId: hostUser._id,
+        type: NOTIFICATION_TYPES.BOOKING_PENDING_APPROVAL_HOST,
+        role: 'host',
+        title: 'New Booking Request',
+        message: `${guestUser.userName} requested to book ${listing.title}`,
+        data: {
+          bookingId: booking._id,
+          listingId: listing._id,
+          actionUrl: '/host/dashboard/requests'
+        }
+      });
+
+      // Notification to Guest
+      await createNotification({
+        userId: guestUser._id,
+        type: NOTIFICATION_TYPES.BOOKING_PENDING_APPROVAL_GUEST,
+        role: 'guest',
+        title: 'Booking Request Sent',
+        message: `Your request for ${listing.title} has been sent to the host.`,
+        data: {
+          bookingId: booking._id,
+          listingId: listing._id,
+          actionUrl: '/trips'
+        }
+      });
+
       return res.status(200).json({ message: "Request sent to host.", booking });
     } catch (error) {
       return res.status(500).json({ message: "Internal Server Error", error: error.message });
@@ -356,6 +385,34 @@ export const bookingController = {
               bookingId: confirmedBooking._id,
             }
           });
+
+          // Notification to Guest
+          await createNotification({
+            userId: guestUser._id,
+            type: NOTIFICATION_TYPES.BOOKING_APPROVED_GUEST,
+            role: 'guest',
+            title: 'Booking Approved!',
+            message: `Your booking for ${booking.listingId.title} is confirmed.`,
+            data: {
+              bookingId: confirmedBooking._id,
+              listingId: booking.listingId._id,
+              actionUrl: `/trips`
+            }
+          });
+
+          // Notification to Host
+          await createNotification({
+            userId: hostUser._id,
+            type: NOTIFICATION_TYPES.BOOKING_APPROVED_HOST,
+            role: 'host',
+            title: 'Booking Confirmed',
+            message: `You accepted the booking for ${booking.listingId.title}.`,
+            data: {
+              bookingId: confirmedBooking._id,
+              listingId: booking.listingId._id,
+              actionUrl: '/host/dashboard'
+            }
+          });
         } catch (err) {
           console.error("Error sending approval emails", err);
         }
@@ -404,6 +461,22 @@ export const bookingController = {
           }
         });
       } catch (e) { console.error("Error sending rejection email", e) }
+
+      // Notification to Guest
+      const guestUser = await Host.findById(booking.userId);
+      if (guestUser) {
+        await createNotification({
+          userId: guestUser._id,
+          type: NOTIFICATION_TYPES.BOOKING_REJECTED_GUEST,
+          role: 'guest',
+          title: 'Booking Rejected',
+          message: `Your booking for ${booking.listingId.title} was rejected.`,
+          data: {
+            listingId: booking.listingId._id,
+            actionUrl: '/'
+          }
+        });
+      }
 
       return res.status(200).json({ message: "Booking rejected." });
 

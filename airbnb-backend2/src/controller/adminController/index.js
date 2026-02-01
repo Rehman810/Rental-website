@@ -2,7 +2,7 @@ import TemporaryListing from "../../model/temporaryLIsting/index.js";
 import ListingModel from '../../model/listingModel/index.js'
 import Host from '../../model/hostModel/index.js'
 import Notification from "../../model/notification/index.js";
-import { notificationController } from "../notificationController/index.js";
+import { createNotification, NOTIFICATION_TYPES } from '../../config/notifications/notificationService.js';
 import { expirePendingBookings } from "../../cron/expirePendingBookings.js";
 import { sendAppEmail, EMAIL_TYPES } from '../../config/email/sendAppEmail.js';
 
@@ -69,11 +69,13 @@ export const adminController = {
       await TemporaryListing.findByIdAndDelete(listingId);
 
 
-      const notification = await notificationController.createNotification({
+      const notification = await createNotification({
         userId: hostData._id,
-        message: 'Your listing has been approved!',
-        listingId: confirmedListing._id,
-        type: 'listing',
+        role: 'host',
+        type: NOTIFICATION_TYPES.LISTING_APPROVED_HOST,
+        title: 'Listing Approved',
+        message: 'Your listing has been approved and is now live!',
+        data: { listingId: confirmedListing._id, actionUrl: `/rooms/${confirmedListing._id}` }
       });
 
 
@@ -163,6 +165,16 @@ export const adminController = {
         payload: {
           userName: host.userName,
         }
+      });
+
+      // DB Notification
+      await createNotification({
+        userId: host._id,
+        role: 'host', // or guest, technically they are same user
+        type: NOTIFICATION_TYPES.CNIC_VERIFIED_USER,
+        title: 'Identity Verified',
+        message: 'Your CNIC has been successfully verified.',
+        data: { actionUrl: '/account-settings' }
       });
     } catch (error) {
       console.error("Error verifying CNIC:", error);

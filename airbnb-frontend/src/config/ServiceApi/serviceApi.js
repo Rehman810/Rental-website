@@ -115,6 +115,23 @@ export const updateDataById = async (endpoint, token, id, data, id2) => {
   }
 };
 
+export const patchDataById = async (endpoint, token, id, data) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  };
+
+  const url = `${apiKey}/${endpoint}/${id}`;
+  try {
+    const response = await axios.patch(url, data, config);
+    return response.data;
+  } catch (error) {
+    throw new Error('Error patching data: ' + error.message);
+  }
+};
+
 export const postData = async (endpoint, data, token, isMultipart = false) => {
   const config = {
     headers: {

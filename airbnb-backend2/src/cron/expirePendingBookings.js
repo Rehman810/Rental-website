@@ -7,7 +7,8 @@ dotenv.config();
 
 const stripeClient = Stripe(process.env.STRIPE_KEY);
 import { sendAppEmail, EMAIL_TYPES } from '../config/email/sendAppEmail.js';
-import Host from '../model/hostModel/index.js'; // Needed if not populated, but populating is better
+import Host from '../model/hostModel/index.js';
+import { createNotification, NOTIFICATION_TYPES } from '../config/notifications/notificationService.js';
 
 export const expirePendingBookings = async () => {
     try {
@@ -68,6 +69,21 @@ export const expirePendingBookings = async () => {
                             guestCapacity: booking.guestCapacity,
                             totalPrice: booking.totalPrice,
                             bookingId: booking._id
+                        }
+                    });
+                }
+
+                // Notification to Guest
+                if (guest) {
+                    await createNotification({
+                        userId: guest._id,
+                        type: NOTIFICATION_TYPES.BOOKING_EXPIRED_GUEST,
+                        role: 'guest',
+                        title: 'Booking Expired',
+                        message: `Request for ${listing?.title || 'listing'} expired (no host response).`,
+                        data: {
+                            listingId: listing?._id,
+                            actionUrl: '/'
                         }
                     });
                 }

@@ -22,6 +22,7 @@ import {
 import LoginModal from "../Login/LoginModal";
 import SearchBar from "../searchBar/searchBar";
 import SearchBar2 from "../searchBar/searchBar2";
+import NotificationBell from "../notifications/NotificationBell";
 import { useNavigate } from "react-router-dom";
 import handleLogout from "../logout/logout";
 import VerifyToken from "../protected/verifyToken";
@@ -328,6 +329,7 @@ const Navbar = () => {
                 ? t("navbar.airbnbYourHome")
                 : t("navbar.switchToHosting")}
             </Button>
+            {token && <NotificationBell />}
             <IconButton>
               <GlobalIcon onClick={toggleModal} />
             </IconButton>

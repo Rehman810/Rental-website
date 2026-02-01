@@ -3,6 +3,7 @@ import cron from 'node-cron';
 import ConfirmedBooking from '../model/confirmBooking/index.js';
 import { sendAppEmail, EMAIL_TYPES } from '../config/email/sendAppEmail.js';
 import { FRONTEND_BASE_URL } from '../config/appConfig.js';
+import { createNotification, NOTIFICATION_TYPES } from '../config/notifications/notificationService.js';
 
 export const sendBookingReminders = async () => {
     try {
@@ -56,6 +57,21 @@ export const sendBookingReminders = async () => {
                     });
                 }
 
+                // Notification to Guest
+                if (guest) {
+                    await createNotification({
+                        userId: guest._id,
+                        type: NOTIFICATION_TYPES.BOOKING_REMINDER_24H_GUEST,
+                        role: 'guest',
+                        title: 'Upcoming Trip',
+                        message: `Your trip to ${listing?.title || 'Listing'} starts tomorrow!`,
+                        data: {
+                            bookingId: booking._id,
+                            actionUrl: '/trips'
+                        }
+                    });
+                }
+
                 // Send to Host
                 if (host && host.email) {
                     await sendAppEmail({
@@ -70,6 +86,21 @@ export const sendBookingReminders = async () => {
                             totalPrice: booking.totalPrice,
                             bookingId: booking._id,
                             actionUrl: `${FRONTEND_BASE_URL}/host/dashboard`
+                        }
+                    });
+                }
+
+                // Notification to Host
+                if (host) {
+                    await createNotification({
+                        userId: host._id,
+                        type: NOTIFICATION_TYPES.BOOKING_REMINDER_24H_HOST,
+                        role: 'host',
+                        title: 'Upcoming Booking',
+                        message: `Guest ${guest?.userName} arrives tomorrow at ${listing?.title}.`,
+                        data: {
+                            bookingId: booking._id,
+                            actionUrl: '/host/dashboard/reservations'
                         }
                     });
                 }

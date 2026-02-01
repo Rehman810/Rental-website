@@ -115,6 +115,7 @@ const SearchBar = () => {
   }, [scrollPosition, setSearchParams, setSearchVisible]);
 
   const handleSearch = () => {
+
     if (!dates?.length) return;
 
     const [startDate, endDate] = dates;
@@ -125,6 +126,7 @@ const SearchBar = () => {
       checkOut: endDate.format("YYYY-MM-DD"),
       guests: guests.adults + guests.children + guests.infants + guests.pets,
     };
+    console.log(payload);
 
     setSearchParams(payload);
     setHasActiveSearch(true);

@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import authUser from '../../model/hostModel/index.js';
 import { sendAppEmail, EMAIL_TYPES } from '../../config/email/sendAppEmail.js';
+import { createNotification, NOTIFICATION_TYPES } from '../../config/notifications/notificationService.js';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -27,6 +28,15 @@ const authController = {
           userName,
           email,
         }
+      });
+
+      await createNotification({
+        userId: user._id,
+        role: 'guest',
+        type: NOTIFICATION_TYPES.AUTH_WELCOME,
+        title: 'Welcome to Airbnb!',
+        message: `Welcome ${userName}, thank you for joining our community.`,
+        data: { actionUrl: '/user/profile' }
       });
 
       res.status(201).json({ message: 'User created successfully', token, user });
@@ -200,6 +210,15 @@ const authController = {
       user.emailVerifyExpiry = undefined;
 
       await user.save();
+
+      await createNotification({
+        userId: user._id,
+        role: 'guest',
+        type: NOTIFICATION_TYPES.AUTH_EMAIL_VERIFIED,
+        title: 'Email Verified',
+        message: 'Your email has been successfully verified.',
+        data: { actionUrl: '/user/profile' }
+      });
 
       res.status(200).json({ message: "Email verified successfully" });
     } catch (error) {

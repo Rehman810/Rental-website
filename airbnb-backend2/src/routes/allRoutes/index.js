@@ -11,7 +11,12 @@ import stripeRoute from "../stripeRoute/index.js"
 import hostSettingsRoute from "../hostSettingsRoute/index.js"
 import hostDashboardRoute from "../hostDashboardRoute/index.js"
 
+import { setSocket } from '../../config/notifications/notificationService.js';
+
 const allRoutes = async (app, io) => {
+    // Initialize socket for notifications
+    setSocket(io);
+
     authRoute(app)
     listingRoute(app)
     bookingRoute(app)

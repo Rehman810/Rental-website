@@ -110,3 +110,13 @@ export const deleteDataById = async (endpoint, id) => {
     throw new Error('Error deleting data: ' + error.message);
   }
 };
+
+export const patchData = async (endpoint, data) => {
+  const config = getAuthConfig();
+  try {
+    const response = await axios.patch(`${apiKey}/${endpoint}`, data, config);
+    return response.data;
+  } catch (error) {
+    throw new Error('Error patching data: ' + error.message);
+  }
+};

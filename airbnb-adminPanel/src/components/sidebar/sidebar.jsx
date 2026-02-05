@@ -11,7 +11,8 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import { Link } from 'react-router-dom'; 
+import { Link } from 'react-router-dom';
+import PeopleIcon from '@mui/icons-material/People';
 import { FaHouse } from "react-icons/fa6";
 import { MdOutlineDomainVerification } from "react-icons/md";
 
@@ -66,10 +67,13 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 export default function Sidebar({ open, handleDrawerClose }) {
   const theme = useTheme();
 
+
+
   const sidebarItems = [
-    // { text: 'Dashboard', icon: <DashboardIcon sx={{ color: '#00203F' }}/>, route: '/' },
-    { text: 'Listings', icon: <FaHouse sx={{ color: '#00203F' }} size={20}/>, route: '/' },
-    { text: 'CNIC Verification', icon: <MdOutlineDomainVerification sx={{ color: '#00203F' }} size={22}/>, route: '/cnic-verification' },
+    { text: 'Dashboard', icon: <DashboardIcon sx={{ color: '#00203F' }} />, route: '/' },
+    { text: 'Listings', icon: <FaHouse sx={{ color: '#00203F' }} size={20} />, route: '/all-products' },
+    { text: 'Host Management', icon: <PeopleIcon sx={{ color: '#00203F' }} />, route: '/admin/hosts' },
+    { text: 'CNIC Verification', icon: <MdOutlineDomainVerification sx={{ color: '#00203F' }} size={22} />, route: '/cnic-verification' },
     // { text: 'Order Details', icon: <DetailsIcon sx={{ color: '#00203F' }}/>, route: '/order-details' },
   ];
 
@@ -77,14 +81,14 @@ export default function Sidebar({ open, handleDrawerClose }) {
     <Drawer variant="permanent" open={open}>
       <DrawerHeader>
         <IconButton onClick={handleDrawerClose}>
-          {theme.direction === 'rtl' ? <ChevronRightIcon sx={{color: "#00203F"}}/> : <ChevronLeftIcon sx={{color: "#313131"}}/>}
+          {theme.direction === 'rtl' ? <ChevronRightIcon sx={{ color: "#00203F" }} /> : <ChevronLeftIcon sx={{ color: "#313131" }} />}
         </IconButton>
       </DrawerHeader>
       <Divider />
       <List>
         {sidebarItems.map(({ text, icon, route }, index) => (
           <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-            <Link to={route} style={{ textDecoration: 'none', color: 'inherit' }}> 
+            <Link to={route} style={{ textDecoration: 'none', color: 'inherit' }}>
               <ListItemButton
                 sx={{
                   minHeight: 48,

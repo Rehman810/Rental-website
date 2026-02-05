@@ -13,43 +13,30 @@ import {
   Button,
   TablePagination,
   Modal,
+  Avatar,
+  Divider,
+  Chip,
 } from "@mui/material";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { fetchData, postDataById } from "../../config/apiServices/apiServices";
 import { showErrorToast, showSuccessToast } from "../../components/toast/toast";
 import Loader from "../../components/loader/loader";
-import { emitEvent, initializeSocket, subscribeToUpdates, unsubscribeFromUpdates } from "../../webSockets/webSockets";
+import {
+  emitEvent,
+  initializeSocket,
+} from "../../webSockets/webSockets";
 
-initializeSocket()
+initializeSocket();
 
 const Listings = () => {
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [products, setProducts] = useState([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [approved, setApproved] = useState(false);
 
   const [selectedListing, setSelectedListing] = useState(null);
   const [openModal, setOpenModal] = useState(false);
-
-  const handleOpenModal = (listing) => {
-    setSelectedListing(listing);
-    setOpenModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setOpenModal(false);
-    setSelectedListing(null);
-  };
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
 
   const paginatedData = products.slice(
     page * rowsPerPage,
@@ -57,126 +44,129 @@ const Listings = () => {
   );
 
   useEffect(() => {
-    const fetchDataFromApi = async () => {
+    const loadListings = async () => {
       setLoading(true);
       try {
-        const response = await fetchData("all-temporary-listings");
-        // console.log(response.listings);
-        setProducts(response.listings);
-      } catch (error) {
-        setError(error.message);
-        console.error("Error fetching data:", error);
+        const res = await fetchData("all-temporary-listings");
+        setProducts(res.listings || []);
+      } catch {
+        showErrorToast("Failed to fetch listings");
       } finally {
         setLoading(false);
         setApproved(false);
       }
     };
-
-    fetchDataFromApi();
-
-    return () => {
-      setProducts([]);
-      setError(null);
-      setLoading(false);
-    };
+    loadListings();
   }, [approved]);
 
-  const Approved = async (id) => {
+  const approveListing = async (id) => {
     try {
-      const response = await postDataById("confirm-listing", {}, id);
-      if (response) {
-        showSuccessToast("Listing Approved");
-        emitEvent("new_notification", {
-          listingId: id,
-        });
-        emitEvent("approved-listings'", {
-          listingId: id,
-        });
-      }
-      console.log(response);
+      await postDataById("confirm-listing", {}, id);
+      showSuccessToast("Listing approved successfully");
+      emitEvent("new_notification", { listingId: id });
       setApproved(true);
-    } catch (error) {
-      console.error("Error during listing:", error);
-      showErrorToast("Listing Approval Failed");
+    } catch {
+      showErrorToast("Approval failed");
     }
   };
 
   return (
     <>
-      {loading && <Loader open={loading} />}
-      {error && <Typography color="error">{error}</Typography>}
-      {!loading && !error && (
+      {loading && <Loader open />}
+
+      {!loading && (
         <>
-          <Typography variant="h5">All Listings:</Typography>
-          <TableContainer component={Paper} sx={{ mt: 3 }}>
+          {/* Page Header */}
+          <Box mb={3}>
+            <Typography variant="h4" fontWeight={700}>
+              Pending Listings
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Review and approve property submissions
+            </Typography>
+          </Box>
+
+          {/* Table */}
+          <TableContainer
+            component={Paper}
+            sx={{
+              borderRadius: 3,
+              boxShadow: "0 12px 30px rgba(0,0,0,0.08)",
+              overflow: "hidden",
+            }}
+          >
             <Table>
               <TableHead>
-                <TableRow>
-                  <TableCell>Listing ID</TableCell>
-                  <TableCell>Profile Photo</TableCell>
-                  <TableCell>Host Name</TableCell>
-                  <TableCell>Phone Number</TableCell>
-                  <TableCell>Email</TableCell>
-                  <TableCell>Action</TableCell>
+                <TableRow sx={{ bgcolor: "#f9fafb" }}>
+                  <TableCell sx={{ fontWeight: 600 }}>Listing</TableCell>
+                  <TableCell sx={{ fontWeight: 600 }}>Host</TableCell>
+                  <TableCell sx={{ fontWeight: 600 }}>Phone</TableCell>
+                  <TableCell sx={{ fontWeight: 600 }}>Email</TableCell>
+                  <TableCell sx={{ fontWeight: 600 }} align="right">
+                    Action
+                  </TableCell>
                 </TableRow>
               </TableHead>
+
               <TableBody>
-                {paginatedData.map((order) => (
-                  <TableRow key={order._id}>
+                {paginatedData.map((listing) => (
+                  <TableRow
+                    key={listing._id}
+                    hover
+                    sx={{ "&:last-child td": { borderBottom: 0 } }}
+                  >
                     {/* Listing ID */}
                     <TableCell>
-                      <Box display="flex" alignItems="center">
-                        <Typography
-                          onClick={() => handleOpenModal(order)}
-                          sx={{
-                            cursor: "pointer",
-                            color: "#3f51b5",
-                            textDecoration: "underline",
-                            marginRight: 1,
-                          }}
-                        >
-                          {order._id}
+                      <Typography
+                        sx={{
+                          cursor: "pointer",
+                          color: "#2563eb",
+                          fontWeight: 500,
+                        }}
+                        onClick={() => {
+                          setSelectedListing(listing);
+                          setOpenModal(true);
+                        }}
+                      >
+                        #{listing._id.slice(-6)}
+                      </Typography>
+                      <Chip
+                        label="Pending"
+                        size="small"
+                        sx={{ mt: 0.5 }}
+                      />
+                    </TableCell>
+
+                    {/* Host */}
+                    <TableCell>
+                      <Box display="flex" alignItems="center" gap={1.5}>
+                        <Avatar
+                          src={listing.hostData?.photoProfile}
+                          alt={listing.hostData?.userName}
+                        />
+                        <Typography fontWeight={500}>
+                          {listing.hostData?.userName}
                         </Typography>
                       </Box>
                     </TableCell>
 
-                    {/* Profile Photo */}
-                    <TableCell>
-                      <Box
-                        component="img"
-                        src={
-                          order.hostData.photoProfile || "/default-profile.png"
-                        }
-                        alt={`${order.hostData.userName} Profile`}
-                        sx={{
-                          width: 40,
-                          height: 40,
-                          borderRadius: "50%",
-                          objectFit: "cover",
-                        }}
-                      />
-                    </TableCell>
+                    <TableCell>{listing.hostData?.phoneNumber}</TableCell>
+                    <TableCell>{listing.hostData?.email}</TableCell>
 
-                    {/* Host Name */}
-                    <TableCell>{order.hostData.userName}</TableCell>
-
-                    {/* Phone Number */}
-                    <TableCell>{order.hostData.phoneNumber}</TableCell>
-
-                    {/* Email */}
-                    <TableCell>{order.hostData.email}</TableCell>
-
-                    <TableCell>
+                    <TableCell align="right">
                       <Button
                         variant="contained"
-                        color="success"
-                        style={{
-                          backgroundColor: "#4CAF50",
+                        startIcon={<CheckCircleOutlineIcon />}
+                        sx={{
+                          bgcolor: "#16a34a",
                           textTransform: "none",
+                          px: 3,
+                          borderRadius: 2,
+                          "&:hover": { bgcolor: "#15803d" },
                         }}
-                        onClick={() => Approved(order._id)}
+                        onClick={() => approveListing(listing._id)}
                       >
-                        Approved
+                        Approve
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -185,221 +175,109 @@ const Listings = () => {
             </Table>
 
             <TablePagination
-              rowsPerPageOptions={[5, 10, 25, 50]}
               component="div"
               count={products.length}
-              rowsPerPage={rowsPerPage}
               page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
+              rowsPerPage={rowsPerPage}
+              rowsPerPageOptions={[5, 10, 25, 50]}
+              onPageChange={(e, p) => setPage(p)}
+              onRowsPerPageChange={(e) => {
+                setRowsPerPage(+e.target.value);
+                setPage(0);
+              }}
             />
           </TableContainer>
-          <Modal
-            open={openModal}
-            onClose={handleCloseModal}
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              padding: 2,
-            }}
-          >
+
+          {/* Listing Review Modal */}
+          <Modal open={openModal} onClose={() => setOpenModal(false)}>
             <Box
               sx={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
                 bgcolor: "background.paper",
                 borderRadius: 4,
-                boxShadow: 24,
-                width: "80%",
-                maxHeight: "90%",
-                overflow: "auto",
+                width: "85%",
+                maxHeight: "90vh",
+                overflowY: "auto",
                 p: 4,
+                boxShadow: 24,
               }}
             >
-              {selectedListing ? (
+              {selectedListing && (
                 <>
-                  {/* Title Section */}
-                  <Typography
-                    variant="h4"
-                    fontWeight="bold"
-                    gutterBottom
-                    sx={{ textAlign: "center", color: "#3f51b5" }}
-                  >
-                    {selectedListing.title || "No Title Available"}
-                  </Typography>
-                  <Typography
-                    variant="body1"
-                    color="var(--text-secondary)"
-                    sx={{ textAlign: "center", mb: 3 }}
-                  >
-                    {selectedListing.description || "No description available"}
+                  <Typography variant="h4" fontWeight={700}>
+                    {selectedListing.title}
                   </Typography>
 
-                  {/* Listing Photos */}
-                  {selectedListing.photos && (
-                    <Box sx={{ mb: 4 }}>
-                      <Typography
-                        variant="h6"
-                        fontWeight="bold"
-                        gutterBottom
-                        sx={{ color: "#3f51b5" }}
-                      >
-                        Listing Photos
-                      </Typography>
-                      <Grid container spacing={2}>
-                        {selectedListing.photos.map((photo, index) => (
-                          <Grid item xs={12} sm={6} md={4} key={index}>
-                            <Box
-                              component="img"
-                              src={photo}
-                              alt={`Photo ${index + 1}`}
-                              sx={{
-                                width: "100%",
-                                height: "150px",
-                                objectFit: "cover",
-                                borderRadius: 2,
-                                boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-                              }}
-                            />
-                          </Grid>
-                        ))}
+                  <Typography color="text.secondary" mt={1}>
+                    {selectedListing.description}
+                  </Typography>
+
+                  <Divider sx={{ my: 3 }} />
+
+                  {/* Photos */}
+                  <Grid container spacing={2}>
+                    {selectedListing.photos?.map((img, i) => (
+                      <Grid item xs={12} sm={6} md={4} key={i}>
+                        <Box
+                          component="img"
+                          src={img}
+                          sx={{
+                            width: "100%",
+                            height: 180,
+                            objectFit: "cover",
+                            borderRadius: 2,
+                          }}
+                        />
                       </Grid>
-                    </Box>
-                  )}
+                    ))}
+                  </Grid>
 
-                  {/* Host Information */}
-                  <Box sx={{ mb: 4 }}>
-                    <Typography
-                      variant="h6"
-                      fontWeight="bold"
-                      gutterBottom
-                      sx={{ color: "#3f51b5" }}
+                  <Divider sx={{ my: 3 }} />
+
+                  {/* Details */}
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} md={6}>
+                      <Typography fontWeight={600}>Host</Typography>
+                      <Typography>
+                        {selectedListing.hostData?.userName}
+                      </Typography>
+                      <Typography color="text.secondary">
+                        {selectedListing.hostData?.email}
+                      </Typography>
+                    </Grid>
+
+                    <Grid item xs={12} md={6}>
+                      <Typography fontWeight={600}>Pricing</Typography>
+                      <Typography>
+                        Weekday: ${selectedListing.weekdayActualPrice}
+                      </Typography>
+                      <Typography>
+                        Weekend: ${selectedListing.weekendActualPrice}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+
+                  <Divider sx={{ my: 3 }} />
+
+                  <Box display="flex" justifyContent="flex-end" gap={2}>
+                    <Button
+                      variant="outlined"
+                      onClick={() => setOpenModal(false)}
                     >
-                      Host Information
-                    </Typography>
-                    <Typography variant="body1">
-                      Name: {selectedListing.hostData?.userName || "N/A"}
-                    </Typography>
-                    <Typography variant="body1">
-                      Email: {selectedListing.hostData?.email || "N/A"}
-                    </Typography>
-                    <Typography variant="body1">
-                      Phone Number:{" "}
-                      {selectedListing.hostData?.phoneNumber || "N/A"}
-                    </Typography>
-                  </Box>
-
-                  {/* Amenities Section */}
-                  <Box sx={{ mb: 4 }}>
-                    <Typography
-                      variant="h6"
-                      fontWeight="bold"
-                      gutterBottom
-                      sx={{ color: "#3f51b5" }}
+                      Close
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="success"
+                      onClick={() => approveListing(selectedListing._id)}
                     >
-                      Amenities
-                    </Typography>
-                    <Typography variant="body1">
-                      {selectedListing.amenities?.join(", ") ||
-                        "No amenities listed"}
-                    </Typography>
-                  </Box>
-
-                  {/* Listing Details */}
-                  <Box sx={{ mb: 4 }}>
-                    <Typography
-                      variant="h6"
-                      fontWeight="bold"
-                      gutterBottom
-                      sx={{ color: "#3f51b5" }}
-                    >
-                      Listing Details
-                    </Typography>
-                    <Typography variant="body1">
-                      Bedrooms: {selectedListing.bedrooms || "N/A"}
-                    </Typography>
-                    <Typography variant="body1">
-                      Beds: {selectedListing.beds || "N/A"}
-                    </Typography>
-                    <Typography variant="body1">
-                      Guest Capacity: {selectedListing.guestCapacity || "N/A"}
-                    </Typography>
-                    <Typography variant="body1">
-                      Place Type: {selectedListing.placeType || "N/A"}
-                    </Typography>
-                    <Typography variant="body1">
-                      Room Type: {selectedListing.roomType || "N/A"}
-                    </Typography>
-                  </Box>
-
-                  {/* Pricing Section */}
-                  <Box sx={{ mb: 4 }}>
-                    <Typography
-                      variant="h6"
-                      fontWeight="bold"
-                      gutterBottom
-                      sx={{ color: "#3f51b5" }}
-                    >
-                      Pricing
-                    </Typography>
-                    <Typography variant="body1">
-                      Weekday Price: ${selectedListing.weekdayActualPrice}
-                    </Typography>
-                    <Typography variant="body1">
-                      Weekend Price: ${selectedListing.weekendActualPrice}
-                    </Typography>
-                  </Box>
-
-                  {/* Address Section */}
-                  <Box sx={{ mb: 4 }}>
-                    <Typography
-                      variant="h6"
-                      fontWeight="bold"
-                      gutterBottom
-                      sx={{ color: "#3f51b5" }}
-                    >
-                      Address
-                    </Typography>
-                    <Typography variant="body1">
-                      {`${selectedListing.flat || ""}, ${selectedListing.street || ""
-                        }, ${selectedListing.town || ""}, ${selectedListing.city || ""
-                        }, ${selectedListing.postcode || ""}`}
-                    </Typography>
-                  </Box>
-
-                  {/* Location (Latitude & Longitude) */}
-                  {/*                   <Box sx={{ mb: 4 }}>
-                    <Typography
-                      variant="h6"
-                      fontWeight="bold"
-                      gutterBottom
-                      sx={{ color: "#3f51b5" }}
-                    >
-                      Location
-                    </Typography>
-                    <Typography variant="body1">
-                      Latitude: {selectedListing.latitude || "N/A"}
-                    </Typography>
-                    <Typography variant="body1">
-                      Longitude: {selectedListing.longitude || "N/A"}
-                    </Typography>
-                  </Box> */}
-
-                  {/* Creation and Update Dates */}
-                  <Box>
-                    <Typography variant="body2" color="var(--text-secondary)">
-                      Created At:{" "}
-                      {new Date(selectedListing.createdAt).toLocaleString()}
-                    </Typography>
-                    <Typography variant="body2" color="var(--text-secondary)">
-                      Updated At:{" "}
-                      {new Date(selectedListing.updatedAt).toLocaleString()}
-                    </Typography>
+                      Approve Listing
+                    </Button>
                   </Box>
                 </>
-              ) : (
-                <Typography variant="body1" align="center">
-                  No details available.
-                </Typography>
               )}
             </Box>
           </Modal>

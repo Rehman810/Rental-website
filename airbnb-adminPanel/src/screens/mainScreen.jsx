@@ -16,6 +16,8 @@ const Listings = lazy(() => import("../pages/orderDetails/orderDetails"));
 const ListingDetails = lazy(() => import("../components/orders/orders"));
 const CNICVerification = lazy(() => import("../pages/cnicVerification/cnicVerification"));
 const UserVerification = lazy(() => import("../pages/userVerification/UserVerification"));
+const HostList = lazy(() => import("../pages/hostManagement/hostList"));
+const HostDetail = lazy(() => import("../pages/hostManagement/hostDetail"));
 
 import "../assets/styles/mainScreen.css";
 
@@ -43,7 +45,10 @@ const MainScreen = () => {
             {/* <Route path="/" element={<Body open={open} body={<DashBoard />}/>} /> */}
 
             {/* Listings Route */}
-            <Route path="/" element={<Body open={open} body={<Listings />} />} />
+            <Route path="/" element={<Body open={open} body={<DashBoard />} />} />
+
+            {/* All Products Route */}
+            <Route path="/all-products" element={<Body open={open} body={<Listings />} />} />
 
             {/* Listing Details Route */}
             <Route path="/listing/:listingId" element={<Body open={open} body={<ListingDetails />} />} />
@@ -53,6 +58,10 @@ const MainScreen = () => {
 
             {/* user-verification Route */}
             <Route path="/user-verification" element={<Body open={open} body={<UserVerification />} />} />
+
+            {/* Host Management Routes */}
+            <Route path="/admin/hosts" element={<Body open={open} body={<HostList />} />} />
+            <Route path="/admin/hosts/:hostId" element={<Body open={open} body={<HostDetail />} />} />
 
             {/* 404 Route */}
             <Route path="*" element={<NotFound />} />

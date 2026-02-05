@@ -27,7 +27,7 @@ const Upcoming = () => {
   useEffect(() => {
     const fetchUpcoming = async () => {
       try {
-        const response = await fetchData("upcoming-bookings", token);
+        const response = await fetchData("upcoming-bookings");
         setUpcomingBookings(response?.upcomingBookings || []);
         setUpcoming(response?.count || 0);
       } catch (error) {

@@ -34,7 +34,7 @@ const CheckingOut = () => {
     const fetchCheckouts = async () => {
       try {
         setLoading(true);
-        const response = await fetchData("bookings-checking-out-today", token);
+        const response = await fetchData("bookings-checking-out-today");
 
         const list = response?.bookingsCheckingOutToday || [];
         setCheckouts(list);

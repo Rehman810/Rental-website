@@ -290,7 +290,7 @@ function ListingSteps() {
       });
     }
     try {
-      const response = await postData("listings", formData, token, true);
+      const response = await postData("listings", formData, true);
       Swal.fire({
         title: "Success!",
         text: "Your listing has been successfully created! It will be reviewed by an admin within 12 hours.",

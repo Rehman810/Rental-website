@@ -170,7 +170,7 @@ const RoomPage = () => {
   useEffect(() => {
     const fetchOptions = async () => {
       try {
-        const response = await fetchDataById("listing", token, roomId);
+        const response = await fetchDataById("listing", roomId);
 
         if (response?.listing) {
           setPlace(response.listing);

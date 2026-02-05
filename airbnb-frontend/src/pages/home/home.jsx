@@ -131,9 +131,7 @@ const Home = () => {
         const queryString = buildQuery(currentFilters);
 
         const data = await fetchData(
-          `api/listings/search?${queryString}`,
-          token || ""
-        );
+          `api/listings/search?${queryString}`);
 
         setListings(data?.results || []);
       } catch (error) {
@@ -172,7 +170,7 @@ const Home = () => {
       const body = { query };
       if (user?._id) body.excludeHostId = user._id;
 
-      const res = await postData("api/search/ai", body, token || "");
+      const res = await postData("api/search/ai", body);
 
       if (res?.success && res?.parsedFilters) {
         const newFilters = { ...filters, ...res.parsedFilters };

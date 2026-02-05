@@ -14,7 +14,7 @@ export const WishlistProvider = ({ children }) => {
     const token = getToken();
     if (token) {
       try {
-        const data = await fetchData("wishlist", token);
+        const data = await fetchData("wishlist");
         // Backend returns schema { items: [{ itemId, type, addedAt }] }
         // We need to map this to the format expected by the UI (Listing objects)
         // Ensure we handle cases where itemId might be null if listing was deleted
@@ -59,7 +59,7 @@ export const WishlistProvider = ({ children }) => {
     const token = getToken();
     if (token) {
       try {
-        await postData("wishlist", { itemId: item._id, type: "property" }, token);
+        await postData("wishlist", { itemId: item._id, type: "property" });
       } catch (error) {
         console.error("Failed to add to backend wishlist", error);
         // Rollback on error?
@@ -76,7 +76,7 @@ export const WishlistProvider = ({ children }) => {
     const token = getToken();
     if (token) {
       try {
-        await deleteDataById("wishlist", token, itemId);
+        await deleteDataById("wishlist", itemId);
       } catch (error) {
         console.error("Failed to remove from backend wishlist", error);
         // Rollback?
@@ -95,7 +95,7 @@ export const WishlistProvider = ({ children }) => {
         // We can do this in parallel
         await Promise.all(
           localWishlist.map((item) =>
-            postData("wishlist", { itemId: item._id, type: "property" }, token)
+            postData("wishlist", { itemId: item._id, type: "property" })
           )
         );
         // Clear local storage after successful sync

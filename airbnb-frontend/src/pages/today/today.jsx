@@ -90,11 +90,11 @@ const ReservationSection = () => {
           upcomingRes,
           confirmedRes,
         ] = await Promise.all([
-          fetchData("temporary-booking", token),
-          fetchData("bookings-checking-out-today", token),
-          fetchData("currently-hosting", token),
-          fetchData("upcoming-bookings", token),
-          fetchData("get-confirmed-booking", token),
+          fetchData("temporary-booking"),
+          fetchData("bookings-checking-out-today"),
+          fetchData("currently-hosting"),
+          fetchData("upcoming-bookings"),
+          fetchData("get-confirmed-booking"),
         ]);
 
         const pendingList = pendingRes?.bookings || [];

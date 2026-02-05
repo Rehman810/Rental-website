@@ -62,7 +62,7 @@ const ProfileSection = () => {
     if (Object.keys(changes).length === 0) return;
 
     try {
-      const res = await updateDataById("update-profile", token, user._id, changes);
+      const res = await updateDataById("update-profile", user._id, changes);
 
       if (res?.updatedHost) {
         const updatedUser = { ...user, ...res.updatedHost };
@@ -96,7 +96,7 @@ const ProfileSection = () => {
         formData.append("profileImage", file);
 
         try {
-          await updateDataById("update-profile", token, user._id, formData);
+          await updateDataById("update-profile", user._id, formData);
           toast.success("Profile photo updated!");
         } catch (error) {
           console.error("Error updating profile photo:", error);
@@ -131,7 +131,7 @@ const ProfileSection = () => {
     const toastId = toast.loading("Uploading CNIC...");
 
     try {
-      const response = await updateDataById("update-profile", token, user._id, formData);
+      const response = await updateDataById("update-profile", user._id, formData);
 
       const updatedUser = response?.updatedHost;
       if (updatedUser) {
@@ -555,7 +555,7 @@ const EmailVerificationDialog = ({ open, onClose, email, token, onSuccess }) => 
     setLoading(true);
     try {
       // POST needs to be imported or used from serviceApi
-      await postData("auth/send-email-verification", { email }, token);
+      await postData("auth/send-email-verification", { email });
       setStep(2);
       toast.success("Verification code sent!");
     } catch (e) {
@@ -570,7 +570,7 @@ const EmailVerificationDialog = ({ open, onClose, email, token, onSuccess }) => 
   const handleVerify = async () => {
     setLoading(true);
     try {
-      await postData("auth/verify-email-code", { email, code }, token);
+      await postData("auth/verify-email-code", { email, code });
       onSuccess({ isEmailVerified: true, emailVerifiedAt: new Date() });
       onClose();
     } catch (e) {

@@ -35,7 +35,7 @@ const Payments = () => {
     useEffect(() => {
         const getStatus = async () => {
             try {
-                const data = await fetchData("api/stripe/status", token);
+                const data = await fetchData("api/stripe/status");
                 setStatus(data);
             } catch (error) {
                 console.error(error);
@@ -49,7 +49,7 @@ const Payments = () => {
     const handleConnect = async () => {
         try {
             setConnecting(true);
-            const response = await postData("api/stripe/connect", {}, token);
+            const response = await postData("api/stripe/connect", {});
             if (response?.url) window.location.href = response.url;
         } catch (error) {
             console.error(error);

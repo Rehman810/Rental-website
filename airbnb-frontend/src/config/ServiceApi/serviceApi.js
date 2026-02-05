@@ -3,7 +3,7 @@ import API_CONFIG from '../Api/Api';
 import { getAuthToken } from '../../utils/cookieUtils';
 
 const { apiKey } = API_CONFIG;
-
+const token = getAuthToken();
 export const loginUser = async (endpoint, data) => {
   try {
     const response = await axios.post(`${apiKey}/${endpoint}`, data);
@@ -23,7 +23,7 @@ export const googleLogin = async (credential) => {
   }
 };
 
-export const fetchData = async (endpoint, token) => {
+export const fetchData = async (endpoint) => {
 
   const config = {
     headers: {
@@ -41,7 +41,7 @@ export const fetchData = async (endpoint, token) => {
   }
 };
 
-export const fetchDataById = async (endpoint, token, id) => {
+export const fetchDataById = async (endpoint, id) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -59,7 +59,7 @@ export const fetchDataById = async (endpoint, token, id) => {
   }
 };
 
-export const deleteDataById = async (endpoint, token, id, id2) => {
+export const deleteDataById = async (endpoint, id, id2) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -78,7 +78,7 @@ export const deleteDataById = async (endpoint, token, id, id2) => {
   }
 };
 
-export const deleteData = async (endpoint, token) => {
+export const deleteData = async (endpoint) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -97,7 +97,7 @@ export const deleteData = async (endpoint, token) => {
   }
 };
 
-export const updateDataById = async (endpoint, token, id, data, id2) => {
+export const updateDataById = async (endpoint, id, data, id2) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -114,7 +114,7 @@ export const updateDataById = async (endpoint, token, id, data, id2) => {
   }
 };
 
-export const patchDataById = async (endpoint, token, id, data) => {
+export const patchDataById = async (endpoint, id, data) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -133,7 +133,7 @@ export const patchDataById = async (endpoint, token, id, data) => {
   }
 };
 
-export const postData = async (endpoint, data, token, isMultipart = false) => {
+export const postData = async (endpoint, data, isMultipart = false) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -152,7 +152,7 @@ export const postData = async (endpoint, data, token, isMultipart = false) => {
   }
 };
 
-export const postDataById = async (endpoint, data, token, id, id2) => {
+export const postDataById = async (endpoint, data, id, id2) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -174,7 +174,7 @@ export const postDataById = async (endpoint, data, token, id, id2) => {
   }
 };
 
-export const postDataByIds = async (endpoint, data, token, id) => {
+export const postDataByIds = async (endpoint, data, id) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -192,7 +192,7 @@ export const postDataByIds = async (endpoint, data, token, id) => {
   }
 };
 
-export const fetchDataByIds = async (endpoint, token, id1, id2) => {
+export const fetchDataByIds = async (endpoint, id1, id2) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -211,8 +211,8 @@ export const fetchDataByIds = async (endpoint, token, id1, id2) => {
 
 
 
-export const createReview = async (data, token) => {
-  return await postData('api/reviews', data, token, true);
+export const createReview = async (data) => {
+  return await postData('api/reviews', data, true);
 };
 
 export const getListingReviews = async (listingId, page = 1, limit = 5) => {
@@ -224,10 +224,10 @@ export const getListingReviews = async (listingId, page = 1, limit = 5) => {
   }
 };
 
-export const respondToReview = async (reviewId, message, token) => {
-  return await postData(`api/reviews/${reviewId}/host-response`, { message }, token);
+export const respondToReview = async (reviewId, message) => {
+  return await postData(`api/reviews/${reviewId}/host-response`, { message });
 };
 
-export const checkCanReview = async (bookingId, token) => {
-  return await fetchData(`api/reviews/can-review/${bookingId}`, token);
+export const checkCanReview = async (bookingId) => {
+  return await fetchData(`api/reviews/can-review/${bookingId}`);
 };

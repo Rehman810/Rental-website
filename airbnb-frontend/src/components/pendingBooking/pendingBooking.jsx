@@ -39,7 +39,7 @@ const PendingBooking = () => {
   const fetchBookings = async () => {
     try {
       setLoading(true);
-      const response = await fetchData("temporary-booking", token);
+      const response = await fetchData("temporary-booking");
       const list = response?.bookings || [];
       setPendingBookings(list);
       setPendingBooking(response?.count || list.length);
@@ -76,7 +76,7 @@ const PendingBooking = () => {
   const handleReject = async (bookingId) => {
     setProcessing(bookingId);
     try {
-      await deleteDataById("reject-booking", token, bookingId);
+      await deleteDataById("reject-booking", bookingId);
 
       setPendingBookings((prev) => prev.filter((b) => b._id !== bookingId));
       setPendingBooking((prev) => Math.max(0, (prev || 0) - 1));

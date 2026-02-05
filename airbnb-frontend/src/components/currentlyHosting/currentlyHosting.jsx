@@ -34,7 +34,7 @@ const CurrentlyHosting = () => {
   const fetchHosting = async () => {
     try {
       setLoading(true);
-      const response = await fetchData("currently-hosting", token);
+      const response = await fetchData("currently-hosting");
 
       const list = response?.currentlyHostingBookings || [];
       setHosting(list);

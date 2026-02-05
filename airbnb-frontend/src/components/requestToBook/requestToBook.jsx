@@ -97,7 +97,7 @@ const BookingComponent = () => {
         guestCapacity: bookingData?.guestCapacity,
       };
 
-      const response = await postDataById("create-bookings", data, token, roomId);
+      const response = await postDataById("create-bookings", data, roomId);
 
       if (!response?.clientSecret) {
         toast.error("Unable to start payment. Please try again.", { id: toastId });
@@ -134,7 +134,7 @@ const BookingComponent = () => {
         if (bookingMode === 'instant') {
           // Instant Book: Capture and Confirm
           try {
-            await postDataById(`confirm-booking`, {}, token, bookingId);
+            await postDataById(`confirm-booking`, {}, bookingId);
             toast.success("Payment successful! Booking confirmed 🎉", { id: toastId });
             setTimeout(() => {
               navigate("/");
@@ -146,7 +146,7 @@ const BookingComponent = () => {
         } else {
           // Request to Book: Mark as Pending Approval
           try {
-            await postDataById(`request-booking`, {}, token, bookingId);
+            await postDataById(`request-booking`, {}, bookingId);
             toast.success("Request sent to host. Waiting for approval.", { id: toastId });
             setTimeout(() => {
               navigate("/");

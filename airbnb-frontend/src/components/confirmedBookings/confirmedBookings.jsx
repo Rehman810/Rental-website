@@ -29,7 +29,7 @@ const ConfirmedBookings = () => {
         const fetchConfirmed = async () => {
             try {
                 setLoading(true);
-                const response = await fetchData("get-confirmed-booking", token);
+                const response = await fetchData("get-confirmed-booking");
 
                 const list = response?.bookings || [];
                 setConfirmed(list);

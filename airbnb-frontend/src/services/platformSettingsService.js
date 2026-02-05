@@ -1,6 +1,7 @@
 import axios from 'axios';
 import API_CONFIG from '../config/Api/Api';
 import { getAuthToken } from '../utils/cookieUtils';
+import apiClient from '../config/ServiceApi/apiClient';
 
 const { apiKey } = API_CONFIG;
 
@@ -16,7 +17,7 @@ export const getPlatformSettings = async () => {
     };
 
     try {
-        const response = await axios.get(`${apiKey}/platform-settings`, config);
+        const response = await apiClient.get(`${apiKey}/platform-settings`, config);
         return response.data;
     } catch (error) {
         console.error('Error fetching platform settings:', error);
@@ -37,7 +38,7 @@ export const updatePlatformSettings = async (settings) => {
     };
 
     try {
-        const response = await axios.put(`${apiKey}/platform-settings`, settings, config);
+        const response = await apiClient.put(`${apiKey}/platform-settings`, settings, config);
         return response.data;
     } catch (error) {
         console.error('Error updating platform settings:', error);

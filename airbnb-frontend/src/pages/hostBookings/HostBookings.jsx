@@ -21,6 +21,7 @@ import {
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import apiClient from '../../config/ServiceApi/apiClient';
 
 const TabPanel = (props) => {
     const { children, value, index, ...other } = props;
@@ -50,12 +51,12 @@ const HostBookings = () => {
         setLoading(true);
         try {
             // Fetch Pending Requests (Temporary Bookings)
-            const pendingRes = await axios.get(`${API_BASE_URL}/temporary-booking`, {
+            const pendingRes = await apiClient.get(`${API_BASE_URL}/temporary-booking`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
             // Fetch Confirmed Bookings
-            const confirmedRes = await axios.get(`${API_BASE_URL}/get-confirmed-booking`, {
+            const confirmedRes = await apiClient.get(`${API_BASE_URL}/get-confirmed-booking`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -87,7 +88,7 @@ const HostBookings = () => {
 
     const handleApprove = async (bookingId) => {
         try {
-            await axios.post(`${API_BASE_URL}/approve-booking/${bookingId}`, {}, {
+            await apiClient.post(`${API_BASE_URL}/approve-booking/${bookingId}`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             toast.success("Booking Approved & Confirmed! 🎉");
@@ -101,7 +102,7 @@ const HostBookings = () => {
     const handleReject = async (bookingId) => {
         if (!window.confirm("Are you sure you want to reject this booking?")) return;
         try {
-            await axios.delete(`${API_BASE_URL}/reject-booking/${bookingId}`, {
+            await apiClient.delete(`${API_BASE_URL}/reject-booking/${bookingId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             toast.success("Booking Rejected");

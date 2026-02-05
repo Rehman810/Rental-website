@@ -1,6 +1,7 @@
 import axios from "axios";
 import API_CONFIG from "../../config/Api/Api";
 import { getAuthToken, clearAuthCookies } from "../../utils/cookieUtils";
+import apiClient from "../../config/ServiceApi/apiClient";
 
 const handleLogout = async (navigate) => {
   const { apiKey } = API_CONFIG;
@@ -18,7 +19,7 @@ const handleLogout = async (navigate) => {
       },
     };
 
-    const response = await axios.post(`${apiKey}/logout`, {}, config);
+    const response = await apiClient.post(`${apiKey}/logout`, {}, config);
 
     window.location.reload();
 

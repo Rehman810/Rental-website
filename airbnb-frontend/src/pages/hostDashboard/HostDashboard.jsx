@@ -35,6 +35,7 @@ import {
     CheckCircleOutlined,
     HomeOutlined,
 } from "@ant-design/icons";
+import apiClient from "../../config/ServiceApi/apiClient";
 
 const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
@@ -84,7 +85,7 @@ const HostDashboardAntd = () => {
             }
             if (filters.status) params.status = filters.status;
 
-            const response = await axios.get(`${API_BASE_URL}/api/host/dashboard/analytics`, {
+            const response = await apiClient.get(`${API_BASE_URL}/api/host/dashboard/analytics`, {
                 headers: { Authorization: `Bearer ${token}` },
                 params,
             });
@@ -110,14 +111,14 @@ const HostDashboardAntd = () => {
     const handleAction = async (action, bookingId) => {
         try {
             if (action === "approve") {
-                await axios.post(
+                await apiClient.post(
                     `${API_BASE_URL}/approve-booking/${bookingId}`,
                     {},
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
                 toast.success("Booking Approved");
             } else {
-                await axios.delete(`${API_BASE_URL}/reject-booking/${bookingId}`, {
+                await apiClient.delete(`${API_BASE_URL}/reject-booking/${bookingId}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 toast.success("Booking Rejected");

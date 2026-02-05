@@ -1,12 +1,13 @@
 import axios from 'axios';
 import API_CONFIG from '../Api/Api';
 import { getAuthToken } from '../../utils/cookieUtils';
+import apiClient from './apiClient';
 
 const { apiKey } = API_CONFIG;
 const token = getAuthToken();
 export const loginUser = async (endpoint, data) => {
   try {
-    const response = await axios.post(`${apiKey}/${endpoint}`, data);
+    const response = await apiClient.post(`${apiKey}/${endpoint}`, data);
     return response.data;
   } catch (error) {
     // showErrorToast(error.message)
@@ -16,7 +17,7 @@ export const loginUser = async (endpoint, data) => {
 
 export const googleLogin = async (credential) => {
   try {
-    const response = await axios.post(`${apiKey}/auth/google`, { credential });
+    const response = await apiClient.post(`${apiKey}/auth/google`, { credential });
     return response.data;
   } catch (error) {
     throw new Error('Error logging in with Google: ' + (error.response?.data?.message || error.message));
@@ -33,7 +34,7 @@ export const fetchData = async (endpoint) => {
   };
 
   try {
-    const response = await axios.get(`${apiKey}/${endpoint}`, config);
+    const response = await apiClient.get(`${apiKey}/${endpoint}`, config);
     const initialData = response.data;
     return initialData;
   } catch (error) {
@@ -50,7 +51,7 @@ export const fetchDataById = async (endpoint, id) => {
   };
 
   try {
-    const response = await axios.get(`${apiKey}/${endpoint}/${id}`, config);
+    const response = await apiClient.get(`${apiKey}/${endpoint}/${id}`, config);
     // console.log(response);
 
     return response.data;
@@ -70,7 +71,7 @@ export const deleteDataById = async (endpoint, id, id2) => {
   const url = id2 ? `${apiKey}/${endpoint}/${id}/${id2}` : `${apiKey}/${endpoint}/${id}`;
 
   try {
-    const response = await axios.delete(url, config);
+    const response = await apiClient.delete(url, config);
     return response.data.data;
   } catch (error) {
     // showErrorToast(error.message)
@@ -89,7 +90,7 @@ export const deleteData = async (endpoint) => {
   const url = `${apiKey}/${endpoint}`;
 
   try {
-    const response = await axios.delete(url, config);
+    const response = await apiClient.delete(url, config);
     return response.data.data;
   } catch (error) {
     // showErrorToast(error.message)
@@ -107,7 +108,7 @@ export const updateDataById = async (endpoint, id, data, id2) => {
 
   const url = id2 ? `${apiKey}/${endpoint}/${id}/${id2}` : `${apiKey}/${endpoint}/${id}`;
   try {
-    const response = await axios.put(url, data, config);
+    const response = await apiClient.put(url, data, config);
     return response.data;
   } catch (error) {
     throw new Error('Error updating data: ' + error.message);
@@ -124,7 +125,7 @@ export const patchDataById = async (endpoint, id, data) => {
 
   const url = `${apiKey}/${endpoint}/${id}`;
   try {
-    const response = await axios.patch(url, data, config);
+    const response = await apiClient.patch(url, data, config);
     console.log(response)
 
     return response.data;
@@ -144,7 +145,7 @@ export const postData = async (endpoint, data, isMultipart = false) => {
   };
 
   try {
-    const response = await axios.post(`${apiKey}/${endpoint}`, data, config);
+    const response = await apiClient.post(`${apiKey}/${endpoint}`, data, config);
     return response.data;
   } catch (error) {
     console.error("Error posting data:", error.response?.data || error.message);
@@ -166,7 +167,7 @@ export const postDataById = async (endpoint, data, id, id2) => {
   try {
     console.log(token);
 
-    const response = await axios.post(url, data, config);
+    const response = await apiClient.post(url, data, config);
     return response.data;
   } catch (error) {
     // showErrorToast(error.message)
@@ -183,7 +184,7 @@ export const postDataByIds = async (endpoint, data, id) => {
   };
 
   try {
-    const response = await axios.post(`${apiKey}/${endpoint}/786/${id}`, data, config);
+    const response = await apiClient.post(`${apiKey}/${endpoint}/786/${id}`, data, config);
     emitEvent('send_message', response.data);
     return response.data;
   } catch (error) {
@@ -201,7 +202,7 @@ export const fetchDataByIds = async (endpoint, id1, id2) => {
   };
 
   try {
-    const response = await axios.get(`${apiKey}/${endpoint}/${id1}/${id2}`, config);
+    const response = await apiClient.get(`${apiKey}/${endpoint}/${id1}/${id2}`, config);
     return response.data.data;
   } catch (error) {
     throw new Error('Error fetching data: ' + error.message);
@@ -217,7 +218,7 @@ export const createReview = async (data) => {
 
 export const getListingReviews = async (listingId, page = 1, limit = 5) => {
   try {
-    const response = await axios.get(`${apiKey}/api/reviews/listing/${listingId}?page=${page}&limit=${limit}`);
+    const response = await apiClient.get(`${apiKey}/api/reviews/listing/${listingId}?page=${page}&limit=${limit}`);
     return response.data;
   } catch (error) {
     throw new Error('Error fetching reviews: ' + error.message);

@@ -39,7 +39,7 @@ const Protected = ({
             },
           }
         );
-// console.log(response);
+        // console.log(response);
 
         if (response.data.code !== 200) {
           handleUnauthorized();

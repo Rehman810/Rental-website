@@ -33,6 +33,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import CheckIcon from '@mui/icons-material/Check';
 import { Menu, MenuItem, Stack as MuiStack, Dialog, DialogTitle, DialogContent, DialogActions, FormControl, InputLabel, Select, Switch, FormControlLabel } from "@mui/material"; // Stack already imported as Stack
 import { APP_NAME } from "../../config/env";
+import apiClient from "../../config/ServiceApi/apiClient";
 
 const AvailabilityModal = ({ open, onClose, listing, token, onUpdate }) => {
   const [formData, setFormData] = useState({});
@@ -73,7 +74,7 @@ const AvailabilityModal = ({ open, onClose, listing, token, onUpdate }) => {
       // In state, I'll store it as 'default', 'true', 'false' string for Select, or just handle it carefully.
       // Let's refine state handling for Selects to be cleaner.
 
-      await axios.put(`${API_BASE_URL}/listing/${listing._id}/availability`, payload, {
+      await apiClient.put(`${API_BASE_URL}/listing/${listing._id}/availability`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success("Availability rules updated");
@@ -305,7 +306,7 @@ const CancellationPolicyModal = ({ open, onClose, listing, token, onUpdate }) =>
 
   const fetchPolicies = async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/api/cancellation-policies`, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await apiClient.get(`${API_BASE_URL}/api/cancellation-policies`, { headers: { Authorization: `Bearer ${token}` } });
       setPolicies(res.data);
     } catch (err) { console.error(err); }
   };
@@ -326,7 +327,7 @@ const CancellationPolicyModal = ({ open, onClose, listing, token, onUpdate }) =>
       }
     };
     try {
-      const res = await axios.post(`${API_BASE_URL}/api/cancellation-policies`, payload, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await apiClient.post(`${API_BASE_URL}/api/cancellation-policies`, payload, { headers: { Authorization: `Bearer ${token}` } });
       setPolicies([...policies, res.data]);
       setSelectedPolicyId(res.data._id);
       setCreatingCustom(false);
@@ -337,7 +338,7 @@ const CancellationPolicyModal = ({ open, onClose, listing, token, onUpdate }) =>
   const handleSave = async () => {
     setLoading(true);
     try {
-      await axios.put(`${API_BASE_URL}/listing/${listing._id}/cancellation-policy`, { policyId: selectedPolicyId }, { headers: { Authorization: `Bearer ${token}` } });
+      await apiClient.put(`${API_BASE_URL}/listing/${listing._id}/cancellation-policy`, { policyId: selectedPolicyId }, { headers: { Authorization: `Bearer ${token}` } });
       toast.success("Policy updated");
       onUpdate();
       onClose();
@@ -664,7 +665,7 @@ const ListingPage = () => {
       handleClose();
       const toastId = toast.loading("Updating booking mode...");
       try {
-        await axios.put(`${API_BASE_URL}/listing/${item._id}/booking-mode`, { bookingMode: mode }, {
+        await apiClient.put(`${API_BASE_URL}/listing/${item._id}/booking-mode`, { bookingMode: mode }, {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success("Updated!", { id: toastId });
@@ -928,7 +929,7 @@ const ListingPage = () => {
                 const confirm = window.confirm("This will reset ALL your listings to use your Host Settings default. Continue?");
                 if (confirm) {
                   try {
-                    await axios.post(`${API_BASE_URL}/listings/migrate-modes`, {}, {
+                    await apiClient.post(`${API_BASE_URL}/listings/migrate-modes`, {}, {
                       headers: { Authorization: `Bearer ${token}` }
                     });
                     window.location.reload();
@@ -1136,7 +1137,7 @@ const GuestRequirementsModal = ({ open, onClose, listing, token, onUpdate }) => 
         minAccountAgeDays: formData.minAccountAgeDays === undefined || formData.minAccountAgeDays === "" ? null : Number(formData.minAccountAgeDays)
       };
 
-      await axios.put(`${API_BASE_URL}/listing/${listing._id}/guest-requirements`, payload, {
+      await apiClient.put(`${API_BASE_URL}/listing/${listing._id}/guest-requirements`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success("Guest requirements updated");

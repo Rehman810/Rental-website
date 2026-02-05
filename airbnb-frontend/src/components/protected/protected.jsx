@@ -5,6 +5,7 @@ import API_CONFIG from "../../config/Api/Api";
 import Loader from "../loader/loader";
 import LoginModal from "../Login/LoginModal";
 import { getAuthToken, clearAuthCookies } from "../../utils/cookieUtils";
+import apiClient from "../../config/ServiceApi/apiClient";
 
 const Protected = ({ Component, allowedRoles }) => {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ const Protected = ({ Component, allowedRoles }) => {
     const verifyTokenWithBackend = async () => {
       try {
         const { apiKey } = API_CONFIG;
-        const response = await axios.post(
+        const response = await apiClient.post(
           `${apiKey}/verify-token`,
           {},
           {

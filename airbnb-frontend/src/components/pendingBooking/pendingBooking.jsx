@@ -60,7 +60,7 @@ const PendingBooking = () => {
   const handleAccept = async (bookingId) => {
     setProcessing(bookingId);
     try {
-      await postDataById("confirm-booking", {}, token, bookingId);
+      await postDataById("confirm-booking", {}, bookingId);
 
       setPendingBookings((prev) => prev.filter((b) => b._id !== bookingId));
       setPendingBooking((prev) => Math.max(0, (prev || 0) - 1));

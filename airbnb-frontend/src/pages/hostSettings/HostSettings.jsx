@@ -23,6 +23,7 @@ import {
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { API_BASE_URL } from '../../config/env';
+import apiClient from '../../config/ServiceApi/apiClient';
 
 const HostSettings = () => {
     const [loading, setLoading] = useState(true);
@@ -63,7 +64,7 @@ const HostSettings = () => {
 
     const fetchSettings = async () => {
         try {
-            const response = await axios.get(`${API_BASE_URL}/host/settings`, {
+            const response = await apiClient.get(`${API_BASE_URL}/host/settings`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (response.data.settings) {
@@ -80,7 +81,7 @@ const HostSettings = () => {
     const handleSave = async () => {
         setSaving(true);
         try {
-            await axios.put(`${API_BASE_URL}/host/settings`, { settings }, {
+            await apiClient.put(`${API_BASE_URL}/host/settings`, { settings }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             toast.success("Settings saved successfully!");

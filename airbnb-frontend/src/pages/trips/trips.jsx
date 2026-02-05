@@ -31,6 +31,7 @@ import axios from 'axios';
 import { API_BASE_URL } from "../../config/env";
 
 import { getAuthToken } from "../../utils/cookieUtils";
+import apiClient from "../../config/ServiceApi/apiClient";
 // ...
 const Trips = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -150,7 +151,7 @@ const Trips = () => {
 
   const handleConfirmCancel = async () => {
     try {
-      await axios.post(`${API_BASE_URL}/bookings/${tripToCancel._id}/cancel`, {}, {
+      await apiClient.post(`${API_BASE_URL}/bookings/${tripToCancel._id}/cancel`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success("Booking cancelled");

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import API_CONFIG from "../../config/Api/Api";
 import { getAuthToken } from "../../utils/cookieUtils";
+import apiClient from "../../config/ServiceApi/apiClient";
 
 const VerifyToken = ({ VerifiedComponent, UnverifiedComponent, ...props }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -15,7 +16,7 @@ const VerifyToken = ({ VerifiedComponent, UnverifiedComponent, ...props }) => {
         throw new Error("No token found");
       }
 
-      const response = await axios.post(
+      const response = await apiClient.post(
         `${apiKey}/verify-token`,
         {},
         {

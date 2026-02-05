@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { getAuthToken, getAuthUser } from "../../utils/cookieUtils";
 import {
   AppBar,
   Toolbar,
@@ -60,8 +61,8 @@ const NavbarHost = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const [notifications, setNotifications] = useState([]);
-  const user = JSON.parse(localStorage.getItem("user"));
-  const token = localStorage.getItem("token");
+  const user = getAuthUser();
+  const token = getAuthToken();
 
   const isMobile = useMediaQuery("(max-width:900px)");
   const isHostArea = location.pathname.includes("hosting");

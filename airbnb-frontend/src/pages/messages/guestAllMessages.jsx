@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { getAuthToken, getAuthUser } from "../../utils/cookieUtils";
 import {
   Box,
   TextField,
@@ -25,16 +26,15 @@ import useDocumentTitle from "../../hooks/dynamicTitle/dynamicTitle";
 import { APP_NAME } from "../../config/env";
 
 initializeSocket();
-
 const GuestAllMessages = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [senders, setSenders] = useState([]);
   const [selectedSenderId, setSelectedSenderId] = useState(null);
   const [showChat, setShowChat] = useState(false);
-  const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user"));
-  const receiverId = user._id;
+  const token = getAuthToken();
+  const user = getAuthUser();
+  const receiverId = user?._id;
   const messagesEndRef = useRef(null);
 
   useDocumentTitle(selectedSenderId ? `${senders.find((s) => s.id === selectedSenderId)?.name} - ${APP_NAME}` : `Messages - ${APP_NAME}`);

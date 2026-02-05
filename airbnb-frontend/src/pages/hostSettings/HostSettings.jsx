@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getAuthToken } from "../../utils/cookieUtils";
 import {
     Box,
     Container,
@@ -51,9 +52,10 @@ const HostSettings = () => {
             checkInFrom: "14:00",
             checkOutBy: "11:00"
         }
+
     });
 
-    const token = localStorage.getItem('token');
+    const token = getAuthToken();
 
     useEffect(() => {
         fetchSettings();

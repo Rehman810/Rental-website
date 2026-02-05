@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { setAuthCookies, getAuthToken, getAuthUser } from "../../utils/cookieUtils";
 import {
   Grid,
   Typography,
@@ -31,7 +32,7 @@ import { updateDataById } from "../../config/ServiceApi/serviceApi";
 import toast from "react-hot-toast";
 
 const ProfileSection = () => {
-  const initialUser = JSON.parse(localStorage.getItem("user"));
+  const initialUser = getAuthUser();
   const [user, setUser] = useState(initialUser);
 
   const [isEditing, setIsEditing] = useState(false);
@@ -44,14 +45,14 @@ const ProfileSection = () => {
   const [frontImage, setFrontImage] = useState(null);
   const [backImage, setBackImage] = useState(null);
 
-  const token = localStorage.getItem("token");
+  const token = getAuthToken();
 
   const isCnicUploaded = useMemo(() => {
-    return Array.isArray(initialUser?.CNIC?.images) && initialUser.CNIC.images.length > 0;
+    return initialUser?.isCNICUploaded || false;
   }, [initialUser]);
 
   const isVerifiedCnic = useMemo(() => {
-    return initialUser?.CNIC?.isVerified || false;
+    return initialUser?.isCNICVerified || false;
   }, [initialUser]);
 
   const handleSaveProfile = async () => {
@@ -65,7 +66,7 @@ const ProfileSection = () => {
 
       if (res?.updatedHost) {
         const updatedUser = { ...user, ...res.updatedHost };
-        localStorage.setItem("user", JSON.stringify(updatedUser));
+        setAuthCookies(token, updatedUser);
         setUser(updatedUser);
         setEditedFields({});
         toast.success("Profile updated successfully!");
@@ -88,7 +89,7 @@ const ProfileSection = () => {
         // update local
         const updatedUser = { ...user, photoProfile: newPhoto };
         setUser(updatedUser);
-        localStorage.setItem("user", JSON.stringify(updatedUser));
+        setAuthCookies(token, updatedUser);
 
         // upload server
         const formData = new FormData();
@@ -134,7 +135,7 @@ const ProfileSection = () => {
 
       const updatedUser = response?.updatedHost;
       if (updatedUser) {
-        localStorage.setItem("user", JSON.stringify(updatedUser));
+        setAuthCookies(token, updatedUser);
         setUser(updatedUser);
       }
 
@@ -532,7 +533,7 @@ const ProfileSection = () => {
         onSuccess={(updatedUser) => {
           const merged = { ...user, ...updatedUser };
           setUser(merged);
-          localStorage.setItem("user", JSON.stringify(merged));
+          setAuthCookies(token, merged);
           toast.success("Email verified successfully!");
         }}
       />

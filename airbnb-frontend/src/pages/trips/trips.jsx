@@ -30,13 +30,15 @@ import LeaveReviewModal from "../../components/reviews/LeaveReviewModal";
 import axios from 'axios';
 import { API_BASE_URL } from "../../config/env";
 
+import { getAuthToken } from "../../utils/cookieUtils";
+// ...
 const Trips = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
   const [activeTripIndex, setActiveTripIndex] = useState(null);
 
   const [trips, setTrips] = useState([]);
-  const token = localStorage.getItem("token");
+  const token = getAuthToken();
 
   const [userReviews, setUserReviews] = useState({});
   const [leaveReviewOpen, setLeaveReviewOpen] = useState(false);
@@ -46,7 +48,7 @@ const Trips = () => {
 
   const fetchTrips = async () => {
     try {
-      const response = await fetchData("guest-bookings", token);
+      const response = await fetchData("guest-bookings");
       setTrips(response?.userBookings || []);
     } catch (e) {
       console.error(e);

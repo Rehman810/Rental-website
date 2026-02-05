@@ -1,11 +1,12 @@
 import axios from "axios";
 import API_CONFIG from "../../config/Api/Api";
+import { getAuthToken, clearAuthCookies } from "../../utils/cookieUtils";
 
 const handleLogout = async (navigate) => {
   const { apiKey } = API_CONFIG;
 
   try {
-    const token = localStorage.getItem("token");
+    const token = getAuthToken();
 
     if (!token) {
       throw new Error("No token found");
@@ -21,11 +22,13 @@ const handleLogout = async (navigate) => {
 
     window.location.reload();
 
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    clearAuthCookies();
     navigate("/");
   } catch (error) {
     console.error("Logout error:", error.message || error);
+    // Even if API logout fails, clear local cookies
+    clearAuthCookies();
+    navigate("/");
   }
 };
 

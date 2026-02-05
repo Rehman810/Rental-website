@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { getAuthToken, getAuthUser } from "../../utils/cookieUtils";
 import { API_BASE_URL } from "../../config/env";
 import {
   Box,
@@ -556,6 +557,7 @@ const CancellationPolicyModal = ({ open, onClose, listing, token, onUpdate }) =>
   );
 };
 
+
 const ListingPage = () => {
   const [listing, setListing] = useState([]);
   const [tempListing, setTempListing] = useState([]);
@@ -569,13 +571,13 @@ const ListingPage = () => {
 
   useDocumentTitle("Listings - " + APP_NAME);
 
-  const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user"));
+  const token = getAuthToken();
+  const user = getAuthUser();
 
   useEffect(() => {
     const fetchOptions = async () => {
       try {
-        const response = await fetchDataById("listings", token, user?._id);
+        const response = await fetchDataById("listings", user?._id);
         setListing(response?.confirmedListings || []);
         setTempListing(response?.temporaryListings || []);
       } catch (error) {

@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
+import { getAuthToken } from "../utils/cookieUtils";
 import { fetchData, postData, deleteDataById } from "../config/ServiceApi/serviceApi";
 
 const WishlistContext = createContext();
@@ -7,7 +8,7 @@ export const WishlistProvider = ({ children }) => {
   const [wishlist, setWishlist] = useState([]);
 
   // Helper to check auth
-  const getToken = () => localStorage.getItem("token");
+  const getToken = () => getAuthToken();
 
   const refreshWishlist = async () => {
     const token = getToken();

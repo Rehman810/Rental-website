@@ -25,6 +25,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { GoogleLogin } from '@react-oauth/google';
 import { googleLogin } from '../../config/ServiceApi/serviceApi';
 import { useWishlist } from "../../context/wishlistProvider";
+import { setAuthCookies } from "../../utils/cookieUtils";
 
 const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
   const { mergeLocalToBackend } = useWishlist();
@@ -42,8 +43,7 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
       const res = await googleLogin(credential);
 
       if (res) {
-        localStorage.setItem("token", res.token);
-        localStorage.setItem("user", JSON.stringify(res.user));
+        setAuthCookies(res.token, res.user);
 
         await mergeLocalToBackend();
 
@@ -73,8 +73,7 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
         : loginUser("login", { email: data.email, password: data.password }));
 
       if (res) {
-        localStorage.setItem("token", res.token);
-        localStorage.setItem("user", JSON.stringify(res.user));
+        setAuthCookies(res.token, res.user);
 
         await mergeLocalToBackend();
 

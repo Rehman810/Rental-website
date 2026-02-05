@@ -88,6 +88,7 @@ export const initializeSocket = () => {
       reconnectionDelay: 1000, // Initial delay (in ms) between retries
       reconnectionDelayMax: 5000, // Max delay (in ms) between retries
       query: { apiKey }, // Optional: Add API key or other query params
+      withCredentials: true,
     });
 
     // Connection events

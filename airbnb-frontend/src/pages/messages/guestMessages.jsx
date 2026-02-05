@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { getAuthToken, getAuthUser } from "../../utils/cookieUtils";
 import { Box, TextField, Button, Typography, IconButton } from "@mui/material";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
@@ -11,7 +12,7 @@ import {
 import SendIcon from "@mui/icons-material/Send";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
-initializeSocket(); 
+initializeSocket();
 
 const GuestMessages = () => {
   const { hostId } = useParams();
@@ -21,8 +22,8 @@ const GuestMessages = () => {
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
-  const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user"));
+  const token = getAuthToken();
+  const user = getAuthUser();
   const senderId = user?._id;
   const messagesEndRef = useRef(null);
 

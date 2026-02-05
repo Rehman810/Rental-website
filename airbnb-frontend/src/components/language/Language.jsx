@@ -1,4 +1,5 @@
 import React from "react";
+import { getAuthToken } from "../../utils/cookieUtils";
 import {
   Dialog,
   DialogContent,
@@ -47,7 +48,7 @@ const Language = ({ open, toggleModal }) => {
           setLanguage({ code: lng.code, lang: lng.lang });
           changeLanguage(lng.code);
 
-          const token = localStorage.getItem('token');
+          const token = getAuthToken();
           if (token) {
             import('../../services/platformSettingsService.js').then(({ updatePlatformSettings }) => {
               updatePlatformSettings({ language: lng.code }, token).catch(err => console.error(err));

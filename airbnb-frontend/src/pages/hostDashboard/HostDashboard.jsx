@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { getAuthToken } from "../../utils/cookieUtils";
 import axios from "axios";
 import dayjs from "dayjs";
 import { toast } from "react-hot-toast";
@@ -58,6 +59,7 @@ const softHover = {
     transition: "all .2s ease",
 };
 
+
 const HostDashboardAntd = () => {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState(null);
@@ -69,7 +71,7 @@ const HostDashboardAntd = () => {
         status: "",
     });
 
-    const token = localStorage.getItem("token");
+    const token = getAuthToken();
 
     const fetchDashboardData = async () => {
         try {

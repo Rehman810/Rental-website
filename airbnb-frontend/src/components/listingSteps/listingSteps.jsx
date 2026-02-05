@@ -1,4 +1,5 @@
 import React, { lazy, useEffect, useState } from "react";
+import { getAuthToken } from "../../utils/cookieUtils";
 import {
   AppBar,
   Toolbar,
@@ -237,10 +238,11 @@ function ListingSteps() {
     weekendPrice,
     resetListingState,
     contextLatitude,
+
     contextLongitude,
   } = useAppContext();
 
-  const token = localStorage.getItem("token");
+  const token = getAuthToken();
   const navigate = useNavigate();
   useDocumentTitle("Create your listing - Airbnb");
   const theme = useTheme();

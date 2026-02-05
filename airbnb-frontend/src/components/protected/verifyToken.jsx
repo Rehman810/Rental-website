@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import API_CONFIG from "../../config/Api/Api";
+import { getAuthToken } from "../../utils/cookieUtils";
 
 const VerifyToken = ({ VerifiedComponent, UnverifiedComponent, ...props }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
-  const token = localStorage.getItem("token");
+  const token = getAuthToken();
 
   const verifyTokenWithBackend = async () => {
     try {
@@ -35,10 +36,10 @@ const VerifyToken = ({ VerifiedComponent, UnverifiedComponent, ...props }) => {
   }, [token]);
 
   return isAuthenticated === null
-    ? <p></p> 
+    ? <p></p>
     : isAuthenticated
-    ? <VerifiedComponent {...props} />
-    : <UnverifiedComponent {...props} />;
+      ? <VerifiedComponent {...props} />
+      : <UnverifiedComponent {...props} />;
 };
 
 export default VerifyToken;

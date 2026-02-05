@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { getAuthToken, getAuthUser } from "../../utils/cookieUtils";
 import { APP_NAME } from "../../config/env";
 import {
   AppBar,
@@ -214,8 +215,9 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [signUp, isSignUp] = useState();
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user"));
+  const token = getAuthToken();
+  const user = getAuthUser();
+  console.log(user);
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -372,7 +374,7 @@ const Navbar = () => {
                 }}
                 src={user?.photoProfile || null}
               >
-                {!user?.photoProfile && user?.userName.charAt(0).toUpperCase()}
+                {!user?.photoProfile && user?.userName?.charAt(0)?.toUpperCase()}
               </Avatar>
             </Box>
 

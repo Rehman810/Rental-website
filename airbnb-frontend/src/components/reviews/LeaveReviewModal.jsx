@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getAuthToken } from "../../utils/cookieUtils";
 import {
     Dialog, DialogTitle, DialogContent, DialogActions,
     Box, Typography, Rating, TextField, Button, IconButton,
@@ -84,11 +85,12 @@ const LeaveReviewModal = ({ open, onClose, listingId, bookingId, onReviewSubmitt
             formData.append('photos', photo);
         });
 
-        try {
-            const user = localStorage.getItem('token');
-            if (!user) throw new Error('Not authenticated');
 
-            await createReview(formData, user);
+        try {
+            const token = getAuthToken();
+            if (!token) throw new Error('Not authenticated');
+
+            await createReview(formData);
             toast.success('Review submitted successfully!');
             onReviewSubmitted();
             onClose();

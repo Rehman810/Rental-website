@@ -147,8 +147,8 @@ const ReviewsSection = ({ listingId, currentUser, listingHostId }) => {
 
         setSubmittingResponse(true);
         try {
-            const token = localStorage.getItem("token");
-            await respondToReview(activeReviewId, responseText, token);
+            // Token is handled internally by serviceApi
+            await respondToReview(activeReviewId, responseText);
 
             toast.success("Response posted");
             setResponseModalOpen(false);

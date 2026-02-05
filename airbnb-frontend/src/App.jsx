@@ -1,4 +1,5 @@
 import React, { lazy, Suspense, useEffect } from "react";
+import { getAuthToken } from "./utils/cookieUtils";
 import Loader from "./components/loader/loader";
 
 const Router = lazy(() => import("./config/router/router"));
@@ -16,12 +17,17 @@ const App = () => {
   const { setLanguage } = useAppContext();
   const { i18n } = useTranslation();
 
+
   useEffect(() => {
     const initSettings = async () => {
-      const token = localStorage.getItem('token');
+      // Check if logged in. getPlatformSettings handles internal token retrieval, 
+      // but we can check existence first to avoid call if not logged in.
+      // But getAuthToken is synchronous.
+
+      const token = getAuthToken();
       if (token) {
         try {
-          const settings = await getPlatformSettings(token);
+          const settings = await getPlatformSettings();
           if (settings) {
             // Sync App Mode
             if (settings.appMode) {

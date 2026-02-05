@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { getAuthToken } from "../../utils/cookieUtils";
 import {
   Box,
   Typography,
@@ -21,11 +22,12 @@ import EmailIcon from "@mui/icons-material/Email";
 import { fetchData } from "../../config/ServiceApi/serviceApi";
 import { useBookingContext } from "../../context/booking";
 
+
 const CheckingOut = () => {
   const [checkouts, setCheckouts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const token = localStorage.getItem("token");
+  const token = getAuthToken();
   const { setCheckingOut } = useBookingContext();
 
   useEffect(() => {

@@ -15,15 +15,17 @@ import {
 import { fetchData } from "../../config/ServiceApi/serviceApi";
 import dayjs from "dayjs";
 
+import { getAuthToken } from "../../utils/cookieUtils";
+// ...
 const HostBookingsCalendar = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
-  const token = localStorage.getItem("token");
+  const token = getAuthToken();
 
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const response = await fetchData("confirmed-booking-dates", token);
+        const response = await fetchData("confirmed-booking-dates");
 
         const formattedBookings = (response?.bookingDates || []).map((booking) => {
           const guestName =

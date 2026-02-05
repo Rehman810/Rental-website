@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { getAuthToken } from '../utils/cookieUtils';
 
 const ThemeContext = createContext();
 
@@ -37,15 +38,16 @@ export const ThemeProvider = ({ children }) => {
         return () => mediaQuery.removeEventListener('change', handleChange);
     }, [themeMode]);
 
+
     const toggleTheme = (mode, persist = true) => {
         setThemeMode(mode);
         if (persist) {
-            const token = localStorage.getItem('token');
+            const token = getAuthToken();
             if (token) {
                 // We don't await here to ensure instant UI feedback (optimistic update)
                 // Errors should be handled silently or with a global toast consumer if needed
                 import('../services/platformSettingsService.js').then(({ updatePlatformSettings }) => {
-                    updatePlatformSettings({ appMode: mode }, token).catch(err => console.error("Failed to persist theme", err));
+                    updatePlatformSettings({ appMode: mode }).catch(err => console.error("Failed to persist theme", err));
                 });
             }
         }

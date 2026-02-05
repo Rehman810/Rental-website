@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { getAuthToken, getAuthUser } from "../../utils/cookieUtils";
 import {
   Box,
   Button,
@@ -22,7 +23,7 @@ const ReservationSection = () => {
   const [selectedTab, setSelectedTab] = useState("Pending Booking");
   useDocumentTitle("Host Dashboard - " + APP_NAME);
 
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = getAuthUser();
   const {
     checkingOut,
     pendingBooking,
@@ -78,7 +79,7 @@ const ReservationSection = () => {
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(" ");
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = getAuthToken();
 
     const fetchAllCounts = async () => {
       try {

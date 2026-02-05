@@ -4,6 +4,7 @@ import axios from "axios";
 import API_CONFIG from "../../config/Api/Api";
 import Loader from "../loader/loader";
 import LoginModal from "../Login/LoginModal";
+import { getAuthToken, clearAuthCookies } from "../../utils/cookieUtils";
 
 const Protected = ({ Component, allowedRoles }) => {
   const navigate = useNavigate();
@@ -14,11 +15,10 @@ const Protected = ({ Component, allowedRoles }) => {
   const [signUp, setSignUp] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = getAuthToken();
 
     if (!token) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+      clearAuthCookies();
     }
 
     const verifyTokenWithBackend = async () => {
@@ -37,8 +37,7 @@ const Protected = ({ Component, allowedRoles }) => {
         setIsAuthenticated(true);
       } catch (error) {
         setIsLoginModalOpen(true);
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+        clearAuthCookies();
       }
     };
 

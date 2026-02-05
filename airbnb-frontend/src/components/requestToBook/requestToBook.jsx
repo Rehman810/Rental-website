@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { getAuthToken, getAuthUser } from "../../utils/cookieUtils";
 import {
   Box,
   Grid,
@@ -27,12 +28,13 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import toast from "react-hot-toast";
 import { CURRENCY } from "../../config/env";
 
+
 const BookingComponent = () => {
   const { bookListing, bookingData } = useBookingContext();
   const navigate = useNavigate();
   const { roomId } = useParams();
-  const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user"));
+  const token = getAuthToken();
+  const user = getAuthUser();
 
   const stripe = useStripe();
   const elements = useElements();

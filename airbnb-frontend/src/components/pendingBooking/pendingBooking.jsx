@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { getAuthToken } from "../../utils/cookieUtils";
 import {
   Box,
   Typography,
@@ -26,12 +27,13 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CloseIcon from "@mui/icons-material/Close";
 import toast from "react-hot-toast";
 
+
 const PendingBooking = () => {
   const [pendingBookings, setPendingBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(null);
 
-  const token = localStorage.getItem("token");
+  const token = getAuthToken();
   const { setPendingBooking } = useBookingContext();
 
   const fetchBookings = async () => {

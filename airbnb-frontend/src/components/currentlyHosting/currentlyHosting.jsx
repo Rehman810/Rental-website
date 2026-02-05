@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { getAuthToken } from "../../utils/cookieUtils";
 import {
   Box,
   Typography,
@@ -22,11 +23,12 @@ import PersonIcon from "@mui/icons-material/Person";
 import { fetchData } from "../../config/ServiceApi/serviceApi";
 import { useBookingContext } from "../../context/booking";
 
+
 const CurrentlyHosting = () => {
   const [hosting, setHosting] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const token = localStorage.getItem("token");
+  const token = getAuthToken();
   const { setCurrentlyHosting } = useBookingContext();
 
   const fetchHosting = async () => {

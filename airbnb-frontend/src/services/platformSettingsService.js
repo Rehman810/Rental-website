@@ -1,9 +1,13 @@
 import axios from 'axios';
 import API_CONFIG from '../config/Api/Api';
+import { getAuthToken } from '../utils/cookieUtils';
 
 const { apiKey } = API_CONFIG;
 
-export const getPlatformSettings = async (token) => {
+export const getPlatformSettings = async () => {
+    const token = getAuthToken();
+    if (!token) return null;
+
     const config = {
         headers: {
             Authorization: `Bearer ${token}`,
@@ -21,7 +25,10 @@ export const getPlatformSettings = async (token) => {
     }
 };
 
-export const updatePlatformSettings = async (settings, token) => {
+export const updatePlatformSettings = async (settings) => {
+    const token = getAuthToken();
+    if (!token) return null;
+
     const config = {
         headers: {
             Authorization: `Bearer ${token}`,

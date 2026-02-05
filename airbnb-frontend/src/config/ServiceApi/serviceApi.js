@@ -1,9 +1,8 @@
 import axios from 'axios';
 import API_CONFIG from '../Api/Api';
-
+import { getAuthToken } from '../../utils/cookieUtils';
 
 const { apiKey } = API_CONFIG;
-
 
 export const loginUser = async (endpoint, data) => {
   try {

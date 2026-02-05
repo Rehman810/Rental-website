@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { getAuthToken, getAuthUser } from "../../utils/cookieUtils";
 import {
   Box,
   TextField,
@@ -25,15 +26,17 @@ import useDocumentTitle from "../../hooks/dynamicTitle/dynamicTitle";
 
 initializeSocket();
 
+import { getAuthToken, getAuthUser } from "../../utils/cookieUtils";
+// ...
 const GuestAllMessages = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [senders, setSenders] = useState([]);
   const [selectedSenderId, setSelectedSenderId] = useState(null);
   const [showChat, setShowChat] = useState(false);
-  const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user"));
-  const receiverId = user._id;
+  const token = getAuthToken();
+  const user = getAuthUser();
+  const receiverId = user?._id;
   const messagesEndRef = useRef(null);
 
   useDocumentTitle(selectedSenderId ? `${senders.find((s) => s.id === selectedSenderId)?.name} - Airbnb` : "Messages - Airbnb");
@@ -205,7 +208,7 @@ const GuestAllMessages = () => {
                   "&:hover": {
                     backgroundColor:
                       selectedSenderId === sender.id ? "#b2ebf2" : "#f0f0f0",
-                      cursor: "pointer"
+                    cursor: "pointer"
                   },
                   transition: "background-color 0.3s ease",
                 }}

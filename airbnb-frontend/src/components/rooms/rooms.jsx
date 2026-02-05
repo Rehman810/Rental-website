@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { getAuthToken, getAuthUser } from "../../utils/cookieUtils";
 import {
   Box,
   Typography,
@@ -116,10 +117,11 @@ const RoomPage = () => {
   const [openImageModal, setOpenImageModal] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
+
   const { setBookingData, setBookListing } = useBookingContext();
   const { roomId } = useParams();
-  const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user"));
+  const token = getAuthToken();
+  const user = getAuthUser();
   const navigate = useNavigate();
 
   const [selectedStartDate, setSelectedStartDate] = useState(null);
@@ -953,7 +955,7 @@ const RoomPage = () => {
               borderColor: "divider",
             }}
           >
-            <ReviewsSection listingId={roomId} currentUser={JSON.parse(localStorage.getItem('user'))} listingHostId={place?.hostId?._id || place?.hostId} />
+            <ReviewsSection listingId={roomId} currentUser={user} listingHostId={place?.hostId?._id || place?.hostId} />
           </Paper>
         </Grid>
 

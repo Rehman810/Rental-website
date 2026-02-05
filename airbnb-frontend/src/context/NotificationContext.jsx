@@ -8,6 +8,7 @@ import {
 } from '../webSockets/webSockets';
 import { fetchData, patchDataById, updateDataById, deleteDataById } from '../config/ServiceApi/serviceApi';
 import toast from 'react-hot-toast';
+import { getAuthToken, getAuthUser } from '../utils/cookieUtils';
 
 const NotificationContext = createContext();
 
@@ -18,8 +19,8 @@ export const NotificationProvider = ({ children }) => {
     const [unreadCount, setUnreadCount] = useState(0);
     const [loading, setLoading] = useState(false);
 
-    const user = JSON.parse(localStorage.getItem('user'));
-    const token = localStorage.getItem('token');
+    const user = getAuthUser();
+    const token = getAuthToken();
 
     const fetchNotifications = async (page = 1, filters = {}) => {
         if (!token) return;
@@ -31,7 +32,7 @@ export const NotificationProvider = ({ children }) => {
                 query += `&isRead=${filters.isRead}`;
             }
 
-            const data = await fetchData(query, token);
+            const data = await fetchData(query);
             if (page === 1) {
                 setNotifications(data.notifications);
             } else {
@@ -52,7 +53,7 @@ export const NotificationProvider = ({ children }) => {
     const fetchUnreadCount = async () => {
         if (!token) return;
         try {
-            const data = await fetchData('notifications/unread-count', token);
+            const data = await fetchData('notifications/unread-count');
             setUnreadCount(data.unreadCount);
         } catch (error) {
             console.error("Failed to fetch unread count", error);
@@ -67,7 +68,7 @@ export const NotificationProvider = ({ children }) => {
             ));
             setUnreadCount(prev => Math.max(0, prev - 1));
 
-            await updateDataById('notifications', token, `${notificationId}/read`, {});
+            await updateDataById('notifications', `${notificationId}/read`, {});
         } catch (error) {
             console.error("Failed to mark read", error);
             fetchNotifications(); // Revert on error
@@ -78,7 +79,7 @@ export const NotificationProvider = ({ children }) => {
         try {
             setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
             setUnreadCount(0);
-            await updateDataById('notifications', token, 'read-all', {});
+            await updateDataById('notifications', 'read-all', {});
         } catch (error) {
             console.error("Failed to mark all read", error);
             fetchNotifications();
@@ -95,7 +96,7 @@ export const NotificationProvider = ({ children }) => {
                 setUnreadCount(prev => Math.max(0, prev - 1));
             }
 
-            await deleteDataById('notifications', token, notificationId);
+            await deleteDataById('notifications', notificationId);
         } catch (error) {
             console.error("Failed to delete notification", error);
             fetchNotifications();

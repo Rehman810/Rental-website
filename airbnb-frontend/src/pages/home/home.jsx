@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
+import { getAuthToken, getAuthUser } from "../../utils/cookieUtils";
 import {
   Box,
   Button,
@@ -38,7 +39,7 @@ const DEFAULT_FILTERS = {
 
 const Home = () => {
   const { t } = useTranslation();
-  const token = localStorage.getItem("token");
+  const token = getAuthToken();
   const { searchParams } = useAppContext(); // Get searchParams from context
 
   const [listings, setListings] = useState([]);
@@ -114,7 +115,7 @@ const Home = () => {
 
     query.append("sortBy", "recommended");
 
-    const user = JSON.parse(localStorage.getItem("user"));
+    const user = getAuthUser();
     if (user?._id) {
       query.append("excludeHostId", user._id);
     }

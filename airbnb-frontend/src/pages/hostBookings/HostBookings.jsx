@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { getAuthToken } from "../../utils/cookieUtils";
 import { API_BASE_URL, CURRENCY } from '../../config/env';
 import {
     Box,
@@ -37,10 +38,11 @@ const TabPanel = (props) => {
 const HostBookings = () => {
     const [value, setValue] = useState(0);
     const [loading, setLoading] = useState(true);
+
     const [bookings, setBookings] = useState([]);
     const [confirmedBookings, setConfirmedBookings] = useState([]);
 
-    const token = localStorage.getItem('token');
+    const token = getAuthToken();
 
     const navigate = useNavigate();
 

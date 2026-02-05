@@ -22,8 +22,6 @@ import toast from "react-hot-toast";
 const Payments = () => {
     const [loading, setLoading] = useState(true);
     const [connecting, setConnecting] = useState(false);
-    import { getAuthToken } from "../../utils/cookieUtils";
-    // ...
     const [status, setStatus] = useState({
         charges_enabled: false,
         payouts_enabled: false,

@@ -2,6 +2,8 @@ import { adminController } from '../../controller/adminController/index.js';
 import combinedAuthenticate from '../../middleWare/combineAuthenticate/index.js';
 import checkRole from '../../middleWare/checkRole/index.js';
 
+import adminUserController from '../../controller/adminController/adminUserController.js';
+
 const AdminRoute = (app, io) => {
     app.get('/all-temporary-listings', combinedAuthenticate, checkRole(['admin']), (req, res) => adminController.getAllListings(io, req, res));
     app.post('/confirm-listing/:listingId', combinedAuthenticate, checkRole(['admin']), (req, res) => adminController.confirmListing(io, req, res));
@@ -22,6 +24,15 @@ const AdminRoute = (app, io) => {
     app.patch('/api/admin/hosts/:hostId/suspend', combinedAuthenticate, checkRole(['admin']), (req, res) => adminController.suspendHost(io, req, res));
     app.patch('/api/admin/hosts/:hostId/ban', combinedAuthenticate, checkRole(['admin']), (req, res) => adminController.banHost(io, req, res));
     app.patch('/api/admin/hosts/:hostId/reactivate', combinedAuthenticate, checkRole(['admin']), (req, res) => adminController.reactivateHost(io, req, res));
+
+    // Guest / User Management Routes
+    app.get('/api/admin/users', combinedAuthenticate, checkRole(['admin']), adminUserController.getUsers);
+    app.get('/api/admin/users/:userId', combinedAuthenticate, checkRole(['admin']), adminUserController.getUserDetails);
+    app.patch('/api/admin/users/:userId/suspend', combinedAuthenticate, checkRole(['admin']), adminUserController.suspendUser);
+    app.patch('/api/admin/users/:userId/ban', combinedAuthenticate, checkRole(['admin']), adminUserController.banUser);
+    app.patch('/api/admin/users/:userId/reactivate', combinedAuthenticate, checkRole(['admin']), adminUserController.reactivateUser);
+    app.post('/api/admin/users/:userId/refund', combinedAuthenticate, checkRole(['admin']), adminUserController.issueRefund);
+    app.post('/api/admin/users/:userId/credit', combinedAuthenticate, checkRole(['admin']), adminUserController.issueCredit);
 };
 
 export default AdminRoute;

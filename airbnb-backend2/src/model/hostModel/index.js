@@ -81,6 +81,7 @@ const hostSchema = new mongoose.Schema({
   },
   stripeAccountId: { type: String, default: null },
   stripeOnboardingCompleted: { type: Boolean, default: false },
+  walletBalance: { type: Number, default: 0 },
   settings: {
     bookingMode: { type: String, enum: ['instant', 'request'], default: 'request' },
     cancellationPolicy: { type: String, enum: ['flexible', 'moderate', 'strict'], default: 'moderate' },

@@ -18,6 +18,8 @@ const CNICVerification = lazy(() => import("../pages/cnicVerification/cnicVerifi
 const UserVerification = lazy(() => import("../pages/userVerification/UserVerification"));
 const HostList = lazy(() => import("../pages/hostManagement/hostList"));
 const HostDetail = lazy(() => import("../pages/hostManagement/hostDetail"));
+const UserList = lazy(() => import("../pages/userManagement/UserList"));
+const UserDetail = lazy(() => import("../pages/userManagement/UserDetail"));
 
 import "../assets/styles/mainScreen.css";
 
@@ -62,6 +64,10 @@ const MainScreen = () => {
             {/* Host Management Routes */}
             <Route path="/admin/hosts" element={<Body open={open} body={<HostList />} />} />
             <Route path="/admin/hosts/:hostId" element={<Body open={open} body={<HostDetail />} />} />
+
+            {/* Guest / User Management Routes */}
+            <Route path="/admin/users" element={<Body open={open} body={<UserList />} />} />
+            <Route path="/admin/users/:userId" element={<Body open={open} body={<UserDetail />} />} />
 
             {/* 404 Route */}
             <Route path="*" element={<NotFound />} />

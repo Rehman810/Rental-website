@@ -13,6 +13,7 @@ import ListItemText from '@mui/material/ListItemText';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import { Link } from 'react-router-dom';
 import PeopleIcon from '@mui/icons-material/People';
+import PersonIcon from '@mui/icons-material/Person';
 import { FaHouse } from "react-icons/fa6";
 import { MdOutlineDomainVerification } from "react-icons/md";
 
@@ -67,12 +68,11 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 export default function Sidebar({ open, handleDrawerClose }) {
   const theme = useTheme();
 
-
-
   const sidebarItems = [
     { text: 'Dashboard', icon: <DashboardIcon sx={{ color: '#00203F' }} />, route: '/' },
     { text: 'Listings', icon: <FaHouse sx={{ color: '#00203F' }} size={20} />, route: '/all-products' },
     { text: 'Host Management', icon: <PeopleIcon sx={{ color: '#00203F' }} />, route: '/admin/hosts' },
+    { text: 'User Management', icon: <PersonIcon sx={{ color: '#00203F' }} />, route: '/admin/users' },
     { text: 'CNIC Verification', icon: <MdOutlineDomainVerification sx={{ color: '#00203F' }} size={22} />, route: '/cnic-verification' },
     // { text: 'Order Details', icon: <DetailsIcon sx={{ color: '#00203F' }}/>, route: '/order-details' },
   ];

@@ -66,6 +66,11 @@ const hostSchema = new mongoose.Schema({
     enum: ['guest', 'host'],
     default: 'guest'
   },
+  accountStatus: {
+    type: String,
+    enum: ['active', 'suspended', 'banned'],
+    default: 'active'
+  },
   CNIC: {
     type: {
       images: [String],

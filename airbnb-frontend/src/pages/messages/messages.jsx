@@ -26,8 +26,6 @@ import useDocumentTitle from "../../hooks/dynamicTitle/dynamicTitle";
 
 initializeSocket();
 
-import { getAuthToken, getAuthUser } from "../../utils/cookieUtils";
-// ...
 const GuestAllMessages = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");

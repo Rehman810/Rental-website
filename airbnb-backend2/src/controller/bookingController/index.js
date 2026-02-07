@@ -60,6 +60,31 @@ export const bookingController = {
         return res.status(404).json({ message: 'Listing not found.' });
       }
 
+      if (listing.status === 'disabled' || listing.status === 'inactive') {
+        return res.status(400).json({ message: 'This listing is currently unavailable for booking.' });
+      }
+
+      // Check for blocked dates (unavailableDates)
+      if (listing.unavailableDates && listing.unavailableDates.length > 0) {
+        const reqStart = new Date(parsedStartDate);
+        const reqEnd = new Date(parsedEndDate);
+        reqStart.setHours(0, 0, 0, 0);
+        reqEnd.setHours(0, 0, 0, 0);
+
+        const hasOverlap = listing.unavailableDates.some(blocked => {
+          const blockStart = new Date(blocked.startDate);
+          const blockEnd = new Date(blocked.endDate);
+          blockStart.setHours(0, 0, 0, 0);
+          blockEnd.setHours(0, 0, 0, 0);
+
+          return (reqStart < blockEnd && reqEnd > blockStart);
+        });
+
+        if (hasOverlap) {
+          return res.status(400).json({ message: 'Selected dates include blocked dates by the host.' });
+        }
+      }
+
       const host = listing.hostId;
       if (!host || !host.stripeAccountId) {
         return res.status(400).json({ message: 'Host has not connected Stripe' });

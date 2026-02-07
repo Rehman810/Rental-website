@@ -1,6 +1,6 @@
 .search-visible {
-  transform: translateY(0); 
-  transition: transform 0.5s ease-in-out; 
+  transform: translateY(0);
+  transition: transform 0.5s ease-in-out;
 }
 
 .search-hidden {
@@ -8,8 +8,8 @@
   top: 0;
   left: 0;
   width: 100%;
-  background-color: white;
+  background-color: var(--bg-secondary);
   z-index: 1000;
-  transform: translateY(-150px); 
-  transition: transform 0.5s ease-in-out; 
+  transform: translateY(-150px);
+  transition: transform 0.5s ease-in-out;
 }

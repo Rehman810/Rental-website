@@ -322,6 +322,17 @@ const RoomPage = () => {
 
       if (currentDate >= bookedStart && currentDate <= bookedEnd) return true;
     }
+
+
+    // Check optional blocked dates from host
+    if (place?.unavailableDates) {
+      for (let block of place.unavailableDates) {
+        const blockStart = dayjs(block.startDate).startOf("day");
+        const blockEnd = dayjs(block.endDate).startOf("day");
+        if (currentDate >= blockStart && currentDate <= blockEnd) return true;
+      }
+    }
+
     return false;
   };
 

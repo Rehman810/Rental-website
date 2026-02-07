@@ -22,9 +22,13 @@ const listingSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['active', 'inactive'],
+    enum: ['active', 'inactive', 'disabled'],
     default: 'active',
   },
+  unavailableDates: [{
+    startDate: { type: Date, required: true },
+    endDate: { type: Date, required: true }
+  }],
   guestRequirementsOverride: {
     requireVerifiedPhone: { type: Boolean },
     requireCNIC: { type: Boolean },

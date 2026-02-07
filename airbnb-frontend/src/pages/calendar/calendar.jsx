@@ -172,11 +172,23 @@ const HostBookingsCalendar = () => {
                 plugins={[dayGridPlugin, interactionPlugin]}
                 initialView="dayGridMonth"
                 events={bookings}
+
                 headerToolbar={{
                   left: "prev,next today",
                   center: "title",
-                  right: "dayGridMonth,dayGridWeek,dayGridDay",
+                  right: "dayGridMonth",
                 }}
+                selectAllow={(selectInfo) => {
+                  const start = dayjs(selectInfo.start);
+                  const end = dayjs(selectInfo.end);
+
+                  return !events.some(ev => {
+                    const evStart = dayjs(ev.start);
+                    const evEnd = dayjs(ev.end);
+                    return start.isBefore(evEnd) && end.isAfter(evStart);
+                  });
+                }}
+
                 height="auto"
                 eventContent={(eventInfo) => {
                   const title = eventInfo.event.title || "Booking";

@@ -244,8 +244,8 @@ export const listingController = {
       const skip = (page - 1) * limit;
 
       const query = loggedInUserId
-        ? { hostId: { $ne: loggedInUserId } }
-        : {};
+        ? { hostId: { $ne: loggedInUserId }, status: { $ne: 'disabled' } }
+        : { status: { $ne: 'disabled' } };
 
       const listings = await Listing.find(query)
         .populate('hostId', 'userName email photoProfile')
@@ -357,7 +357,7 @@ export const listingController = {
       const { listingId } = req.params;
       const {
         minNights, maxNights, allowSameDayBooking, minNoticeDays,
-        bookingWindowMonths, checkInFrom, checkOutBy
+        bookingWindowMonths, checkInFrom, checkOutBy, status, unavailableDates
       } = req.body;
 
       const hostId = req.user._id;
@@ -383,6 +383,8 @@ export const listingController = {
       updateField('bookingWindowMonths', bookingWindowMonths);
       updateField('checkInFrom', checkInFrom);
       updateField('checkOutBy', checkOutBy);
+      updateField('status', status);
+      updateField('unavailableDates', unavailableDates);
 
       await listing.save();
 
@@ -409,7 +411,9 @@ export const listingController = {
           minNoticeDays: listing.minNoticeDays,
           bookingWindowMonths: listing.bookingWindowMonths,
           checkInFrom: listing.checkInFrom,
-          checkOutBy: listing.checkOutBy
+          checkOutBy: listing.checkOutBy,
+          status: listing.status,
+          unavailableDates: listing.unavailableDates
         },
         effective
       });

@@ -31,9 +31,159 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CheckIcon from '@mui/icons-material/Check';
-import { Menu, MenuItem, Stack as MuiStack, Dialog, DialogTitle, DialogContent, DialogActions, FormControl, InputLabel, Select, Switch, FormControlLabel } from "@mui/material"; // Stack already imported as Stack
+import { Menu, MenuItem, Stack as MuiStack, Dialog, DialogTitle, DialogContent, DialogActions, FormControl, InputLabel, Select, Switch, FormControlLabel, List, ListItem, ListItemText, ListItemSecondaryAction } from "@mui/material"; // Stack already imported as Stack
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+import { PickersDay } from '@mui/x-date-pickers/PickersDay';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EventBusyIcon from '@mui/icons-material/EventBusy';
+import dayjs from 'dayjs';
+import isBetween from 'dayjs/plugin/isBetween';
+dayjs.extend(isBetween);
 
 import apiClient from "../../config/ServiceApi/apiClient";
+
+const BlockedDatesManagementModal = ({ open, onClose, listing, token, onUpdate }) => {
+  const [unavailableDates, setUnavailableDates] = useState([]);
+  const [newBlockStart, setNewBlockStart] = useState(null);
+  const [newBlockEnd, setNewBlockEnd] = useState(null);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (listing?.unavailableDates) {
+      setUnavailableDates(listing.unavailableDates);
+    } else {
+      setUnavailableDates([]);
+    }
+  }, [listing]);
+
+  const handleAddBlock = () => {
+    if (!newBlockStart || !newBlockEnd) return toast.error("Select start and end dates");
+    if (dayjs(newBlockEnd).isBefore(dayjs(newBlockStart))) return toast.error("End date must be after start date");
+
+    const newBlock = {
+      startDate: dayjs(newBlockStart).toISOString(),
+      endDate: dayjs(newBlockEnd).toISOString()
+    };
+    setUnavailableDates([...unavailableDates, newBlock]);
+    setNewBlockStart(null);
+    setNewBlockEnd(null);
+  };
+
+  const handleDeleteBlock = (index) => {
+    const updated = [...unavailableDates];
+    updated.splice(index, 1);
+    setUnavailableDates(updated);
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const payload = {
+        unavailableDates: unavailableDates
+      };
+      await apiClient.put(`${API_BASE_URL}/listing/${listing._id}/availability`, payload, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success("Blocked dates updated");
+      onUpdate();
+      onClose();
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to update blocked dates");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Custom Day Render for Calendar
+  const ServerDay = (props) => {
+    const { day, outsideCurrentMonth, ...other } = props;
+
+    // Check if day is blocked
+    const isBlocked = unavailableDates.some(block =>
+      dayjs(day).isBetween(dayjs(block.startDate), dayjs(block.endDate), 'day', '[]')
+    );
+
+    return (
+      <PickersDay
+        {...other}
+        outsideCurrentMonth={outsideCurrentMonth}
+        day={day}
+        sx={{
+          ...(isBlocked && {
+            backgroundColor: '#ff385c !important',
+            color: 'white !important',
+            borderRadius: '50%'
+          })
+        }}
+      />
+    );
+  };
+
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth sx={{ "& .MuiPaper-root": { borderRadius: 4 } }}>
+      <DialogTitle sx={{ pb: 1 }}>
+        <Typography fontWeight={900} fontSize={18}>Manage Blocked Dates</Typography>
+        <Typography variant="body2" color="var(--text-secondary)">Block specific dates or ranges from being booked.</Typography>
+      </DialogTitle>
+      <DialogContent dividers>
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={6}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DateCalendar
+                slots={{ day: ServerDay }}
+                readOnly
+              />
+            </LocalizationProvider>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Stack spacing={3}>
+              <Box>
+                <Typography fontSize={12} fontWeight={900} color="var(--text-secondary)" gutterBottom>ADD BLOCK</Typography>
+                <Stack spacing={2}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker label="Start Date" value={newBlockStart} onChange={setNewBlockStart} />
+                    <DatePicker label="End Date" value={newBlockEnd} onChange={setNewBlockEnd} minDate={newBlockStart} />
+                  </LocalizationProvider>
+                  <Button variant="outlined" onClick={handleAddBlock} startIcon={<EventBusyIcon />}>Block Dates</Button>
+                </Stack>
+              </Box>
+
+              <Box sx={{ maxHeight: 200, overflow: 'auto' }}>
+                <Typography fontSize={12} fontWeight={900} color="var(--text-secondary)" gutterBottom>CURRENT BLOCKS</Typography>
+                <List dense>
+                  {unavailableDates.length === 0 && <Typography variant="caption" color="text.secondary">No dates blocked.</Typography>}
+                  {unavailableDates.map((block, index) => (
+                    <ListItem key={index} sx={{ bgcolor: 'var(--bg-secondary)', borderRadius: 2, mb: 1 }}>
+                      <ListItemText
+                        primary={`${dayjs(block.startDate).format('MMM D, YYYY')} - ${dayjs(block.endDate).format('MMM D, YYYY')}`}
+                        primaryTypographyProps={{ fontWeight: 600, fontSize: '0.9rem' }}
+                      />
+                      <ListItemSecondaryAction>
+                        <IconButton edge="end" size="small" onClick={() => handleDeleteBlock(index)}>
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                  ))}
+                </List>
+              </Box>
+            </Stack>
+          </Grid>
+        </Grid>
+      </DialogContent>
+      <DialogActions sx={{ px: 3, py: 2 }}>
+        <Button onClick={onClose} disabled={saving}>Cancel</Button>
+        <Button onClick={handleSave} variant="contained" disabled={saving} sx={{ borderRadius: "999px", px: 3 }}>
+          {saving ? "Saving..." : "Save Changes"}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
 
 const AvailabilityModal = ({ open, onClose, listing, token, onUpdate }) => {
   const [formData, setFormData] = useState({});
@@ -566,6 +716,7 @@ const ListingPage = () => {
   const [editingAvailability, setEditingAvailability] = useState(null);
   const [editingGuestRequirements, setEditingGuestRequirements] = useState(null);
   const [editingCancellation, setEditingCancellation] = useState(null);
+  const [editingBlockedDates, setEditingBlockedDates] = useState(null);
 
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
@@ -656,7 +807,8 @@ const ListingPage = () => {
   );
 
   const ListingCard = ({ item, status }) => {
-    const isVerified = status === "verified";
+    const isVerified = item.status === "active"; // Simplified, or keep existing logic if it was different
+    const isDisabled = item.status === "disabled";
     const [anchorEl, setAnchorEl] = useState(null);
 
     const handleClose = () => setAnchorEl(null);
@@ -669,17 +821,31 @@ const ListingPage = () => {
           headers: { Authorization: `Bearer ${token}` }
         });
         toast.success("Updated!", { id: toastId });
-        // Refresh listings locally to see checkmark update
-        // Simple way: Update local state. 
-        // Better way: Re-fetch or update `listing` state.
-        // For now, let's just force reload or update state manually.
-        const updateList = (list) => list.map(l => l._id === item._id ? { ...l, bookingMode: mode === null ? undefined : mode } : l);
-        setListing(prev => updateList(prev));
-        setTempListing(prev => updateList(prev));
-
+        reloadListings();
       } catch (e) {
         toast.error("Failed to update", { id: toastId });
       }
+    };
+
+    const handleUpdateStatus = async (newStatus) => {
+      handleClose();
+      const toastId = toast.loading(`Setting listing to ${newStatus}...`);
+      try {
+        // Use updateAvailability endpoint which supports status update now
+        await apiClient.put(`${API_BASE_URL}/listing/${item._id}/availability`, { status: newStatus }, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        toast.success("Status updated!", { id: toastId });
+        reloadListings();
+      } catch (e) {
+        console.error(e);
+        toast.error("Failed to update status", { id: toastId });
+      }
+    };
+
+    const reloadListings = () => {
+      // Simple re-fetch trigger or manual update
+      window.location.reload(); // Simplest given current state structure
     };
 
     return (
@@ -707,7 +873,7 @@ const ListingPage = () => {
           />
 
           <Chip
-            label={isVerified ? "Verified" : "Pending review"}
+            label={isDisabled ? "Disabled" : (item.status === 'active' ? "Active" : "Pending")}
             size="small"
             sx={{
               position: "absolute",
@@ -715,7 +881,7 @@ const ListingPage = () => {
               left: 12,
               borderRadius: "999px",
               fontWeight: 900,
-              bgcolor: isVerified ? "rgba(0,0,0,0.85)" : "rgba(255,56,92,0.92)",
+              bgcolor: isDisabled ? "var(--text-secondary)" : (item.status === 'active' ? "rgba(0,0,0,0.85)" : "rgba(255,56,92,0.92)"),
               color: "#fff",
             }}
           />
@@ -799,6 +965,36 @@ const ListingPage = () => {
               <MenuRow
                 label="Guest Requirements"
                 checked={item.guestRequirementsOverride && Object.keys(item.guestRequirementsOverride).length > 0}
+              />
+            </MenuItem>
+
+            <MenuItem onClick={() => { handleClose(); setEditingBlockedDates(item); }}>
+              <MenuRow
+                label="Block Dates"
+                checked={item.unavailableDates && item.unavailableDates.length > 0}
+              />
+            </MenuItem>
+
+            <Divider />
+
+            {/* Section: Status */}
+            <Box sx={{ px: 2, py: 1.2 }}>
+              <Typography fontSize={11} fontWeight={900} color="var(--text-secondary)">
+                STATUS
+              </Typography>
+            </Box>
+
+            <MenuItem onClick={() => handleUpdateStatus("active")}>
+              <MenuRow
+                label="Active"
+                active={item.status === 'active'}
+              />
+            </MenuItem>
+
+            <MenuItem onClick={() => handleUpdateStatus("disabled")}>
+              <MenuRow
+                label="Disabled"
+                active={item.status === 'disabled'}
               />
             </MenuItem>
 
@@ -1097,6 +1293,15 @@ const ListingPage = () => {
         token={token}
         onUpdate={() => window.location.reload()}
       />
+      {/* Blocked Dates Dialog */}
+      <BlockedDatesManagementModal
+        open={!!editingBlockedDates}
+        onClose={() => setEditingBlockedDates(null)}
+        listing={editingBlockedDates}
+        token={token}
+        onUpdate={() => window.location.reload()}
+      />
+
     </Box>
   );
 };

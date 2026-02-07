@@ -190,7 +190,7 @@ const MobileSearchDialog = ({ open, onClose }) => {
                     </Stack>
 
                     {/* GUESTS */}
-                    <Typography fontWeight={900} mb={1}>
+                    <Typography fontWeight={900} mb={1} color="var(--text-primary)">
                         Guests
                     </Typography>
 

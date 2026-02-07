@@ -462,13 +462,23 @@ const Navbar = () => {
               <>
                 <Button
                   onClick={() => {
+                    navigate("/user/guestAllMessages");
+                    setDrawerOpen(false);
+                  }}
+                  startIcon={<MailOutlineIcon />}
+                  sx={drawerBtnSx}
+                >
+                  {t("menu.verified.messages")}
+                </Button>
+                <Button
+                  onClick={() => {
                     navigate("/user/trips");
                     setDrawerOpen(false);
                   }}
                   startIcon={<LuggageIcon />}
                   sx={drawerBtnSx}
                 >
-                  Trips
+                  {t("menu.verified.trips")}
                 </Button>
 
                 <Button
@@ -479,7 +489,7 @@ const Navbar = () => {
                   startIcon={<FavoriteBorderIcon />}
                   sx={drawerBtnSx}
                 >
-                  Wishlist
+                  {t("menu.verified.wishlist")}
                 </Button>
 
                 <Button
@@ -490,7 +500,15 @@ const Navbar = () => {
                   startIcon={<DashboardCustomizeOutlinedIcon />}
                   sx={drawerBtnSx}
                 >
-                  Manage listings
+                  {t("menu.verified.manageListings")}
+                </Button>
+
+                <Button sx={drawerBtnSx}
+                  onClick={() => {
+                    navigate("/user/profile")
+                    setDrawerOpen(false);
+                  }} startIcon={<PersonOutlineIcon />}>
+                  {t("menu.hostMenu2.userProfile")}
                 </Button>
               </>
             )}

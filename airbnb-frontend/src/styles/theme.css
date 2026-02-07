@@ -298,3 +298,108 @@ textarea::placeholder {
     background-color: var(--bg-secondary) !important;
     border-color: var(--border-focus) !important;
 }
+
+/* ===============================
+   MUI X DatePicker – Dark Mode Fix
+   Force white / readable UI
+================================ */
+
+/* Calendar wrapper */
+[data-theme="dark"] .MuiPickersLayout-root {
+    background-color: var(--bg-card) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Header (Month / Year bar) */
+[data-theme="dark"] .MuiPickersCalendarHeader-root {
+    background-color: var(--bg-card) !important;
+    color: var(--text-primary) !important;
+    border-bottom: 1px solid var(--border-light);
+}
+
+/* Month / Year text */
+[data-theme="dark"] .MuiPickersCalendarHeader-label {
+    color: var(--text-primary) !important;
+    font-weight: 900;
+}
+
+/* Arrow buttons */
+[data-theme="dark"] .MuiPickersArrowSwitcher-button {
+    color: var(--text-primary) !important;
+}
+
+/* Week day labels (Mon Tue etc) */
+[data-theme="dark"] .MuiDayCalendar-weekDayLabel {
+    color: var(--text-secondary) !important;
+    font-weight: 700;
+}
+
+/* Day numbers */
+[data-theme="dark"] .MuiPickersDay-root {
+    color: var(--text-primary) !important;
+    background-color: transparent !important;
+    border-radius: 999px;
+}
+
+/* Hover day */
+[data-theme="dark"] .MuiPickersDay-root:hover {
+    background-color: var(--bg-tertiary) !important;
+}
+
+/* Selected day */
+[data-theme="dark"] .MuiPickersDay-root.Mui-selected {
+    background-color: var(--primary) !important;
+    color: var(--text-inverse) !important;
+}
+
+/* Today outline */
+[data-theme="dark"] .MuiPickersDay-today {
+    border: 1px solid var(--primary) !important;
+}
+
+/* Disabled days */
+[data-theme="dark"] .MuiPickersDay-root.Mui-disabled {
+    color: var(--text-tertiary) !important;
+}
+
+/* Year picker */
+[data-theme="dark"] .MuiYearCalendar-root {
+    background-color: var(--bg-card) !important;
+}
+
+[data-theme="dark"] .MuiYearCalendar-root .MuiPickersYear-yearButton {
+    color: var(--text-primary) !important;
+}
+
+/* Selected year */
+[data-theme="dark"] .MuiPickersYear-yearButton.Mui-selected {
+    background-color: var(--primary) !important;
+    color: var(--text-inverse) !important;
+}
+
+/* Dialog / Popper */
+[data-theme="dark"] .MuiPickersPopper-root,
+[data-theme="dark"] .MuiDialog-paper {
+    background-color: var(--bg-card) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Label */
+[data-theme="dark"] .MuiInputLabel-root {
+    color: var(--text-secondary) !important;
+}
+
+/* Focus label */
+[data-theme="dark"] .MuiInputLabel-root.Mui-focused {
+    color: var(--primary) !important;
+}
+
+/* Outline */
+[data-theme="dark"] .MuiOutlinedInput-notchedOutline {
+    border-color: var(--border-light) !important;
+}
+
+/* Focus outline */
+[data-theme="dark"] .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: var(--primary) !important;
+}

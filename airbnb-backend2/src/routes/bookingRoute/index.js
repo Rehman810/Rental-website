@@ -20,6 +20,7 @@ const bookingRoute = (app) => {
     app.post('/approve-booking/:bookingId', combinedAuthenticate, bookingController.approveBooking);
     app.delete('/reject-booking/:bookingId', combinedAuthenticate, bookingController.rejectBooking);
     app.post('/bookings/:bookingId/cancel', combinedAuthenticate, bookingController.cancelBooking);
+    app.get('/bookings/:bookingId', combinedAuthenticate, bookingController.getBookingById);
 
 }
 export default bookingRoute;

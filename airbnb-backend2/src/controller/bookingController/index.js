@@ -991,8 +991,84 @@ export const bookingController = {
       console.error('Error fetching confirmed bookings:', error);
       res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
-  }
+  },
 
+  getBookingById: async (req, res) => {
+    try {
+      const { bookingId } = req.params;
+
+      // Try Confirmed Booking first
+      let booking = await ConfirmedBooking.findById(bookingId)
+        .populate({
+          path: 'listingId',
+          populate: { path: 'hostId', select: 'userName email photoProfile' }
+        })
+        .exec();
+
+      let type = 'confirmed';
+
+      if (!booking) {
+        // Try Temporary Booking
+        booking = await TemporaryBooking.findById(bookingId)
+          .populate({
+            path: 'listingId',
+            populate: { path: 'hostId', select: 'userName email photoProfile' }
+          })
+          .exec();
+        type = 'temporary';
+      }
+
+      if (!booking) {
+        return res.status(404).json({ message: "Booking not found." });
+      }
+
+      // Authorization: Guest or Host
+      const userId = req.user._id.toString();
+      const guestId = booking.userId.toString();
+      const hostId = booking.listingId?.hostId?._id?.toString();
+
+      if (userId !== guestId && userId !== hostId) {
+        return res.status(403).json({ message: "Unauthorized access." });
+      }
+
+      // Format Data
+      const bookingData = booking.toObject();
+      let status = bookingData.status;
+
+      if (type === 'confirmed') {
+        // Map DB status to Frontend Friendly status
+        if (status === 'CONFIRMED') status = 'Active';
+        else if (status === 'CANCELLED') status = 'Cancelled';
+        else if (status === 'COMPLETED') status = 'Completed';
+      } else {
+        status = status === 'pending_approval' ? 'Pending Approval' : 'Pending Payment';
+      }
+
+      const host = bookingData.listingId?.hostId;
+      // Remove raw hostId from listing to avoid confusion, keep detail in hostData
+      const { hostId: _, ...listingDetails } = bookingData.listingId || {};
+
+      const formattedBooking = {
+        ...bookingData,
+        listingId: { ...listingDetails, id: listingDetails._id },
+        hostData: host ? {
+          userName: host.userName,
+          email: host.email,
+          photoProfile: host.photoProfile,
+          _id: host._id
+        } : null,
+        status,
+        // Ensure type identifier if needed
+        isConfirmed: type === 'confirmed'
+      };
+
+      res.status(200).json({ booking: formattedBooking });
+
+    } catch (error) {
+      console.error("Error fetching booking details:", error);
+      res.status(500).json({ message: "Internal Server Error", error: error.message });
+    }
+  }
 
 };
 

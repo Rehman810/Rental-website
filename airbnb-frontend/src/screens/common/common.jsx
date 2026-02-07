@@ -14,13 +14,14 @@ const RequestToBook = lazy(() =>
   import("../../components/requestToBook/requestToBook")
 );
 const Trips = lazy(() => import("../../pages/trips/trips"));
+const TripDetails = lazy(() => import("../../pages/trips/TripDetails"));
 import Help from "../../screens/help/help";
 const Navbar = lazy(() => import("../../components/navbar/navbar2"));
 const Footer = lazy(() => import("../../components/footer/footer"));
 
 const Reviews = lazy(() => import("../../components/reviews/reviews"));
 
-const CommonRoutes = () => {  
+const CommonRoutes = () => {
   const location = useLocation();
 
   const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
@@ -63,6 +64,9 @@ const CommonRoutes = () => {
           {/* Trips Page */}
           <Route path="/trips" element={<Protected Component={Trips} />} />
 
+          {/* Trip Details Page */}
+          <Route path="/trips/:tripId" element={<Protected Component={TripDetails} />} />
+
           {/* Guest message to host Page */}
           <Route
             path="/guestMessages/:hostId"
@@ -83,8 +87,8 @@ const CommonRoutes = () => {
         </Routes>
       </div>
       {!isMessage && (
-      <Footer />
-    )}
+        <Footer />
+      )}
     </>
   );
 };

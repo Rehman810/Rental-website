@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Grid,
@@ -36,6 +37,7 @@ import usePageTitle from "../../hooks/usePageTitle";
 // ...
 const Trips = () => {
   usePageTitle("Trips");
+  const navigate = useNavigate();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
   const [activeTripIndex, setActiveTripIndex] = useState(null);
@@ -77,7 +79,8 @@ const Trips = () => {
     []
   );
 
-  const handleImageClick = (index, tripIndex) => {
+  const handleImageClick = (e, index, tripIndex) => {
+    e.stopPropagation();
     setCurrentImageIndex(index);
     setActiveTripIndex(tripIndex);
     setImageDialogOpen(true);
@@ -103,7 +106,8 @@ const Trips = () => {
     setCurrentImageIndex((prev) => (prev - 1 >= 0 ? prev - 1 : total - 1));
   };
 
-  const handleOpenReviewModal = (trip) => {
+  const handleOpenReviewModal = (e, trip) => {
+    e.stopPropagation();
     setSelectedBooking(trip);
     setLeaveReviewOpen(true);
   };
@@ -145,7 +149,8 @@ const Trips = () => {
   };
 
 
-  const handleOpenCancel = (trip) => {
+  const handleOpenCancel = (e, trip) => {
+    e.stopPropagation();
     setTripToCancel(trip);
     setRefundQuote(calculateRefund(trip));
     setCancelDialogOpen(true);
@@ -223,7 +228,9 @@ const Trips = () => {
                 <Grid item xs={12} sm={6} md={4} lg={3} key={trip?._id || tripIndex}>
                   <Card
                     elevation={0}
+                    onClick={() => navigate(`/user/trips/${trip._id}`)}
                     sx={{
+                      cursor: "pointer",
                       borderRadius: 4,
                       overflow: "hidden",
                       border: "1px solid",
@@ -241,7 +248,7 @@ const Trips = () => {
                         {photos.map((photo, index) => (
                           <Box
                             key={index}
-                            onClick={() => handleImageClick(index, tripIndex)}
+                            onClick={(e) => handleImageClick(e, index, tripIndex)}
                             sx={{ height: 220, cursor: "pointer" }}
                           >
                             <img
@@ -387,7 +394,7 @@ const Trips = () => {
                           <Button
                             variant="outlined"
                             size="small"
-                            onClick={() => handleOpenReviewModal(trip)}
+                            onClick={(e) => handleOpenReviewModal(e, trip)}
                             sx={{
                               borderRadius: 999,
                               textTransform: "none",
@@ -404,7 +411,7 @@ const Trips = () => {
                             variant="text"
                             size="small"
                             color="error"
-                            onClick={() => handleOpenCancel(trip)}
+                            onClick={(e) => handleOpenCancel(e, trip)}
                             sx={{
                               textTransform: "none",
                               fontWeight: 900

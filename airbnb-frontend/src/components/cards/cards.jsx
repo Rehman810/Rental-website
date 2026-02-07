@@ -31,6 +31,7 @@ const CardItem = React.memo(({ data }) => {
     () => wishlist.some((item) => item._id === data._id),
     [wishlist, data._id]
   );
+  const [showSlider, setShowSlider] = useState(false);
 
   const [activeSlide, setActiveSlide] = useState(0);
 
@@ -83,6 +84,18 @@ const CardItem = React.memo(({ data }) => {
 
   const totalPhotos = data?.photos?.length || 0;
 
+  const hoverTimeout = React.useRef(null);
+
+  const handleMouseEnter = () => {
+    setShowSlider(true);
+  };
+
+  const handleMouseLeave = () => {
+    clearTimeout(hoverTimeout.current);
+    setShowSlider(false);
+  };
+
+
   return (
     <>
       <Card
@@ -96,32 +109,43 @@ const CardItem = React.memo(({ data }) => {
           transition: "all 0.18s ease",
           backgroundColor: "var(--bg-card)",
           "&:hover": {
-            transform: "translateY(-3px)",
+            // transform: "translateY(-3px)",
             boxShadow: "var(--shadow-lg)",
           },
         }}
       >
         {/* Image Area */}
         <Box sx={{ position: "relative" }} onClick={(e) => e.stopPropagation()}>
-          <Box sx={{ height: 240 }}>
-            <Slider {...settings}>
-              {(data?.photos || []).map((img, index) => (
-                <Box key={index} sx={{ height: 240 }}>
-                  <img
-                    src={img}
-                    alt={`Photo ${index + 1}`}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      display: "block",
-                    }}
-                    loading="lazy"
-                    onError={(e) => (e.currentTarget.src = "/fallback-image.jpg")}
-                  />
-                </Box>
-              ))}
-            </Slider>
+          <Box sx={{ height: 240 }} onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()} >
+            {showSlider ? (
+              <Slider {...settings}>
+                {(data?.photos || []).map((img, index) => (
+                  <Box key={index} sx={{ height: 240 }}>
+                    <img
+                      src={img}
+                      alt={`Photo ${index + 1}`}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        display: "block",
+                      }}
+                      loading="lazy"
+                      onError={(e) => (e.currentTarget.src = "/fallback-image.jpg")}
+                    />
+                  </Box>
+                ))}
+              </Slider>
+            ) : (
+              <img
+                src={data.photos?.[0]}
+                style={{ width: "100%", height: 240, objectFit: "cover" }}
+                loading="lazy"
+              />
+            )}
           </Box>
 
           {/* Wishlist Button */}

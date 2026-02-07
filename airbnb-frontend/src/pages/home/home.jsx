@@ -41,9 +41,12 @@ const Home = () => {
   const { t } = useTranslation();
   const token = getAuthToken();
   const { searchParams } = useAppContext(); // Get searchParams from context
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   // Map Overlay Toggle (same as previous)
   const [mapVisible, setMapVisible] = useState(false);
@@ -123,43 +126,66 @@ const Home = () => {
     return query.toString();
   }, []);
 
-  // Search Function
   const performSearch = useCallback(
-    async (currentFilters = filters) => {
+    async (currentFilters = filters, pageNumber = 1, append = false) => {
+
+      if (!append && pageNumber === 1 && listings.length === 0) {
+        setInitialLoading(true);
+      }
+
       setLoading(true);
       try {
         const queryString = buildQuery(currentFilters);
 
         const data = await fetchData(
-          `api/listings/search?${queryString}`);
+          `api/listings/search?${queryString}&page=${pageNumber}&limit=10`
+        );
 
-        setListings(data?.results || []);
+        setHasMore(pageNumber < data.totalPages);
+
+        setListings(prev =>
+          append ? [...prev, ...(data.results || [])] : (data.results || [])
+        );
       } catch (error) {
-        console.error("Search error", error);
-        toast.error("Search failed. Please try again.");
+        toast.error("Search failed");
       } finally {
         setLoading(false);
+        setInitialLoading(false);
       }
     },
-    [filters, token, buildQuery]
+    [filters, buildQuery]
   );
 
-  // Debounce filters search
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      performSearch(filters);
-    }, 600);
 
-    return () => clearTimeout(timer);
+  // Debounce filters search
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     performSearch(filters);
+  //   }, 600);
+
+  //   return () => clearTimeout(timer);
+  // }, [
+  //   filters.q,
+  //   filters.priceRange,
+  //   filters.amenities,
+  //   filters.bounds,
+  //   filters.polygon,
+  //   performSearch,
+  //   filters,
+  // ]);
+
+  useEffect(() => {
+    setPage(1);
+    setHasMore(true);
+    performSearch(filters, 1, false);
   }, [
     filters.q,
     filters.priceRange,
     filters.amenities,
     filters.bounds,
-    filters.polygon,
-    performSearch,
-    filters,
+    filters.polygon
   ]);
+
 
   // AI Search Handler
   const handleAiSearch = async (query) => {
@@ -212,6 +238,31 @@ const Home = () => {
   const toggleMapVisibility = () => {
     setMapVisible((prev) => !prev);
   };
+
+  const observerRef = React.useRef(null);
+
+  useEffect(() => {
+    if (!hasMore || loading) return;
+
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && !loading) {
+          setPage(prev => prev + 1);
+        }
+      },
+      { rootMargin: "200px" }
+    );
+
+    if (observerRef.current) observer.observe(observerRef.current);
+
+    return () => observer.disconnect();
+  }, [hasMore, loading]);
+
+
+  useEffect(() => {
+    if (page === 1) return;
+    performSearch(filters, page, true);
+  }, [page]);
 
   return (
     <Box sx={{ minHeight: "100vh", pb: 6, bgcolor: "var(--bg-primary)" }}>
@@ -271,7 +322,7 @@ const Home = () => {
           <Box
             sx={{
               position: "relative",
-              height: listings.length > 0 ? "300px" : "500px",
+              minHeight: "300px",
               transition: "height 0.5s ease",
               backgroundImage:
                 "url(https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80)",
@@ -335,7 +386,7 @@ const Home = () => {
             </Stack>
 
             <Grid container spacing={2}>
-              {loading ? (
+              {initialLoading ? (
                 Array.from({ length: 8 }).map((_, i) => (
                   <Grid item xs={12} sm={6} md={4} lg={3} key={i}>
                     <Paper
@@ -386,6 +437,7 @@ const Home = () => {
                   </Grid>
                 ))
               )}
+              {hasMore && <div ref={observerRef} style={{ height: 1 }} />}
             </Grid>
           </Container>
         </>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { getAuthToken, getAuthUser } from "../../utils/cookieUtils";
+import { getAuthUser } from "../../utils/cookieUtils";
 import {
   Box,
   Button,
@@ -41,7 +41,7 @@ const DEFAULT_FILTERS = {
 const Home = () => {
   usePageTitle("Home");
   const { t } = useTranslation();
-  const token = getAuthToken();
+  const [searchError, setSearchError] = useState(false);
   const { searchParams } = useAppContext(); // Get searchParams from context
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -149,7 +149,9 @@ const Home = () => {
           append ? [...prev, ...(data.results || [])] : (data.results || [])
         );
       } catch (error) {
-        toast.error("Search failed");
+        setSearchError(true);
+        setHasMore(false);
+        toast.error("Search failed. Please try again.");
       } finally {
         setLoading(false);
         setInitialLoading(false);
@@ -177,6 +179,7 @@ const Home = () => {
   // ]);
 
   useEffect(() => {
+    setSearchError(false);
     setPage(1);
     setHasMore(true);
     performSearch(filters, 1, false);
@@ -248,7 +251,7 @@ const Home = () => {
 
     const observer = new IntersectionObserver(
       entries => {
-        if (entries[0].isIntersecting && !loading) {
+        if (entries[0].isIntersecting && !loading && hasMore && !searchError) {
           setPage(prev => prev + 1);
         }
       },
@@ -324,42 +327,74 @@ const Home = () => {
           <Box
             sx={{
               position: "relative",
-              minHeight: "300px",
-              transition: "height 0.5s ease",
+
+              /* 🔑 Responsive height */
+              minHeight: {
+                xs: 180,   // mobile
+                sm: 220,   // tablets
+                md: 300,   // desktop
+              },
+
+              transition: "all 0.3s ease",
               backgroundImage:
                 "url(https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80)",
               backgroundSize: "cover",
               backgroundPosition: "center",
+
               display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
               alignItems: "center",
-              mb: 4,
+              justifyContent: "center",
+
+              mb: { xs: 2, md: 4 }, // less gap on mobile
             }}
           >
+
             <Box
               sx={{
                 position: "absolute",
                 inset: 0,
-                bgcolor: "rgba(0,0,0,0.3)",
+                bgcolor: "rgba(0,0,0,0.35)",
+
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
+
+                px: { xs: 1.5, md: 2 },
               }}
             >
+
               <Typography
-                variant={listings.length > 0 ? "h4" : "h2"}
                 color="white"
                 fontWeight={900}
-                sx={{ mb: 3, textAlign: "center", px: 2 }}
+                sx={{
+                  mb: { xs: 1.5, md: 3 },
+                  textAlign: "center",
+
+                  /* 🔑 Responsive font sizing */
+                  fontSize: {
+                    xs: "1.2rem",   // mobile
+                    sm: "1.6rem",
+                    md: listings.length > 0 ? "2rem" : "2.6rem",
+                  },
+
+                  lineHeight: 1.2,
+                  px: 2,
+                }}
               >
                 {listings.length > 0
                   ? "Find your perfect stay"
                   : "Experience Pakistan like never before"}
               </Typography>
 
-              <Box sx={{ width: "100%", maxWidth: "800px", px: 2 }}>
+
+              <Box
+                sx={{
+                  width: "100%",
+                  maxWidth: 800,
+                  px: { xs: 0, md: 2 },
+                }}
+              >
                 <SearchFilters
                   filters={filters}
                   onFilterChange={setFilters}
@@ -369,6 +404,7 @@ const Home = () => {
                   onClear={() => setFilters(DEFAULT_FILTERS)}
                 />
               </Box>
+
             </Box>
           </Box>
 
@@ -390,7 +426,7 @@ const Home = () => {
             <Grid container spacing={2}>
               {initialLoading ? (
                 Array.from({ length: 8 }).map((_, i) => (
-                  <Grid item xs={12} sm={6} md={4} lg={3} key={i}>
+                  <Grid item xs={6} sm={6} md={4} lg={3} key={i}>
                     <Paper
                       elevation={0}
                       sx={{
@@ -434,7 +470,7 @@ const Home = () => {
                 </Grid>
               ) : (
                 listings.map((item) => (
-                  <Grid item xs={12} sm={6} md={4} lg={3} key={item._id}>
+                  <Grid item xs={6} sm={6} md={4} lg={3} key={item._id}>
                     <MemoizedCard data={item} />
                   </Grid>
                 ))
@@ -442,7 +478,7 @@ const Home = () => {
               {hasMore && <div ref={observerRef} style={{ height: 1 }} />}
               {loading && page > 1 && (
                 Array.from({ length: 4 }).map((_, i) => (
-                  <Grid item xs={12} sm={6} md={4} lg={3} key={`loading-${i}`}>
+                  <Grid item xs={6} sm={6} md={4} lg={3} key={`loading-${i}`}>
                     <Paper
                       elevation={0}
                       sx={{

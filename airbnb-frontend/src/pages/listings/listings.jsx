@@ -806,7 +806,7 @@ const ListingPage = () => {
     </Stack>
   );
 
-  const ListingCard = ({ item, status }) => {
+  const ListingCard = ({ item, status, showIcon = true }) => {
     const isVerified = item.status === "active"; // Simplified, or keep existing logic if it was different
     const isDisabled = item.status === "disabled";
     const [anchorEl, setAnchorEl] = useState(null);
@@ -886,7 +886,7 @@ const ListingPage = () => {
             }}
           />
 
-          <IconButton
+          {showIcon && <IconButton
             size="small"
             sx={{ position: "absolute", top: 12, right: 12, bgcolor: "rgba(255,255,255,0.9)", '&:hover': { bgcolor: "white" } }}
             onClick={(e) => {
@@ -895,7 +895,7 @@ const ListingPage = () => {
             }}
           >
             <SettingsIcon fontSize="small" />
-          </IconButton>
+          </IconButton>}
 
           <Menu
             anchorEl={anchorEl}
@@ -1037,11 +1037,11 @@ const ListingPage = () => {
             {formatAddress(item)}
           </Typography>
 
-          <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mt: 1.5 }} onClick={() => navigate(`/hosting/listings/${item._id}`)}>
+          {showIcon && <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mt: 1.5 }} onClick={() => navigate(`/hosting/listings/${item._id}`)}>
             <Typography variant="caption" color="var(--text-secondary)" fontWeight={800}>
               View →
             </Typography>
-          </Stack>
+          </Stack>}
         </CardContent>
       </Card>
     );

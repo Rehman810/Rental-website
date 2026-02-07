@@ -14,6 +14,9 @@ import {
   Divider,
   ListItemIcon,
   ListItemText,
+  useMediaQuery,
+  Drawer,
+  Stack,
 } from "@mui/material";
 import {
   Menu as MenuIcon,
@@ -42,6 +45,7 @@ import {
   PersonAddAlt as PersonAddAltIcon,
 } from "@mui/icons-material";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
+import MobileSearchBar from "../searchBar/mobileSearchbar";
 
 const VerifiedMenu = ({ anchorEl, handleMenuClose, navigate, handleLogout }) => {
   const { t } = useTranslation();
@@ -206,9 +210,18 @@ const UnverifiedMenu = ({
   );
 };
 
+const drawerBtnSx = {
+  justifyContent: "flex-start",
+  textTransform: "none",
+  fontWeight: 900,
+  borderRadius: 2,
+  py: 1.2,
+};
 
 const Navbar = () => {
   const { t } = useTranslation();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const toggleDrawer = (open) => () => setDrawerOpen(open);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -246,6 +259,8 @@ const Navbar = () => {
   const toggleModal = () => {
     setOpen(!open);
   };
+
+  const isMobile = useMediaQuery("(max-width:1100px)");
 
   return (
     <AppBar
@@ -301,9 +316,11 @@ const Navbar = () => {
           </Typography>
         </Box>
 
-        <Box>
-          <SearchBar2 />
-        </Box>
+        {!isMobile && (
+          <Box>
+            <SearchBar2 />
+          </Box>
+        )}
 
         <Box
           sx={{
@@ -354,17 +371,26 @@ const Navbar = () => {
             }}
           >
             <Box
-              onClick={handleMenuOpen}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (isMobile) {
+                  setDrawerOpen(true);
+                } else {
+                  setAnchorEl(e.currentTarget);
+                  handleMenuOpen()
+                }
+              }}
               sx={{
                 display: "flex",
                 alignItems: "center",
                 flexDirection: "row",
                 cursor: "pointer",
               }}
-            >
-              <IconButton>
+            >{!isMobile &&
+              <IconButton
+              >
                 <MenuIcon />
-              </IconButton>
+              </IconButton>}
               <Avatar
                 sx={{
                   bgcolor: user?.photoProfile ? "transparent" : "var(--bg-secondary)",
@@ -391,7 +417,139 @@ const Navbar = () => {
           </Box>
         </Box>
       </Toolbar>
-      <SearchBar />
+      <Drawer
+        anchor="right"
+        open={drawerOpen}
+        onClose={toggleDrawer(false)}
+        PaperProps={{
+          sx: {
+            width: 300,
+            borderTopLeftRadius: 18,
+            borderBottomLeftRadius: 18,
+          },
+        }}
+      >
+        <Box sx={{ p: 2 }}>
+          {/* Header */}
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Avatar
+                src={user?.photoProfile || undefined}
+                sx={{ width: 40, height: 40 }}
+              >
+                {!user?.photoProfile && user?.userName?.charAt(0)?.toUpperCase()}
+              </Avatar>
+              <Box>
+                <Typography fontWeight={900}>
+                  {user?.userName || "Guest"}
+                </Typography>
+                <Typography variant="body2" color="var(--text-secondary)">
+                  Account
+                </Typography>
+              </Box>
+            </Box>
+
+            <IconButton onClick={toggleDrawer(false)}>
+              <MenuIcon />
+            </IconButton>
+          </Box>
+
+          <Divider sx={{ my: 2 }} />
+
+          {/* Menu Items */}
+          <Stack spacing={1}>
+            {token && (
+              <>
+                <Button
+                  onClick={() => {
+                    navigate("/user/trips");
+                    setDrawerOpen(false);
+                  }}
+                  startIcon={<LuggageIcon />}
+                  sx={drawerBtnSx}
+                >
+                  Trips
+                </Button>
+
+                <Button
+                  onClick={() => {
+                    navigate("/user/wishlist");
+                    setDrawerOpen(false);
+                  }}
+                  startIcon={<FavoriteBorderIcon />}
+                  sx={drawerBtnSx}
+                >
+                  Wishlist
+                </Button>
+
+                <Button
+                  onClick={() => {
+                    navigate("/hosting/listings");
+                    setDrawerOpen(false);
+                  }}
+                  startIcon={<DashboardCustomizeOutlinedIcon />}
+                  sx={drawerBtnSx}
+                >
+                  Manage listings
+                </Button>
+              </>
+            )}
+
+            {!token && (
+              <>
+                <Button
+                  onClick={() => {
+                    handleLoginModalOpen();
+                    setDrawerOpen(false);
+                  }}
+                  startIcon={<LoginIcon />}
+                  sx={drawerBtnSx}
+                >
+                  Login
+                </Button>
+
+                <Button
+                  onClick={() => {
+                    handleSignUpModalOpen();
+                    setDrawerOpen(false);
+                  }}
+                  startIcon={<PersonAddAltIcon />}
+                  sx={drawerBtnSx}
+                >
+                  Sign up
+                </Button>
+              </>
+            )}
+
+            <Divider />
+
+            <Button
+              onClick={() => {
+                navigate("/user/help/feature");
+                setDrawerOpen(false);
+              }}
+              startIcon={<HelpOutlineIcon />}
+              sx={drawerBtnSx}
+            >
+              Help Center
+            </Button>
+
+            {token && (
+              <Button
+                onClick={() => handleLogout(navigate)}
+                startIcon={<LogoutIcon />}
+                color="error"
+                variant="contained"
+                sx={{ borderRadius: 2, fontWeight: 900 }}
+              >
+                Logout
+              </Button>
+            )}
+          </Stack>
+        </Box>
+      </Drawer>
+
+      {isMobile ? <MobileSearchBar /> : <SearchBar />}
       <Divider />
       {isLoginModalOpen && (
         <LoginModal

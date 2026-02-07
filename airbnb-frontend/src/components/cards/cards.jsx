@@ -9,6 +9,7 @@ import {
   IconButton,
   Chip,
   Stack,
+  useMediaQuery,
 } from "@mui/material";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -95,6 +96,7 @@ const CardItem = React.memo(({ data }) => {
     setShowSlider(false);
   };
 
+  const isMobile = useMediaQuery("(max-width:1100px)");
 
   return (
     <>
@@ -116,14 +118,14 @@ const CardItem = React.memo(({ data }) => {
       >
         {/* Image Area */}
         <Box sx={{ position: "relative" }} onClick={(e) => e.stopPropagation()}>
-          <Box sx={{ height: 240 }} onMouseEnter={handleMouseEnter}
+          <Box sx={{ height: isMobile ? 150 : 240 }} onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()} >
             {/* {showSlider ? ( */}
             <Slider {...settings}>
               {(data?.photos || []).map((img, index) => (
-                <Box key={index} sx={{ height: 240 }}>
+                <Box key={index} sx={{ height: isMobile ? 150 : 240 }}>
                   <img
                     src={img}
                     alt={`Photo ${index + 1}`}
@@ -173,7 +175,6 @@ const CardItem = React.memo(({ data }) => {
               handleLoginModalOpen={handleLoginModalOpen}
             />
           </IconButton>
-          {console.log(data)}
           {/* Guest favourite */}
           {data?.guestFavourite && (
             <Chip

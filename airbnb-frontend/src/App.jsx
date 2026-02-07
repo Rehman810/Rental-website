@@ -7,6 +7,7 @@ import { Toaster } from "react-hot-toast";
 import { ToastNotification } from "./components/toast/toast";
 
 import { NotificationProvider } from "./context/NotificationContext";
+import { TitleProvider } from "./context/TitleContext";
 import { useTheme } from "./context/ThemeContext.jsx";
 import { useAppContext } from "./context/context.jsx";
 import { getPlatformSettings } from "./services/platformSettingsService.js";
@@ -71,7 +72,9 @@ const App = () => {
       <ToastNotification />
       <Toaster position="top-right" reverseOrder={false} />
       <NotificationProvider>
-        <Router />
+        <TitleProvider>
+          <Router />
+        </TitleProvider>
       </NotificationProvider>
     </Suspense>
   )

@@ -22,7 +22,7 @@ import {
   subscribeToUpdates,
   unsubscribeFromUpdates,
 } from "../../webSockets/webSockets";
-import useDocumentTitle from "../../hooks/dynamicTitle/dynamicTitle";
+import usePageTitle from "../../hooks/usePageTitle";
 
 initializeSocket();
 
@@ -37,7 +37,7 @@ const GuestAllMessages = () => {
   const receiverId = user?._id;
   const messagesEndRef = useRef(null);
 
-  useDocumentTitle(selectedSenderId ? `${senders.find((s) => s.id === selectedSenderId)?.name} - Airbnb` : "Messages - Airbnb");
+  usePageTitle(selectedSenderId ? (senders.find((s) => s.id === selectedSenderId)?.name || "Messages") : "Messages");
 
   // Fetch the list of senders
   useEffect(() => {

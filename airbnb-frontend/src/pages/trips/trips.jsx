@@ -32,8 +32,10 @@ import { API_BASE_URL } from "../../config/env";
 
 import { getAuthToken } from "../../utils/cookieUtils";
 import apiClient from "../../config/ServiceApi/apiClient";
+import usePageTitle from "../../hooks/usePageTitle";
 // ...
 const Trips = () => {
+  usePageTitle("Trips");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
   const [activeTripIndex, setActiveTripIndex] = useState(null);
@@ -195,7 +197,7 @@ const Trips = () => {
             <Chip
               label={`${trips?.length || 0} Trips`}
               variant="outlined"
-              sx={{ borderRadius: 999, fontWeight: 900 }}
+              sx={{ borderRadius: 999, fontWeight: 900, color: "var(--text-secondary)" }}
             />
           </Stack>
         </Paper>
@@ -355,14 +357,14 @@ const Trips = () => {
                               label={a}
                               size="small"
                               variant="outlined"
-                              sx={{ borderRadius: 999, fontWeight: 800, mb: 0.6 }}
+                              sx={{ borderRadius: 999, fontWeight: 800, mb: 0.6, color: "var(--text-secondary)" }}
                             />
                           ))}
                           {remainingAmenities > 0 && (
                             <Chip
                               label={`+${remainingAmenities} more`}
                               size="small"
-                              sx={{ borderRadius: 999, fontWeight: 900 }}
+                              sx={{ borderRadius: 999, fontWeight: 900, color: "var(--text-secondary)" }}
                             />
                           )}
                         </Stack>

@@ -32,7 +32,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { fetchDataById } from "../../config/ServiceApi/serviceApi";
 import dayjs from "dayjs";
 import Swal from "sweetalert2";
-import useDocumentTitle from "../../hooks/dynamicTitle/dynamicTitle";
+import usePageTitle from "../../hooks/usePageTitle";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
@@ -165,7 +165,7 @@ const RoomPage = () => {
       ?.join(" ");
   };
 
-  useDocumentTitle(place?.title ? toPascalCase(place.title) : "Airbnb");
+  usePageTitle(place?.title ? toPascalCase(place.title) : "");
 
   useEffect(() => {
     const fetchOptions = async () => {

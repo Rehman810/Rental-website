@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Grid, Typography, Link } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import usePageTitle from "../../hooks/usePageTitle";
 
 const policies = [
   { id: 'terms-of-service', title: 'Terms of Service' },
@@ -15,6 +16,7 @@ const policies = [
 ];
 
 const TermsPoliciesPage = () => {
+  usePageTitle("Help Center");
   const navigate = useNavigate();
 
   const handleLinkClick = (id) => {

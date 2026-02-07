@@ -23,6 +23,7 @@ import LeafletMap from "../../components/map/map";
 import SearchFilters from "../../components/searchFilters/SearchFilters";
 import { toast } from "react-hot-toast";
 import { useAppContext } from "../../context/context";
+import usePageTitle from "../../hooks/usePageTitle";
 
 const MemoizedCard = React.memo(({ data }) => <Card data={data} />);
 
@@ -38,6 +39,7 @@ const DEFAULT_FILTERS = {
 };
 
 const Home = () => {
+  usePageTitle("Home");
   const { t } = useTranslation();
   const token = getAuthToken();
   const { searchParams } = useAppContext(); // Get searchParams from context
@@ -438,6 +440,28 @@ const Home = () => {
                 ))
               )}
               {hasMore && <div ref={observerRef} style={{ height: 1 }} />}
+              {loading && page > 1 && (
+                Array.from({ length: 4 }).map((_, i) => (
+                  <Grid item xs={12} sm={6} md={4} lg={3} key={`loading-${i}`}>
+                    <Paper
+                      elevation={0}
+                      sx={{
+                        borderRadius: 3,
+                        border: "1px solid",
+                        borderColor: "divider",
+                        overflow: "hidden",
+                      }}
+                    >
+                      <Skeleton variant="rectangular" height={220} />
+                      <Box sx={{ p: 2 }}>
+                        <Skeleton variant="text" width="70%" />
+                        <Skeleton variant="text" width="90%" />
+                        <Skeleton variant="text" width="50%" />
+                      </Box>
+                    </Paper>
+                  </Grid>
+                ))
+              )}
             </Grid>
           </Container>
         </>

@@ -29,10 +29,12 @@ import { useNotification } from '../../context/NotificationContext';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { useNavigate } from 'react-router-dom';
+import usePageTitle from "../../hooks/usePageTitle";
 
 dayjs.extend(relativeTime);
 
 const NotificationsPage = () => {
+    usePageTitle("Notifications");
     const {
         notifications,
         loading,

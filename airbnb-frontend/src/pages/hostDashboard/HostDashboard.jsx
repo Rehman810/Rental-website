@@ -36,6 +36,7 @@ import {
     HomeOutlined,
 } from "@ant-design/icons";
 import apiClient from "../../config/ServiceApi/apiClient";
+import usePageTitle from "../../hooks/usePageTitle";
 
 const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
@@ -62,6 +63,7 @@ const softHover = {
 
 
 const HostDashboardAntd = () => {
+    usePageTitle("Host Dashboard");
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState(null);
 

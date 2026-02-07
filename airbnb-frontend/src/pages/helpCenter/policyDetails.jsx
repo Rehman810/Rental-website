@@ -2,10 +2,12 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { Box, Typography, Divider } from '@mui/material';
 import policyDetails from './policyDetails';
+import usePageTitle from "../../hooks/usePageTitle";
 
 const PolicyDetailPage = () => {
   const { id } = useParams();
   const policy = policyDetails[id] || { title: 'Policy Not Found', sections: [{ heading: '', content: 'No details available for this policy.' }] };
+  usePageTitle(policy.title || "Policy Details");
 
   return (
     <Box p={4} sx={{ minHeight: '100vh' }}>

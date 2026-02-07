@@ -9,19 +9,18 @@ import {
   Chip,
   Divider,
 } from "@mui/material";
-import useDocumentTitle from "../../hooks/dynamicTitle/dynamicTitle";
+import usePageTitle from "../../hooks/usePageTitle";
 import CheckingOut from "../../components/checkingOut/checkingOut";
 import CurrentlyHosting from "../../components/currentlyHosting/currentlyHosting";
 import Upcoming from "../../components/upcoming/upcoming";
 import PendingBooking from "../../components/pendingBooking/pendingBooking";
 import { useBookingContext } from "../../context/booking";
-import { APP_NAME } from "../../config/env";
 import ConfirmedBookings from "../../components/confirmedBookings/confirmedBookings";
 import { fetchData } from "../../config/ServiceApi/serviceApi";
 
 const ReservationSection = () => {
   const [selectedTab, setSelectedTab] = useState("Pending Booking");
-  useDocumentTitle("Host Dashboard - " + APP_NAME);
+  usePageTitle("Host Dashboard");
 
   const user = getAuthUser();
   const {

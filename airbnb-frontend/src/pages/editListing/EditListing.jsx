@@ -70,6 +70,7 @@ const AMENITIES_LIST = [
 ];
 
 const EditListing = () => {
+    usePageTitle("Edit Listing");
     const { id } = useParams();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);

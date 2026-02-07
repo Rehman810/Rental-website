@@ -1,7 +1,9 @@
 import React from 'react';
 import { Box, Grid, Typography, Avatar, TextField, Button, Rating, Card, CardMedia, CardContent } from '@mui/material';
+import usePageTitle from "../../hooks/usePageTitle";
 
 const reviews = () => {
+  usePageTitle("Reviews");
   const listings = [
     {
       id: 1,

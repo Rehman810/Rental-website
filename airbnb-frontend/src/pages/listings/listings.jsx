@@ -24,7 +24,7 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
-import useDocumentTitle from "../../hooks/dynamicTitle/dynamicTitle";
+import usePageTitle from "../../hooks/usePageTitle";
 import { useNavigate } from "react-router-dom";
 import { fetchDataById } from "../../config/ServiceApi/serviceApi";
 import axios from 'axios';
@@ -32,7 +32,7 @@ import toast from 'react-hot-toast';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CheckIcon from '@mui/icons-material/Check';
 import { Menu, MenuItem, Stack as MuiStack, Dialog, DialogTitle, DialogContent, DialogActions, FormControl, InputLabel, Select, Switch, FormControlLabel } from "@mui/material"; // Stack already imported as Stack
-import { APP_NAME } from "../../config/env";
+
 import apiClient from "../../config/ServiceApi/apiClient";
 
 const AvailabilityModal = ({ open, onClose, listing, token, onUpdate }) => {
@@ -570,7 +570,7 @@ const ListingPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
-  useDocumentTitle("Listings - " + APP_NAME);
+  usePageTitle("Listings");
 
   const token = getAuthToken();
   const user = getAuthUser();

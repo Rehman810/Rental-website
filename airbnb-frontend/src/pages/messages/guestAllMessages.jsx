@@ -22,8 +22,8 @@ import {
   subscribeToUpdates,
   unsubscribeFromUpdates,
 } from "../../webSockets/webSockets";
-import useDocumentTitle from "../../hooks/dynamicTitle/dynamicTitle";
-import { APP_NAME } from "../../config/env";
+import usePageTitle from "../../hooks/usePageTitle";
+
 
 initializeSocket();
 const GuestAllMessages = () => {
@@ -37,7 +37,7 @@ const GuestAllMessages = () => {
   const receiverId = user?._id;
   const messagesEndRef = useRef(null);
 
-  useDocumentTitle(selectedSenderId ? `${senders.find((s) => s.id === selectedSenderId)?.name} - ${APP_NAME}` : `Messages - ${APP_NAME}`);
+  usePageTitle(selectedSenderId ? (senders.find((s) => s.id === selectedSenderId)?.name || "Messages") : "Messages");
 
   // Fetch the list of senders
   useEffect(() => {

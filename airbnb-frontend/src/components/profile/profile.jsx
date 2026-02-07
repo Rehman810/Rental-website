@@ -30,8 +30,10 @@ import BadgeIcon from "@mui/icons-material/Badge";
 
 import { updateDataById } from "../../config/ServiceApi/serviceApi";
 import toast from "react-hot-toast";
+import usePageTitle from "../../hooks/usePageTitle";
 
 const ProfileSection = () => {
+  usePageTitle("Profile");
   const initialUser = getAuthUser();
   const [user, setUser] = useState(initialUser);
 

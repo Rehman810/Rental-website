@@ -11,7 +11,7 @@ import {
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import Logo from "../../assets/images/logo.png";
-import useDocumentTitle from "../../hooks/dynamicTitle/dynamicTitle";
+import usePageTitle from "../../hooks/usePageTitle";
 import Step1 from "../host/step1";
 import PropertyType from "../host/propertyType";
 import PlaceType from "../host/placeType";
@@ -244,7 +244,7 @@ function ListingSteps() {
 
   const token = getAuthToken();
   const navigate = useNavigate();
-  useDocumentTitle("Create your listing - Airbnb");
+  usePageTitle("Create your listing");
   const theme = useTheme();
   const [activeStep, setActiveStep] = useState(0);
   const [isNextDisabled, setIsNextDisabled] = useState(true);

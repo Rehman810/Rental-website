@@ -27,9 +27,11 @@ import ErrorIcon from "@mui/icons-material/Error";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import toast from "react-hot-toast";
 import { CURRENCY } from "../../config/env";
+import usePageTitle from "../../hooks/usePageTitle";
 
 
 const BookingComponent = () => {
+  usePageTitle("Request to Book");
   const { bookListing, bookingData } = useBookingContext();
   const navigate = useNavigate();
   const { roomId } = useParams();

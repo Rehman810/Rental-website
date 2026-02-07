@@ -46,6 +46,7 @@ import MicrowaveIcon from "@mui/icons-material/Microwave";
 import CoffeeIcon from "@mui/icons-material/Coffee";
 import BathtubIcon from "@mui/icons-material/Bathtub";
 import { CheckCircleOutline } from '@mui/icons-material';
+import usePageTitle from "../../hooks/usePageTitle";
 
 const HostListingDetails = () => {
     const { id } = useParams();
@@ -53,6 +54,7 @@ const HostListingDetails = () => {
     const theme = useTheme();
 
     const [listing, setListing] = useState(null);
+    usePageTitle(listing?.title || "Listing Details");
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {

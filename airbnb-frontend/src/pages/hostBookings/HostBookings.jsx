@@ -22,6 +22,7 @@ import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../config/ServiceApi/apiClient';
+import usePageTitle from "../../hooks/usePageTitle";
 
 const TabPanel = (props) => {
     const { children, value, index, ...other } = props;
@@ -37,6 +38,7 @@ const TabPanel = (props) => {
 };
 
 const HostBookings = () => {
+    usePageTitle("Bookings");
     const [value, setValue] = useState(0);
     const [loading, setLoading] = useState(true);
 

@@ -11,10 +11,12 @@ import {
 } from "../../webSockets/webSockets";
 import SendIcon from "@mui/icons-material/Send";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import usePageTitle from "../../hooks/usePageTitle";
 
 initializeSocket();
 
 const GuestMessages = () => {
+  usePageTitle("Chat");
   const { hostId } = useParams();
   const navigate = useNavigate();
   const receiverId = hostId;

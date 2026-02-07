@@ -7,8 +7,10 @@ import {
 import { Link } from "react-router-dom";
 import Lottie from "lottie-react";
 import notFoundAnimation from "../../animations/notfound.json";
+import usePageTitle from "../../hooks/usePageTitle";
 
 const NotFoundPage = () => {
+  usePageTitle("Page Not Found");
   return (
     <Box
       sx={{

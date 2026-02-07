@@ -14,8 +14,10 @@ import TravelExploreIcon from "@mui/icons-material/TravelExplore";
 import Card from "../../components/cards/cards";
 import { useWishlist } from "../../context/wishlistProvider";
 import { useNavigate } from "react-router-dom";
+import usePageTitle from "../../hooks/usePageTitle";
 
 const Wishlist = () => {
+  usePageTitle("Wishlist");
   const { wishlist } = useWishlist();
   const navigate = useNavigate();
 

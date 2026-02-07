@@ -16,8 +16,10 @@ import { fetchData } from "../../config/ServiceApi/serviceApi";
 import dayjs from "dayjs";
 
 import { getAuthToken } from "../../utils/cookieUtils";
+import usePageTitle from "../../hooks/usePageTitle";
 // ...
 const HostBookingsCalendar = () => {
+  usePageTitle("Calendar");
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const token = getAuthToken();

@@ -24,8 +24,10 @@ import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { API_BASE_URL } from '../../config/env';
 import apiClient from '../../config/ServiceApi/apiClient';
+import usePageTitle from "../../hooks/usePageTitle";
 
 const HostSettings = () => {
+    usePageTitle("Settings");
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [settings, setSettings] = useState({

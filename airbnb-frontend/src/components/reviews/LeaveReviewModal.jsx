@@ -126,7 +126,19 @@ const LeaveReviewModal = ({ open, onClose, listingId, bookingId, onReviewSubmitt
 
                     <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Typography variant="subtitle1" fontWeight="bold">Overall:</Typography>
-                        <Rating value={overallRating} precision={0.1} readOnly />
+                        <Rating value={overallRating} precision={0.1} readOnly sx={{
+                            color: 'var(--secondary-main)',
+                            '& .MuiRating-iconEmpty': {
+                                color: (theme) =>
+                                    theme.palette.mode === 'dark'
+                                        ? 'var(--secondary-main)'
+                                        : 'var(--secondary-main)',
+                                stroke: (theme) =>
+                                    theme.palette.mode === 'dark'
+                                        ? 'var(--secondary-main)'
+                                        : 'var(--secondary-main)',
+                            },
+                        }} />
                         <Typography>({overallRating.toFixed(1)})</Typography>
                     </Box>
                 </Box>
@@ -179,10 +191,41 @@ const LeaveReviewModal = ({ open, onClose, listingId, bookingId, onReviewSubmitt
                 <Button
                     onClick={handleSubmit}
                     variant="contained"
-                    disabled={loading || Object.values(ratings).some(r => r === 0) || comment.length < 10}
+                    disabled={
+                        loading ||
+                        Object.values(ratings).some(r => r === 0) ||
+                        comment.length < 10
+                    }
+                    sx={{
+                        '&.Mui-disabled': {
+                            opacity: .5,
+                            backgroundColor: (theme) =>
+                                theme.palette.mode === 'dark'
+                                    ? '#2e2e2e'
+                                    : '#e0e0e0',
+                            color: (theme) =>
+                                theme.palette.mode === 'dark'
+                                    ? 'rgba(255,255,255,0.6)'
+                                    : 'rgba(0,0,0,0.6)',
+                            cursor: 'not-allowed',
+                        },
+                    }}
                 >
-                    {loading ? <CircularProgress size={24} /> : 'Submit Review'}
+                    {loading ? (
+                        <CircularProgress
+                            size={24}
+                            sx={{
+                                color: (theme) =>
+                                    theme.palette.mode === 'dark'
+                                        ? 'rgba(255,255,255,0.7)'
+                                        : 'primary.main',
+                            }}
+                        />
+                    ) : (
+                        'Submit Review'
+                    )}
                 </Button>
+
             </DialogActions>
         </Dialog>
     );

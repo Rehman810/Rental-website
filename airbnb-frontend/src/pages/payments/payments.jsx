@@ -18,8 +18,10 @@ import ErrorIcon from "@mui/icons-material/Error";
 import PaymentsIcon from "@mui/icons-material/Payments";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import toast from "react-hot-toast";
+import usePageTitle from "../../hooks/usePageTitle";
 
 const Payments = () => {
+    usePageTitle("Payments");
     const [loading, setLoading] = useState(true);
     const [connecting, setConnecting] = useState(false);
     const [status, setStatus] = useState({

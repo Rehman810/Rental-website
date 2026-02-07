@@ -20,6 +20,11 @@ const listingSchema = new mongoose.Schema({
     type: String,
     enum: ['instant', 'request'],
   },
+  status: {
+    type: String,
+    enum: ['active', 'inactive'],
+    default: 'active',
+  },
   guestRequirementsOverride: {
     requireVerifiedPhone: { type: Boolean },
     requireCNIC: { type: Boolean },

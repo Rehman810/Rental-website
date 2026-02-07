@@ -24,6 +24,7 @@
     "express-session": "^1.18.1",
     "firebase-admin": "^13.6.0",
     "google-auth-library": "^10.5.0",
+    "joi": "^18.0.2",
     "jsonwebtoken": "^9.0.2",
     "logger": "^0.0.1",
     "mongoose": "^8.9.1",

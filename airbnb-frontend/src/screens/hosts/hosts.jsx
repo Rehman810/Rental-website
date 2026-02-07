@@ -13,6 +13,8 @@ const Listings = lazy(() => import("../../pages/listings/listings"));
 const Payments = lazy(() => import("../../pages/payments/payments"));
 const HostSettings = lazy(() => import("../../pages/hostSettings/HostSettings"));
 const HostBookings = lazy(() => import("../../pages/hostBookings/HostBookings"));
+const HostListingDetails = lazy(() => import("../../pages/hostListingDetails/HostListingDetails"));
+const EditListing = lazy(() => import("../../pages/editListing/EditListing"));
 
 const Hosts = () => {
   const location = useLocation();
@@ -31,6 +33,8 @@ const Hosts = () => {
 
           {/* Listing Page */}
           <Route path="/listings" element={<Listings />} />
+          <Route path="/listings/:id" element={<HostListingDetails />} />
+          <Route path="/listings/:id/edit" element={<EditListing />} />
 
           {/* Host Bookings Calendar Page */}
           <Route path="/calendar" element={<HostBookingsCalendar />} />

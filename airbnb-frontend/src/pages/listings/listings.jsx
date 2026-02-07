@@ -684,7 +684,6 @@ const ListingPage = () => {
 
     return (
       <Card
-        onClick={() => navigate(`/rooms/${item._id}`)}
         sx={{
           borderRadius: 4,
           border: "1px solid",
@@ -842,7 +841,7 @@ const ListingPage = () => {
             {formatAddress(item)}
           </Typography>
 
-          <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mt: 1.5 }}>
+          <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mt: 1.5 }} onClick={() => navigate(`/hosting/listings/${item._id}`)}>
             <Typography variant="caption" color="var(--text-secondary)" fontWeight={800}>
               View →
             </Typography>

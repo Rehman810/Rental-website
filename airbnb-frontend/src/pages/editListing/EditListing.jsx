@@ -33,6 +33,7 @@ import MicrowaveIcon from "@mui/icons-material/Microwave";
 import CoffeeIcon from "@mui/icons-material/Coffee";
 import BathtubIcon from "@mui/icons-material/Bathtub";
 import { CheckCircleOutline } from '@mui/icons-material';
+import usePageTitle from '../../hooks/usePageTitle';
 
 const AMENITY_ICONS = {
     wifi: <WifiIcon fontSize="small" />,

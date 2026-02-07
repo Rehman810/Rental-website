@@ -16,17 +16,17 @@ export const chatController = {
       if (!chat) {
         chat = new Chat({ hostId: user1, guestId: user2, messages: [] });
       }
-      chat.messages.push({ senderId: hostId, message });
+      const newMessage = { senderId: hostId, message, timestamp: new Date() };
+      chat.messages.push(newMessage);
       await chat.save();
 
+      // Retrieve the saved message with its _id
+      const savedMessage = chat.messages[chat.messages.length - 1];
 
       const chatRoomId = `${user1}_${user2}`;
-      io.to(chatRoomId).emit('send_message', {
-        chatId: chat._id,
-        messages: chat.messages,
-        host: chat.hostId,
-        guest: chat.guestId,
-      });
+
+      // Emit 'receive_message' to match frontend listener
+      io.to(chatRoomId).emit('receive_message', savedMessage);
 
       // Notification
       await createNotification({

@@ -47,6 +47,7 @@ import CoffeeIcon from "@mui/icons-material/Coffee";
 import BathtubIcon from "@mui/icons-material/Bathtub";
 import { CheckCircleOutline } from '@mui/icons-material';
 import usePageTitle from "../../hooks/usePageTitle";
+import { CURRENCY } from '../../config/env';
 
 const HostListingDetails = () => {
     const { id } = useParams();
@@ -322,9 +323,8 @@ const HostListingDetails = () => {
                         <CardContent>
                             {/* Price */}
                             <Stack direction="row" alignItems="center" spacing={1} mb={2}>
-                                <AttachMoneyIcon color="primary" />
                                 <Typography variant="h5" fontWeight={900}>
-                                    PKR {listing.weekdayPrice}
+                                    {CURRENCY} {listing.weekdayPrice}
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary">
                                     / night

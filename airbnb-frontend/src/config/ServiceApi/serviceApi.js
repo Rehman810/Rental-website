@@ -171,7 +171,7 @@ export const postDataById = async (endpoint, data, id, id2) => {
     return response.data;
   } catch (error) {
     // showErrorToast(error.message)
-    throw new Error('Error posting data: ' + error);
+    throw new Error('Error posting data: ' + error.response?.data?.message);
   }
 };
 
@@ -189,7 +189,7 @@ export const postDataByIds = async (endpoint, data, id) => {
     return response.data;
   } catch (error) {
     // showErrorToast(error.message)
-    throw new Error('Error posting data: ' + error);
+    throw new Error('Error posting data: ' + error.response?.data?.message);
   }
 };
 

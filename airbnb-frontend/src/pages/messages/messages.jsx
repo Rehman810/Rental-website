@@ -3,13 +3,14 @@ import { getAuthToken, getAuthUser } from "../../utils/cookieUtils";
 import {
   Box,
   TextField,
-  Button,
   Typography,
   List,
   ListItem,
   ListItemText,
   Avatar,
   IconButton,
+  Divider,
+  useTheme,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SendIcon from "@mui/icons-material/Send";
@@ -23,332 +24,265 @@ import {
   unsubscribeFromUpdates,
 } from "../../webSockets/webSockets";
 import usePageTitle from "../../hooks/usePageTitle";
+import { API_BASE_URL } from "../../config/env";
 
 initializeSocket();
 
 const GuestAllMessages = () => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [senders, setSenders] = useState([]);
   const [selectedSenderId, setSelectedSenderId] = useState(null);
   const [showChat, setShowChat] = useState(false);
+
   const token = getAuthToken();
   const user = getAuthUser();
   const receiverId = user?._id;
   const messagesEndRef = useRef(null);
 
-  usePageTitle(selectedSenderId ? (senders.find((s) => s.id === selectedSenderId)?.name || "Messages") : "Messages");
+  usePageTitle(
+    selectedSenderId
+      ? senders.find((s) => s.id === selectedSenderId)?.name || "Messages"
+      : "Messages"
+  );
 
-  // Fetch the list of senders
   useEffect(() => {
     const fetchSenders = async () => {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      };
       try {
-        const response = await axios.get(
-          `http://192.168.18.45:5000/list-users-for-messages`,
-          config
+        const res = await axios.get(
+          `${API_BASE_URL}/list-users-for-messages`,
+          { headers: { Authorization: `Bearer ${token}` } }
         );
-        setSenders(response.data.users);
-      } catch (error) {
-        console.error("Error fetching senders:", error);
+        setSenders(res.data.users);
+      } catch (e) {
+        console.error(e);
       }
     };
     fetchSenders();
   }, [token]);
 
-  // Fetch chat messages when a sender is selected
   useEffect(() => {
     if (!selectedSenderId || !receiverId) return;
 
     const fetchChat = async () => {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      };
       try {
-        const response = await axios.get(
-          `http://192.168.18.45:5000/get-chat/${selectedSenderId}`,
-          config
+        const res = await axios.get(
+          `${API_BASE_URL}/get-chat/${selectedSenderId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
         );
-        setMessages(response.data.messages);
+        setMessages(res.data.messages);
 
-        // Join chat room
         emitEvent("join_room", `${receiverId}_${selectedSenderId}`);
         emitEvent("join_room", `${selectedSenderId}_${receiverId}`);
-      } catch (error) {
-        console.error("Error fetching chat:", error);
+      } catch (e) {
+        console.error(e);
       }
     };
     fetchChat();
   }, [selectedSenderId, receiverId, token]);
 
-  // Listen for new messages
   useEffect(() => {
-    const handleMessage = (payload) => {
-      setMessages((prevMessages) => [...prevMessages, payload]);
-    };
+    const handler = (payload) =>
+      setMessages((prev) => [...prev, payload]);
 
-    subscribeToUpdates("receive_message", handleMessage);
-
-    return () => {
-      unsubscribeFromUpdates("receive_message");
-    };
+    subscribeToUpdates("receive_message", handler);
+    return () => unsubscribeFromUpdates("receive_message");
   }, []);
 
-  // Auto-scroll to the bottom of the chat
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Handle sending a message
   const handleSendMessage = async () => {
     if (!newMessage) return;
-
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    };
     try {
       await axios.post(
-        `http://192.168.18.45:5000/send-message`,
+        `${API_BASE_URL}/send-message`,
         { guestId: selectedSenderId, message: newMessage },
-        config
+        { headers: { Authorization: `Bearer ${token}` } }
       );
+
       emitEvent("send_message", {
         senderId: receiverId,
         receiverId: selectedSenderId,
         message: newMessage,
       });
+
       setNewMessage("");
-    } catch (error) {
-      console.error("Error sending message:", error);
+    } catch (e) {
+      console.error(e);
     }
   };
 
   return (
-    <Box
-      sx={{
-        height: "87vh",
-        display: "flex",
-        flexDirection: { xs: "column", md: "row" },
-      }}
-    >
-      {/* Sidebar */}
+    <Box sx={{ height: "87vh", display: "flex", bgcolor: "var(--bg-primary)" }}>
       <Box
         sx={{
-          width: { xs: showChat ? "0" : "100%", md: "30%" },
-          display: showChat && { xs: "none", md: "block" },
+          width: { xs: showChat ? 0 : "100%", md: 320 },
+          borderRight: 1,
+          borderColor: "divider",
           overflowY: "auto",
-          borderRight: { md: "1px solid #ccc" },
-          transition: "all 0.3s ease",
+          transition: "all .3s",
         }}
       >
-        <Typography
-          variant="h6"
-          sx={{ padding: 2, textAlign: "left", fontWeight: "bold" }}
-        >
+        <Typography fontWeight={900} sx={{ p: 2 }}>
           Conversations
         </Typography>
-        <List>
+
+        <List disablePadding>
           {senders.length === 0 ? (
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                height: "100%",
-                color: "#757575",
-              }}
-            >
-              <InboxOutlinedIcon
-                sx={{
-                  fontSize: 50,
-                  marginBottom: "16px",
-                  opacity: 0.7,
-                  color: "#bdbdbd",
-                }}
-              />
-              <Typography
-                variant="h6"
-                sx={{ textAlign: "center", fontWeight: 500 }}
-              >
-                You don’t have any messages
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{ textAlign: "center", marginTop: 1 }}
-              >
-                Start a conversation to see messages here.
-              </Typography>
+            <Box sx={{ textAlign: "center", mt: 8, opacity: 0.6 }}>
+              <InboxOutlinedIcon sx={{ fontSize: 60 }} />
+              <Typography>No messages yet</Typography>
             </Box>
           ) : (
-            senders.map((sender, index) => (
+            senders.map((s) => (
               <ListItem
-                button
-                key={index}
+                key={s.id}
                 onClick={() => {
-                  setSelectedSenderId(sender.id);
+                  setSelectedSenderId(s.id);
                   setShowChat(true);
                 }}
                 sx={{
-                  backgroundColor:
-                    selectedSenderId === sender.id ? "#e0f7fa" : "#ffffff",
-                  "&:hover": {
-                    backgroundColor:
-                      selectedSenderId === sender.id ? "#b2ebf2" : "#f0f0f0",
-                    cursor: "pointer"
-                  },
-                  transition: "background-color 0.3s ease",
+                  cursor: "pointer",
+                  px: 2,
+                  py: 1.5,
+                  bgcolor:
+                    selectedSenderId === s.id
+                      ? "var(--bg-secondary)"
+                      : "transparent",
+                  "&:hover": { bgcolor: "var(--bg-secondary)" },
                 }}
               >
-                {sender.photoProfile ? (
-                  <img
-                    src={sender.photoProfile}
-                    alt={sender.name}
-                    style={{
-                      width: "40px",
-                      height: "40px",
-                      borderRadius: "50%",
-                      marginRight: "8px",
-                    }}
-                  />
-                ) : (
-                  <Avatar sx={{ marginRight: 2 }}>{sender.name[0]}</Avatar>
-                )}
-                <ListItemText primary={sender.name} />
+                <Avatar src={s.photoProfile} sx={{ mr: 2 }}>
+                  {s.name?.[0]}
+                </Avatar>
+                <ListItemText
+                  primary={
+                    <Typography fontWeight={700}>{s.name}</Typography>
+                  }
+                />
               </ListItem>
             ))
           )}
         </List>
       </Box>
 
-      {/* Chat Window */}
-      <Box
-        sx={{
-          flex: 1,
-          display: showChat || { xs: "none", md: "block" },
-          flexDirection: "column",
-          height: "100%",
-        }}
-      >
+      <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
         {selectedSenderId ? (
           <>
-            {/* Chat Header */}
+            {/* Header */}
             <Box
               sx={{
+                p: 2,
                 display: "flex",
                 alignItems: "center",
-                padding: 2,
-                borderBottom: "1px solid #ccc",
-                backgroundColor: "#f8f8f8",
+                borderBottom: 1,
+                borderColor: "divider",
+                bgcolor: "var(--bg-primary)",
               }}
             >
               <IconButton
-                sx={{ display: { xs: "inline-flex", md: "none" } }}
                 onClick={() => {
                   setSelectedSenderId(null);
                   setShowChat(false);
                 }}
+                sx={{ display: { md: "none" } }}
               >
                 <ArrowBackIcon />
               </IconButton>
-              <Typography variant="h6" sx={{ marginLeft: 2 }}>
-                Chat with{" "}
-                {senders.find((s) => s.id === selectedSenderId)?.name ||
-                  "Unknown"}
+              <Typography fontWeight={900} ml={1}>
+                {senders.find((s) => s.id === selectedSenderId)?.name}
               </Typography>
             </Box>
 
             {/* Messages */}
             <Box
               sx={{
-                height: { xs: "400px", md: "calc(100vh - 250px)" }, // Fixed height on mobile, full height minus header/input on desktop
+                flex: 1,
                 overflowY: "auto",
-                padding: 2,
-                backgroundColor: "#f5f5f5",
+                p: 2,
+                bgcolor: "var(--bg-secondary)"
               }}
             >
-              {messages.map((msg, index) => (
-                <Box
-                  key={index}
-                  sx={{
-                    display: "flex",
-                    justifyContent:
-                      msg.senderId !== receiverId ? "flex-start" : "flex-end",
-                    marginBottom: 1,
-                  }}
-                >
+              {messages.map((m, i) => {
+                const mine = m.senderId === receiverId;
+                return (
                   <Box
+                    key={i}
                     sx={{
-                      maxWidth: "75%",
-                      padding: "10px 16px",
-                      backgroundColor:
-                        msg.senderId !== receiverId ? "#e0e0e0" : "#1976d2",
-                      color: msg.senderId !== receiverId ? "#000" : "#fff",
-                      position: "relative",
-                      borderTopLeftRadius: "16px",
-                      borderTopRightRadius: "16px",
-                      borderBottomLeftRadius:
-                        msg.senderId !== receiverId ? "0px" : "16px",
-                      borderBottomRightRadius:
-                        msg.senderId !== receiverId ? "16px" : "0px",
+                      display: "flex",
+                      justifyContent: mine ? "flex-end" : "flex-start",
+                      mb: 1.2,
                     }}
                   >
-                    {msg.message}
-                    <Typography
-                      variant="caption"
+                    <Box
                       sx={{
-                        display: "block",
-                        textAlign: "right",
-                        marginTop: 0.5,
+                        px: 2,
+                        py: 1.2,
+                        maxWidth: "70%",
+                        bgcolor: mine
+                          ? "primary.main"
+                          : "background.paper",
+                        color: mine
+                          ? "primary.contrastText"
+                          : "text.primary",
+                        borderRadius: 3,
+                        boxShadow: 1,
                       }}
                     >
-                      {new Date(msg.timestamp).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </Typography>
+                      <Typography variant="body2">
+                        {m.message}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          opacity: 0.6,
+                          mt: 0.5,
+                          display: "block",
+                          textAlign: "right",
+                        }}
+                      >
+                        {new Date(m.timestamp).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </Typography>
+                    </Box>
                   </Box>
-                </Box>
-              ))}
+                );
+              })}
               <div ref={messagesEndRef} />
             </Box>
 
-            {/* Message Input */}
+            {/* Input */}
             <Box
               sx={{
+                p: 2,
+                borderTop: 1,
+                borderColor: "divider",
                 display: "flex",
-                alignItems: "center",
-                padding: 2,
-                borderTop: "1px solid #ccc",
-                backgroundColor: "#fff",
+                gap: 1,
+                bgcolor: "var(--bg-primary)",
               }}
             >
               <TextField
                 fullWidth
-                variant="outlined"
-                placeholder="Type a message..."
+                placeholder="Type a message…"
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleSendMessage();
-                }}
+                onKeyDown={(e) =>
+                  e.key === "Enter" && handleSendMessage()
+                }
+                sx={{ borderRadius: 999 }}
               />
               <IconButton
-                color="primary"
                 onClick={handleSendMessage}
                 disabled={!newMessage}
-                sx={{ marginLeft: 2 }}
+                color="primary"
               >
                 <SendIcon />
               </IconButton>
@@ -357,34 +291,16 @@ const GuestAllMessages = () => {
         ) : (
           <Box
             sx={{
+              flex: 1,
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-              height: "100%",
-              color: "#757575",
+              opacity: 0.6,
             }}
           >
-            <ChatBubbleOutlineIcon
-              sx={{
-                fontSize: 80,
-                marginBottom: "16px",
-                opacity: 0.7,
-                color: "#bdbdbd", // Subtle icon color
-              }}
-            />
-            <Typography
-              variant="h6"
-              sx={{ textAlign: "center", fontWeight: 500 }}
-            >
-              Select a conversation to start chatting
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{ textAlign: "center", marginTop: 1 }}
-            >
-              Choose a sender from the list to begin chatting with them.
-            </Typography>
+            <ChatBubbleOutlineIcon sx={{ fontSize: 80 }} />
+            <Typography>Select a conversation</Typography>
           </Box>
         )}
       </Box>

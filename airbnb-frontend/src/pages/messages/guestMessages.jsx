@@ -12,6 +12,7 @@ import {
 import SendIcon from "@mui/icons-material/Send";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import usePageTitle from "../../hooks/usePageTitle";
+import { API_BASE_URL } from "../../config/env";
 
 initializeSocket();
 
@@ -42,7 +43,7 @@ const GuestMessages = () => {
 
       try {
         const response = await axios.get(
-          `http://192.168.18.45:5000/get-chat/${receiverId}`,
+          `${API_BASE_URL}/get-chat/${receiverId}`,
           config
         );
         setMessages(response.data.messages);
@@ -86,17 +87,20 @@ const GuestMessages = () => {
 
     try {
       const res = await axios.post(
-        `http://192.168.18.45:5000/send-message`,
+        `${API_BASE_URL}/send-message`,
         { guestId: receiverId, message: newMessage },
         config
       );
 
       // Emit the message to the server
+      // Removed redundant emitEvent("send_message") because backend emits "receive_message" upon save.
+      /* 
       emitEvent("send_message", {
         senderId: senderId,
         receiverId: receiverId,
         message: newMessage,
       });
+      */
 
       setNewMessage("");
     } catch (error) {
@@ -127,7 +131,7 @@ const GuestMessages = () => {
           alignItems: "center",
           padding: 2,
           borderBottom: "1px solid #ccc",
-          backgroundColor: "#f8f8f8",
+          backgroundColor: "var(--bg-primary)",
         }}
       >
         <IconButton
@@ -147,7 +151,7 @@ const GuestMessages = () => {
           height: "calc(100vh - 220px)", // Fixed height minus input area
           overflowY: "auto",
           padding: 2,
-          backgroundColor: "#f5f5f5",
+          backgroundColor: "var(--bg-secondary)",
         }}
       >
         {messages.map((msg, index) => (
@@ -203,7 +207,7 @@ const GuestMessages = () => {
           alignItems: "center",
           padding: 2,
           borderTop: "1px solid #ccc",
-          backgroundColor: "#fff",
+          backgroundColor: "var(--bg-primary)",
         }}
       >
         <TextField

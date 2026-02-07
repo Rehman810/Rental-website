@@ -164,7 +164,7 @@ const SearchFilters = ({
                     <Box sx={{ py: 2 }}>
 
                         {/* Search as Move */}
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, p: 2, bgcolor: 'grey.50', borderRadius: 2, backgroundColor: "var(--bg-secondary)" }}>
+                        {/* <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, p: 2, bgcolor: 'grey.50', borderRadius: 2, backgroundColor: "var(--bg-secondary)" }}>
                             <Box>
                                 <Typography fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                     <MyLocationIcon fontSize="small" color="action" sx={{ color: "var(--text-primary)" }} /> Search as I move map
@@ -175,7 +175,7 @@ const SearchFilters = ({
                                 checked={searchAsMove}
                                 onChange={(e) => setSearchAsMove(e.target.checked)}
                             />
-                        </Box>
+                        </Box> */}
 
                         {/* Price Range */}
                         <Box sx={{ mb: 4 }}>

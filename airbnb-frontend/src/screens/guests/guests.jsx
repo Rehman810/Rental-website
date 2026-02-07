@@ -10,6 +10,8 @@ const Protected = lazy(() => import("../../components/protected/protected"));
 const NotificationsPage = lazy(() => import("../../pages/notifications/NotificationsPage"));
 
 const NotFoundPage = lazy(() => import("../../components/notFound/notFound"));
+const HostProfile = lazy(() => import("../../pages/profile/HostProfile"));
+const GuestProfile = lazy(() => import("../../pages/profile/GuestProfile"));
 
 const Guests = () => {
   return (
@@ -25,6 +27,10 @@ const Guests = () => {
 
           {/* Notifications Page */}
           <Route path="/notifications" element={<Protected Component={NotificationsPage} />} />
+
+          {/* Profile Pages */}
+          <Route path="/profile/host/:hostId" element={<HostProfile />} />
+          <Route path="/profile/guest/:guestId" element={<GuestProfile />} />
 
           {/* 404 Page */}
           <Route path="*" element={<NotFoundPage />} />

@@ -962,6 +962,7 @@ export const bookingController = {
               userName: hostData.userName,
               email: hostData.email,
               photoProfile: hostData.photoProfile,
+              hostId: hostData?._id,
             }
             : null,
         };

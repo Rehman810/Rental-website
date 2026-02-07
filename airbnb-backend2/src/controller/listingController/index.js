@@ -87,6 +87,7 @@ export const listingController = {
           email: hostData.email,
           photoProfile: hostData.photoProfile,
           CNICStatus: hostData.CNIC?.isVerified || false,
+          hostId: hostData?._id
         },
         temporaryListings,
         confirmedListings,
@@ -109,7 +110,8 @@ export const listingController = {
         userName: hostData?.userName,
         email: hostData?.email,
         photoProfile: hostData?.photoProfile,
-        CNICStatus: hostData?.CNIC?.isVerified
+        CNICStatus: hostData?.CNIC?.isVerified,
+        hostId: hostData?._id
       };
       const reviews = await Review.find({ listingId: listing._id }).populate(
         'hostId',

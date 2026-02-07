@@ -28,7 +28,11 @@ import { API_BASE_URL } from "../../config/env";
 
 initializeSocket();
 
+import { useNavigate } from "react-router-dom";
+import { Stack } from "@mui/material";
+
 const GuestAllMessages = () => {
+  const navigate = useNavigate();
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
 
@@ -194,9 +198,23 @@ const GuestAllMessages = () => {
               >
                 <ArrowBackIcon />
               </IconButton>
-              <Typography fontWeight={900} ml={1}>
-                {senders.find((s) => s.id === selectedSenderId)?.name}
-              </Typography>
+              <Stack
+                direction="row"
+                alignItems="center"
+                spacing={1.5}
+                sx={{ ml: 1, cursor: 'pointer' }}
+                onClick={() => {
+                  const targetId = selectedSenderId;
+                  const myRole = user?.role || 'guest';
+                  const targetRole = myRole === 'host' ? 'guest' : 'host';
+                  navigate(`/profile/${targetRole}/${targetId}`);
+                }}
+              >
+                <Avatar src={senders.find((s) => s.id === selectedSenderId)?.photoProfile} />
+                <Typography fontWeight={900}>
+                  {senders.find((s) => s.id === selectedSenderId)?.name}
+                </Typography>
+              </Stack>
             </Box>
 
             {/* Messages */}

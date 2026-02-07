@@ -16,12 +16,16 @@ import { API_BASE_URL } from "../../config/env";
 
 initializeSocket();
 
+import { getHostProfile } from "../../services/profileService";
+import { Avatar, Stack } from "@mui/material";
+
 const GuestMessages = () => {
   usePageTitle("Chat");
   const { hostId } = useParams();
   const navigate = useNavigate();
   const receiverId = hostId;
   const [messages, setMessages] = useState([]);
+  const [host, setHost] = useState(null);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
@@ -29,6 +33,12 @@ const GuestMessages = () => {
   const user = getAuthUser();
   const senderId = user?._id;
   const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    if (hostId) {
+      getHostProfile(hostId).then(data => setHost(data)).catch(err => console.error(err));
+    }
+  }, [hostId]);
 
   useEffect(() => {
     if (!receiverId || !senderId) return;
@@ -140,9 +150,23 @@ const GuestMessages = () => {
         >
           <ArrowBackIcon />
         </IconButton>
-        <Typography variant="h6" sx={{ marginLeft: 2 }}>
-          Chat with Host
-        </Typography>
+        <Stack
+          direction="row"
+          spacing={2}
+          alignItems="center"
+          sx={{ ml: 2, cursor: 'pointer' }}
+          onClick={() => {
+            if (host?._id) navigate(`/profile/host/${host._id}`);
+          }}
+        >
+          {host && <Avatar src={host.photoProfile} alt={host.userName} />}
+          <Box>
+            <Typography variant="h6">
+              {host ? host.userName : "Chat with Host"}
+            </Typography>
+            {host && <Typography variant="caption" color="text.secondary">View Profile</Typography>}
+          </Box>
+        </Stack>
       </Box>
 
       {/* Messages */}

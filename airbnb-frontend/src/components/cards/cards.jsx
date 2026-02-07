@@ -42,7 +42,7 @@ const CardItem = React.memo(({ data }) => {
       speed: 450,
       slidesToShow: 1,
       slidesToScroll: 1,
-      autoplay: true,
+      autoplay: false,
       autoplaySpeed: 4500,
       arrows: false,
       beforeChange: (_, next) => setActiveSlide(next),
@@ -120,32 +120,32 @@ const CardItem = React.memo(({ data }) => {
             onMouseLeave={handleMouseLeave}
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()} >
-            {showSlider ? (
-              <Slider {...settings}>
-                {(data?.photos || []).map((img, index) => (
-                  <Box key={index} sx={{ height: 240 }}>
-                    <img
-                      src={img}
-                      alt={`Photo ${index + 1}`}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        display: "block",
-                      }}
-                      loading="lazy"
-                      onError={(e) => (e.currentTarget.src = "/fallback-image.jpg")}
-                    />
-                  </Box>
-                ))}
-              </Slider>
-            ) : (
+            {/* {showSlider ? ( */}
+            <Slider {...settings}>
+              {(data?.photos || []).map((img, index) => (
+                <Box key={index} sx={{ height: 240 }}>
+                  <img
+                    src={img}
+                    alt={`Photo ${index + 1}`}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      display: "block",
+                    }}
+                    loading="lazy"
+                    onError={(e) => (e.currentTarget.src = "/fallback-image.jpg")}
+                  />
+                </Box>
+              ))}
+            </Slider>
+            {/* ) : (
               <img
                 src={data.photos?.[0]}
                 style={{ width: "100%", height: 240, objectFit: "cover" }}
                 loading="lazy"
               />
-            )}
+            )} */}
           </Box>
 
           {/* Wishlist Button */}
@@ -173,7 +173,7 @@ const CardItem = React.memo(({ data }) => {
               handleLoginModalOpen={handleLoginModalOpen}
             />
           </IconButton>
-
+          {console.log(data)}
           {/* Guest favourite */}
           {data?.guestFavourite && (
             <Chip
@@ -218,6 +218,12 @@ const CardItem = React.memo(({ data }) => {
           {/* Host Avatar */}
           {data?.hostData && (
             <Box
+              onClick={(e) => {
+                e.stopPropagation();
+                if (data?.hostData?._id) {
+                  navigate(`/profile/host/${data.hostData._id}`);
+                }
+              }}
               sx={{
                 position: "absolute",
                 bottom: 10,
@@ -230,6 +236,7 @@ const CardItem = React.memo(({ data }) => {
                 px: 1.5,
                 py: 2.5,
                 boxShadow: 1,
+                cursor: "pointer",
                 transform: "perspective(600px) rotateY(0deg)",
                 transformOrigin: "left center",
                 transition: "transform 0.5s ease",

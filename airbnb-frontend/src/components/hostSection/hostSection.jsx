@@ -137,6 +137,7 @@ const HostSection = ({ data, listing }) => {
             <Button
               variant="text"
               endIcon={<ArrowForwardIcon />}
+              onClick={() => navigate(`/profile/host/${data.hostId}`)}
               sx={{
                 mt: 1.5,
                 px: 0,

@@ -377,9 +377,19 @@ const Trips = () => {
                         </Stack>
                       )}
 
+                      {console.log(host)}
                       {/* Review CTA */}
                       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mt: 2 }}>
-                        <Stack direction="row" spacing={1.2} alignItems="center">
+                        <Stack
+                          direction="row"
+                          spacing={1.2}
+                          alignItems="center"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (host?.hostId) navigate(`/profile/host/${host.hostId}`);
+                          }}
+                          sx={{ cursor: 'pointer' }}
+                        >
                           <Avatar
                             src={host?.photoProfile}
                             alt={host?.userName}
@@ -537,16 +547,16 @@ const Trips = () => {
       < Dialog open={cancelDialogOpen} onClose={() => setCancelDialogOpen(false)} maxWidth="xs" fullWidth >
         <DialogContent sx={{ p: 3, textAlign: 'center' }}>
           <Typography variant="h6" fontWeight={800} gutterBottom>Cancel Booking?</Typography>
-          <Typography color="text.secondary" paragraph variant="body2">
+          <Typography color="var(--text-secondary)" paragraph variant="body2">
             Are you sure you want to cancel your stay at <b>{tripToCancel?.listingId?.title}</b>?
           </Typography>
 
           <Paper variant="outlined" sx={{ p: 2, mb: 3, bgcolor: 'rgba(0,0,0,0.02)', borderRadius: 3, borderStyle: 'dashed' }}>
-            <Typography variant="caption" display="block" color="text.secondary" fontWeight={700} gutterBottom>ESTIMATED REFUND</Typography>
-            <Typography variant="h4" fontWeight={900} color={refundQuote && refundQuote.amount > 0 ? "success.main" : "text.secondary"}>
+            <Typography variant="caption" display="block" color="var(--text-secondary)" fontWeight={700} gutterBottom>ESTIMATED REFUND</Typography>
+            <Typography variant="h4" fontWeight={900} color={refundQuote && refundQuote.amount > 0 ? "success.main" : "var(--text-secondary)"}>
               Rs {refundQuote?.amount || 0}
             </Typography>
-            <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>{refundQuote?.reason}</Typography>
+            <Typography variant="caption" color="var(--text-secondary)" sx={{ mt: 1, display: 'block' }}>{refundQuote?.reason}</Typography>
           </Paper>
 
           <Stack direction="row" spacing={1} justifyContent="center" width="100%">

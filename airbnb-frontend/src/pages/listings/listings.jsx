@@ -155,7 +155,7 @@ const BlockedDatesManagementModal = ({ open, onClose, listing, token, onUpdate }
               <Box sx={{ maxHeight: 200, overflow: 'auto' }}>
                 <Typography fontSize={12} fontWeight={900} color="var(--text-secondary)" gutterBottom>CURRENT BLOCKS</Typography>
                 <List dense>
-                  {unavailableDates.length === 0 && <Typography variant="caption" color="text.secondary">No dates blocked.</Typography>}
+                  {unavailableDates.length === 0 && <Typography variant="caption" color="var(--text-secondary)">No dates blocked.</Typography>}
                   {unavailableDates.map((block, index) => (
                     <ListItem key={index} sx={{ bgcolor: 'var(--bg-secondary)', borderRadius: 2, mb: 1 }}>
                       <ListItemText

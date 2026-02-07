@@ -297,7 +297,7 @@ const HostListingDetails = () => {
                                 ))}
                             </Grid>
                         ) : (
-                            <Typography variant="body2" color="text.secondary">
+                            <Typography variant="body2" color="var(--text-secondary)">
                                 No amenities listed.
                             </Typography>
                         )}
@@ -326,7 +326,7 @@ const HostListingDetails = () => {
                                 <Typography variant="h5" fontWeight={900}>
                                     {CURRENCY} {listing.weekdayPrice}
                                 </Typography>
-                                <Typography variant="body2" color="text.secondary">
+                                <Typography variant="body2" color="var(--text-secondary)">
                                     / night
                                 </Typography>
                             </Stack>

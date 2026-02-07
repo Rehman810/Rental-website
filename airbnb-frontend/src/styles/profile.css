@@ -1,0 +1,228 @@
+.profile-page-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 40px 24px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 48px;
+}
+
+@media (min-width: 768px) {
+    .profile-page-container {
+        grid-template-columns: 350px 1fr;
+    }
+}
+
+/* Sidebar / Profile Card */
+.profile-card {
+    border: 1px solid #ddd;
+    border-radius: 24px;
+    padding: 32px 24px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    /* Airbnb style shadow */
+    text-align: center;
+    position: sticky;
+    top: 100px;
+    /* Sticky sidebar */
+    background: white;
+}
+
+.dark-mode .profile-card {
+    background: #1e1e1e;
+    border-color: #333;
+    color: #eee;
+}
+
+.profile-avatar-wrapper {
+    position: relative;
+    width: 128px;
+    height: 128px;
+    margin: 0 auto 24px;
+}
+
+.profile-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.profile-name {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #222;
+}
+
+.dark-mode .profile-name {
+    color: #fff;
+}
+
+.profile-joined {
+    color: #717171;
+    font-size: 0.9rem;
+    margin-bottom: 24px;
+}
+
+.verification-badges {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.badge-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    color: #222;
+    border: 1px solid #ddd;
+    padding: 6px 12px;
+    border-radius: 16px;
+}
+
+.dark-mode .badge-item {
+    color: #eee;
+    border-color: #444;
+}
+
+.verified-icon {
+    color: #ff385c;
+}
+
+/* Main Content */
+.profile-content {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 24px;
+    color: #222;
+}
+
+.dark-mode .section-title {
+    color: #fff;
+}
+
+.bio-text {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #222;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 24px;
+    padding: 24px 0;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #222;
+}
+
+.dark-mode .stat-value {
+    color: #fff;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #717171;
+}
+
+/* Listings Grid */
+.listings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+/* Reviews List */
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.review-card {
+    padding: 24px;
+    border-radius: 12px;
+    background: #f7f7f7;
+}
+
+.dark-mode .review-card {
+    background: #333;
+}
+
+.review-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.reviewer-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.reviewer-info h4 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.review-date {
+    font-size: 0.8rem;
+    color: #717171;
+}
+
+.review-text {
+    line-height: 1.5;
+    color: #444;
+}
+
+.dark-mode .review-text {
+    color: #ccc;
+}
+
+/* Skeleton */
+.skeleton {
+    background: #eee;
+    border-radius: 4px;
+    animation: pulse 1.5s infinite;
+}
+
+.dark-mode .skeleton {
+    background: #444;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.6;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.6;
+    }
+}

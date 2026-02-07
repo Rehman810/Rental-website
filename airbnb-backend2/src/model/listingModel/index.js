@@ -113,6 +113,41 @@ const listingSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'CancellationPolicy',
     required: false
+  },
+  listingType: {
+    type: String,
+    enum: ['SHORT_TERM', 'LONG_TERM', 'FOR_SALE'],
+    default: 'SHORT_TERM',
+    index: true
+  },
+
+  // Long-Term Rental Configuration
+  leaseConfig: {
+    monthlyRent: { type: Number },
+    securityDeposit: { type: Number },
+    minLeaseDuration: { type: Number }, // in months
+    renewalAllowed: { type: Boolean, default: false },
+    utilities: {
+      type: String,
+      enum: ['included', 'partial', 'excluded']
+    },
+    furnishingStatus: {
+      type: String,
+      enum: ['furnished', 'semi-furnished', 'unfurnished']
+    },
+    availabilityStart: { type: Date }
+  },
+
+  // Property Sale Configuration
+  saleConfig: {
+    salePrice: { type: Number },
+    propertyType: {
+      type: String,
+      enum: ['House', 'Apartment', 'Plot', 'Commercial']
+    },
+    ownershipStatus: { type: String }, // e.g., 'Freehold', 'Leasehold'
+    documentUrls: [{ type: String }],
+    visitAvailability: { type: String } // e.g., "Weekends 10am-4pm"
   }
 }, {
   timestamps: true,

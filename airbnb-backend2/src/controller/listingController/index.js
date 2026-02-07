@@ -10,6 +10,10 @@ export const listingController = {
 
   createListing: async (req, res) => {
     try {
+      console.log('--- createListing Request ---');
+      console.log('Files received:', req.files ? req.files.length : 'No files');
+      console.log('Body:', JSON.stringify(req.body, null, 2));
+
       const host = await Host.findById(req.user._id);
       if (!host) {
         return res.status(404).json({ message: "Host not found." });
@@ -17,9 +21,12 @@ export const listingController = {
 
       const {
         placeType, roomType, guestCapacity, bedrooms, beds, bathrooms, amenities,
-        title, description, weekdayPrice, weekendPrice, street, flat, city, town, postcode,
-        latitude, longitude
+        title, description, street, flat, city, town, postcode,
+        latitude, longitude, listingType = 'SHORT_TERM'
       } = req.body;
+
+      // Extract prices and configs
+      let { weekdayPrice, weekendPrice, leaseConfig, saleConfig } = req.body;
 
       if (!req.files || req.files.length < 3) {
         return res.status(400).json({ message: 'At least 3 photos are required.' });
@@ -27,13 +34,32 @@ export const listingController = {
 
       const photos = req.files.map((file) => file.path);
 
-      if (!weekdayPrice || isNaN(weekdayPrice)) {
-        return res.status(400).json({ message: 'Valid weekdayPrice is required.' });
+      // Parse configs if they come as strings (Multipart form-data)
+      if (typeof leaseConfig === 'string') {
+        try { leaseConfig = JSON.parse(leaseConfig); } catch (e) { console.error("Error parsing leaseConfig", e); }
+      }
+      if (typeof saleConfig === 'string') {
+        try { saleConfig = JSON.parse(saleConfig); } catch (e) { console.error("Error parsing saleConfig", e); }
       }
 
-      if (!weekendPrice || isNaN(weekendPrice)) {
-        return res.status(400).json({ message: 'Valid weekendPrice is required.' });
+      // Validation based on Listing Type
+      if (listingType === 'SHORT_TERM') {
+        if (!weekdayPrice || isNaN(weekdayPrice)) {
+          return res.status(400).json({ message: 'Valid weekdayPrice is required for short-term listings.' });
+        }
+        if (!weekendPrice || isNaN(weekendPrice)) {
+          return res.status(400).json({ message: 'Valid weekendPrice is required for short-term listings.' });
+        }
+      } else if (listingType === 'LONG_TERM') {
+        if (!leaseConfig || !leaseConfig.monthlyRent) {
+          return res.status(400).json({ message: 'Monthly rent is required for long-term listings.' });
+        }
+      } else if (listingType === 'FOR_SALE') {
+        if (!saleConfig || !saleConfig.salePrice) {
+          return res.status(400).json({ message: 'Sale price is required for property sales.' });
+        }
       }
+
       const amenitiesArray = Array.isArray(amenities)
         ? amenities
         : typeof amenities === 'string'
@@ -42,6 +68,7 @@ export const listingController = {
 
       const newListing = new temporaryListingSchema({
         hostId: req.user._id,
+        listingType,
         placeType,
         roomType,
         guestCapacity,
@@ -52,8 +79,10 @@ export const listingController = {
         photos,
         title,
         description,
-        weekdayPrice: parseFloat(weekdayPrice),
-        weekendPrice: parseFloat(weekendPrice),
+        weekdayPrice: listingType === 'SHORT_TERM' ? parseFloat(weekdayPrice) : 0,
+        weekendPrice: listingType === 'SHORT_TERM' ? parseFloat(weekendPrice) : 0,
+        leaseConfig: listingType === 'LONG_TERM' ? leaseConfig : undefined,
+        saleConfig: listingType === 'FOR_SALE' ? saleConfig : undefined,
         street,
         flat,
         city,

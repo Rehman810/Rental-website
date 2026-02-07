@@ -42,11 +42,19 @@ export const AppProvider = ({ children }) => {
     setDescription("");
     setTitle("");
     setUploadedImages([]);
+    setUploadedImages([]);
     setWeekDayPrice(null);
     setWeekEndPrice(null);
+    setListingType('SHORT_TERM');
+    setLeaseConfig({});
+    setSaleConfig({});
     setContextLatitude(null);
     setContextLongitude(null);
   };
+
+  const [listingType, setListingType] = useState('SHORT_TERM');
+  const [leaseConfig, setLeaseConfig] = useState({});
+  const [saleConfig, setSaleConfig] = useState({});
 
   const value = {
     searchVisible,
@@ -57,6 +65,12 @@ export const AppProvider = ({ children }) => {
     setDescription,
     uploadedImages,
     setUploadedImages,
+    listingType,
+    setListingType,
+    leaseConfig,
+    setLeaseConfig,
+    saleConfig,
+    setSaleConfig,
     placeType,
     setPlaceType,
     propertyType,

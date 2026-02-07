@@ -5,11 +5,11 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useAppContext } from "../../context/context";
 
 const ImageUploader = () => {
-  const [files, setFiles] = useState([]);
-  const { setUploadedImages } = useAppContext();
-  
+  const { uploadedImages, setUploadedImages } = useAppContext();
+  const [files, setFiles] = useState(uploadedImages || []);
+
   const updateFiles = (incomingFiles) => {
-    const newFiles = incomingFiles.slice(0, 8); 
+    const newFiles = incomingFiles.slice(0, 8);
     setFiles(newFiles);
     setUploadedImages(newFiles);
   };

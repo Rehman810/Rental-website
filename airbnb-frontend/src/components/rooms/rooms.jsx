@@ -984,205 +984,222 @@ const RoomPage = () => {
             }}
           >
             <Stack spacing={2}>
-              {console.log(place?.effectiveBookingMode)}
-              {/* Booking Mode Badge */}
-              <Box sx={{ mb: 2 }}>
-                {place?.effectiveBookingMode === 'instant' ? (
-                  <Chip label="Instant Book" color="success" size="small" sx={{ fontWeight: 800, borderRadius: 1 }} />
-                ) : (
-                  <Chip label="Approval Required" color="warning" size="small" sx={{ fontWeight: 800, borderRadius: 1, color: "white" }} />
-                )}
-              </Box>
-
-              {/* Price */}
-              <Box>
-                <Typography variant="h4" fontWeight={900} sx={{ color: "primary.main" }}>
-                  Rs {weekDayPrice}
-                  <Typography component="span" variant="body2" color="var(--text-secondary)" sx={{ ml: 1 }}>
-                    / night
+              {/* Booking/Lease/Sale Logic */}
+              {(place?.listingType === "LONG_TERM") ? (
+                // Long Term Rental UI
+                <Box>
+                  <Chip label="Monthly Lease" color="primary" size="small" sx={{ mb: 2, fontWeight: 800, borderRadius: 1 }} />
+                  <Typography variant="h4" fontWeight={900} sx={{ color: "primary.main" }}>
+                    Rs {place?.leaseConfig?.monthlyRent?.toLocaleString()}
+                    <Typography component="span" variant="body2" color="var(--text-secondary)" sx={{ ml: 1 }}>
+                      / month
+                    </Typography>
                   </Typography>
-                </Typography>
-                <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.4 }}>
-                  Weekends may have different pricing.
-                </Typography>
-              </Box>
 
-              {/* Date Picker */}
-              <Box>
-                <Typography variant="subtitle2" fontWeight={900} sx={{ mb: 1 }}>
-                  Dates
-                </Typography>
+                  <Stack spacing={1} sx={{ mt: 2, p: 2, bgcolor: "var(--bg-secondary)", borderRadius: 2 }}>
+                    <Row label="Security Deposit" value={`Rs ${place?.leaseConfig?.securityDeposit?.toLocaleString()}`} />
+                    <Row label="Min. Duration" value={`${place?.leaseConfig?.minLeaseDuration} Month(s)`} />
+                    <Row label="Furnishing" value={place?.leaseConfig?.furnishingStatus ? place.leaseConfig.furnishingStatus.charAt(0).toUpperCase() + place.leaseConfig.furnishingStatus.slice(1).toLowerCase() : ''} />
+                    <Row label="Utilities" value={place?.leaseConfig?.utilities ? place.leaseConfig.utilities.charAt(0).toUpperCase() + place.leaseConfig.utilities.slice(1).toLowerCase() : ''} />
+                  </Stack>
 
-                <RangePicker
-                  style={{
-                    width: "100%",
-                    marginBottom: 10,
-                    borderRadius: 10,
-                  }}
-                  placeholder={["Check-in", "Check-out"]}
-                  onCalendarChange={handleDateChange}
-                  onChange={handleDateChange2}
-                  disabledDate={disabledDate}
-                  format="DD MMM, YYYY"
-                  value={selectedDates}
-                />
+                  <Button
+                    variant="contained"
+                    fullWidth
+                    onClick={() => toast.success("Lease application feature coming soon!")}
+                    sx={{ mt: 3, py: 1.5, borderRadius: 2, textTransform: "none", fontWeight: 900 }}
+                  >
+                    Apply for Lease
+                  </Button>
+                </Box>
+              ) : (place?.listingType === "FOR_SALE") ? (
+                // Property Sale UI
+                <Box>
+                  <Chip label="For Sale" color="error" size="small" sx={{ mb: 2, fontWeight: 800, borderRadius: 1 }} />
+                  <Typography variant="h4" fontWeight={900} sx={{ color: "primary.main" }}>
+                    Rs {place?.saleConfig?.salePrice?.toLocaleString()}
+                  </Typography>
 
-                <Button
-                  variant="text"
-                  onClick={clearDates}
-                  sx={{ textTransform: "none", fontWeight: 800, px: 0 }}
-                >
-                  Clear dates
-                </Button>
-              </Box>
+                  <Stack spacing={1} sx={{ mt: 2, p: 2, bgcolor: "var(--bg-secondary)", borderRadius: 2 }}>
+                    <Row label="Property Type" value={place?.saleConfig?.propertyType} />
+                    <Row label="Ownership" value={place?.saleConfig?.ownershipStatus} />
+                  </Stack>
 
-              {/* Guests */}
-              <Box>
-                <Typography variant="subtitle2" fontWeight={900} sx={{ mb: 1 }}>
-                  Guests
-                </Typography>
+                  <Button
+                    variant="contained"
+                    fullWidth
+                    color="error"
+                    onClick={() => toast.success("Sale offer feature coming soon!")}
+                    sx={{ mt: 3, py: 1.5, borderRadius: 2, textTransform: "none", fontWeight: 900 }}
+                  >
+                    Contact Seller
+                  </Button>
+                </Box>
+              ) : (
+                // Existing Short Term Booking UI
+                <>
+                  {/* Booking Mode Badge */}
+                  <Box sx={{ mb: 2 }}>
+                    {place?.effectiveBookingMode === 'instant' ? (
+                      <Chip label="Instant Book" color="success" size="small" sx={{ fontWeight: 800, borderRadius: 1 }} />
+                    ) : (
+                      <Chip label="Approval Required" color="warning" size="small" sx={{ fontWeight: 800, borderRadius: 1, color: "white" }} />
+                    )}
+                  </Box>
 
-                <Box
-                  onClick={openGuestsMenu}
-                  sx={{
-                    cursor: "pointer",
-                    // ... existing styles ...
-                    border: "1px solid",
-                    borderColor: "divider",
-                    borderRadius: 2,
-                    p: 1.6,
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  { /* Content of Guests Box reused existing structure implicitly if I don't see it?
-                      Wait, I need to see the implementation of the Box to not break it.
-                      The view_file cut off right at `              sx={{
-                    cursor: "pointer",`.
-                      I should append the info box AFTER the closing of the Guests Box and Menu.
-                      I need to see where it closes.
-                   */ }
+                  {/* Price */}
                   <Box>
-                    <Typography variant="body2" fontWeight={700}>
-                      {guests.adults} Guest{guests.adults !== 1 && "s"}
+                    <Typography variant="h4" fontWeight={900} sx={{ color: "primary.main" }}>
+                      Rs {weekDayPrice}
+                      <Typography component="span" variant="body2" color="var(--text-secondary)" sx={{ ml: 1 }}>
+                        / night
+                      </Typography>
+                    </Typography>
+                    <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.4 }}>
+                      Weekends may have different pricing.
                     </Typography>
                   </Box>
-                  <ArrowForwardIcon2 sx={{ transform: "rotate(90deg)", fontSize: 18, color: "var(--text-secondary)" }} />
-                </Box>
-                <Menu
-                  anchorEl={guestsAnchorEl}
-                  open={Boolean(guestsAnchorEl)}
-                  onClose={closeGuestsMenu}
-                  PaperProps={{ sx: { width: 280, borderRadius: 3, mt: 1, p: 2 } }}
-                >
-                  <Stack spacing={2}>
-                    <Stack direction="row" justifyContent="space-between" alignItems="center">
+
+                  {/* Date Picker */}
+                  <Box>
+                    <Typography variant="subtitle2" fontWeight={900} sx={{ mb: 1 }}>
+                      Dates
+                    </Typography>
+
+                    <RangePicker
+                      style={{
+                        width: "100%",
+                        marginBottom: 10,
+                        borderRadius: 10,
+                      }}
+                      placeholder={["Check-in", "Check-out"]}
+                      onCalendarChange={handleDateChange}
+                      onChange={handleDateChange2}
+                      disabledDate={disabledDate}
+                      format="DD MMM, YYYY"
+                      value={selectedDates}
+                    />
+
+                    <Button
+                      variant="text"
+                      onClick={clearDates}
+                      sx={{ textTransform: "none", fontWeight: 800, px: 0 }}
+                    >
+                      Clear dates
+                    </Button>
+                  </Box>
+
+                  {/* Guests */}
+                  <Box>
+                    <Typography variant="subtitle2" fontWeight={900} sx={{ mb: 1 }}>
+                      Guests
+                    </Typography>
+
+                    <Box
+                      onClick={openGuestsMenu}
+                      sx={{
+                        cursor: "pointer",
+                        border: "1px solid",
+                        borderColor: "divider",
+                        borderRadius: 2,
+                        p: 1.6,
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
                       <Box>
-                        <Typography fontWeight={800}>Adults</Typography>
-                        <Typography variant="caption" color="var(--text-secondary)">Age 13+</Typography>
+                        <Typography variant="body2" fontWeight={700}>
+                          {guests.adults} Guest{guests.adults !== 1 && "s"}
+                        </Typography>
                       </Box>
-                      <Stack direction="row" alignItems="center" spacing={1}>
-                        <IconButton size="small" onClick={() => decrementGuest('adults')} disabled={guests.adults <= 1}>-</IconButton>
-                        <Typography>{guests.adults}</Typography>
-                        <IconButton size="small" onClick={() => incrementGuest('adults')} disabled={guests.adults >= maxGuests}>+</IconButton>
+                      <ArrowForwardIcon2 sx={{ transform: "rotate(90deg)", fontSize: 18, color: "var(--text-secondary)" }} />
+                    </Box>
+                    <Menu
+                      anchorEl={guestsAnchorEl}
+                      open={Boolean(guestsAnchorEl)}
+                      onClose={closeGuestsMenu}
+                      PaperProps={{ sx: { width: 280, borderRadius: 3, mt: 1, p: 2 } }}
+                    >
+                      <Stack spacing={2}>
+                        <Stack direction="row" justifyContent="space-between" alignItems="center">
+                          <Box>
+                            <Typography fontWeight={800}>Adults</Typography>
+                            <Typography variant="caption" color="var(--text-secondary)">Age 13+</Typography>
+                          </Box>
+                          <Stack direction="row" alignItems="center" spacing={1}>
+                            <IconButton size="small" onClick={() => decrementGuest('adults')} disabled={guests.adults <= 1}>-</IconButton>
+                            <Typography>{guests.adults}</Typography>
+                            <IconButton size="small" onClick={() => incrementGuest('adults')} disabled={guests.adults >= maxGuests}>+</IconButton>
+                          </Stack>
+                        </Stack>
                       </Stack>
-                    </Stack>
-                  </Stack>
-                </Menu>
-              </Box>
+                    </Menu>
+                  </Box>
 
-              {/* Availability Info */}
-              {place?.effectiveAvailability && (
-                <Box sx={{ p: 1.5, bgcolor: 'var(--bg-secondary)', borderRadius: 2 }}>
-                  <Typography variant="caption" display="block" fontWeight={700} sx={{ mb: 0.5 }}>
-                    Planning your trip?
+                  {/* Availability Info */}
+                  {place?.effectiveAvailability && (
+                    <Box sx={{ p: 1.5, bgcolor: 'var(--bg-secondary)', borderRadius: 2 }}>
+                      <Typography variant="caption" display="block" fontWeight={700} sx={{ mb: 0.5 }}>
+                        Planning your trip?
+                      </Typography>
+                      <Stack spacing={0.5}>
+                        <Typography variant="caption" display="block" color="var(--text-secondary)">
+                          • Minimum stay: {place?.effectiveAvailability?.minNights ?? 1} nights
+                        </Typography>
+                        <Typography variant="caption" display="block" color="var(--text-secondary)">
+                          • Maximum stay: {place?.effectiveAvailability?.maxNights ?? 1} nights
+                        </Typography>
+                        <Typography variant="caption" display="block" color="var(--text-secondary)">
+                          • Check-in: {place?.effectiveAvailability?.checkInFrom ?? "14:00"}
+                        </Typography>
+                        <Typography variant="caption" display="block" color="var(--text-secondary)">
+                          • Check-out: {place?.effectiveAvailability?.checkOutBy ?? "11:00"}
+                        </Typography>
+                      </Stack>
+                    </Box>
+                  )}
+
+                  <Divider />
+
+                  {/* Price Breakdown */}
+                  <Stack spacing={1}>
+                    <Row label={`Total for ${numofDays || 0} night(s)`} value={`Rs ${totalPrice.toFixed(2)}`} />
+                    <Row label={`Service fee (${serviceFeePercentage}%)`} value={`Rs ${serviceFee.toFixed(2)}`} />
+                  </Stack>
+
+                  <Divider />
+
+                  <Row
+                    label={<Typography fontWeight={900}>Total</Typography>}
+                    value={<Typography fontWeight={900}>Rs {grandTotal.toFixed(2)}</Typography>}
+                  />
+
+                  {/* Reserve CTA */}
+                  <Button
+                    variant="contained"
+                    fullWidth
+                    disabled={isReserveDisabled}
+                    onClick={handleReserve}
+                    sx={{
+                      mt: 1, py: 1.4, borderRadius: 2, textTransform: "none", fontWeight: 900,
+                      boxShadow: "var(--shadow-md)",
+                      "&:hover": { transform: "translateY(-1px)", boxShadow: "var(--shadow-lg)" },
+                      "&.Mui-disabled": { backgroundColor: "var(--bg-tertiary)", color: "var(--text-tertiary)", border: "1px solid var(--border-muted)", boxShadow: "none", cursor: "not-allowed" },
+                    }}
+                  >
+                    {place?.effectiveBookingMode === "instant" ? "Reserve" : "Request to Book"}
+                  </Button>
+
+                  <Typography variant="body2" color="var(--text-secondary)" textAlign="center">
+                    You won’t be charged yet.
                   </Typography>
-                  <Stack spacing={0.5}>
-                    <Typography variant="caption" display="block" color="var(--text-secondary)">
-                      • Minimum stay: {place?.effectiveAvailability?.minNights ?? 1} nights
-                    </Typography>
-                    <Typography variant="caption" display="block" color="var(--text-secondary)">
-                      • Maximum stay: {place?.effectiveAvailability?.maxNights ?? 1} nights
-                    </Typography>
-                    <Typography variant="caption" display="block" color="var(--text-secondary)">
-                      • Check-in: {place?.effectiveAvailability?.checkInFrom ?? "14:00"}
-                    </Typography>
-                    <Typography variant="caption" display="block" color="var(--text-secondary)">
-                      • Check-out: {place?.effectiveAvailability?.checkOutBy ?? "11:00"}
-                    </Typography>
-                  </Stack>
-                </Box>
+
+                  <Typography variant="caption" color="var(--text-secondary)" textAlign="center">
+                    Weekdays: Mon–Thu • Weekend: Fri–Sun
+                  </Typography>
+                </>
               )}
-
-              <Divider />
-
-              {/* Price Breakdown */}
-              <Stack spacing={1}>
-                <Row label={`Total for ${numofDays || 0} night(s)`} value={`Rs ${totalPrice.toFixed(2)}`} />
-                <Row label={`Service fee (${serviceFeePercentage}%)`} value={`Rs ${serviceFee.toFixed(2)}`} />
-              </Stack>
-
-              <Divider />
-
-              <Row
-                label={<Typography fontWeight={900}>Total</Typography>}
-                value={<Typography fontWeight={900}>Rs {grandTotal.toFixed(2)}</Typography>}
-              />
-
-              {/* Reserve CTA */}
-              <Button
-                variant="contained"
-                fullWidth
-                disabled={isReserveDisabled}
-                onClick={handleReserve}
-                sx={{
-                  mt: 1,
-                  py: 1.4,
-                  borderRadius: 2,
-                  textTransform: "none",
-                  fontWeight: 900,
-
-                  /* normal state */
-                  boxShadow: "var(--shadow-md)",
-
-                  "&:hover": {
-                    transform: "translateY(-1px)",
-                    boxShadow: "var(--shadow-lg)",
-                  },
-
-                  "&.Mui-disabled": {
-                    backgroundColor: "var(--bg-tertiary)",
-                    color: "var(--text-tertiary)",
-                    border: "1px solid var(--border-muted)",
-                    boxShadow: "none",
-                    cursor: "not-allowed",
-                  },
-
-                  "&.Mui-disabled:hover": {
-                    transform: "none",
-                    boxShadow: "none",
-                  },
-
-                  /* disabled text & icon */
-                  "&.Mui-disabled .MuiButton-startIcon": {
-                    color: "var(--text-tertiary)",
-                  },
-
-                  transition: "all 0.18s ease",
-                }}
-              >
-                {place?.effectiveBookingMode === "instant" ? "Reserve" : "Request to Book"}
-              </Button>
-
-
-              <Typography variant="body2" color="var(--text-secondary)" textAlign="center">
-                You won’t be charged yet.
-              </Typography>
-
-              <Typography variant="caption" color="var(--text-secondary)" textAlign="center">
-                Weekdays: Mon–Thu • Weekend: Fri–Sun
-              </Typography>
             </Stack>
           </Paper>
         </Grid>

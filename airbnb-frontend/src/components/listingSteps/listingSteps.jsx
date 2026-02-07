@@ -1,4 +1,4 @@
-import React, { lazy, useEffect, useState } from "react";
+import React, { lazy, useEffect, useState, useMemo } from "react";
 import { getAuthToken } from "../../utils/cookieUtils";
 import {
   AppBar,
@@ -58,6 +58,10 @@ import ImageUploader from "../host/images";
 import DescriptionInput from "../host/description";
 import Pricing from "../host/pricing";
 import ListingPreview from "../host/preview";
+import ListingTypeSelection from "../host/listingTypeSelection";
+import LeaseDetails from "../host/leaseDetails";
+import SaleDetails from "../host/saleDetails";
+import GenericPricing from "../host/genericPricing";
 import { useAppContext } from "../../context/context";
 import { postData } from "../../config/ServiceApi/serviceApi";
 import { useNavigate } from "react-router-dom";
@@ -113,117 +117,6 @@ const amenities = [
   { name: "Bathtub", icon: <BathtubIcon fontSize="large" /> },
 ];
 
-const steps = [
-  { label: "Step 1", content: <GetStarted /> },
-  {
-    label: "Step 2",
-    content: (
-      <Step1
-        stepNo={1}
-        title={"Tell us about your place"}
-        description={`In this step, we'll ask you which type of property you have and if
-            guests will book the entire place or just a room. Then let us know
-            the location and how many guests can stay.`}
-      />
-    ),
-  },
-  {
-    label: "Step 3",
-    content: (
-      <PropertyType
-        type={propertyTypes}
-        heading={"Which of these best describes your place?"}
-      />
-    ),
-  },
-  { label: "Step 4", content: <PlaceType /> },
-  {
-    label: "Step 5",
-    content: <LeafletMap />,
-  },
-  { label: "Step 6", content: <AddressForm /> },
-  { label: "Step 7", content: <GuestCounter /> },
-  {
-    label: "Step 8",
-    content: (
-      <Step1
-        stepNo={2}
-        title={"Make your place stand out"}
-        description={`In this step, you’ll add some of the amenities your place offers, plus 5 or more photos. Then you’ll create a title and description.`}
-      />
-    ),
-  },
-  {
-    label: "Step 9",
-    content: (
-      <PropertyType
-        type={amenities}
-        heading={"Tell guests what your place has to offer"}
-        isAmenties={true}
-      />
-    ),
-  },
-  { label: "Step 10", content: <ImageUploader /> },
-  {
-    label: "Step 11",
-    content: (
-      <DescriptionInput
-        isTitle={true}
-        heading={"Now, let's give your house a title"}
-        para={`Short titles work best. Have fun with it – you can always change it later.`}
-        max={32}
-        placholder={"Your Title"}
-      />
-    ),
-  },
-  {
-    label: "Step 12",
-    content: (
-      <DescriptionInput
-        heading={"Create your description"}
-        para={`Share what makes your place special.`}
-        max={500}
-        placholder={
-          "You'll have a great time at this comfortable place to stay"
-        }
-      />
-    ),
-  },
-  {
-    label: "Step 13",
-    content: (
-      <Step1
-        stepNo={3}
-        title={"Finish up and publish"}
-        description={`Finally, you’ll choose booking settings, set up pricing and publish your listing.`}
-        animation={animationData}
-      />
-    ),
-  },
-  {
-    label: "Step 14",
-    content: (
-      <Pricing
-        isWeekDay={true}
-        heading={"Now, set a weekday base price"}
-        para={`Tip: Rs 2000. You’ll set a weekend price next.`}
-        pricing={2000}
-      />
-    ),
-  },
-  {
-    label: "Step 15",
-    content: (
-      <Pricing
-        heading={"Set a weekend price"}
-        para={`Add a premium for Fridays and Sunday.`}
-        pricing={3000}
-      />
-    ),
-  },
-  { label: "Step 16", content: <ListingPreview /> },
-];
-
 function ListingSteps() {
   const {
     placeType,
@@ -238,8 +131,13 @@ function ListingSteps() {
     weekendPrice,
     resetListingState,
     contextLatitude,
-
     contextLongitude,
+
+    listingType,
+    leaseConfig,
+    setLeaseConfig,
+    saleConfig,
+    setSaleConfig
   } = useAppContext();
 
   const token = getAuthToken();
@@ -249,12 +147,187 @@ function ListingSteps() {
   const [activeStep, setActiveStep] = useState(0);
   const [isNextDisabled, setIsNextDisabled] = useState(true);
 
+  // Helper setters for configs
+  const setMonthlyRent = (val) => setLeaseConfig(prev => ({ ...prev, monthlyRent: val }));
+  const setSecurityDeposit = (val) => setLeaseConfig(prev => ({ ...prev, securityDeposit: val }));
+  const setSalePrice = (val) => setSaleConfig(prev => ({ ...prev, salePrice: val }));
+
+  const steps = useMemo(() => {
+    let pricingSteps = [];
+
+    if (listingType === 'SHORT_TERM') {
+      pricingSteps = [
+        {
+          label: "Weekday Price",
+          content: (
+            <Pricing
+              isWeekDay={true}
+              heading={"Now, set a weekday base price"}
+              para={`Tip: Rs 2000. You’ll set a weekend price next.`}
+              pricing={2000}
+            />
+          ),
+        },
+        {
+          label: "Weekend Price",
+          content: (
+            <Pricing
+              heading={"Set a weekend price"}
+              para={`Add a premium for Fridays and Sunday.`}
+              pricing={3000}
+            />
+          ),
+        }
+      ];
+    } else if (listingType === 'LONG_TERM') {
+      pricingSteps = [
+        {
+          label: "Lease Details",
+          content: <LeaseDetails leaseConfig={leaseConfig} setLeaseConfig={setLeaseConfig} />
+        },
+        {
+          label: "Monthly Rent",
+          content: (
+            <GenericPricing
+              value={leaseConfig?.monthlyRent || 0}
+              onChange={setMonthlyRent}
+              heading={"Set monthly rent"}
+              para={"How much do you want to charge per month?"}
+            />
+          ),
+        },
+        {
+          label: "Security Deposit",
+          content: (
+            <GenericPricing
+              value={leaseConfig?.securityDeposit || 0}
+              onChange={setSecurityDeposit}
+              heading={"Set security deposit"}
+              para={"Amount to cover potential damages."}
+            />
+          ),
+        }
+      ];
+    } else if (listingType === 'FOR_SALE') {
+      pricingSteps = [
+        {
+          label: "Sale Details",
+          content: <SaleDetails saleConfig={saleConfig} setSaleConfig={setSaleConfig} />
+        },
+        {
+          label: "Sale Price",
+          content: (
+            <GenericPricing
+              value={saleConfig?.salePrice || 0}
+              onChange={setSalePrice}
+              heading={"Set sale price"}
+              para={"How much are you selling this property for?"}
+            />
+          ),
+        }
+      ];
+    }
+
+    return [
+      { label: "Listing Type", content: <ListingTypeSelection /> },
+      { label: "Step 1", content: <GetStarted /> },
+      {
+        label: "Step 2",
+        content: (
+          <Step1
+            stepNo={1}
+            title={"Tell us about your place"}
+            description={`In this step, we'll ask you which type of property you have and if
+                guests will book the entire place or just a room. Then let us know
+                the location and how many guests can stay.`}
+          />
+        ),
+      },
+      {
+        label: "Step 3",
+        content: (
+          <PropertyType
+            type={propertyTypes}
+            heading={"Which of these best describes your place?"}
+          />
+        ),
+      },
+      { label: "Step 4", content: <PlaceType /> },
+      {
+        label: "Step 5",
+        content: <LeafletMap />,
+      },
+      { label: "Step 6", content: <AddressForm /> },
+      { label: "Step 7", content: <GuestCounter /> },
+      {
+        label: "Step 8",
+        content: (
+          <Step1
+            stepNo={2}
+            title={"Make your place stand out"}
+            description={`In this step, you’ll add some of the amenities your place offers, plus 5 or more photos. Then you’ll create a title and description.`}
+          />
+        ),
+      },
+      {
+        label: "Step 9",
+        content: (
+          <PropertyType
+            type={amenities}
+            heading={"Tell guests what your place has to offer"}
+            isAmenties={true}
+          />
+        ),
+      },
+      { label: "Step 10", content: <ImageUploader /> },
+      {
+        label: "Step 11",
+        content: (
+          <DescriptionInput
+            isTitle={true}
+            heading={"Now, let's give your house a title"}
+            para={`Short titles work best. Have fun with it – you can always change it later.`}
+            max={32}
+            placholder={"Your Title"}
+          />
+        ),
+      },
+      {
+        label: "Step 12",
+        content: (
+          <DescriptionInput
+            heading={"Create your description"}
+            para={`Share what makes your place special.`}
+            max={500}
+            placholder={
+              "You'll have a great time at this comfortable place to stay"
+            }
+          />
+        ),
+      },
+      {
+        label: "Step 13",
+        content: (
+          <Step1
+            stepNo={3}
+            title={"Finish up and publish"}
+            description={`Finally, you’ll choose booking settings, set up pricing and publish your listing.`}
+            animation={animationData}
+          />
+        ),
+      },
+      ...pricingSteps,
+      { label: "Step 16", content: <ListingPreview /> },
+    ];
+  }, [listingType, leaseConfig, saleConfig, address, uploadedImages]); // Add dependencies
+
   useEffect(() => {
-    if (activeStep === 5) {
+    // Indexes shifted by +1 because of ListingTypeSelection at index 0
+    if (activeStep === 6) { // Address Form (was 5)
       const { flat, city } = address || {};
       const isAddressComplete = flat && city;
       setIsNextDisabled(!isAddressComplete);
-    } else if (activeStep === 9) {
+    } else if (activeStep === 10) { // Image Uploader (was 9)
       const isValid =
         uploadedImages.length >= 3 || activeStep === steps.length - 1;
       setIsNextDisabled(!isValid);
@@ -262,11 +335,11 @@ function ListingSteps() {
       setIsNextDisabled(false);
     }
   }, [address, uploadedImages, guestCount, activeStep]);
-  // console.log(Array.isArray(amenties));
 
   const sendDataToApi = async () => {
     const formData = new FormData();
 
+    formData.append("listingType", listingType || "SHORT_TERM");
     formData.append("placeType", propertyType || "House");
     formData.append("roomType", placeType || "Entire Place");
     formData.append("street", address?.streetAddress || "");
@@ -282,8 +355,16 @@ function ListingSteps() {
     formData.append("amenities", amenties || []);
     formData.append("title", title || "Untitled Listing");
     formData.append("description", description || "No description provided.");
-    formData.append("weekdayPrice", weekDayPrice || 0);
-    formData.append("weekendPrice", weekendPrice || 0);
+
+    if (listingType === 'SHORT_TERM') {
+      formData.append("weekdayPrice", weekDayPrice || 0);
+      formData.append("weekendPrice", weekendPrice || 0);
+    } else if (listingType === 'LONG_TERM') {
+      formData.append("leaseConfig", JSON.stringify(leaseConfig));
+    } else if (listingType === 'FOR_SALE') {
+      formData.append("saleConfig", JSON.stringify(saleConfig));
+    }
+
     if (uploadedImages.length > 0) {
       uploadedImages.forEach((image) => {
         formData.append("photos", image.file);
@@ -293,13 +374,12 @@ function ListingSteps() {
       const response = await postData("listings", formData, true);
       Swal.fire({
         title: "Success!",
-        text: "Your listing has been successfully created! It will be reviewed by an admin within 12 hours.",
+        text: "Your listing has been successfully created!",
         icon: "success",
         confirmButtonText: "Go to Listings",
       }).then(() => {
-        // Reset state and navigate to listings page
-        // resetListingState();
-        // navigate("/hosting/listings");
+        // Handle post-creation navigation/reset
+        navigate("/hosting/listings");
       });
     } catch (error) {
       console.error("API Error:", error.message);
@@ -359,10 +439,9 @@ function ListingSteps() {
           alignItems: "center",
           backgroundColor: "var(--bg-secondary)",
           padding: 2,
-          // paddingTop: "100px",
         }}
       >
-        {steps[activeStep].content}
+        {steps[activeStep] ? steps[activeStep].content : null}
       </Box>
 
       <Box

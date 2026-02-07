@@ -8,7 +8,7 @@ const temporaryListingSchema = new mongoose.Schema({
   },
   placeType: {
     type: String,
-    enum: ['House', 'Apartment', 'Shared Room','Bed & breakfast','Boat','Cabin','Campervan/motorhome','Casa particular','Castle'],
+    enum: ['House', 'Apartment', 'Shared Room', 'Bed & breakfast', 'Boat', 'Cabin', 'Campervan/motorhome', 'Casa particular', 'Castle'],
     required: false,
   },
   roomType: {
@@ -40,10 +40,10 @@ const temporaryListingSchema = new mongoose.Schema({
   },
   title: { type: String, required: false },
   description: { type: String, required: false },
-  weekdayPrice: { type: Number, required: true, default: 0 },
-  weekendPrice: { type: Number, required: true, default: 0 },
-  weekdayCommission: { type: Number, default: 13 }, 
-  weekendCommission: { type: Number, default: 13 }, 
+  weekdayPrice: { type: Number, required: false, default: 0 },
+  weekendPrice: { type: Number, required: false, default: 0 },
+  weekdayCommission: { type: Number, default: 13 },
+  weekendCommission: { type: Number, default: 13 },
   weekdayActualPrice: {
     type: Number,
     required: false,
@@ -61,6 +61,27 @@ const temporaryListingSchema = new mongoose.Schema({
         ? Math.round(this.weekendPrice * (1 + this.weekendCommission / 100))
         : 0;
     },
+  },
+  listingType: {
+    type: String,
+    enum: ['SHORT_TERM', 'LONG_TERM', 'FOR_SALE'],
+    default: 'SHORT_TERM',
+  },
+  leaseConfig: {
+    monthlyRent: { type: Number },
+    securityDeposit: { type: Number },
+    minLeaseDuration: { type: Number },
+    renewalAllowed: { type: Boolean, default: false },
+    utilities: { type: String, enum: ['included', 'partial', 'excluded'] },
+    furnishingStatus: { type: String, enum: ['furnished', 'semi-furnished', 'unfurnished'] },
+    availabilityStart: { type: Date }
+  },
+  saleConfig: {
+    salePrice: { type: Number },
+    propertyType: { type: String, enum: ['House', 'Apartment', 'Plot', 'Commercial'] },
+    ownershipStatus: { type: String },
+    documentUrls: [{ type: String }],
+    visitAvailability: { type: String }
   },
 }, {
   timestamps: true,

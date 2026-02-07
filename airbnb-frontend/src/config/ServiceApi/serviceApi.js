@@ -138,9 +138,7 @@ export const postData = async (endpoint, data, isMultipart = false) => {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
-      ...(isMultipart
-        ? {}
-        : { "Content-Type": "application/json" }),
+      ...(isMultipart ? { "Content-Type": "multipart/form-data" } : { "Content-Type": "application/json" }),
     },
   };
 

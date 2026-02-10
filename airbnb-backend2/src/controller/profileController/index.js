@@ -40,20 +40,20 @@ export const getHostProfile = async (req, res) => {
             photoProfile: host.photoProfile,
             joinedDate: host.createdAt,
             isVerified: host.isVerify,
-            bio: "Detailed bio section coming soon...", // Placeholder as schema lacks bio
+            bio: "Detailed bio section coming soon...",
             stats: {
                 totalListings,
                 totalBookings,
                 reviewsCount,
                 averageRating,
-                responseRate: '100%', // Mocked for now
-                responseTime: 'Within 1 hour' // Mocked for now
+                responseRate: '100%',
+                responseTime: 'Within 1 hour'
             },
             listings: listings.map(l => ({
                 _id: l._id,
                 title: l.title,
                 photos: l.photos,
-                price: l.weekdayActualPrice || l.weekendActualPrice, // Fallback logic
+                price: l.weekdayActualPrice || l.weekendActualPrice,
                 ratingAvg: l.ratingAvg,
                 location: l.city || l.town,
                 placeType: l.placeType,

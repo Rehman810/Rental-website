@@ -16,6 +16,7 @@ import {
   Button,
   Container,
   Paper,
+  Skeleton,
 } from "@mui/material";
 import { useMediaQuery } from "@mui/material";
 import Slider from "react-slick";
@@ -34,7 +35,8 @@ import { API_BASE_URL } from "../../config/env";
 import { getAuthToken } from "../../utils/cookieUtils";
 import apiClient from "../../config/ServiceApi/apiClient";
 import usePageTitle from "../../hooks/usePageTitle";
-// ...
+import BackButton from "../../components/backButton/backButton";
+
 const Trips = () => {
   usePageTitle("Trips");
   const navigate = useNavigate();
@@ -45,19 +47,23 @@ const Trips = () => {
   const [trips, setTrips] = useState([]);
   const token = getAuthToken();
 
-  const [userReviews, setUserReviews] = useState({});
+  const [loadingTrips, setLoadingTrips] = useState(true);
   const [leaveReviewOpen, setLeaveReviewOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
 
   const isMobile = useMediaQuery("(max-width:900px)");
 
   const fetchTrips = async () => {
+    setLoadingTrips(true);
+
     try {
       const response = await fetchData("guest-bookings");
       setTrips(response?.userBookings || []);
     } catch (e) {
       console.error(e);
       toast.error("Failed to load trips");
+    } finally {
+      setLoadingTrips(false);
     }
   };
 
@@ -171,6 +177,7 @@ const Trips = () => {
 
   return (
     <Box sx={{ py: { xs: 2, md: 4 } }}>
+      <BackButton />
       <Container maxWidth="xl">
         {/* Header */}
         <Paper
@@ -207,9 +214,31 @@ const Trips = () => {
           </Stack>
         </Paper>
 
-        {/* Trips Grid */}
         <Grid container spacing={2.2}>
-          {trips?.length > 0 ? (
+          {loadingTrips ? (
+            [...Array(4)].map((_, i) => (
+              <Grid item xs={12} sm={6} md={4} lg={3} key={i}>
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 2,
+                    borderRadius: 4,
+                    border: "1px solid",
+                    borderColor: "divider",
+                  }}
+                >
+                  <Box sx={{ height: 220, bgcolor: "rgba(0,0,0,0.08)", borderRadius: 3 }} />
+                  <Stack spacing={1.2} sx={{ mt: 2 }}>
+                    <Typography variant="body2" fontWeight={800}>
+                      <Skeleton width="80%" />
+                    </Typography>
+                    <Skeleton width="60%" />
+                    <Skeleton height={20} />
+                  </Stack>
+                </Paper>
+              </Grid>
+            ))
+          ) : trips.length > 0 ? (
             trips.map((trip, tripIndex) => {
               const photos = trip?.listingId?.photos || [];
               const listing = trip?.listingId || {};

@@ -73,13 +73,13 @@ const NavbarHost = () => {
 
   const menuItems = useMemo(
     () => [
-      { name: "Dashboard", route: "/hosting/dashboard", icon: <DashboardIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} /> },
-      { name: t("menu.hostMenu.today"), route: "/hosting/today", icon: <DashboardIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} /> },
-      { name: t("menu.hostMenu.calendar"), route: "/hosting/calendar", icon: <CalendarIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} /> },
-      { name: t("menu.hostMenu.listings"), route: "/hosting/listings", icon: <ListingsIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} /> },
-      { name: t("menu.hostMenu.messages"), route: "/hosting/messages", icon: <MailIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} /> },
-      { name: "Payments", route: "/hosting/payments", icon: <PaymentsIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} /> },
-      { name: "Settings", route: "/hosting/settings", icon: <SettingsIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} /> },
+      { name: "Dashboard", route: "/hosting/dashboard", icon: <DashboardIcon fontSize="small" /> },
+      { name: t("menu.hostMenu.today"), route: "/hosting/today", icon: <DashboardIcon fontSize="small" /> },
+      { name: t("menu.hostMenu.calendar"), route: "/hosting/calendar", icon: <CalendarIcon fontSize="small" /> },
+      { name: t("menu.hostMenu.listings"), route: "/hosting/listings", icon: <ListingsIcon fontSize="small" /> },
+      { name: t("menu.hostMenu.messages"), route: "/hosting/messages", icon: <MailIcon fontSize="small" /> },
+      { name: "Payments", route: "/hosting/payments", icon: <PaymentsIcon fontSize="small" /> },
+      { name: "Settings", route: "/hosting/settings", icon: <SettingsIcon fontSize="small" /> },
     ],
     [t]
   );

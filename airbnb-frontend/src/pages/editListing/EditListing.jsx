@@ -5,7 +5,8 @@ import { hostListingApi } from '../../services/hostListingService';
 import { toast } from 'react-hot-toast'; // Using hot-toast as per app
 import {
     Box, Button, TextField, Typography, Checkbox, FormControlLabel,
-    Grid, Paper, Stack, InputAdornment, IconButton, MenuItem, Select, FormControl, InputLabel
+    Grid, Paper, Stack, InputAdornment, IconButton, MenuItem, Select, FormControl, InputLabel,
+    useMediaQuery
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
@@ -34,6 +35,7 @@ import CoffeeIcon from "@mui/icons-material/Coffee";
 import BathtubIcon from "@mui/icons-material/Bathtub";
 import { CheckCircleOutline } from '@mui/icons-material';
 import usePageTitle from '../../hooks/usePageTitle';
+import BackButton from '../../components/backButton/backButton';
 
 const AMENITY_ICONS = {
     wifi: <WifiIcon fontSize="small" />,
@@ -75,6 +77,7 @@ const EditListing = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
+    const isMobile = useMediaQuery("(max-width:1100px)");
 
     const { control, handleSubmit, reset, setValue, watch, formState: { errors, isSubmitting, isDirty } } = useForm({
         defaultValues: {
@@ -139,7 +142,8 @@ const EditListing = () => {
 
     return (
         <Box p={4} maxWidth="800px" margin="0 auto">
-            <Typography variant="h4" fontWeight="bold" mb={3}>Edit Listing</Typography>
+            <BackButton />
+            <Typography variant={isMobile ? "h5" : "h4"} fontWeight="bold" mb={3}>Edit Listing</Typography>
 
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Stack spacing={4}>
@@ -387,9 +391,11 @@ const EditListing = () => {
                                 <Typography sx={{ fontWeight: 900, lineHeight: 1.2 }}>
                                     Ready to apply changes?
                                 </Typography>
-                                <Typography variant="body2" sx={{ color: 'var(--text-secondary)' }}>
-                                    Save once and you’re good to go.
-                                </Typography>
+                                {!isMobile && (
+                                    <Typography variant="body2" sx={{ color: 'var(--text-secondary)' }}>
+                                        Save once and you’re good to go.
+                                    </Typography>
+                                )}
                             </Box>
 
                             <Button
@@ -407,7 +413,7 @@ const EditListing = () => {
                                     boxShadow: '0 12px 30px rgba(0,0,0,0.18)',
                                 }}
                             >
-                                {isSubmitting ? 'Saving...' : 'Save Changes'}
+                                {isSubmitting ? 'Saving...' : 'Save'}
                             </Button>
                         </Box></Box>
                 </Stack>

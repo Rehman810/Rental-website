@@ -260,9 +260,9 @@ const ReservationSection = () => {
                     fontSize: 12,
                     fontWeight: 900,
                     backgroundColor: active
-                      ? "rgba(255,255,255,0.18)"
-                      : "rgba(0,0,0,0.06)",
-                    color: active ? "white" : "text.primary",
+                      ? "var(--primary-color)"
+                      : "var(--border-light)",
+                    color: active ? "white" : "var(--text-primary)",
                   }}
                 >
                   {tab.count}

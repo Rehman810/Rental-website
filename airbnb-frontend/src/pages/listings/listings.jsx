@@ -807,7 +807,7 @@ const ListingPage = () => {
   );
 
   const ListingCard = ({ item, status, showIcon = true }) => {
-    const isVerified = item.status === "active"; // Simplified, or keep existing logic if it was different
+    const isVerified = item.status === "active";
     const isDisabled = item.status === "disabled";
     const [anchorEl, setAnchorEl] = useState(null);
 
@@ -831,7 +831,6 @@ const ListingPage = () => {
       handleClose();
       const toastId = toast.loading(`Setting listing to ${newStatus}...`);
       try {
-        // Use updateAvailability endpoint which supports status update now
         await apiClient.put(`${API_BASE_URL}/listing/${item._id}/availability`, { status: newStatus }, {
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -844,8 +843,7 @@ const ListingPage = () => {
     };
 
     const reloadListings = () => {
-      // Simple re-fetch trigger or manual update
-      window.location.reload(); // Simplest given current state structure
+      window.location.reload();
     };
 
     return (
@@ -866,7 +864,7 @@ const ListingPage = () => {
         <Box sx={{ position: "relative" }}>
           <CardMedia
             component="img"
-            height="210"
+            height="150"
             image={item?.photos?.[0] || "/fallback-image.jpg"}
             alt={item?.title || "Listing"}
             sx={{ objectFit: "cover" }}
@@ -1209,7 +1207,7 @@ const ListingPage = () => {
             </Grid>
           ) : (
             filteredConfirmed.map((item) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={item._id}>
+              <Grid item xs={6} sm={6} md={4} lg={3} key={item._id}>
                 <ListingCard item={item} status="verified" />
               </Grid>
             ))

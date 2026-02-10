@@ -27,7 +27,7 @@ import LoginModal from "../Login/LoginModal";
 import SearchBar from "../searchBar/searchBar";
 import SearchBar2 from "../searchBar/searchBar2";
 import NotificationBell from "../notifications/NotificationBell";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import handleLogout from "../logout/logout";
 import VerifyToken from "../protected/verifyToken";
 import Language from "../language/Language";
@@ -46,6 +46,7 @@ import {
 } from "@mui/icons-material";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
 import MobileSearchBar from "../searchBar/mobileSearchbar";
+import CloseIcon from "@mui/icons-material/Close";
 
 const VerifiedMenu = ({ anchorEl, handleMenuClose, navigate, handleLogout }) => {
   const { t } = useTranslation();
@@ -222,6 +223,8 @@ const Navbar = () => {
   const { t } = useTranslation();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const toggleDrawer = (open) => () => setDrawerOpen(open);
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -316,7 +319,7 @@ const Navbar = () => {
           </Typography>
         </Box>
 
-        {!isMobile && (
+        {!isMobile && isHomePage && (
           <Box>
             <SearchBar2 />
           </Box>
@@ -440,6 +443,7 @@ const Navbar = () => {
                 {!user?.photoProfile && user?.userName?.charAt(0)?.toUpperCase()}
               </Avatar>
               <Box>
+                {console.log(user)}
                 <Typography fontWeight={900}>
                   {user?.userName || "Guest"}
                 </Typography>
@@ -450,7 +454,7 @@ const Navbar = () => {
             </Box>
 
             <IconButton onClick={toggleDrawer(false)}>
-              <MenuIcon />
+              <CloseIcon />
             </IconButton>
           </Box>
 
@@ -489,7 +493,7 @@ const Navbar = () => {
                   startIcon={<FavoriteBorderIcon />}
                   sx={drawerBtnSx}
                 >
-                  {t("menu.verified.wishlist")}
+                  {t("menu.verified.wishlists")}
                 </Button>
 
                 <Button
@@ -567,7 +571,9 @@ const Navbar = () => {
         </Box>
       </Drawer>
 
-      {isMobile ? <MobileSearchBar /> : <SearchBar />}
+      {isHomePage && (
+        isMobile ? <MobileSearchBar /> : <SearchBar />
+      )}
       <Divider />
       {isLoginModalOpen && (
         <LoginModal

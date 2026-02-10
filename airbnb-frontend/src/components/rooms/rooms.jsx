@@ -79,6 +79,7 @@ import RestaurantIcon from "@mui/icons-material/Restaurant";
 import MicrowaveIcon from "@mui/icons-material/Microwave";
 import CoffeeIcon from "@mui/icons-material/Coffee";
 import BathtubIcon from "@mui/icons-material/Bathtub";
+import BackButton from "../backButton/backButton";
 
 const { RangePicker } = DatePicker;
 
@@ -480,6 +481,7 @@ const RoomPage = () => {
 
   return (
     <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1200, mx: "auto" }}>
+      <BackButton />
       {/* Top Header */}
       <Paper
         elevation={0}
@@ -564,7 +566,7 @@ const RoomPage = () => {
               <Grid item xs={6}>
                 <ShareTile
                   icon={<TwitterIcon />}
-                  label="Twitter / X"
+                  label="X"
                   onClick={handleShareTwitter}
                 />
               </Grid>
@@ -684,6 +686,7 @@ const RoomPage = () => {
                 width: "100%",
                 objectFit: "cover",
                 transition: "all 0.25s ease",
+                height: { xs: 220, sm: 300, md: 460 },
                 "&:hover": { transform: "scale(1.01)" },
               }}
               onError={(e) => (e.target.src = "/fallback-image.jpg")}
@@ -709,6 +712,7 @@ const RoomPage = () => {
                         borderLeft: "1px solid rgba(0,0,0,0.06)",
                         borderBottom: "1px solid rgba(0,0,0,0.06)",
                         transition: "all 0.25s ease",
+                        height: { xs: 120, sm: 150, md: 230 },
                         "&:hover": { transform: "scale(1.01)" },
                       }}
                       onError={(e) => (e.target.src = "/fallback-image.jpg")}
@@ -742,7 +746,6 @@ const RoomPage = () => {
         </Button>
       </Paper>
 
-      {/* Fullscreen Gallery Modal */}
       <Dialog fullScreen open={openImageModal} onClose={handleCloseModal}>
         <DialogContent
           sx={{
@@ -799,9 +802,7 @@ const RoomPage = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Main Layout */}
       <Grid container spacing={3}>
-        {/* Left Column */}
         <Grid item xs={12} md={8}>
           <Paper
             elevation={0}
@@ -845,7 +846,6 @@ const RoomPage = () => {
 
           </Paper>
 
-          {/* Amenities Section */}
           <Paper
             elevation={0}
             sx={{
@@ -897,7 +897,6 @@ const RoomPage = () => {
                         border: "1px solid",
                         borderColor: "var(--border-light)",
 
-                        /* ✅ theme-aware background */
                         bgcolor: "var(--bg-card)",
 
                         display: "flex",
@@ -955,7 +954,6 @@ const RoomPage = () => {
             )}
           </Paper>
 
-          {/* Reviews Section */}
           <Paper
             elevation={0}
             sx={{
@@ -970,7 +968,6 @@ const RoomPage = () => {
           </Paper>
         </Grid>
 
-        {/* Right Column - Booking Card */}
         <Grid item xs={12} md={4}>
           <Paper
             elevation={0}

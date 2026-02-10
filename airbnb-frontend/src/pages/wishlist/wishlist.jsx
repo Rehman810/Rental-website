@@ -10,11 +10,11 @@ import {
   Chip,
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import TravelExploreIcon from "@mui/icons-material/TravelExplore";
 import Card from "../../components/cards/cards";
 import { useWishlist } from "../../context/wishlistProvider";
 import { useNavigate } from "react-router-dom";
 import usePageTitle from "../../hooks/usePageTitle";
+import BackButton from "../../components/backButton/backButton";
 
 const Wishlist = () => {
   usePageTitle("Wishlist");
@@ -23,6 +23,7 @@ const Wishlist = () => {
 
   return (
     <Box sx={{ minHeight: "80vh", py: { xs: 2, md: 4 } }}>
+      <BackButton />
       <Container maxWidth="xl">
         {/* Header */}
         <Paper
@@ -77,7 +78,7 @@ const Wishlist = () => {
         {wishlist?.length > 0 ? (
           <Grid container spacing={2.2}>
             {wishlist.map((item) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={item._id}>
+              <Grid item xs={6} sm={6} md={4} lg={3} key={item._id}>
                 <Card data={item} />
               </Grid>
             ))}

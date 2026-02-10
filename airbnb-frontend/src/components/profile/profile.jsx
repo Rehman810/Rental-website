@@ -150,6 +150,7 @@ const ProfileSection = () => {
 
   return (
     <Box sx={{ maxWidth: 1200, mx: "auto", p: { xs: 2, md: 3 } }}>
+      <BackButton />
       {/* Page Header */}
       <Paper
         elevation={0}
@@ -231,9 +232,6 @@ const ProfileSection = () => {
               <Box textAlign="center">
                 <Typography variant="h6" fontWeight={900}>
                   {user?.userName}
-                </Typography>
-                <Typography variant="body2" color="var(--text-secondary)">
-                  Guest Account
                 </Typography>
               </Box>
 
@@ -547,6 +545,7 @@ const ProfileSection = () => {
 
 import { Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import { postData } from "../../config/ServiceApi/serviceApi";
+import BackButton from "../backButton/backButton";
 
 const EmailVerificationDialog = ({ open, onClose, email, token, onSuccess }) => {
   const [step, setStep] = useState(1); // 1: Send, 2: Verify

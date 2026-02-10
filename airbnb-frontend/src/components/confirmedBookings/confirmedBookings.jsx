@@ -16,6 +16,7 @@ import PaymentsIcon from "@mui/icons-material/Payments";
 
 import { fetchData } from "../../config/ServiceApi/serviceApi";
 import { useBookingContext } from "../../context/booking";
+import { CURRENCY } from "../../config/env";
 
 
 const ConfirmedBookings = () => {
@@ -168,12 +169,13 @@ const ConfirmedBookings = () => {
 
                                         <Chip
                                             icon={<PaymentsIcon />}
-                                            label={`Rs ${booking?.totalPrice || 0}`}
+                                            label={`${CURRENCY} ${booking?.totalPrice || 0}`}
                                             variant="outlined"
                                             sx={{
                                                 borderRadius: 999,
                                                 fontWeight: 900,
                                                 px: 1,
+                                                color: "var(--text-secondary)",
                                             }}
                                         />
                                     </Stack>

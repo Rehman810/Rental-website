@@ -48,12 +48,14 @@ import BathtubIcon from "@mui/icons-material/Bathtub";
 import { CheckCircleOutline } from '@mui/icons-material';
 import usePageTitle from "../../hooks/usePageTitle";
 import { CURRENCY } from '../../config/env';
+import BackButton from '../../components/backButton/backButton';
+import { useMediaQuery } from "@mui/material";
 
 const HostListingDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const theme = useTheme();
-
+    const isMobile = useMediaQuery("(max-width:1100px)");
     const [listing, setListing] = useState(null);
     usePageTitle(listing?.title || "Listing Details");
     const [loading, setLoading] = useState(true);
@@ -119,6 +121,7 @@ const HostListingDetails = () => {
 
     return (
         <Box p={{ xs: 2, md: 4 }} maxWidth="1200px" mx="auto">
+            <BackButton />
             {/* Header */}
             <Stack
                 direction={{ xs: 'column', md: 'row' }}
@@ -128,7 +131,7 @@ const HostListingDetails = () => {
                 mb={4}
             >
                 <Box>
-                    <Typography variant="h4" fontWeight={900}>
+                    <Typography variant={isMobile ? "h5" : "h4"} fontWeight={900}>
                         {listing.title}
                     </Typography>
                     <Stack direction="row" spacing={1} mt={1} alignItems="center">
@@ -140,19 +143,33 @@ const HostListingDetails = () => {
                 </Box>
 
                 <Button
-                    variant="contained"
-                    startIcon={<EditIcon />}
+                    startIcon={<EditIcon fontSize="small" />}
                     onClick={() => navigate(`/hosting/listings/${id}/edit`)}
                     sx={{
-                        borderRadius: 999,
-                        px: 3,
-                        py: 1.2,
+                        px: 2.8,
+                        py: 1,
+                        borderRadius: 3,
                         fontWeight: 800,
-                        textTransform: 'none',
-                        boxShadow: theme.shadows[6]
+                        textTransform: "none",
+                        color: "var(--text-primary)",
+                        background:
+                            "linear-gradient(135deg, rgba(25,118,210,0.10), rgba(25,118,210,0.04))",
+                        border: "1px solid rgba(25,118,210,0.25)",
+                        boxShadow: "0 6px 18px rgba(25,118,210,0.15)",
+                        transition: "all 0.2s ease",
+                        "&:hover": {
+                            background:
+                                "linear-gradient(135deg, rgba(25,118,210,0.18), rgba(25,118,210,0.08))",
+                            boxShadow: "0 10px 28px rgba(25,118,210,0.25)",
+                            transform: "translateY(-1px)",
+                        },
+                        "&:active": {
+                            transform: "translateY(0)",
+                            boxShadow: "0 4px 12px rgba(25,118,210,0.18)",
+                        },
                     }}
                 >
-                    Edit Listing
+                    Edit listing
                 </Button>
             </Stack>
 

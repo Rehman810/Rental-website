@@ -20,7 +20,7 @@ export const setAuthCookies = (token, user) => {
     if (user) {
         const minimalUser = {
             _id: user._id,
-            name: user.userName || user.name,
+            userName: user.userName || user.name,
             email: user.email,
             role: user.role,
             isCNICUploaded:
@@ -29,6 +29,7 @@ export const setAuthCookies = (token, user) => {
             isPhoneVerified: Boolean(user.phoneNumber),
 
             isCNICVerified: Boolean(user?.CNIC?.isVerified),
+            isEmailVerified: Boolean(user?.isEmailVerified),
 
             photoProfile: user.photoProfile || null,
         };

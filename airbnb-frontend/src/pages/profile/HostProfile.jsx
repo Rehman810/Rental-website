@@ -11,6 +11,7 @@ import {
     Paper,
     Grid,
     Chip,
+    Pagination,
 } from "@mui/material";
 import {
     FaShieldAlt,
@@ -22,12 +23,17 @@ import {
 } from "react-icons/fa";
 import { getHostProfile } from "../../services/profileService";
 import CardItem from "../../components/cards/cards";
+import { useNavigate } from "react-router-dom";
+import BackButton from "../../components/backButton/backButton";
 
 const HostProfile = () => {
     const { hostId } = useParams();
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
+    const [reviewsPage, setReviewsPage] = useState(1);
+    const REVIEWS_PER_PAGE = 4;
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -43,7 +49,6 @@ const HostProfile = () => {
         fetchProfile();
     }, [hostId]);
 
-    /* ================= LOADING ================= */
     if (loading) {
         return (
             <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -75,10 +80,19 @@ const HostProfile = () => {
         );
     }
 
+    const paginatedReviews = profile.reviews.slice(
+        (reviewsPage - 1) * REVIEWS_PER_PAGE,
+        reviewsPage * REVIEWS_PER_PAGE
+    );
+
+    const totalReviewPages = Math.ceil(
+        profile.reviews.length / REVIEWS_PER_PAGE
+    );
+
     return (
         <Container maxWidth="lg" sx={{ py: 4 }}>
+            <BackButton />
             <Grid container spacing={4}>
-                {/* ================= LEFT PROFILE CARD ================= */}
                 <Grid item xs={12} md={4}>
                     <Paper
                         elevation={0}
@@ -178,21 +192,21 @@ const HostProfile = () => {
                         <Typography color="var(--text-color)">{profile.bio}</Typography>
 
                         <Grid container spacing={3} sx={{ mt: 3 }}>
-                            <Grid item xs={12} sm={4} textAlign="center">
+                            <Grid item xs={4} sm={4} textAlign="center">
                                 <FaHome size={22} />
                                 <Typography fontWeight={900}>
                                     {profile.stats.totalBookings}
                                 </Typography>
                                 <Typography variant="caption">Bookings</Typography>
                             </Grid>
-                            <Grid item xs={12} sm={4} textAlign="center">
+                            <Grid item xs={4} sm={4} textAlign="center">
                                 <FaStar size={22} />
                                 <Typography fontWeight={900}>
                                     {profile.stats.responseRate}
                                 </Typography>
                                 <Typography variant="caption">Response Rate</Typography>
                             </Grid>
-                            <Grid item xs={12} sm={4} textAlign="center">
+                            <Grid item xs={4} sm={4} textAlign="center">
                                 <FaCalendarAlt size={22} />
                                 <Typography fontWeight={900}>Active</Typography>
                                 <Typography variant="caption">
@@ -210,7 +224,7 @@ const HostProfile = () => {
                             </Typography>
                             <Grid container spacing={3}>
                                 {profile.listings.map((listing) => (
-                                    <Grid item xs={12} sm={6} key={listing._id}>
+                                    <Grid item xs={6} sm={6} key={listing._id}>
                                         <CardItem data={listing} />
                                     </Grid>
                                 ))}
@@ -226,7 +240,7 @@ const HostProfile = () => {
                             </Typography>
 
                             <Grid container spacing={3}>
-                                {profile.reviews.map((review) => (
+                                {paginatedReviews.map((review) => (
                                     <Grid item xs={12} sm={6} key={review._id}>
                                         <Paper
                                             elevation={0}
@@ -263,6 +277,32 @@ const HostProfile = () => {
                                     </Grid>
                                 ))}
                             </Grid>
+                            {totalReviewPages > 1 && (
+                                <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+                                    <Pagination
+                                        count={totalReviewPages}
+                                        page={reviewsPage}
+                                        onChange={(e, value) => setReviewsPage(value)}
+                                        shape="rounded"
+                                        size="small"
+                                        sx={{
+                                            "& .MuiPaginationItem-root": {
+                                                color: "var(--text-primary)",
+                                                border: "1px solid var(--border-light)",
+                                                fontWeight: 700,
+                                            },
+                                            "& .Mui-selected": {
+                                                backgroundColor: "var(--primary) !important",
+                                                color: "#fff",
+                                                borderColor: "var(--primary)",
+                                            },
+                                            "& .MuiPaginationItem-root:hover": {
+                                                backgroundColor: "var(--bg-secondary)",
+                                            },
+                                        }}
+                                    />
+                                </Box>
+                            )}
                         </Box>
                     )}
                 </Grid>

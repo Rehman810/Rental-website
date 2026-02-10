@@ -18,10 +18,10 @@ import {
     TextField,
     Select,
     MenuItem,
-    InputLabel
+    InputLabel,
+    useMediaQuery
 } from '@mui/material';
 import { toast } from 'react-hot-toast';
-import axios from 'axios';
 import { API_BASE_URL } from '../../config/env';
 import apiClient from '../../config/ServiceApi/apiClient';
 import usePageTitle from "../../hooks/usePageTitle";
@@ -30,6 +30,7 @@ const HostSettings = () => {
     usePageTitle("Settings");
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const isMobile = useMediaQuery("(max-width:1100px)");
     const [settings, setSettings] = useState({
         bookingMode: 'request',
         cancellationPolicy: 'moderate',
@@ -631,9 +632,11 @@ const HostSettings = () => {
                             <Typography sx={{ fontWeight: 900, lineHeight: 1.2 }}>
                                 Ready to apply changes?
                             </Typography>
-                            <Typography variant="body2" sx={{ color: 'var(--text-secondary)' }}>
-                                Save once and you’re good to go.
-                            </Typography>
+                            {!isMobile && (
+                                <Typography variant="body2" sx={{ color: 'var(--text-secondary)' }}>
+                                    Save once and you’re good to go.
+                                </Typography>
+                            )}
                         </Box>
 
                         <Button
@@ -651,7 +654,7 @@ const HostSettings = () => {
                                 boxShadow: '0 12px 30px rgba(0,0,0,0.18)',
                             }}
                         >
-                            {saving ? 'Saving...' : 'Save Changes'}
+                            {saving ? 'Saving...' : 'Save'}
                         </Button>
                     </Box>
                 </Box>

@@ -140,14 +140,14 @@ const HostDashboardAntd = () => {
             title: "Date",
             dataIndex: "date",
             key: "date",
-            render: (d) => <Text style={{ fontWeight: 700 }}>{dayjs(d).format("MMM D, YYYY")}</Text>,
+            render: (d) => <Text style={{ fontWeight: 700, color: "var(--text-primary)" }}>{dayjs(d).format("MMM D, YYYY")}</Text>,
         },
         {
             title: "Gross",
             dataIndex: "gross",
             key: "gross",
             align: "right",
-            render: (v) => <Text style={{ fontWeight: 700 }}>{money(v)}</Text>,
+            render: (v) => <Text style={{ fontWeight: 700, color: "var(--text-primary)" }}>{money(v)}</Text>,
         },
         {
             title: "Fee",
@@ -168,7 +168,7 @@ const HostDashboardAntd = () => {
             dataIndex: "bookings",
             key: "bookings",
             align: "right",
-            render: (v) => <Text style={{ fontWeight: 800 }}>{v}</Text>,
+            render: (v) => <Text style={{ fontWeight: 800, color: "var(--text-primary)" }}>{v}</Text>,
         },
     ];
 
@@ -603,7 +603,7 @@ const HostDashboardAntd = () => {
                     </Col>
 
                     <Col xs={24} lg={8}>
-                        <Card style={glassCard} title={<Text style={{ fontWeight: 950 }}>Top Listings</Text>}>
+                        <Card style={glassCard} title={<Text style={{ fontWeight: 950, color: "var(--text-primary)" }}>Top Listings</Text>}>
                             <Table
                                 size="middle"
                                 pagination={false}
@@ -617,8 +617,8 @@ const HostDashboardAntd = () => {
                                                     {(listing.title || "L")[0]}
                                                 </Avatar>
                                                 <Space direction="vertical" size={0}>
-                                                    <Text style={{ fontWeight: 900 }}>{listing.title}</Text>
-                                                    <Text type="secondary" style={{ fontSize: 12, fontWeight: 650 }}>
+                                                    <Text style={{ fontWeight: 900, color: "var(--text-primary)" }}>{listing.title}</Text>
+                                                    <Text type="secondary" style={{ fontSize: 12, fontWeight: 650, color: "var(--text-secondary)" }}>
                                                         {listing.bookingCount} bookings
                                                     </Text>
                                                 </Space>
@@ -630,7 +630,7 @@ const HostDashboardAntd = () => {
                                         key: "earnings",
                                         align: "right",
                                         render: (_, listing) => (
-                                            <Text style={{ fontWeight: 950 }}>{money(listing.grossEarnings)}</Text>
+                                            <Text style={{ fontWeight: 950, color: "var(--text-primary)" }}>{money(listing.grossEarnings)}</Text>
                                         ),
                                     },
                                 ]}

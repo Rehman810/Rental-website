@@ -11,6 +11,7 @@ const adminService = {
   login: async ({ userName, password }) => {
     const admin = await Admin.findOne({ userName });
     if (admin) {
+      if (!password || !admin.password) return null;
       const match = await bcrypt.compare(password, admin.password);
       if (match) {
         const token = jwt.sign({ userName: admin.userName, role: admin.role }, secretKey, { expiresIn: '10h' });
@@ -27,18 +28,18 @@ const adminService = {
       const admin = await Admin.findOne({ 'sessions.token': token });
       if (admin) {
         admin.sessions = admin.sessions.filter(session => session.token !== token);
-          await admin.save();
-  
+        await admin.save();
+
         return true;
       }
-  
-      return false; 
+
+      return false;
     } catch (error) {
       console.error('Error logging out user:', error);
       return false;
     }
   },
-  
+
   saveResetCode: async (code, email) => {
     const admin = await Admin.findOne({ email });
     if (admin) {
@@ -60,7 +61,7 @@ const adminService = {
       if (admin) {
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         admin.password = hashedPassword;
-        admin.resetCode = undefined; 
+        admin.resetCode = undefined;
         await admin.save();
         return true;
       }
@@ -74,21 +75,21 @@ const adminService = {
 
   verifyToken: async (token) => {
     try {
-      const decoded = jwt.verify(token, secretKey); 
+      const decoded = jwt.verify(token, secretKey);
       console.log('Decoded userName:', decoded.userName);
       const admin = await Admin.findOne({ userName: decoded.userName });
       console.log('Admin found:', admin);
       if (admin && admin.sessions.some((session) => session.token === token)) {
         return { isValid: true };
       }
-  
-      return { isValid: false }; 
+
+      return { isValid: false };
     } catch (error) {
       console.error('Error verifying token:', error.message);
-      return { isValid: false }; 
+      return { isValid: false };
     }
   },
-  
+
 };
 
 export default adminService;

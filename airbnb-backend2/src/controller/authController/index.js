@@ -58,6 +58,9 @@ const authController = {
       if (!user) {
         return res.status(400).json({ message: 'Invalid email or password' });
       }
+      if (!password || !user.password) {
+        return res.status(400).json({ message: 'Invalid email or password. If you signed up with Google, please log in with Google.' });
+      }
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid) {
         return res.status(400).json({ message: 'Invalid email or password' });

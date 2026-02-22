@@ -21,22 +21,29 @@ const authController = {
 
       await user.save();
 
-      await sendAppEmail({
-        to: email,
-        type: EMAIL_TYPES.AUTH_WELCOME,
-        payload: {
-          userName,
-          email,
-        }
+      res.status(201).json({
+        message: 'User created successfully',
+        token,
+        user
       });
 
-      await createNotification({
+      sendAppEmail({
+        to: email,
+        type: EMAIL_TYPES.AUTH_WELCOME,
+        payload: { userName, email }
+      }).catch(err => {
+        console.error("Email failed:", err.message);
+      });
+
+      createNotification({
         userId: user._id,
         role: 'guest',
         type: NOTIFICATION_TYPES.AUTH_WELCOME,
         title: 'Welcome to Airbnb!',
         message: `Welcome ${userName}, thank you for joining our community.`,
         data: { actionUrl: '/user/profile' }
+      }).catch(err => {
+        console.error("Notification failed:", err.message);
       });
 
       res.status(201).json({ message: 'User created successfully', token, user });

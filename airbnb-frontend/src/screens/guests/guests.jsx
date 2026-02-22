@@ -13,6 +13,11 @@ const NotFoundPage = lazy(() => import("../../components/notFound/notFound"));
 const HostProfile = lazy(() => import("../../pages/profile/HostProfile"));
 const GuestProfile = lazy(() => import("../../pages/profile/GuestProfile"));
 
+const VerificationPage = lazy(() => import("../../pages/longTerm/VerificationPage"));
+const AgreementPage = lazy(() => import("../../pages/longTerm/AgreementPage"));
+const RentPage = lazy(() => import("../../pages/longTerm/RentPage"));
+const ApplyPage = lazy(() => import("../../pages/longTerm/ApplyPage"));
+
 const Guests = () => {
   return (
     <>
@@ -24,6 +29,12 @@ const Guests = () => {
 
           {/* Rooms Page */}
           <Route path="/rooms/:roomId" element={<Rooms />} />
+
+          {/* Long Term Rental Pages */}
+          <Route path="/long-term/apply/:listingId" element={<Protected Component={ApplyPage} />} />
+          <Route path="/long-term/verification/:agreementId" element={<Protected Component={VerificationPage} />} />
+          <Route path="/long-term/agreement/:agreementId" element={<Protected Component={AgreementPage} />} />
+          <Route path="/long-term/payments/:agreementId" element={<Protected Component={RentPage} />} />
 
           {/* Notifications Page */}
           <Route path="/notifications" element={<Protected Component={NotificationsPage} />} />

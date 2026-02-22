@@ -7,11 +7,15 @@ const { apiKey } = API_CONFIG;
 const token = getAuthToken();
 export const loginUser = async (endpoint, data) => {
   try {
-    const response = await apiClient.post(`${apiKey}/${endpoint}`, data);
+    const response = await axios.post(`${apiKey}/${endpoint}`, data);
+    console.log(response);
     return response.data;
   } catch (error) {
-    // showErrorToast(error.message)
-    throw new Error('Error logging in: ' + error.message);
+    if (error.response && error.response.data) {
+      throw new Error(error.response.data.message);
+    }
+
+    throw new Error("Something went wrong. Please try again.");
   }
 };
 

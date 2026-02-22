@@ -1003,7 +1003,7 @@ const RoomPage = () => {
                   <Button
                     variant="contained"
                     fullWidth
-                    onClick={() => toast.success("Lease application feature coming soon!")}
+                    onClick={() => navigate(`/long-term/verification/${place._id}`, { state: place.leaseConfig })}
                     sx={{ mt: 3, py: 1.5, borderRadius: 2, textTransform: "none", fontWeight: 900 }}
                   >
                     Apply for Lease

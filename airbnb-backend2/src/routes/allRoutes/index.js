@@ -15,6 +15,7 @@ import wishlistRoute from '../wishlistRoute/index.js'
 import cancellationPolicyRoute from '../cancellationPolicy/index.js';
 import hostListingRoute from '../hostListingRoute/index.js';
 import profileRoute from "../profileRoute/index.js";
+import longTermRoute from "../longTermRoutes/index.js";
 
 import { setSocket } from '../../config/notifications/notificationService.js';
 
@@ -37,6 +38,8 @@ const allRoutes = async (app, io) => {
     hostListingRoute(app)
     cancellationPolicyRoute(app)
     wishlistRoute(app)
+
     profileRoute(app)
+    longTermRoute(app)
 }
 export default allRoutes

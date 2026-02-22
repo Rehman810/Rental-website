@@ -65,7 +65,7 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
   const onSubmit = async (data) => {
     try {
       const res = await (signUp
-        ? loginUser("signup", {
+        ? loginUser("signUp", {
           userName: data.userName,
           email: data.email,
           password: data.password,
@@ -85,9 +85,10 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
       }
     } catch (error) {
       // onClose(); // Don't close on error so they can retry
-      toast.error("Login Failed", {
+      toast.error(error.message, {
         duration: 2000,
       });
+
       console.error("Login Error:", error);
     }
   };

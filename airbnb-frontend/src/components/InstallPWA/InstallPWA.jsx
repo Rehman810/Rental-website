@@ -1,59 +1,74 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { usePWAInstall } from '../../hooks/usePWAInstall';
+import './InstallPWA.css';
 
 const InstallPWA = () => {
-    const [supportsPWA, setSupportsPWA] = useState(false);
-    const [promptInstall, setPromptInstall] = useState(null);
+    const {
+        isIOS,
+        shouldShowPrompt,
+        promptToInstall,
+        dismissPrompt
+    } = usePWAInstall();
+
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        const handler = e => {
-            e.preventDefault();
-            setSupportsPWA(true);
-            setPromptInstall(e);
-        };
-        window.addEventListener('beforeinstallprompt', handler);
-
-        return () => window.removeEventListener('beforeinstallprompt', handler);
-    }, []);
-
-    const onClick = evt => {
-        evt.preventDefault();
-        if (!promptInstall) {
-            return;
+        // Trigger mounting animation natively by giving it a frame
+        if (shouldShowPrompt) {
+            const frame = requestAnimationFrame(() => setMounted(true));
+            return () => cancelAnimationFrame(frame);
+        } else {
+            setMounted(false);
         }
-        promptInstall.prompt();
-        promptInstall.userChoice.then((choiceResult) => {
-            if (choiceResult.outcome === 'accepted') {
-                console.log('User accepted the install prompt');
-            } else {
-                console.log('User dismissed the install prompt');
-            }
-        });
-    };
+    }, [shouldShowPrompt]);
 
-    if (!supportsPWA) {
-        return null;
-    }
+    if (!shouldShowPrompt && !mounted) return null;
 
     return (
-        <button
-            onClick={onClick}
-            style={{
-                position: 'fixed',
-                bottom: '20px',
-                left: '20px',
-                zIndex: 9999,
-                padding: '10px 20px',
-                backgroundColor: '#FF5A5F', // Airbnb primary
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-                cursor: 'pointer',
-                fontWeight: 'bold',
-            }}
-        >
-            Install App
-        </button>
+        <div className={`pwa-bottom-sheet ${mounted && shouldShowPrompt ? 'visible' : ''}`}>
+            <div className="pwa-sheet-content">
+                <div className="pwa-info">
+                    {/* Assuming the app has a 192x192 icon in PWA config or a logo in public directory */}
+                    <img
+                        src="/assets/pwa-192x192.png"
+                        alt="App Icon"
+                        className="pwa-icon"
+                        onError={(e) => {
+                            // Fallback if missing
+                            e.target.style.display = 'none';
+                        }}
+                    />
+                    <div className="pwa-text">
+                        <h3>Add to Home Screen</h3>
+                        <p>
+                            {isIOS
+                                ? "Tap the share icon below and select 'Add to Home Screen' for a faster, full-screen experience."
+                                : "Install our app for a faster and seamless experience directly from your home screen."}
+                        </p>
+                    </div>
+                </div>
+
+                <div className="pwa-actions">
+                    <button className="btn-dismiss" onClick={dismissPrompt} aria-label="Dismiss">
+                        {isIOS ? "Close" : "Not Now"}
+                    </button>
+
+                    {!isIOS ? (
+                        <button className="btn-install" onClick={promptToInstall} aria-label="Install App">
+                            Install
+                        </button>
+                    ) : (
+                        <div className="ios-share-hint" aria-label="Share Icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                                <polyline points="16 6 12 2 8 6" />
+                                <line x1="12" y1="2" x2="12" y2="15" />
+                            </svg>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
     );
 };
 

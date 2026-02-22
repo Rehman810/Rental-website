@@ -12,6 +12,7 @@ import { useTheme } from "./context/ThemeContext.jsx";
 import { useAppContext } from "./context/context.jsx";
 import { getPlatformSettings } from "./services/platformSettingsService.js";
 import { useTranslation } from "react-i18next";
+import InstallPWA from "./components/InstallPWA/InstallPWA";
 
 const App = () => {
   const { toggleTheme } = useTheme();
@@ -69,6 +70,7 @@ const App = () => {
 
   return (
     <Suspense fallback={<Loader open={true} />}>
+      <InstallPWA />
       <ToastNotification />
       <Toaster position="top-right" reverseOrder={false} />
       <NotificationProvider>

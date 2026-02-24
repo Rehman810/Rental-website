@@ -21,13 +21,30 @@ dotenv.config();
 
 const app = express();
 // app.use(cors({ origin: FRONTEND_BASE_URL, credentials: true }));
+const allowedOrigins = [
+  "http://localhost:5174",
+  "https://rental-website-lovat.vercel.app"
+];
+
 app.use(cors({
-  origin: true,              // allow ALL origins
-  credentials: true,         // allow cookies
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true); // allow non-browser requests
+
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  allowedHeaders: ["Content-Type", "Authorization"],
 }));
-app.options("*", cors());
+
+app.options("*", cors({
+  origin: allowedOrigins,
+  credentials: true
+}));
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));

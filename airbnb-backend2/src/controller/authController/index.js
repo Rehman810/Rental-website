@@ -21,12 +21,6 @@ const authController = {
 
       await user.save();
 
-      res.status(201).json({
-        message: 'User created successfully',
-        token,
-        user
-      });
-
       sendAppEmail({
         to: email,
         type: EMAIL_TYPES.AUTH_WELCOME,

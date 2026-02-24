@@ -192,6 +192,7 @@ const RoomPage = () => {
           setWeekenddayPrice(response.listing.weekendPrice);
 
           setLoadingText(false);
+          handleImageLoad()
         }
       } catch (error) {
         console.error("Failed to fetch listing:", error);
@@ -672,25 +673,25 @@ const RoomPage = () => {
       >
         <Grid container spacing={0} onClick={handleOpenModal} sx={{ cursor: "pointer" }}>
           <Grid item xs={12} md={6}>
-            {loadingImages && (
+            {loadingImages ? (
               <Skeleton variant="rectangular" width="100%" height={460} animation="wave" />
-            )}
-            <CardMedia
-              component="img"
-              height="460"
-              image={place?.photos?.[0] || "/fallback-image.jpg"}
-              alt="Main"
-              onLoad={handleImageLoad}
-              loading="lazy"
-              sx={{
-                width: "100%",
-                objectFit: "cover",
-                transition: "all 0.25s ease",
-                height: { xs: 220, sm: 300, md: 460 },
-                "&:hover": { transform: "scale(1.01)" },
-              }}
-              onError={(e) => (e.target.src = "/fallback-image.jpg")}
-            />
+            ) : (
+              <CardMedia
+                component="img"
+                height="460"
+                image={place?.photos?.[0] || "/fallback-image.jpg"}
+                alt="Main"
+                onLoad={handleImageLoad}
+                loading="lazy"
+                sx={{
+                  width: "100%",
+                  objectFit: "cover",
+                  transition: "all 0.25s ease",
+                  height: { xs: 220, sm: 300, md: 460 },
+                  "&:hover": { transform: "scale(1.01)" },
+                }}
+                onError={(e) => (e.target.src = "/fallback-image.jpg")}
+              />)}
           </Grid>
 
           <Grid item xs={12} md={6}>

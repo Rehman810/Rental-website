@@ -242,7 +242,7 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
             <Divider sx={{ my: 1.2 }}>or</Divider>
 
             <Grid container spacing={1.5}>
-              <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center' }}>
+              <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', ml: -1 }}>
                 <GoogleOAuthProvider
                   clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
                   useFedCM={true}
@@ -256,7 +256,7 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
                       });
                     }}
                     shape="pill"
-                    width="350px"
+                    width="300px"
                     text="continue_with"
                     theme="filled_blue"
                     useOneTap={false}

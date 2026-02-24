@@ -18,10 +18,6 @@ export const stripeController = {
             if (!accountId) {
                 const account = await stripe.accounts.create({
                     type: 'express',
-                    // Assuming PK based on existing code, or US. Express supports many.
-                    // Ideally catch error if country not supported.
-                    // Let's use user email.
-                    url: "https://pakbnb.com",
                     email: host.email,
                 });
                 accountId = account.id;

@@ -28,8 +28,8 @@ const CounterRow = ({ label, value, onDecrement, onIncrement }) => (
           onClick={onDecrement}
           disabled={value <= 1}
           sx={{
-            backgroundColor: "#f1f1f1",
-            "&:hover": { backgroundColor: "#e0e0e0" },
+            backgroundColor: "var(--background-color)",
+            "&:hover": { backgroundColor: "var(--background-color)" },
             boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
             width: "48px",
             height: "48px",
@@ -45,8 +45,8 @@ const CounterRow = ({ label, value, onDecrement, onIncrement }) => (
         <IconButton
           onClick={onIncrement}
           sx={{
-            backgroundColor: "#f1f1f1",
-            "&:hover": { backgroundColor: "#e0e0e0" },
+            backgroundColor: "var(--background-color)",
+            "&:hover": { backgroundColor: "var(--background-color)" },
             boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
             width: "48px",
             height: "48px",
@@ -70,7 +70,7 @@ const GuestCounter = () => {
   }, [guests, bedrooms, beds, setGuestCount]);
 
   return (
-    <Box sx={{ p: 4, width: "600px", margin: "auto", backgroundColor: "#fff" }}>
+    <Box sx={{ p: 4, width: "600px", margin: "auto", backgroundColor: "var(--background-color)" }}>
       <Typography variant="h4" fontWeight="bold" gutterBottom>
         Let&apos;s start with the basics
       </Typography>

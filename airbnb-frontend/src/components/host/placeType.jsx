@@ -9,9 +9,16 @@ import { useAppContext } from "../../context/context";
 const StyledPaper = styled(Paper)(({ theme, selected }) => ({
   padding: theme.spacing(2),
   cursor: "pointer",
-  border: selected ? "1.5px solid black" : "1px solid #ddd",
-  backgroundColor: selected ? "#F7F7F7" : "white",
-  transition: "0.3s",
+
+  border: selected
+    ? `1.5px solid ${theme.palette.text.primary}`
+    : `1px solid ${theme.palette.divider}`,
+
+  backgroundColor: selected
+    ? theme.palette.action.selected
+    : theme.palette.background.paper,
+
+  transition: "all 0.3s ease",
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
@@ -19,8 +26,9 @@ const StyledPaper = styled(Paper)(({ theme, selected }) => ({
   width: "100%",
   maxWidth: "500px",
   margin: "0 auto",
+
   "&:hover": {
-    border: "1.5px solid black",
+    border: `1.5px solid ${theme.palette.text.primary}`,
   },
 }));
 
@@ -34,7 +42,7 @@ const PlaceType = () => {
   const [selected, setSelected] = useState("Entire Place");
   const { setPlaceType } = useAppContext();
 
-  const select = (type)=>{
+  const select = (type) => {
     setSelected(type);
     setPlaceType(type)
   }
@@ -60,7 +68,7 @@ const PlaceType = () => {
                 <Typography variant="h6" fontWeight="bold">
                   {property.name}
                 </Typography>
-                <Typography variant="body2" color="textSecondary">
+                <Typography variant="body2" color="var(--text-secondary)">
                   {property.text}
                 </Typography>
               </Box>

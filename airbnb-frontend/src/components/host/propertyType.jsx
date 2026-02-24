@@ -7,16 +7,20 @@ const StyledPaper = styled(Paper)(({ theme, selected }) => ({
   padding: theme.spacing(3),
   textAlign: "center",
   cursor: "pointer",
-  border: selected ? "2px solid var(--text-primary)" : "1px solid var(--border-light)",
-  backgroundColor: selected ? "var(--bg-secondary)" : "var(--bg-card)",
-  color: "var(--text-primary)",
-  transition: "0.3s",
+  border: selected
+    ? `2px solid ${theme.palette.text.primary}`
+    : `1px solid ${theme.palette.divider}`,
+  backgroundColor: selected
+    ? theme.palette.action.selected
+    : theme.palette.background.paper,
+  color: theme.palette.text.primary,
+  transition: "all 0.25s ease",
   borderRadius: "10px",
+
   "&:hover": {
-    border: "2px solid var(--text-primary)",
+    border: `2px solid ${theme.palette.text.primary}`,
   },
 }));
-
 
 const PropertyType = ({ type = [], heading, isAmenties }) => {
   const [selected, setSelected] = useState(isAmenties ? [] : "House");

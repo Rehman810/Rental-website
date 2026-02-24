@@ -10,7 +10,7 @@ const steps = [
     id: 1,
     title: ' 1. Tell us about your place',
     description: 'Share some basic info, like where it is and how many guests can stay.',
-    image: bed, 
+    image: bed,
   },
   {
     id: 2,
@@ -28,12 +28,12 @@ const steps = [
 
 const GetStarted = () => {
   return (
-    <Box sx={{ py: 5, px: 5, paddingTop: "100px"}}>
+    <Box sx={{ py: 5, px: 5, paddingTop: "100px" }}>
       <Grid container spacing={8} alignItems="center">
         <Grid item xs={12} md={6}>
           <Typography
             variant="h3"
-            sx={{ mb: { xs: 3, md: 0 }, fontWeight: 'bold', color: '#333', textAlign: { xs: 'center', md: 'left' } }}
+            sx={{ mb: { xs: 3, md: 0 }, fontWeight: 'bold', color: 'var(--text-primary)', textAlign: { xs: 'center', md: 'left' } }}
           >
             It’s easy to get started on Airbnb
           </Typography>
@@ -44,12 +44,12 @@ const GetStarted = () => {
             {steps.map((step) => (
               <Grid item xs={12} key={step.id}>
                 <Card sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: 'center', boxShadow: 3, borderRadius: 2 }}>
-                  
+
                   <CardContent sx={{ flex: 1 }}>
-                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#333' }}>
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>
                       {step.title}
                     </Typography>
-                    <Typography variant="body2" sx={{ mt: 1, color: '#666' }}>
+                    <Typography variant="body2" sx={{ mt: 1, color: 'var(--text-secondary)' }}>
                       {step.description}
                     </Typography>
                   </CardContent>

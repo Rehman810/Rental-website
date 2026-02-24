@@ -3,7 +3,7 @@ import { Box, Typography, Grid } from "@mui/material";
 import Lottie from "react-lottie";
 import animationData from "../../animations/step1animation.json";
 
-const WebLottieAnimation = ({animation}) => {
+const WebLottieAnimation = ({ animation }) => {
   const defaultOptions = {
     loop: true,
     autoplay: true,
@@ -28,7 +28,7 @@ const WebLottieAnimation = ({animation}) => {
   );
 };
 
-const Step1 = ({stepNo, title, description, animation}) => {
+const Step1 = ({ stepNo, title, description, animation }) => {
   return (
     <Box sx={{ py: 5, px: 5 }}>
       <Grid container spacing={8} alignItems="center" >
@@ -39,7 +39,7 @@ const Step1 = ({stepNo, title, description, animation}) => {
             sx={{
               mb: { xs: 3, md: 0 },
               fontWeight: "bold",
-              color: "#333",
+              color: "var(--text-primary)",
               paddingTop: "20px",
               textAlign: { xs: "center", md: "left" },
             }}
@@ -52,7 +52,7 @@ const Step1 = ({stepNo, title, description, animation}) => {
         </Grid>
 
         <Grid item xs={12} md={6}>
-          <WebLottieAnimation animation={animation}/>
+          <WebLottieAnimation animation={animation} />
         </Grid>
       </Grid>
     </Box>

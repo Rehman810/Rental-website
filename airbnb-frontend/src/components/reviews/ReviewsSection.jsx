@@ -378,16 +378,6 @@ const ReviewsSection = ({ listingId, currentUser, listingHostId }) => {
                             >
                                 {/* Header */}
                                 <Stack direction="row" spacing={2} alignItems="flex-start">
-                                    <Avatar
-                                        src={guestPhoto}
-                                        alt={guestName}
-                                        sx={{
-                                            width: 52,
-                                            height: 52,
-                                            border: "1px solid",
-                                            borderColor: "divider",
-                                        }}
-                                    />
 
                                     <Box sx={{ flexGrow: 1 }}>
                                         <Stack
@@ -396,14 +386,43 @@ const ReviewsSection = ({ listingId, currentUser, listingHostId }) => {
                                             justifyContent="space-between"
                                             spacing={1}
                                         >
-                                            <Box>
-                                                <Typography sx={{ fontWeight: 900, fontSize: "1.05rem" }}>
-                                                    {guestName}
-                                                </Typography>
-                                                <Typography variant="caption" color="var(--text-secondary)" sx={{ fontWeight: 700 }}>
-                                                    {createdAt}
-                                                </Typography>
-                                            </Box>
+                                            <Stack direction="row" spacing={1.8} alignItems="center">
+                                                <Avatar
+                                                    src={guestPhoto}
+                                                    alt={guestName}
+                                                    sx={{
+                                                        width: 48,
+                                                        height: 48,
+                                                        fontSize: "0.95rem",
+                                                        fontWeight: 600,
+                                                        bgcolor: "primary.main",
+                                                    }}
+                                                />
+
+                                                <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                                                    <Typography
+                                                        sx={{
+                                                            fontWeight: 600,
+                                                            fontSize: "0.98rem",
+                                                            lineHeight: 1.2,
+                                                        }}
+                                                    >
+                                                        {guestName}
+                                                    </Typography>
+
+                                                    <Typography
+                                                        variant="caption"
+                                                        sx={{
+                                                            color: "var(--text-secondary)",
+                                                            fontWeight: 500,
+                                                            lineHeight: 1.2,
+                                                            mt: 0.3,
+                                                        }}
+                                                    >
+                                                        {createdAt}
+                                                    </Typography>
+                                                </Box>
+                                            </Stack>
 
                                             <Stack direction="row" spacing={1} alignItems="center">
                                                 {perReviewOverall && (

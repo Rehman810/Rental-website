@@ -78,7 +78,7 @@ const AddressForm = () => {
           onChange={(e) => handleFieldChange("streetAddress", e.target.value)}
         />
         <TextField
-          label="Flat, floor, bldg (if applicable)"
+          label="Flat, floor, bldg"
           variant="outlined"
           onChange={(e) => handleFieldChange("flat", e.target.value)}
         />

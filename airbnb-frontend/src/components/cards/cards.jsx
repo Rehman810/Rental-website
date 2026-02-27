@@ -117,10 +117,9 @@ const CardItem = React.memo(({ data }) => {
         }}
       >
         {/* Image Area */}
-        <Box sx={{ position: "relative" }} onClick={(e) => e.stopPropagation()}>
+        <Box sx={{ position: "relative" }} >
           <Box sx={{ height: isMobile ? 150 : 240 }} onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()} >
             {/* {showSlider ? ( */}
             <Slider {...settings}>

@@ -223,7 +223,7 @@ const HostSection = ({ data, listing }) => {
                 <Button
                   variant="contained"
                   onClick={() =>
-                    navigate(`/user/guestMessages/${listing?.hostId}`)
+                    navigate(`/user/guestMessages/${listing?.hostId}?listingId=${listing?._id || listing?.id || ''}`)
                   }
                   endIcon={<ArrowForwardIcon />}
                   sx={{

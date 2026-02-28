@@ -717,6 +717,7 @@ const ListingPage = () => {
   const [editingGuestRequirements, setEditingGuestRequirements] = useState(null);
   const [editingCancellation, setEditingCancellation] = useState(null);
   const [editingBlockedDates, setEditingBlockedDates] = useState(null);
+  const [editingAiAssistant, setEditingAiAssistant] = useState(null);
 
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
@@ -1000,6 +1001,22 @@ const ListingPage = () => {
               <MenuRow
                 label="Cancellation Policy"
                 checked={!!item.cancellationPolicy}
+              />
+            </MenuItem>
+
+            <Divider />
+
+            {/* Section: AI Assistant */}
+            <Box sx={{ px: 2, py: 1.2 }}>
+              <Typography fontSize={11} fontWeight={900} color="var(--text-secondary)">
+                AI ASSISTANT
+              </Typography>
+            </Box>
+
+            <MenuItem onClick={() => { handleClose(); setEditingAiAssistant(item); }}>
+              <MenuRow
+                label="Host Assistant"
+                checked={item.autoReplyEnabled}
               />
             </MenuItem>
           </Menu>
@@ -1300,6 +1317,15 @@ const ListingPage = () => {
         onUpdate={() => window.location.reload()}
       />
 
+      {/* AI Assistant Dialog */}
+      <AiAssistantModal
+        open={!!editingAiAssistant}
+        onClose={() => setEditingAiAssistant(null)}
+        listing={editingAiAssistant}
+        token={token}
+        onUpdate={() => window.location.reload()}
+      />
+
     </Box>
   );
 };
@@ -1400,6 +1426,70 @@ const GuestRequirementsModal = ({ open, onClose, listing, token, onUpdate }) => 
       <DialogActions>
         <Button onClick={onClose} disabled={saving}>Cancel</Button>
         <Button onClick={handleSave} variant="contained" disabled={saving}>{saving ? "Saving..." : "Save Overrides"}</Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+const AiAssistantModal = ({ open, onClose, listing, token, onUpdate }) => {
+  const [autoReplyEnabled, setAutoReplyEnabled] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (listing) {
+      setAutoReplyEnabled(listing.autoReplyEnabled || false);
+    }
+  }, [listing]);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await apiClient.put(`${API_BASE_URL}/listing/${listing._id}/ai-assistant`,
+        { autoReplyEnabled },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      toast.success("Host Assistant settings updated");
+      onUpdate();
+      onClose();
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to update AI settings");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth sx={{ "& .MuiPaper-root": { borderRadius: 4 } }}>
+      <DialogTitle fontWeight={800}>Host Assistant</DialogTitle>
+      <DialogContent dividers>
+        <Typography variant="body2" color="var(--text-secondary)" paragraph>
+          Enable an AI-powered assistant to automatically reply to guest messages for this listing.
+        </Typography>
+
+        <Box sx={{ py: 1 }}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={autoReplyEnabled}
+                onChange={(e) => setAutoReplyEnabled(e.target.checked)}
+                color="primary"
+              />
+            }
+            label={
+              <Box>
+                <Typography fontWeight={700}>Auto Reply</Typography>
+                <Typography variant="caption" color="var(--text-secondary)">{autoReplyEnabled ? "ON - AI will reply to guests" : "OFF - Manual replies only"}</Typography>
+              </Box>
+            }
+          />
+        </Box>
+      </DialogContent>
+      <DialogActions sx={{ px: 3, py: 2 }}>
+        <Button onClick={onClose} disabled={saving} sx={{ borderRadius: 999 }}>Cancel</Button>
+        <Button onClick={handleSave} variant="contained" disabled={saving} sx={{ borderRadius: 999, px: 3 }}>
+          {saving ? "Saving..." : "Save Settings"}
+        </Button>
       </DialogActions>
     </Dialog>
   );

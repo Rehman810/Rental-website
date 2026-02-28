@@ -17,6 +17,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SendIcon from "@mui/icons-material/Send";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import InboxOutlinedIcon from "@mui/icons-material/InboxOutlined";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import axios from "axios";
 import {
   emitEvent,
@@ -106,7 +107,7 @@ const GuestAllMessages = () => {
     try {
       await axios.post(
         `${API_BASE_URL}/send-message`,
-        { guestId: selectedSenderId, message: newMessage },
+        { guestId: selectedSenderId, message: newMessage, role: user?.role || 'guest' },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -231,6 +232,8 @@ const GuestAllMessages = () => {
               >
                 {messages.map((m, i) => {
                   const mine = m.senderId === receiverId;
+                  const isAssistant = m.role === 'assistant' || m.isAI;
+
                   return (
                     <Box
                       key={i}
@@ -245,16 +248,44 @@ const GuestAllMessages = () => {
                           px: 2,
                           py: 1.2,
                           maxWidth: { xs: "85%", md: "70%" },
-                          bgcolor: mine
-                            ? "primary.main"
-                            : "background.paper",
-                          color: mine
-                            ? "primary.contrastText"
-                            : "text.primary",
-                          borderRadius: 3,
-                          boxShadow: 1,
+                          bgcolor: isAssistant
+                            ? "linear-gradient(135deg, #f0f7f4 0%, #e8f5e9 100%)"
+                            : mine
+                              ? "primary.main"
+                              : "background.paper",
+                          backgroundImage: isAssistant
+                            ? "linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)"
+                            : 'none',
+                          color: isAssistant
+                            ? "#1b5e20"
+                            : mine
+                              ? "primary.contrastText"
+                              : "text.primary",
+                          position: "relative",
+                          borderRadius: '20px',
+                          borderBottomLeftRadius: !mine ? (isAssistant ? '4px' : '20px') : "20px",
+                          borderBottomRightRadius: !mine ? "20px" : "4px",
+                          boxShadow: isAssistant ? '0 4px 15px rgba(46, 125, 50, 0.1)' : '0 2px 5px rgba(0,0,0,0.05)',
+                          border: isAssistant ? '1px solid rgba(46, 125, 50, 0.1)' : 'none',
                         }}
                       >
+                        {isAssistant && (
+                          <Box sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            mb: 0.5,
+                            bgcolor: 'rgba(46, 125, 50, 0.1)',
+                            width: 'fit-content',
+                            px: 1,
+                            py: 0.2,
+                            borderRadius: '10px',
+                          }}>
+                            <AutoAwesomeIcon sx={{ fontSize: 12, mr: 0.5, color: '#2e7d32' }} />
+                            <Typography variant="caption" sx={{ fontWeight: 800, color: '#2e7d32', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                              Host Assistant
+                            </Typography>
+                          </Box>
+                        )}
                         <Typography variant="body2">
                           {m.message}
                         </Typography>

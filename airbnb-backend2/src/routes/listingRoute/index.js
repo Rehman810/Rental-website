@@ -18,6 +18,7 @@ const listingRoute = (app) => {
     app.put('/listing/:listingId/availability', combinedAuthenticate, listingController.updateAvailability);
     app.put('/listing/:listingId/guest-requirements', combinedAuthenticate, listingController.updateGuestRequirements);
     app.put('/listing/:listingId/cancellation-policy', combinedAuthenticate, listingController.updateCancellationPolicy);
+    app.put('/listing/:listingId/ai-assistant', combinedAuthenticate, listingController.updateAiAssistant);
     app.post('/listings/migrate-modes', combinedAuthenticate, listingController.migrateBookingModes);
 };
 

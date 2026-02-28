@@ -563,6 +563,35 @@ export const listingController = {
     } catch (error) {
       return res.status(500).json({ message: "Internal Server Error", error: error.message });
     }
+  },
+
+  updateAiAssistant: async (req, res) => {
+    try {
+      const { listingId } = req.params;
+      const { autoReplyEnabled, aiSummary } = req.body;
+
+      const hostId = req.user._id;
+      const listing = await Listing.findOne({ _id: listingId, hostId });
+
+      if (!listing) {
+        return res.status(404).json({ message: "Listing not found or unauthorized." });
+      }
+
+      if (autoReplyEnabled !== undefined) listing.autoReplyEnabled = autoReplyEnabled;
+      if (aiSummary !== undefined) listing.aiSummary = aiSummary;
+
+      await listing.save();
+
+      res.status(200).json({
+        message: "AI Assistant settings updated",
+        autoReplyEnabled: listing.autoReplyEnabled,
+        aiSummary: listing.aiSummary
+      });
+
+    } catch (error) {
+      console.error('Error updating AI settings:', error);
+      res.status(500).json({ message: "Internal Server Error", error: error.message });
+    }
   }
 
 };

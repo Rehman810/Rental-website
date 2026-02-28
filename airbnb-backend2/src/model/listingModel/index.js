@@ -149,7 +149,11 @@ const listingSchema = new mongoose.Schema({
     ownershipStatus: { type: String }, // e.g., 'Freehold', 'Leasehold'
     documentUrls: [{ type: String }],
     visitAvailability: { type: String } // e.g., "Weekends 10am-4pm"
-  }
+  },
+
+  // AI Assistant Configuration
+  aiSummary: { type: String },
+  autoReplyEnabled: { type: Boolean, default: false }
 }, {
   timestamps: true,
   toJSON: { virtuals: true },

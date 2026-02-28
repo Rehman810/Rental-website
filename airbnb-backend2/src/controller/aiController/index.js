@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { generateAiReply } from "../../service/ai/aiProvider.js";
 
 export const generateListing = async (req, res) => {
     try {
@@ -13,10 +13,6 @@ export const generateListing = async (req, res) => {
             cityAvgPrice,
             demandLevel,
         } = req.body;
-
-        const ai = new GoogleGenAI({
-            apiKey: process.env.GEMINI_API_KEY,
-        });
 
         const prompt = `
 You are a senior real estate marketing strategist and pricing analyst.
@@ -48,15 +44,7 @@ City Avg Price: ${cityAvgPrice}
 Demand Level: ${demandLevel}
 `;
 
-        const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
-            contents: prompt,
-            config: {
-                responseMimeType: "application/json"
-            }
-        });
-
-        let text = response.text;
+        const text = await generateAiReply(prompt);
 
         // Remove markdown block if model ignored the responseMimeType
         text = text.replace(/^```json\s*/, "").replace(/\s*```$/, "");

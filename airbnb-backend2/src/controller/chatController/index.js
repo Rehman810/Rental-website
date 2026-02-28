@@ -1,10 +1,13 @@
 import Chat from '../../model/chatModel/index.js';
 import User from '../../model/hostModel/index.js';
+import Listing from '../../model/listingModel/index.js';
 import { createNotification, NOTIFICATION_TYPES } from '../../config/notifications/notificationService.js';
-
+import { generateAiReply } from '../../service/ai/aiProvider.js';
+import { buildAssistantPrompt } from '../../service/ai/promptBuilder.js';
+import { generateListingSummary } from '../../service/ai/summaryGenerator.js';
 export const chatController = {
   sendMessage: async (io, req, res) => {
-    const { guestId, message } = req.body;
+    const { guestId, message, listingId, role } = req.body;
     const hostId = req.user._id;
     if (!guestId || !hostId || !message) {
       return res.status(400).json({ message: 'Both hostId and guestId are required, along with the message.' });
@@ -16,7 +19,18 @@ export const chatController = {
       if (!chat) {
         chat = new Chat({ hostId: user1, guestId: user2, messages: [] });
       }
-      const newMessage = { senderId: hostId, message, timestamp: new Date() };
+
+      const senderRole = role || 'guest';
+      if (listingId) chat.listingId = listingId;
+
+      const newMessage = {
+        senderId: hostId,
+        receiverId: guestId,
+        message,
+        role: senderRole,
+        isAI: false,
+        timestamp: new Date()
+      };
       chat.messages.push(newMessage);
       await chat.save();
 
@@ -38,6 +52,76 @@ export const chatController = {
         data: { actionUrl: '/user/guestAllMessages' }
       });
       res.status(201).json({ message: 'Message sent successfully.', chat });
+
+      // AI Response Flow (ASYNC - do not block API)
+      if (senderRole === 'guest' && chat.listingId) setTimeout(async () => {
+        try {
+          const listing = await Listing.findById(chat.listingId);
+
+          if (listing && listing.autoReplyEnabled) {
+            // Simple Rate Limiting: Prevent more than 1 AI message per 3 seconds per listing
+            const now = Date.now();
+            const lastAiMessage = chat.messages.filter(m => m.isAI).pop();
+            if (lastAiMessage && (now - new Date(lastAiMessage.timestamp).getTime() < 3000)) {
+              console.log("[AI Rate Limit] Skipping reply for listing:", listing._id);
+              return;
+            }
+
+            // Auto-generate summary once if missing
+            if (!listing.aiSummary) {
+              const summary = await generateListingSummary(listing);
+              if (summary) {
+                listing.aiSummary = summary;
+                await listing.save();
+              }
+            }
+
+            // Limit history to last 5 messages as requested
+            const chatHistory = chat.messages.slice(-5);
+            const prompt = buildAssistantPrompt(listing, chatHistory, message);
+            let aiReplyText = await generateAiReply(prompt);
+
+            if (aiReplyText) {
+              // Safety Layer
+              const lowerReply = aiReplyText.toLowerCase();
+              const forbiddenPhrases = [
+                'booking confirmed',
+                'discount approved',
+                'approved',
+                'discount',
+                'price modification',
+                'negotiate',
+                'lower price'
+              ];
+
+              const containsForbidden = forbiddenPhrases.some(phrase => lowerReply.includes(phrase)) ||
+                (/\$[\d]+/.test(lowerReply)) ||
+                (/price/.test(lowerReply) && /modified|changed|reduced/.test(lowerReply));
+
+              if (containsForbidden) {
+                aiReplyText = 'I will confirm this with the host and get back to you.';
+              }
+
+              const aiMessage = {
+                senderId: guestId, // assistant acting for host
+                receiverId: hostId, // guest receiving
+                message: aiReplyText,
+                role: 'assistant',
+                isAI: true,
+                timestamp: new Date()
+              };
+
+              chat.messages.push(aiMessage);
+              await chat.save();
+
+              const savedAiMessage = chat.messages[chat.messages.length - 1];
+              io.to(chatRoomId).emit('receive_message', savedAiMessage);
+            }
+          }
+        } catch (aiError) {
+          console.error('AI Processing Error:', aiError);
+        }
+      }, 1000); // 1s delay to feel natural
     } catch (error) {
       console.error('Error sending message:', error);
       res.status(500).json({ message: 'Internal Server Error', error: error.message });

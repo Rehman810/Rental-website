@@ -67,6 +67,7 @@ const listingSchema = new mongoose.Schema({
     },
     required: true,
   },
+  image360: { type: String, default: null },
   title: { type: String, required: false },
   description: { type: String, required: false },
   weekdayPrice: { type: Number, required: true, default: 0 },

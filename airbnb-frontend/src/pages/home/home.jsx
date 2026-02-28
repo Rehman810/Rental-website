@@ -24,7 +24,10 @@ import SearchFilters from "../../components/searchFilters/SearchFilters";
 import { toast } from "react-hot-toast";
 import { useAppContext } from "../../context/context";
 import usePageTitle from "../../hooks/usePageTitle";
-
+import Property360Viewer from "../../components/360/Property360Viewer";
+import CtaSection from "../../components/cta/CtaSection";
+import { useNavigate } from "react-router-dom";
+import Img from "../../assets/images/new-york-city-manhattan.jpg"
 const MemoizedCard = React.memo(({ data }) => <Card data={data} />);
 
 const DEFAULT_FILTERS = {
@@ -39,6 +42,7 @@ const DEFAULT_FILTERS = {
 };
 
 const Home = () => {
+  const navigate = useNavigate();
   usePageTitle("Home");
   const { t } = useTranslation();
   const [searchError, setSearchError] = useState(false);
@@ -327,27 +331,23 @@ const Home = () => {
           <Box
             sx={{
               position: "relative",
-
-              /* 🔑 Responsive height */
-              minHeight: {
-                xs: 180,   // mobile
-                sm: 220,   // tablets
-                md: 300,   // desktop
-              },
-
+              height: { xs: 350, md: 500 }, // taller for 360
               transition: "all 0.3s ease",
-              backgroundImage:
-                "url(https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80)",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-
               mb: { xs: 2, md: 4 }, // less gap on mobile
+              bgcolor: "var(--bg-secondary)",
             }}
           >
+            {/* 360 Viewer Background */}
+            <Box sx={{ position: "absolute", inset: 0, zIndex: 0 }}>
+              <Property360Viewer
+                // Using a default 360 image for the home page hero since we don't have a specific property
+                imageUrl={Img}
+                isHero={true}
+              />
+            </Box>
 
             <Box
               sx={{
@@ -380,12 +380,67 @@ const Home = () => {
 
                   lineHeight: 1.2,
                   px: 2,
+                  zIndex: 2,
                 }}
               >
-                {listings.length > 0
-                  ? "Find your perfect stay"
-                  : "Experience Pakistan like never before"}
+                Find Your Perfect Rental Space
               </Typography>
+              <Typography
+                color="rgba(255,255,255,0.9)"
+                variant="h6"
+                sx={{
+                  mb: { xs: 3, md: 5 },
+                  textAlign: "center",
+                  fontWeight: 500,
+                  zIndex: 2,
+                  textShadow: "0 2px 4px rgba(0,0,0,0.5)"
+                }}
+              >
+                Explore properties in immersive 360° experience
+              </Typography>
+
+              <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ zIndex: 2, mb: 4 }}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  sx={{
+                    bgcolor: "#FF385C",
+                    color: "white",
+                    fontWeight: 800,
+                    px: 4,
+                    py: 1.5,
+                    borderRadius: "999px",
+                    textTransform: "none",
+                    "&:hover": { bgcolor: "#E31C5F" }
+                  }}
+                  onClick={() => {
+                    const listingsSection = document.getElementById("listings-section");
+                    if (listingsSection) {
+                      listingsSection.scrollIntoView({ behavior: "smooth" });
+                    }
+                  }}
+                >
+                  Browse Properties
+                </Button>
+                <Button
+                  variant="outlined"
+                  size="large"
+                  sx={{
+                    borderColor: "white",
+                    color: "white",
+                    fontWeight: 800,
+                    px: 4,
+                    py: 1.5,
+                    borderRadius: "999px",
+                    textTransform: "none",
+                    borderWidth: 2,
+                    "&:hover": { borderColor: "rgba(255,255,255,0.8)", bgcolor: "rgba(255,255,255,0.1)", borderWidth: 2 }
+                  }}
+                  onClick={() => navigate("/hosting/today")}
+                >
+                  List Your Property
+                </Button>
+              </Stack>
 
 
               <Box
@@ -408,7 +463,7 @@ const Home = () => {
             </Box>
           </Box>
 
-          <Container maxWidth="xl">
+          <Container maxWidth="xl" id="listings-section">
             <Stack
               direction="row"
               alignItems="center"
@@ -500,8 +555,11 @@ const Home = () => {
               )}
             </Grid>
           </Container>
+
+          <CtaSection />
         </>
-      )}
+      )
+      }
 
       {/* ===================== FLOATING MAP TOGGLE BUTTON ===================== */}
       <Button
@@ -524,7 +582,7 @@ const Home = () => {
       >
         {mapVisible ? "Show List" : "Map"}
       </Button>
-    </Box>
+    </Box >
   );
 };
 

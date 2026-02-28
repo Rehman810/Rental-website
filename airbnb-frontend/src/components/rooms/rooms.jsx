@@ -23,6 +23,9 @@ import {
   Chip,
 } from "@mui/material";
 
+import Property360Viewer from "../../components/360/Property360Viewer";
+import ArrowForwardIcon2 from "@mui/icons-material/ArrowForward";
+
 import { DatePicker } from "antd";
 import "antd/dist/reset.css";
 import CheckIcon from '@mui/icons-material/Check';
@@ -43,7 +46,6 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import BedIcon from "@mui/icons-material/Bed";
 import GroupIcon from "@mui/icons-material/Group";
 import HotelIcon from "@mui/icons-material/Hotel";
-import ArrowForwardIcon2 from "@mui/icons-material/ArrowForward";
 
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogActions from "@mui/material/DialogActions";
@@ -746,6 +748,27 @@ const RoomPage = () => {
           View all photos
         </Button>
       </Paper>
+
+      {/* 360 viewer */}
+      {place?.image360 && (
+        <Paper
+          elevation={0}
+          sx={{
+            borderRadius: 3,
+            border: "1px solid",
+            borderColor: "divider",
+            mb: 3,
+            overflow: "hidden"
+          }}
+        >
+          <Box sx={{ p: 2.5, borderBottom: "1px solid", borderColor: "divider" }}>
+            <Typography variant="h6" fontWeight={900}>
+              Explore in 360°
+            </Typography>
+          </Box>
+          <Property360Viewer imageUrl={place.image360} fallbackMsg="No 360° image available." />
+        </Paper>
+      )}
 
       <Dialog fullScreen open={openImageModal} onClose={handleCloseModal}>
         <DialogContent

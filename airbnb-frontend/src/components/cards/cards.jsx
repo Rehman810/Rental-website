@@ -193,6 +193,26 @@ const CardItem = React.memo(({ data }) => {
             />
           )}
 
+          {/* 360 Available Badge */}
+          {data?.image360 && (
+            <Chip
+              label="360° Available"
+              size="small"
+              sx={{
+                position: "absolute",
+                top: data?.guestFavourite ? 44 : 12,
+                left: 12,
+                zIndex: 5,
+                borderRadius: 999,
+                fontWeight: 900,
+                color: "white",
+                backgroundColor: "rgba(0,0,0,0.65)",
+                border: "1px solid rgba(255,255,255,0.2)",
+                backdropFilter: "blur(4px)",
+              }}
+            />
+          )}
+
           {/* Photo Counter */}
           {totalPhotos > 0 && (
             <Box

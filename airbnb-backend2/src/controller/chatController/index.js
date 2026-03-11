@@ -58,8 +58,12 @@ export const chatController = {
       if (senderRole === 'guest' && chat.listingId) setTimeout(async () => {
         try {
           const listing = await Listing.findById(chat.listingId);
+          if (!listing) return;
 
-          if (listing && listing.autoReplyEnabled) {
+          const host = await User.findById(listing.hostId).select('+settings.aiAssistant.geminiApiKey');
+          const isAiEnabled = host?.settings?.aiAssistant?.enabled && host?.settings?.aiAssistant?.geminiApiKey;
+
+          if (listing.autoReplyEnabled || isAiEnabled) {
             // Simple Rate Limiting: Prevent more than 1 AI message per 3 seconds per listing
             const now = Date.now();
             const lastAiMessage = chat.messages.filter(m => m.isAI).pop();
@@ -84,7 +88,8 @@ export const chatController = {
             }));
 
             const prompt = buildHostAssistantPrompt(listing, chatHistory, message);
-            let aiReplyText = await generateAiReply(prompt);
+            const hostApiKey = host?.settings?.aiAssistant?.geminiApiKey;
+            let aiReplyText = await generateAiReply(prompt, hostApiKey);
 
             if (aiReplyText) {
               // The AI is already instructed to use the escalation phrase if needed.

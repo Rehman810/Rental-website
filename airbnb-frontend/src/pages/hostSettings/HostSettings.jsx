@@ -19,8 +19,16 @@ import {
     Select,
     MenuItem,
     InputLabel,
-    useMediaQuery
+    useMediaQuery,
+    InputAdornment
 } from '@mui/material';
+import {
+    AutoAwesome as AutoAwesomeIcon,
+    VpnKey as KeyIcon,
+    InfoOutlined as InfoIcon,
+    CheckCircle as CheckCircleIcon,
+    RadioButtonUnchecked as UncheckedIcon
+} from '@mui/icons-material';
 import { toast } from 'react-hot-toast';
 import { API_BASE_URL } from '../../config/env';
 import apiClient from '../../config/ServiceApi/apiClient';
@@ -46,6 +54,10 @@ const HostSettings = () => {
         notifications: {
             email: true,
             sms: false,
+        },
+        aiAssistant: {
+            enabled: false,
+            geminiApiKey: '',
         },
         availability: {
             minNights: 1,
@@ -553,6 +565,90 @@ const HostSettings = () => {
                                 />
                             </Grid>
                         </Grid>
+                    </CardContent>
+                </Card>
+
+                {/* AI Host Assistant */}
+                <Card sx={cardSx}>
+                    <CardContent sx={cardContentSx}>
+                        <Box sx={sectionHeaderSx}>
+                            <Box>
+                                <Typography variant="h6" sx={{ ...sectionTitleSx, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <AutoAwesomeIcon sx={{ color: '#8b5cf6' }} />
+                                    AI Host Assistant
+                                </Typography>
+                                <Typography variant="body2" sx={sectionDescSx}>
+                                    Activate the AI Guest Assistant for your listings by connecting your Google Gemini API Key.
+                                </Typography>
+                            </Box>
+                        </Box>
+
+                        <Divider sx={{ mb: 2.5 }} />
+
+                        <Box sx={{ mb: 3 }}>
+                            <Typography variant="subtitle1" fontWeight={700} gutterBottom>
+                                How it works
+                            </Typography>
+                            <Typography variant="body2" color="var(--text-secondary)" sx={{ mb: 2, lineHeight: 1.6 }}>
+                                The AI uses the Gemini model to generate responses on your behalf. It automatically helps you respond to guest messages, answer questions about your property, share pricing and availability, and assist during the booking process.
+                            </Typography>
+
+                            <Typography variant="subtitle1" fontWeight={700} gutterBottom>
+                                Steps to enable
+                            </Typography>
+                            <Box component="ol" sx={{ pl: 2, mb: 3, '& li': { mb: 0.5, fontSize: '0.875rem', color: 'var(--text-secondary)' } }}>
+                                <li>Go to <b>Google AI Studio</b></li>
+                                <li>Generate your <b>Gemini API Key</b></li>
+                                <li>Paste the key in the field below</li>
+                                <li>Toggle the switch to Activate AI Assistant</li>
+                            </Box>
+                        </Box>
+
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <TextField
+                                    fullWidth
+                                    size="small"
+                                    sx={fieldSx}
+                                    label="Gemini API Key"
+                                    placeholder="Paste your Gemini API key here"
+                                    type="password"
+                                    value={settings.aiAssistant?.geminiApiKey ?? ''}
+                                    onChange={(e) => handleChange('aiAssistant', 'geminiApiKey', e.target.value)}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <KeyIcon sx={{ color: 'var(--text-secondary)', fontSize: 20 }} />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <FormControlLabel
+                                    sx={switchRowSx}
+                                    control={
+                                        <Switch
+                                            checked={settings.aiAssistant?.enabled ?? false}
+                                            onChange={(e) => handleChange('aiAssistant', 'enabled', e.target.checked)}
+                                        />
+                                    }
+                                    label={settings.aiAssistant?.enabled ? "AI Assistant Active" : "Activate AI Assistant"}
+                                    labelPlacement="start"
+                                />
+                            </Grid>
+                        </Grid>
+
+                        <Box sx={{ mt: 3, p: 2, borderRadius: 2, bgcolor: 'rgba(25, 118, 210, 0.05)', border: '1px solid rgba(25, 118, 210, 0.1)' }}>
+                            <Typography variant="caption" color="var(--text-primary)" display="block" sx={{ fontWeight: 600, mb: 0.5 }}>
+                                Important Notes:
+                            </Typography>
+                            <Typography variant="caption" color="var(--text-secondary)" component="div">
+                                • Your API key is stored securely and used only for AI responses.<br />
+                                • You can disable or replace your API key anytime.<br />
+                                • API usage costs depend on your Gemini account and Google billing.
+                            </Typography>
+                        </Box>
                     </CardContent>
                 </Card>
 

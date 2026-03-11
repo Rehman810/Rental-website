@@ -7,10 +7,17 @@ const ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY,
 });
 
-export const generateAiReply = async (prompt) => {
+export const generateAiReply = async (prompt, customApiKey = null) => {
     const startTime = Date.now();
     try {
-        const response = await ai.models.generateContent({
+        let aiInstance = ai;
+        if (customApiKey) {
+            aiInstance = new GoogleGenAI({
+                apiKey: customApiKey,
+            });
+        }
+
+        const response = await aiInstance.models.generateContent({
             model: process.env.AI_MODEL || "gemini-1.5-flash",
             contents: [
                 {

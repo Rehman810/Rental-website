@@ -46,10 +46,12 @@ City Avg Price: ${cityAvgPrice}
 Demand Level: ${demandLevel}
 `;
 
-        const text = await generateAiReply(prompt);
+        let text = await generateAiReply(prompt);
 
         // Remove markdown block if model ignored the responseMimeType
-        text = text.replace(/^```json\s*/, "").replace(/\s*```$/, "");
+        if (text) {
+            text = text.replace(/^```json\s*/, "").replace(/\s*```$/, "");
+        }
 
         const parsed = JSON.parse(text);
 

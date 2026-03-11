@@ -114,6 +114,10 @@ const hostSchema = new mongoose.Schema({
       bookingWindowMonths: { type: Number, enum: [1, 3, 6, 12], default: 6 },
       checkInFrom: { type: String, default: "14:00" },
       checkOutBy: { type: String, default: "11:00" }
+    },
+    aiAssistant: {
+      enabled: { type: Boolean, default: false },
+      geminiApiKey: { type: String, select: false },
     }
   },
 }, {

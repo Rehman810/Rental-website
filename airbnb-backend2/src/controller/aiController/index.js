@@ -1,4 +1,6 @@
 import { generateAiReply } from "../../service/ai/aiProvider.js";
+import { buildHostAssistantPrompt } from "../../service/ai/promptBuilder.js";
+
 
 export const generateListing = async (req, res) => {
     try {
@@ -56,8 +58,38 @@ Demand Level: ${demandLevel}
             data: parsed,
         });
 
+
     } catch (error) {
         console.error("REAL ERROR:", error);
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+export const assistantChat = async (req, res) => {
+    try {
+        const { propertyData, chatHistory, guestMessage } = req.body;
+
+        if (!propertyData || !guestMessage) {
+            return res.status(400).json({
+                success: false,
+                message: "Missing propertyData or guestMessage"
+            });
+        }
+
+        const prompt = buildHostAssistantPrompt(propertyData, chatHistory || [], guestMessage);
+        
+        const reply = await generateAiReply(prompt);
+
+        return res.json({
+            success: true,
+            reply: reply.trim()
+        });
+
+    } catch (error) {
+        console.error("AI Assistant Chat Error:", error);
         return res.status(500).json({
             success: false,
             message: error.message,

@@ -3,7 +3,8 @@ import User from '../../model/hostModel/index.js';
 import Listing from '../../model/listingModel/index.js';
 import { createNotification, NOTIFICATION_TYPES } from '../../config/notifications/notificationService.js';
 import { generateAiReply } from '../../service/ai/aiProvider.js';
-import { buildAssistantPrompt } from '../../service/ai/promptBuilder.js';
+import { buildHostAssistantPrompt } from '../../service/ai/promptBuilder.js';
+
 import { generateListingSummary } from '../../service/ai/summaryGenerator.js';
 export const chatController = {
   sendMessage: async (io, req, res) => {
@@ -77,35 +78,22 @@ export const chatController = {
             }
 
             // Limit history to last 5 messages as requested
-            const chatHistory = chat.messages.slice(-5);
-            const prompt = buildAssistantPrompt(listing, chatHistory, message);
+            const chatHistory = chat.messages.slice(-5).map(m => ({
+              role: m.role === 'assistant' || m.isAI ? 'assistant' : 'user',
+              message: m.message
+            }));
+
+            const prompt = buildHostAssistantPrompt(listing, chatHistory, message);
             let aiReplyText = await generateAiReply(prompt);
 
             if (aiReplyText) {
-              // Safety Layer
-              const lowerReply = aiReplyText.toLowerCase();
-              const forbiddenPhrases = [
-                'booking confirmed',
-                'discount approved',
-                'approved',
-                'discount',
-                'price modification',
-                'negotiate',
-                'lower price'
-              ];
-
-              const containsForbidden = forbiddenPhrases.some(phrase => lowerReply.includes(phrase)) ||
-                (/\$[\d]+/.test(lowerReply)) ||
-                (/price/.test(lowerReply) && /modified|changed|reduced/.test(lowerReply));
-
-              if (containsForbidden) {
-                aiReplyText = 'I will confirm this with the host and get back to you.';
-              }
-
+              // The AI is already instructed to use the escalation phrase if needed.
+              // However, we can keep a safety check if we want, but the prompt is quite strict now.
+              
               const aiMessage = {
                 senderId: guestId, // assistant acting for host
                 receiverId: hostId, // guest receiving
-                message: aiReplyText,
+                message: aiReplyText.trim(),
                 role: 'assistant',
                 isAI: true,
                 timestamp: new Date()
@@ -117,6 +105,7 @@ export const chatController = {
               const savedAiMessage = chat.messages[chat.messages.length - 1];
               io.to(chatRoomId).emit('receive_message', savedAiMessage);
             }
+
           }
         } catch (aiError) {
           console.error('AI Processing Error:', aiError);

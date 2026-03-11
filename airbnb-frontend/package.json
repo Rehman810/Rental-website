@@ -7,8 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "install": "npm install --legacy-peer-deps"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@date-io/dayjs": "^3.0.0",
@@ -42,7 +41,7 @@
     "lottie-react": "^2.4.0",
     "moment": "^2.30.1",
     "ol": "^10.3.1",
-    "pannellum-react": "^1.2.4",
+    "pannellum": "^2.5.7",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.5",
     "react-dom": "^18.3.1",

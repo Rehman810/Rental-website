@@ -1,17 +1,47 @@
-import React, { Suspense, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Box, Typography, Skeleton } from "@mui/material";
 
-// Dynamic import for client-side rendering only and lazy loading
-const PannellumComponent = React.lazy(() => import("pannellum-react").then(module => ({ default: module.Pannellum })));
+import "pannellum/build/pannellum.css";
+import "pannellum/build/pannellum.js";
 
-const Property360Viewer = ({ imageUrl, fallbackMsg = "360° view is not available for this property.", isHero = false }) => {
-    const [error, setError] = useState(false);
+const Property360Viewer = ({
+    imageUrl,
+    fallbackMsg = "360° view is not available for this property.",
+    isHero = false
+}) => {
+    const viewerRef = useRef(null);
+    const containerRef = useRef(null);
+    const [loading, setLoading] = useState(true);
 
-    if (!imageUrl || error) {
+    useEffect(() => {
+        if (!imageUrl || !containerRef.current) return;
+
+        viewerRef.current = window.pannellum.viewer(containerRef.current, {
+            type: "equirectangular",
+            panorama: imageUrl,
+            autoLoad: true,
+            pitch: 10,
+            yaw: 180,
+            hfov: 110,
+            autoRotate: isHero ? -2 : 0,
+            showZoomCtrl: !isHero,
+            showFullscreenCtrl: !isHero,
+            mouseZoom: !isHero
+        });
+
+        viewerRef.current.on("load", () => setLoading(false));
+
+        return () => {
+            viewerRef.current?.destroy?.();
+        };
+    }, [imageUrl, isHero]);
+
+    if (!imageUrl) {
         if (isHero) return null;
+
         return (
             <Box sx={{ p: 4, textAlign: "center", bgcolor: "var(--bg-secondary)", borderRadius: 3 }}>
-                <Typography color="var(--text-secondary)">{fallbackMsg}</Typography>
+                <Typography color="var(--text-secondary">{fallbackMsg}</Typography>
             </Box>
         );
     }
@@ -23,29 +53,12 @@ const Property360Viewer = ({ imageUrl, fallbackMsg = "360° view is not availabl
                 height: isHero ? "100%" : { xs: 350, md: 500 },
                 position: "relative",
                 borderRadius: isHero ? 0 : 3,
-                overflow: "hidden",
-                "& .pnlm-container": {
-                    width: "100%",
-                    height: "100%",
-                }
+                overflow: "hidden"
             }}
         >
-            <Suspense fallback={<Skeleton variant="rectangular" width="100%" height="100%" />}>
-                <PannellumComponent
-                    width="100%"
-                    height="100%"
-                    image={imageUrl}
-                    pitch={10}
-                    yaw={180}
-                    hfov={110}
-                    autoLoad
-                    showZoomCtrl={!isHero}
-                    showFullscreenCtrl={!isHero}
-                    mouseZoom={!isHero}
-                    autoRotate={isHero ? -2 : 0}
-                    onError={() => setError(true)}
-                />
-            </Suspense>
+            {loading && <Skeleton variant="rectangular" width="100%" height="100%" />}
+
+            <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
 
             {isHero && (
                 <Box

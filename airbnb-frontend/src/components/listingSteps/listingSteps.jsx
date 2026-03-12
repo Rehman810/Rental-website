@@ -62,6 +62,7 @@ import ListingTypeSelection from "../host/listingTypeSelection";
 import LeaseDetails from "../host/leaseDetails";
 import SaleDetails from "../host/saleDetails";
 import GenericPricing from "../host/genericPricing";
+import { ALL_AMENITIES } from "../amenities/amenitiesData";
 import { useAppContext } from "../../context/context";
 import { postData } from "../../config/ServiceApi/serviceApi";
 import { useNavigate } from "react-router-dom";
@@ -82,40 +83,7 @@ const propertyTypes = [
   { name: "Castle", icon: <CastleIcon fontSize="large" /> },
 ];
 
-const amenities = [
-  { name: "Wifi", icon: <WifiIcon fontSize="large" /> },
-  { name: "TV", icon: <TvIcon fontSize="large" /> },
 
-  { name: "Gym", icon: <FitnessCenterIcon fontSize="large" /> },
-
-  { name: "Parking", icon: <LocalParkingIcon fontSize="large" /> },
-  { name: "Air Conditioning", icon: <AcUnitIcon fontSize="large" /> },
-
-  { name: "Kitchen", icon: <KitchenIcon fontSize="large" /> },
-  { name: "Pool", icon: <PoolIcon fontSize="large" /> },
-  { name: "Hot Tub", icon: <HotTubIcon fontSize="large" /> },
-
-  { name: "Washer", icon: <LocalLaundryServiceIcon fontSize="large" /> },
-  { name: "Dryer", icon: <LocalLaundryServiceIcon fontSize="large" /> },
-
-  { name: "Balcony", icon: <BalconyIcon fontSize="large" /> },
-  { name: "Elevator", icon: <ElevatorIcon fontSize="large" /> },
-  { name: "Heating", icon: <LocalFireDepartmentIcon fontSize="large" /> },
-
-  { name: "Security", icon: <SecurityIcon fontSize="large" /> },
-  { name: "CCTV", icon: <CameraAltIcon fontSize="large" /> },
-  { name: "First Aid Kit", icon: <HealthAndSafetyIcon fontSize="large" /> },
-
-  { name: "Pet Friendly", icon: <PetsIcon fontSize="large" /> },
-  { name: "No Smoking", icon: <SmokeFreeIcon fontSize="large" /> },
-
-  { name: "Workspace", icon: <WorkIcon fontSize="large" /> },
-  { name: "Dining Area", icon: <RestaurantIcon fontSize="large" /> },
-
-  { name: "Microwave", icon: <MicrowaveIcon fontSize="large" /> },
-  { name: "Coffee Maker", icon: <CoffeeIcon fontSize="large" /> },
-  { name: "Bathtub", icon: <BathtubIcon fontSize="large" /> },
-];
 
 function ListingSteps() {
   const {
@@ -273,7 +241,7 @@ function ListingSteps() {
         label: "Step 9",
         content: (
           <PropertyType
-            type={amenities}
+            type={ALL_AMENITIES}
             heading={"Tell guests what your place has to offer"}
             isAmenties={true}
           />

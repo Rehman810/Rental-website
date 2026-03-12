@@ -58,6 +58,7 @@ import EmailIcon from "@mui/icons-material/Email";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import Tooltip from "@mui/material/Tooltip";
 import ReviewsSection from "../../components/reviews/ReviewsSection";
+import Amenities from "../amenities/amenities";
 
 import WifiIcon from "@mui/icons-material/Wifi";
 import TvIcon from "@mui/icons-material/Tv";
@@ -130,36 +131,6 @@ const RoomPage = () => {
   const [selectedStartDate, setSelectedStartDate] = useState(null);
   const [selectedDates, setSelectedDates] = useState(null);
 
-  const AMENITY_ICONS = {
-    wifi: <WifiIcon fontSize="small" />,
-    tv: <TvIcon fontSize="small" />,
-    kitchen: <KitchenIcon fontSize="small" />,
-    parking: <LocalParkingIcon fontSize="small" />,
-    "air conditioning": <AcUnitIcon fontSize="small" />,
-    gym: <FitnessCenterIcon fontSize="small" />,
-    pool: <PoolIcon fontSize="small" />,
-    "hot tub": <HotTubIcon fontSize="small" />,
-    washer: <LocalLaundryServiceIcon fontSize="small" />,
-    dryer: <LocalLaundryServiceIcon fontSize="small" />,
-    balcony: <BalconyIcon fontSize="small" />,
-    elevator: <ElevatorIcon fontSize="small" />,
-    heating: <LocalFireDepartmentIcon fontSize="small" />,
-    security: <SecurityIcon fontSize="small" />,
-    cctv: <CameraAltIcon fontSize="small" />,
-    "first aid kit": <HealthAndSafetyIcon fontSize="small" />,
-    "pet friendly": <PetsIcon fontSize="small" />,
-    "no smoking": <SmokeFreeIcon fontSize="small" />,
-    workspace: <WorkIcon fontSize="small" />,
-    "dining area": <RestaurantIcon fontSize="small" />,
-    microwave: <MicrowaveIcon fontSize="small" />,
-    "coffee maker": <CoffeeIcon fontSize="small" />,
-    bathtub: <BathtubIcon fontSize="small" />,
-  };
-
-  const getAmenityIcon = (name) => {
-    const key = String(name || "").trim().toLowerCase();
-    return AMENITY_ICONS[key] || <CheckIcon sx={{ fontSize: 18 }} />;
-  };
 
   const toPascalCase = (str) => {
     return str
@@ -911,56 +882,7 @@ const RoomPage = () => {
             <Divider sx={{ my: 2 }} />
 
             {place?.amenities?.length > 0 ? (
-              <Grid container spacing={1.2}>
-                {place?.amenities?.slice(0, 6).map((amenity, index) => (
-                  <Grid item xs={12} sm={6} key={index}>
-                    <Box
-                      sx={{
-                        p: 1.4,
-                        borderRadius: 2.5,
-                        border: "1px solid",
-                        borderColor: "var(--border-light)",
-
-                        bgcolor: "var(--bg-card)",
-
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 1.2,
-                        transition: "all 0.18s ease",
-
-                        "&:hover": {
-                          transform: "translateY(-1px)",
-                          boxShadow: "var(--shadow-md)",
-                          backgroundColor: "var(--bg-tertiary)",
-                        },
-                      }}
-                    >
-
-                      <Box
-                        sx={{
-                          width: 34,
-                          height: 34,
-                          borderRadius: 2,
-                          display: "grid",
-                          placeItems: "center",
-                          bgcolor: "rgba(25,118,210,0.10)",
-                          color: "primary.main",
-                          flexShrink: 0,
-                        }}
-                      >
-                        {getAmenityIcon(amenity)}
-                      </Box>
-
-                      <Typography sx={{
-                        fontSize: "0.95rem",
-                        color: "var(--text-primary)",
-                      }} fontWeight={900}   >
-                        {amenity}
-                      </Typography>
-                    </Box>
-                  </Grid>
-                ))}
-              </Grid>
+              <Amenities backendAmenities={place?.amenities} variant="card" limit={6} />
             ) : (
               <Typography variant="body2" color="var(--text-secondary)">
                 No amenities listed.
@@ -1284,43 +1206,7 @@ const RoomPage = () => {
             Everything included with this place.
           </Typography>
 
-          <Grid container spacing={1.2}>
-            {place?.amenities?.map((amenity, index) => (
-              <Grid item xs={12} sm={6} key={index}>
-                <Box
-                  sx={{
-                    p: 1.4,
-                    borderRadius: 2.5,
-                    border: "1px solid",
-                    borderColor: "divider",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1.2,
-                    bgcolor: "rgba(0,0,0,0.02)",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: 34,
-                      height: 34,
-                      borderRadius: 2,
-                      display: "grid",
-                      placeItems: "center",
-                      bgcolor: "rgba(25,118,210,0.10)",
-                      color: "primary.main",
-                      flexShrink: 0,
-                    }}
-                  >
-                    {getAmenityIcon(amenity)}
-                  </Box>
-
-                  <Typography fontWeight={900} sx={{ fontSize: "0.95rem" }}>
-                    {amenity}
-                  </Typography>
-                </Box>
-              </Grid>
-            ))}
-          </Grid>
+            <Amenities backendAmenities={place?.amenities} variant="card" />
         </DialogContent>
 
         <DialogActions sx={{ px: 3, pb: 2 }}>

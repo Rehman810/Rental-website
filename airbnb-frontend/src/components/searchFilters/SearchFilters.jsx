@@ -25,8 +25,7 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import CloseIcon from '@mui/icons-material/Close';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
 import { CURRENCY } from "../../config/env";
-
-const amenitiesList = ["Wifi", "AC", "Parking", "Pool", "Kitchen", "TV", "Washer", "Iron", "Heating"];
+import { ALL_AMENITIES } from "../amenities/amenitiesData";
 
 const SearchFilters = ({
     filters,
@@ -210,38 +209,42 @@ const SearchFilters = ({
                         <Box>
                             <Typography fontWeight="bold" gutterBottom>Amenities</Typography>
                             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                                {amenitiesList.map(amenity => (
-                                    <Chip
-                                        key={amenity}
-                                        label={amenity}
-                                        onClick={() => handleAmenityToggle(amenity)}
-                                        clickable
-                                        variant={(filters.amenities || []).includes(amenity) ? "filled" : "outlined"}
-                                        sx={{
-                                            borderRadius: 2,
-                                            fontWeight: 700,
+                                {ALL_AMENITIES.map(amenityObj => {
+                                    const amenity = amenityObj.name;
+                                    const isSelected = (filters.amenities || []).includes(amenity);
+                                    return (
+                                        <Chip
+                                            key={amenity}
+                                            label={amenity}
+                                            icon={React.cloneElement(amenityObj.icon, { sx: { fontSize: "16px !important", ml: "6px !important" } })}
+                                            onClick={() => handleAmenityToggle(amenity)}
+                                            clickable
+                                            variant={isSelected ? "filled" : "outlined"}
+                                            sx={{
+                                                borderRadius: 2,
+                                                fontWeight: 700,
 
-                                            backgroundColor: (filters.amenities || []).includes(amenity)
-                                                ? "var(--bg-tertiary)"
-                                                : "transparent",
+                                                backgroundColor: isSelected
+                                                    ? "var(--bg-tertiary)"
+                                                    : "transparent",
 
-                                            color: "var(--text-primary)",
+                                                color: "var(--text-primary)",
 
-                                            borderColor: (filters.amenities || []).includes(amenity)
-                                                ? "var(--border-focus)"
-                                                : "var(--border-light)",
+                                                borderColor: isSelected
+                                                    ? "var(--border-focus)"
+                                                    : "var(--border-light)",
 
-                                            "&:hover": {
-                                                backgroundColor: "var(--bg-secondary)",
-                                            },
+                                                "&:hover": {
+                                                    backgroundColor: "var(--bg-secondary)",
+                                                },
 
-                                            "&.MuiChip-filled": {
-                                                backgroundColor: "var(--bg-tertiary)",
-                                            },
-                                        }}
-                                    />
-
-                                ))}
+                                                "&.MuiChip-filled": {
+                                                    backgroundColor: "var(--bg-tertiary)",
+                                                },
+                                            }}
+                                        />
+                                    );
+                                })}
                             </Box>
                         </Box>
                     </Box>

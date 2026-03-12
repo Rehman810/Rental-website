@@ -36,41 +36,7 @@ import BathtubIcon from "@mui/icons-material/Bathtub";
 import { CheckCircleOutline } from '@mui/icons-material';
 import usePageTitle from '../../hooks/usePageTitle';
 import BackButton from '../../components/backButton/backButton';
-
-const AMENITY_ICONS = {
-    wifi: <WifiIcon fontSize="small" />,
-    tv: <TvIcon fontSize="small" />,
-    kitchen: <KitchenIcon fontSize="small" />,
-    parking: <LocalParkingIcon fontSize="small" />,
-    "air conditioning": <AcUnitIcon fontSize="small" />,
-    heating: <LocalFireDepartmentIcon fontSize="small" />,
-    gym: <FitnessCenterIcon fontSize="small" />,
-    pool: <PoolIcon fontSize="small" />,
-    washer: <LocalLaundryServiceIcon fontSize="small" />,
-    dryer: <LocalLaundryServiceIcon fontSize="small" />,
-    "pet friendly": <PetsIcon fontSize="small" />,
-    workspace: <WorkIcon fontSize="small" />,
-    breakfast: <RestaurantIcon fontSize="small" />,
-};
-
-const getAmenityIcon = (amenity) =>
-    AMENITY_ICONS[amenity.toLowerCase()] || <CheckCircleOutline fontSize="small" />;
-
-const AMENITIES_LIST = [
-    "Wifi",
-    "Kitchen",
-    "Washer",
-    "Dryer",
-    "Air conditioning",
-    "Heating",
-    "Pool",
-    "TV",
-    "Parking",
-    "Gym",
-    "Breakfast",
-    "Pet friendly",
-    "Workspace"
-];
+import { ALL_AMENITIES } from '../../components/amenities/amenitiesData';
 
 const EditListing = () => {
     usePageTitle("Edit Listing");
@@ -258,7 +224,8 @@ const EditListing = () => {
                                 control={control}
                                 render={({ field }) => (
                                     <Grid container spacing={1.2}>
-                                        {AMENITIES_LIST.map((amenity) => {
+                                        {ALL_AMENITIES.map((amenityObj) => {
+                                            const amenity = amenityObj.name;
                                             const selected = field.value
                                                 .map(a => a.toLowerCase())
                                                 .includes(amenity.toLowerCase());
@@ -268,7 +235,7 @@ const EditListing = () => {
                                                     <Box
                                                         onClick={() => {
                                                             const updated = selected
-                                                                ? field.value.filter((a) => a !== amenity)
+                                                                ? field.value.filter((a) => a.toLowerCase() !== amenity.toLowerCase())
                                                                 : [...field.value, amenity];
                                                             field.onChange(updated);
                                                         }}
@@ -308,7 +275,7 @@ const EditListing = () => {
                                                                 flexShrink: 0,
                                                             }}
                                                         >
-                                                            {getAmenityIcon(amenity)}
+                                                            {React.cloneElement(amenityObj.icon, { sx: { fontSize: "18px !important" } })}
                                                         </Box>
 
                                                         {/* Label */}

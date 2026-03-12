@@ -6,99 +6,124 @@ const CtaSection = () => {
     return (
         <Box
             sx={{
-                mt: 8,
-                mb: 8,
-                py: { xs: 8, md: 10 },
-                position: 'relative',
-                borderRadius: { xs: 0, md: 4 },
-                mx: { xs: 0, md: 4 },
-                background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)',
-                overflow: 'hidden',
-                boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
+                mt: 10,
+                mb: 10,
+                position: "relative",
+                px: { xs: 2, md: 4 }
             }}
         >
-            {/* Abstract Background Decoration */}
-            <Box
-                sx={{
-                    position: 'absolute',
-                    top: -100,
-                    right: -100,
-                    width: 300,
-                    height: 300,
-                    borderRadius: '50%',
-                    background: 'linear-gradient(135deg, rgba(255,56,92,0.2) 0%, rgba(255,100,120,0) 100%)',
-                    filter: 'blur(50px)',
-                    pointerEvents: 'none',
-                }}
-            />
-            <Box
-                sx={{
-                    position: 'absolute',
-                    bottom: -100,
-                    left: -100,
-                    width: 300,
-                    height: 300,
-                    borderRadius: '50%',
-                    background: 'linear-gradient(135deg, rgba(0,212,255,0.1) 0%, rgba(9,9,121,0) 100%)',
-                    filter: 'blur(50px)',
-                    pointerEvents: 'none',
-                }}
-            />
+            <Container maxWidth="xl">
+                <Box
+                    sx={{
+                        py: { xs: 8, md: 10 },
+                        px: { xs: 3, md: 8 },
+                        textAlign: "center",
+                        borderRadius: 6,
+                        position: "relative",
+                        overflow: "hidden",
 
-            <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
-                <Typography
-                    variant="h2"
-                    component="h2"
-                    sx={{
-                        color: '#fff',
-                        fontWeight: 900,
-                        fontSize: { xs: '2.5rem', md: '3.5rem' },
-                        mb: 2,
-                        letterSpacing: '-0.02em',
-                    }}
-                >
-                    Ready to Move In?
-                </Typography>
-                <Typography
-                    variant="h6"
-                    sx={{
-                        color: 'rgba(255,255,255,0.8)',
-                        fontWeight: 400,
-                        mb: 5,
-                        maxWidth: '600px',
-                        mx: 'auto',
-                    }}
-                >
-                    Browse verified listings with real 360° previews. Experience your next home before you even visit.
-                </Typography>
+                        background:
+                            "linear-gradient(135deg, #1a1a1a 0%, #242424 40%, #2d2d2d 100%)",
 
-                <Button
-                    variant="contained"
-                    size="large"
-                    endIcon={<ArrowForwardIcon />}
-                    sx={{
-                        bgcolor: '#FF385C',
-                        color: '#fff',
-                        px: 5,
-                        py: 2,
-                        borderRadius: '999px',
-                        fontSize: '1.1rem',
-                        fontWeight: 800,
-                        textTransform: 'none',
-                        boxShadow: '0 10px 20px rgba(255,56,92,0.3)',
-                        transition: 'all 0.3s ease',
-                        '&:hover': {
-                            bgcolor: '#E31C5F',
-                            transform: 'translateY(-2px)',
-                            boxShadow: '0 15px 30px rgba(255,56,92,0.4)',
-                        },
-                    }}
-                    onClick={() => {
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        backdropFilter: "blur(20px)",
+                        border: "1px solid rgba(255,255,255,0.06)",
+
+                        boxShadow: `
+                          0 20px 60px rgba(0,0,0,0.35),
+                          inset 0 1px 0 rgba(255,255,255,0.05)
+                        `,
                     }}
                 >
-                    Start Searching
-                </Button>
+                    {/* Top Glow */}
+                    <Box
+                        sx={{
+                            position: "absolute",
+                            top: -120,
+                            right: -120,
+                            width: 320,
+                            height: 320,
+                            borderRadius: "50%",
+                            background:
+                                "radial-gradient(circle, rgba(255,56,92,0.25) 0%, rgba(255,56,92,0) 70%)",
+                            filter: "blur(40px)",
+                            pointerEvents: "none",
+                        }}
+                    />
+
+                    {/* Bottom Glow */}
+                    <Box
+                        sx={{
+                            position: "absolute",
+                            bottom: -120,
+                            left: -120,
+                            width: 320,
+                            height: 320,
+                            borderRadius: "50%",
+                            background:
+                                "radial-gradient(circle, rgba(0,212,255,0.18) 0%, rgba(0,212,255,0) 70%)",
+                            filter: "blur(40px)",
+                            pointerEvents: "none",
+                        }}
+                    />
+
+                    <Typography
+                        variant="h2"
+                        component="h2"
+                        sx={{
+                            color: '#fff',
+                            fontWeight: 900,
+                            fontSize: { xs: '2.5rem', md: '3.5rem' },
+                            mb: 2,
+                            letterSpacing: '-0.02em',
+                        }}
+                    >
+                        Find Your Next Home With Confidence
+                    </Typography>
+
+                    <Typography
+                        variant="h6"
+                        sx={{
+                            color: 'rgba(255,255,255,0.8)',
+                            fontWeight: 400,
+                            mb: 5,
+                            maxWidth: '600px',
+                            mx: 'auto',
+                        }}
+                    >
+                        Discover high-quality listings, explore detailed property insights, and connect with trusted hosts — all in one seamless platform.
+                    </Typography>
+
+                    <Button
+                        variant="contained"
+                        size="large"
+                        endIcon={<ArrowForwardIcon />}
+                        sx={{
+                            bgcolor: "#FF385C",
+                            color: "#fff",
+                            px: 6,
+                            py: 2,
+                            borderRadius: "999px",
+                            fontSize: "1.05rem",
+                            fontWeight: 700,
+                            textTransform: "none",
+
+                            boxShadow: "0 12px 25px rgba(255,56,92,0.35)",
+
+                            transition: "all 0.35s ease",
+
+                            '&:hover': {
+                                bgcolor: "#E31C5F",
+                                transform: "translateY(-4px)",
+                                boxShadow: "0 20px 40px rgba(255,56,92,0.45)",
+                            }
+                        }}
+                        onClick={() => {
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
+                    >
+                        Start Searching
+                    </Button>
+                </Box>
             </Container>
         </Box>
     );

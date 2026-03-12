@@ -16,39 +16,22 @@ import {
     Skeleton,
     Divider,
     Stack,
-    useTheme
+    useTheme,
+    Dialog,
+    DialogContent,
+    IconButton
 } from '@mui/material';
 
 import EditIcon from '@mui/icons-material/Edit';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import HotelIcon from '@mui/icons-material/Hotel';
-import WifiIcon from "@mui/icons-material/Wifi";
-import TvIcon from "@mui/icons-material/Tv";
-import KitchenIcon from "@mui/icons-material/Kitchen";
-import LocalParkingIcon from "@mui/icons-material/LocalParking";
-import AcUnitIcon from "@mui/icons-material/AcUnit";
-import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
-import PoolIcon from "@mui/icons-material/Pool";
-import HotTubIcon from "@mui/icons-material/HotTub";
-import LocalLaundryServiceIcon from "@mui/icons-material/LocalLaundryService";
-import BalconyIcon from "@mui/icons-material/Balcony";
-import ElevatorIcon from "@mui/icons-material/Elevator";
-import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
-import SecurityIcon from "@mui/icons-material/Security";
-import CameraAltIcon from "@mui/icons-material/CameraAlt";
-import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
-import PetsIcon from "@mui/icons-material/Pets";
-import SmokeFreeIcon from "@mui/icons-material/SmokeFree";
-import WorkIcon from "@mui/icons-material/Work";
-import RestaurantIcon from "@mui/icons-material/Restaurant";
-import MicrowaveIcon from "@mui/icons-material/Microwave";
-import CoffeeIcon from "@mui/icons-material/Coffee";
-import BathtubIcon from "@mui/icons-material/Bathtub";
-import { CheckCircleOutline } from '@mui/icons-material';
+import CloseIcon from '@mui/icons-material/Close';
+
 import usePageTitle from "../../hooks/usePageTitle";
 import { CURRENCY } from '../../config/env';
 import BackButton from '../../components/backButton/backButton';
+import Amenities from '../../components/amenities/amenities';
 import { useMediaQuery } from "@mui/material";
 
 const HostListingDetails = () => {
@@ -57,6 +40,7 @@ const HostListingDetails = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery("(max-width:1100px)");
     const [listing, setListing] = useState(null);
+    const [openAmenitiesModal, setOpenAmenitiesModal] = useState(false);
     usePageTitle(listing?.title || "Listing Details");
     const [loading, setLoading] = useState(true);
 
@@ -88,36 +72,6 @@ const HostListingDetails = () => {
         return <Typography p={4}>Listing not found</Typography>;
     }
 
-    const AMENITY_ICONS = {
-        wifi: <WifiIcon fontSize="small" />,
-        tv: <TvIcon fontSize="small" />,
-        kitchen: <KitchenIcon fontSize="small" />,
-        parking: <LocalParkingIcon fontSize="small" />,
-        "air conditioning": <AcUnitIcon fontSize="small" />,
-        gym: <FitnessCenterIcon fontSize="small" />,
-        pool: <PoolIcon fontSize="small" />,
-        "hot tub": <HotTubIcon fontSize="small" />,
-        washer: <LocalLaundryServiceIcon fontSize="small" />,
-        dryer: <LocalLaundryServiceIcon fontSize="small" />,
-        balcony: <BalconyIcon fontSize="small" />,
-        elevator: <ElevatorIcon fontSize="small" />,
-        heating: <LocalFireDepartmentIcon fontSize="small" />,
-        security: <SecurityIcon fontSize="small" />,
-        cctv: <CameraAltIcon fontSize="small" />,
-        "first aid kit": <HealthAndSafetyIcon fontSize="small" />,
-        "pet friendly": <PetsIcon fontSize="small" />,
-        "no smoking": <SmokeFreeIcon fontSize="small" />,
-        workspace: <WorkIcon fontSize="small" />,
-        "dining area": <RestaurantIcon fontSize="small" />,
-        microwave: <MicrowaveIcon fontSize="small" />,
-        "coffee maker": <CoffeeIcon fontSize="small" />,
-        bathtub: <BathtubIcon fontSize="small" />,
-    };
-
-    const getAmenityIcon = (name) => {
-        const key = String(name || "").trim().toLowerCase();
-        return AMENITY_ICONS[key] || <CheckCircleOutline sx={{ fontSize: 18 }} />;
-    };
 
     return (
         <Box p={{ xs: 2, md: 4 }} maxWidth="1200px" mx="auto">
@@ -262,62 +216,7 @@ const HostListingDetails = () => {
 
                         <Divider sx={{ my: 2 }} />
 
-                        {listing?.amenities?.length > 0 ? (
-                            <Grid container spacing={1.2}>
-                                {listing.amenities.slice(0, 6).map((amenity, index) => (
-                                    <Grid item xs={12} sm={6} key={index}>
-                                        <Box
-                                            sx={{
-                                                p: 1.4,
-                                                borderRadius: 2.5,
-                                                border: "1px solid",
-                                                borderColor: "divider",
-                                                bgcolor: "var(--bg-card)",
-                                                display: "flex",
-                                                alignItems: "center",
-                                                gap: 1.2,
-                                                transition: "all 0.18s ease",
-
-                                                "&:hover": {
-                                                    transform: "translateY(-1px)",
-                                                    boxShadow: 3,
-                                                    backgroundColor: "action.hover",
-                                                },
-                                            }}
-                                        >
-                                            {/* Icon */}
-                                            <Box
-                                                sx={{
-                                                    width: 34,
-                                                    height: 34,
-                                                    borderRadius: 2,
-                                                    display: "grid",
-                                                    placeItems: "center",
-                                                    bgcolor: "primary.main",
-                                                    color: "primary.contrastText",
-                                                    opacity: 0.9,
-                                                    flexShrink: 0,
-                                                }}
-                                            >
-                                                {getAmenityIcon(amenity)}
-                                            </Box>
-
-                                            {/* Label */}
-                                            <Typography
-                                                fontWeight={900}
-                                                sx={{ fontSize: "0.95rem" }}
-                                            >
-                                                {amenity}
-                                            </Typography>
-                                        </Box>
-                                    </Grid>
-                                ))}
-                            </Grid>
-                        ) : (
-                            <Typography variant="body2" color="var(--text-secondary)">
-                                No amenities listed.
-                            </Typography>
-                        )}
+                        <Amenities backendAmenities={listing?.amenities} variant="card" limit={6} />
                     </Box>
                 </Grid>
 
@@ -397,6 +296,31 @@ const HostListingDetails = () => {
                     </Card>
                 </Grid>
             </Grid>
+
+            {/* Amenities Modal */}
+            <Dialog
+                open={openAmenitiesModal}
+                onClose={() => setOpenAmenitiesModal(false)}
+                fullWidth
+                maxWidth="sm"
+                PaperProps={{
+                    sx: {
+                        borderRadius: 3,
+                        p: 0.5,
+                    },
+                }}
+            >
+                <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography variant="h6" fontWeight="bold">Amenities</Typography>
+                    <IconButton onClick={() => setOpenAmenitiesModal(false)}>
+                        <CloseIcon />
+                    </IconButton>
+                </Box>
+                <Divider />
+                <DialogContent>
+                   <Amenities backendAmenities={listing?.amenities} variant="card" />
+                </DialogContent>
+            </Dialog>
         </Box>
     );
 };

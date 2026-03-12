@@ -1,71 +1,9 @@
 import React, { useMemo } from "react";
-import { Grid, Typography, Box } from "@mui/material";
-
-// Core Icons
-import WifiIcon from "@mui/icons-material/Wifi";
-import TvIcon from "@mui/icons-material/Tv";
-import KitchenIcon from "@mui/icons-material/Kitchen";
-import LocalParkingIcon from "@mui/icons-material/LocalParking";
-import AcUnitIcon from "@mui/icons-material/AcUnit";
-import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
-import PoolIcon from "@mui/icons-material/Pool";
-import HotTubIcon from "@mui/icons-material/HotTub";
-import LocalLaundryServiceIcon from "@mui/icons-material/LocalLaundryService";
-import BalconyIcon from "@mui/icons-material/Balcony";
-import ElevatorIcon from "@mui/icons-material/Elevator";
-import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
-import SecurityIcon from "@mui/icons-material/Security";
-import PetsIcon from "@mui/icons-material/Pets";
-import SmokeFreeIcon from "@mui/icons-material/SmokeFree";
-import WorkIcon from "@mui/icons-material/Work";
-import RestaurantIcon from "@mui/icons-material/Restaurant";
-import MicrowaveIcon from "@mui/icons-material/Microwave";
-import CoffeeIcon from "@mui/icons-material/Coffee";
-import BathtubIcon from "@mui/icons-material/Bathtub";
-import CameraAltIcon from "@mui/icons-material/CameraAlt";
-import HealthAndSafetyIcon from "@mui/icons-material/HealthAndSafety";
+import { Grid, Typography, Box, Stack, Chip } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { ALL_AMENITIES } from "./amenitiesData";
 
-const Amenities = ({ backendAmenities = [] }) => {
-  // ✅ Expanded amenities list (same as your other UI)
-  const amenities = useMemo(
-    () => [
-      { name: "Wifi", icon: <WifiIcon fontSize="large" /> },
-      { name: "TV", icon: <TvIcon fontSize="large" /> },
-      { name: "Kitchen", icon: <KitchenIcon fontSize="large" /> },
-      { name: "Parking", icon: <LocalParkingIcon fontSize="large" /> },
-      { name: "Air Conditioning", icon: <AcUnitIcon fontSize="large" /> },
-
-      // FIX: Gym icon corrected ✅
-      { name: "Gym", icon: <FitnessCenterIcon fontSize="large" /> },
-
-      { name: "Pool", icon: <PoolIcon fontSize="large" /> },
-      { name: "Hot Tub", icon: <HotTubIcon fontSize="large" /> },
-
-      { name: "Washer", icon: <LocalLaundryServiceIcon fontSize="large" /> },
-      { name: "Dryer", icon: <LocalLaundryServiceIcon fontSize="large" /> },
-
-      { name: "Balcony", icon: <BalconyIcon fontSize="large" /> },
-      { name: "Elevator", icon: <ElevatorIcon fontSize="large" /> },
-      { name: "Heating", icon: <LocalFireDepartmentIcon fontSize="large" /> },
-
-      { name: "Security", icon: <SecurityIcon fontSize="large" /> },
-      { name: "CCTV", icon: <CameraAltIcon fontSize="large" /> },
-      { name: "First Aid Kit", icon: <HealthAndSafetyIcon fontSize="large" /> },
-
-      { name: "Pet Friendly", icon: <PetsIcon fontSize="large" /> },
-      { name: "No Smoking", icon: <SmokeFreeIcon fontSize="large" /> },
-
-      { name: "Workspace", icon: <WorkIcon fontSize="large" /> },
-      { name: "Dining Area", icon: <RestaurantIcon fontSize="large" /> },
-
-      { name: "Microwave", icon: <MicrowaveIcon fontSize="large" /> },
-      { name: "Coffee Maker", icon: <CoffeeIcon fontSize="large" /> },
-      { name: "Bathtub", icon: <BathtubIcon fontSize="large" /> },
-    ],
-    []
-  );
-
+const Amenities = ({ backendAmenities = [], variant = "grid", limit }) => {
   // ✅ Normalize backend list (case-insensitive safe)
   const normalizedBackend = useMemo(() => {
     return (backendAmenities || []).map((a) => String(a).trim().toLowerCase());
@@ -73,14 +11,14 @@ const Amenities = ({ backendAmenities = [] }) => {
 
   // ✅ Match known amenities
   const filteredAmenities = useMemo(() => {
-    return amenities.filter((amenity) =>
+    return ALL_AMENITIES.filter((amenity) =>
       normalizedBackend.includes(amenity.name.toLowerCase())
     );
-  }, [amenities, normalizedBackend]);
+  }, [normalizedBackend]);
 
   // ✅ Show unknown backend amenities too (fallback icon)
   const unknownAmenities = useMemo(() => {
-    const knownNames = amenities.map((a) => a.name.toLowerCase());
+    const knownNames = ALL_AMENITIES.map((a) => a.name.toLowerCase());
 
     return (backendAmenities || [])
       .filter((a) => !knownNames.includes(String(a).trim().toLowerCase()))
@@ -88,15 +26,94 @@ const Amenities = ({ backendAmenities = [] }) => {
         name: a,
         icon: <CheckCircleIcon fontSize="large" />,
       }));
-  }, [backendAmenities, amenities]);
+  }, [backendAmenities]);
 
-  const finalAmenities = [...filteredAmenities, ...unknownAmenities];
+  const allFinalAmenities = [...filteredAmenities, ...unknownAmenities];
+  
+  const finalAmenities = limit ? allFinalAmenities.slice(0, limit) : allFinalAmenities;
+  const remainingCount = allFinalAmenities.length - finalAmenities.length;
 
-  if (!finalAmenities.length) {
+  if (!allFinalAmenities.length) {
     return (
       <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 2 }}>
         No amenities listed.
       </Typography>
+    );
+  }
+
+  if (variant === "chip") {
+    return (
+      <Stack direction="row" spacing={0.8} flexWrap="wrap" sx={{ mt: 1.6 }}>
+        {finalAmenities.map((amenity, index) => (
+          <Chip
+            key={index}
+            label={amenity.name}
+            icon={React.cloneElement(amenity.icon, { sx: { fontSize: "16px !important", ml: "6px !important" } })}
+            size="small"
+            variant="outlined"
+            sx={{ borderRadius: 999, fontWeight: 800, mb: 0.6, color: "var(--text-secondary)" }}
+          />
+        ))}
+        {remainingCount > 0 && (
+          <Chip
+            label={`+${remainingCount} more`}
+            size="small"
+            sx={{ borderRadius: 999, fontWeight: 900, color: "var(--text-secondary)" }}
+          />
+        )}
+      </Stack>
+    );
+  }
+
+  if (variant === "card") {
+    return (
+      <Grid container spacing={1.2}>
+        {finalAmenities.map((amenity, index) => (
+          <Grid item xs={12} sm={6} key={index}>
+            <Box
+              sx={{
+                p: 1.4,
+                borderRadius: 2.5,
+                border: "1px solid",
+                borderColor: "divider",
+                bgcolor: "var(--bg-card)",
+                display: "flex",
+                alignItems: "center",
+                gap: 1.2,
+                transition: "all 0.18s ease",
+
+                "&:hover": {
+                  transform: "translateY(-1px)",
+                  boxShadow: 3,
+                  backgroundColor: "action.hover",
+                },
+              }}
+            >
+              {/* Icon */}
+              <Box
+                sx={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: 2,
+                  display: "grid",
+                  placeItems: "center",
+                  bgcolor: "primary.main",
+                  color: "primary.contrastText",
+                  opacity: 0.9,
+                  flexShrink: 0,
+                }}
+              >
+                {React.cloneElement(amenity.icon, { sx: { fontSize: "18px !important" } })}
+              </Box>
+
+              {/* Label */}
+              <Typography fontWeight={900} sx={{ fontSize: "0.95rem" }}>
+                {amenity.name}
+              </Typography>
+            </Box>
+          </Grid>
+        ))}
+      </Grid>
     );
   }
 
@@ -116,6 +133,13 @@ const Amenities = ({ backendAmenities = [] }) => {
           </Box>
         </Grid>
       ))}
+      {remainingCount > 0 && (
+        <Grid item xs={12}>
+          <Typography variant="body2" sx={{ fontWeight: 800, color: "var(--text-secondary)", mt: 1 }}>
+            +{remainingCount} more amenities
+          </Typography>
+        </Grid>
+      )}
     </Grid>
   );
 };

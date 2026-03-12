@@ -36,6 +36,7 @@ import { getAuthToken } from "../../utils/cookieUtils";
 import apiClient from "../../config/ServiceApi/apiClient";
 import usePageTitle from "../../hooks/usePageTitle";
 import BackButton from "../../components/backButton/backButton";
+import Amenities from "../../components/amenities/amenities";
 
 const Trips = () => {
   usePageTitle("Trips");
@@ -249,10 +250,7 @@ const Trips = () => {
 
               const canReview = new Date(trip.endDate) < new Date() && trip.status !== "Cancelled";
 
-              const amenities = Array.isArray(listing?.amenities) ? listing.amenities : [];
-              const visibleAmenities = amenities.slice(0, 6);
-              const remainingAmenities = amenities.length - visibleAmenities.length;
-
+              const amenitiesArray = Array.isArray(listing?.amenities) ? listing.amenities : [];
               return (
                 <Grid item xs={12} sm={6} md={4} lg={3} key={trip?._id || tripIndex}>
                   <Card
@@ -385,26 +383,7 @@ const Trips = () => {
                       </Stack>
 
                       {/* Amenities */}
-                      {visibleAmenities?.length > 0 && (
-                        <Stack direction="row" spacing={0.8} flexWrap="wrap" sx={{ mt: 1.6 }}>
-                          {visibleAmenities.map((a, idx) => (
-                            <Chip
-                              key={idx}
-                              label={a}
-                              size="small"
-                              variant="outlined"
-                              sx={{ borderRadius: 999, fontWeight: 800, mb: 0.6, color: "var(--text-secondary)" }}
-                            />
-                          ))}
-                          {remainingAmenities > 0 && (
-                            <Chip
-                              label={`+${remainingAmenities} more`}
-                              size="small"
-                              sx={{ borderRadius: 999, fontWeight: 900, color: "var(--text-secondary)" }}
-                            />
-                          )}
-                        </Stack>
-                      )}
+                      <Amenities backendAmenities={amenitiesArray} variant="chip" limit={6} />
 
                       {console.log(host)}
                       {/* Review CTA */}

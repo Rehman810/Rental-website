@@ -80,11 +80,11 @@ const GuestAllMessages = () => {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setMessages(res.data.messages);
-
-        emitEvent("join_room", `${receiverId}_${selectedSenderId}`);
-        emitEvent("join_room", `${selectedSenderId}_${receiverId}`);
       } catch (e) {
         console.error(e);
+      } finally {
+        emitEvent("join_room", `${receiverId}_${selectedSenderId}`);
+        emitEvent("join_room", `${selectedSenderId}_${receiverId}`);
       }
     };
     fetchChat();

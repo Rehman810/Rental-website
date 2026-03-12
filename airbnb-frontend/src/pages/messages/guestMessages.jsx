@@ -61,13 +61,12 @@ const GuestMessages = () => {
           config
         );
         setMessages(response.data.messages);
-
+      } catch (error) {
+        console.error("Error fetching chat:", error);
+      } finally {
         // Join the chat room
         emitEvent("join_room", `${receiverId}_${senderId}`);
         emitEvent("join_room", `${senderId}_${receiverId}`);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching chat:", error);
         setLoading(false);
       }
     };

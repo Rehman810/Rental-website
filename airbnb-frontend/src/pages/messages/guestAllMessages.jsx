@@ -12,12 +12,14 @@ import {
   Divider,
   useTheme,
   useMediaQuery,
+  CircularProgress,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SendIcon from "@mui/icons-material/Send";
-import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import InboxOutlinedIcon from "@mui/icons-material/InboxOutlined";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import axios from "axios";
+import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import {
   emitEvent,
   initializeSocket,
@@ -38,6 +40,7 @@ const GuestAllMessages = () => {
   const [senders, setSenders] = useState([]);
   const [selectedSenderId, setSelectedSenderId] = useState(null);
   const [showChat, setShowChat] = useState(false);
+  const [loadingChat, setLoadingChat] = useState(false);
 
   const token = getAuthToken();
   const user = getAuthUser();
@@ -71,6 +74,7 @@ const GuestAllMessages = () => {
     if (!selectedSenderId || !receiverId) return;
 
     const fetchChat = async () => {
+      setLoadingChat(true);
       try {
         const res = await axios.get(
           `${API_BASE_URL}/get-chat/${selectedSenderId}`,
@@ -84,6 +88,7 @@ const GuestAllMessages = () => {
       } finally {
         emitEvent("join_room", `${receiverId}_${selectedSenderId}`);
         emitEvent("join_room", `${selectedSenderId}_${receiverId}`);
+        setLoadingChat(false);
       }
     };
     fetchChat();
@@ -116,7 +121,7 @@ const GuestAllMessages = () => {
   };
 
   return (
-    <Box sx={{ height: "87vh", display: "flex", bgcolor: "var(--bg-primary)" }}>
+    <Box sx={{ height: { xs: "calc(100vh - 65px)", md: "calc(100vh - 85px)" }, display: "flex", bgcolor: "var(--bg-primary)" }}>
       {(!isMobile || !showChat) && (
         <Box
           sx={{
@@ -211,33 +216,92 @@ const GuestAllMessages = () => {
                   bgcolor: "var(--bg-secondary)",
                 }}
               >
-                {messages.map((m, i) => {
-                  const mine = m.senderId === receiverId;
-                  return (
-                    <Box
-                      key={i}
-                      sx={{
-                        display: "flex",
-                        justifyContent: mine ? "flex-end" : "flex-start",
-                        mb: 1.2,
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          px: 2,
-                          py: 1.2,
-                          maxWidth: "75%",
-                          bgcolor: mine ? "primary.main" : "var(--bg-card)",
-                          color: mine ? "white" : "var(--text-primary)",
-                          borderRadius: 3,
-                        }}
-                      >
-                        <Typography variant="body2">{m.message}</Typography>
-                      </Box>
-                    </Box>
-                  );
-                })}
-                <div ref={messagesEndRef} />
+                {loadingChat ? (
+                  <Box sx={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}>
+                    <CircularProgress />
+                  </Box>
+                ) : (
+                  <>
+                    {messages.map((m, i) => {
+                      const mine = m.senderId === receiverId;
+                      const isAssistant = m.role === 'assistant' || m.isAI;
+
+                      return (
+                        <Box
+                          key={i}
+                          sx={{
+                            display: "flex",
+                            justifyContent: mine ? "flex-end" : "flex-start",
+                            mb: 1.2,
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              px: 2,
+                              py: 1.2,
+                              maxWidth: { xs: "85%", md: "70%" },
+                              bgcolor: isAssistant
+                                ? "linear-gradient(135deg, #f0f7f4 0%, #e8f5e9 100%)"
+                                : mine
+                                  ? "primary.main"
+                                  : "background.paper",
+                              backgroundImage: isAssistant
+                                ? "linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)"
+                                : 'none',
+                              color: isAssistant
+                                ? "#1b5e20"
+                                : mine
+                                  ? "primary.contrastText"
+                                  : "text.primary",
+                              position: "relative",
+                              borderRadius: '20px',
+                              borderBottomLeftRadius: !mine ? (isAssistant ? '4px' : '20px') : "20px",
+                              borderBottomRightRadius: !mine ? "20px" : "4px",
+                              boxShadow: isAssistant ? '0 4px 15px rgba(46, 125, 50, 0.1)' : '0 2px 5px rgba(0,0,0,0.05)',
+                              border: isAssistant ? '1px solid rgba(46, 125, 50, 0.1)' : 'none',
+                            }}
+                          >
+                            {isAssistant && (
+                              <Box sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                mb: 0.5,
+                                bgcolor: 'rgba(46, 125, 50, 0.1)',
+                                width: 'fit-content',
+                                px: 1,
+                                py: 0.2,
+                                borderRadius: '10px',
+                              }}>
+                                <AutoAwesomeIcon sx={{ fontSize: 12, mr: 0.5, color: '#2e7d32' }} />
+                                <Typography variant="caption" sx={{ fontWeight: 800, color: '#2e7d32', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                  Host Assistant
+                                </Typography>
+                              </Box>
+                            )}
+                            <Typography variant="body2" sx={{ wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
+                              {m.message}
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                opacity: 0.6,
+                                mt: 0.5,
+                                display: "block",
+                                textAlign: "right",
+                              }}
+                            >
+                              {new Date(m.timestamp).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      );
+                    })}
+                    <div ref={messagesEndRef} />
+                  </>
+                )}
               </Box>
 
               {/* Input */}

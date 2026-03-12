@@ -48,6 +48,7 @@ import axios from "axios";
 import { APP_NAME } from "../../config/env";
 import NotificationBell from "../notifications/NotificationBell";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
+import RoleSwitchLoader from "../loading/RoleSwitchLoader";
 
 initializeSocket();
 
@@ -59,6 +60,15 @@ const NavbarHost = () => {
   const [notificationsMenuAnchorEl, setNotificationsMenuAnchorEl] = useState(null);
   const [avatarMenuAnchorEl, setAvatarMenuAnchorEl] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [switchState, setSwitchState] = useState({ open: false, role: '', path: '' });
+
+  const handleRoleSwitch = (role, path) => {
+    setSwitchState({ open: true, role, path });
+    setTimeout(() => {
+      navigate(path);
+      setSwitchState({ open: false, role: '', path: '' });
+    }, 1500);
+  };
 
   const [notifications, setNotifications] = useState([]);
   const user = getAuthUser();
@@ -301,7 +311,7 @@ const NavbarHost = () => {
 
                 <Divider />
 
-                <MenuItem onClick={() => navigate("/")} sx={{ py: 1.2, px: 2 }}>
+                <MenuItem onClick={() => { handleAvatarMenuClose(); handleRoleSwitch('guest', '/'); }} sx={{ py: 1.2, px: 2 }}>
                   <ListItemIcon>
                     <TravelIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} />
                   </ListItemIcon>
@@ -439,7 +449,7 @@ const NavbarHost = () => {
               variant="outlined"
               onClick={() => {
                 setDrawerOpen(false);
-                navigate("/");
+                handleRoleSwitch('guest', '/');
               }}
               startIcon={<TravelIcon color="var(--text-secondary)" />}
               sx={{ textTransform: "none", fontWeight: 900, borderRadius: 2, py: 1.2, color: "var(--text-secondary)" }}
@@ -461,6 +471,7 @@ const NavbarHost = () => {
       </Drawer>
 
       <Divider />
+      {switchState.open && <RoleSwitchLoader open={switchState.open} targetRole={switchState.role} />}
     </AppBar>
   );
 };

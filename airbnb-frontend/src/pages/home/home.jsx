@@ -16,6 +16,7 @@ import MapIcon from "@mui/icons-material/Map";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import CloseIcon from "@mui/icons-material/Close";
 
+import Pagination from "@mui/material/Pagination";
 import { useTranslation } from "react-i18next";
 import { fetchData, postData } from "../../config/ServiceApi/serviceApi";
 import Card from "../../components/cards/cards";
@@ -49,6 +50,7 @@ const Home = () => {
   const { searchParams } = useAppContext(); // Get searchParams from context
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [totalCount, setTotalCount] = useState(0);
 
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -147,7 +149,10 @@ const Home = () => {
           `api/listings/search?${queryString}&page=${pageNumber}&limit=10`
         );
 
-        setHasMore(pageNumber < data.totalPages);
+        setTotalCount(data.totalCount || 0);
+
+        const isMasterPageEnd = pageNumber % 3 === 0;
+        setHasMore(pageNumber < data.totalPages && !isMasterPageEnd);
 
         setListings(prev =>
           append ? [...prev, ...(data.results || [])] : (data.results || [])
@@ -270,7 +275,7 @@ const Home = () => {
 
   useEffect(() => {
     if (page === 1) return;
-    performSearch(filters, page, true);
+    performSearch(filters, page, page % 3 !== 1);
   }, [page]);
 
   return (
@@ -464,7 +469,7 @@ const Home = () => {
           </Box>
 
           <Container maxWidth="xl" id="listings-section">
-            <Stack
+            {/* <Stack
               direction="row"
               alignItems="center"
               justifyContent="space-between"
@@ -476,7 +481,7 @@ const Home = () => {
                   ? `${listings.length} Stays found`
                   : "Recommended for you"}
               </Typography>
-            </Stack>
+            </Stack> */}
 
             <Grid container spacing={2}>
               {initialLoading ? (
@@ -554,6 +559,31 @@ const Home = () => {
                 ))
               )}
             </Grid>
+            {Math.ceil(totalCount / 30) > 1 && !hasMore && !loading && (
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4, mb: 4, width: '100%' }}>
+                <Pagination
+                  count={Math.ceil(totalCount / 30)}
+                  page={Math.ceil(page / 3)}
+                  onChange={(e, value) => {
+                    const targetPage = (value - 1) * 3 + 1;
+                    setPage(targetPage);
+                    if (targetPage === 1) {
+                      performSearch(filters, 1, false);
+                    }
+                    const listSection = document.getElementById("listings-section");
+                    if (listSection) listSection.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  color="primary"
+                  size="large"
+                  sx={{
+                    "& .MuiPaginationItem-root": {
+                      fontWeight: 800,
+                      fontSize: "1rem"
+                    }
+                  }}
+                />
+              </Box>
+            )}
           </Container>
 
           <CtaSection />

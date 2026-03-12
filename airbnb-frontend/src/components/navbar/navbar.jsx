@@ -26,6 +26,7 @@ import {
 import LoginModal from "../Login/LoginModal";
 import SearchBar from "../searchBar/searchBar";
 import SearchBar2 from "../searchBar/searchBar2";
+import RoleSwitchLoader from "../loading/RoleSwitchLoader";
 import NotificationBell from "../notifications/NotificationBell";
 import { useLocation, useNavigate } from "react-router-dom";
 import handleLogout from "../logout/logout";
@@ -48,7 +49,7 @@ import ThemeToggle from "../ThemeToggle/ThemeToggle";
 import MobileSearchBar from "../searchBar/mobileSearchbar";
 import CloseIcon from "@mui/icons-material/Close";
 
-const VerifiedMenu = ({ anchorEl, handleMenuClose, navigate, handleLogout }) => {
+const VerifiedMenu = ({ anchorEl, handleMenuClose, navigate, handleLogout, onRoleSwitch }) => {
   const { t } = useTranslation();
 
   const menuSx = {
@@ -102,7 +103,7 @@ const VerifiedMenu = ({ anchorEl, handleMenuClose, navigate, handleLogout }) => 
 
       <Divider />
 
-      <MenuItem sx={itemSx} onClick={() => navigate("/hosting/listings")}>
+      <MenuItem sx={itemSx} onClick={() => { handleMenuClose(); onRoleSwitch('host', "/hosting/listings"); }}>
         <ListItemIcon>
           <DashboardCustomizeOutlinedIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} />
         </ListItemIcon>
@@ -147,6 +148,7 @@ const UnverifiedMenu = ({
   handleLoginModalOpen,
   handleSignUpModalOpen,
   navigate,
+  onRoleSwitch,
 }) => {
   const { t } = useTranslation();
 
@@ -194,7 +196,7 @@ const UnverifiedMenu = ({
 
       <Divider />
 
-      <MenuItem sx={itemSx} onClick={() => navigate("/hosting/listings")}>
+      <MenuItem sx={itemSx} onClick={() => { handleMenuClose(); onRoleSwitch('host', "/hosting/listings"); }}>
         <ListItemIcon>
           <HomeWorkOutlinedIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} />
         </ListItemIcon>
@@ -233,7 +235,15 @@ const Navbar = () => {
   const navigate = useNavigate();
   const token = getAuthToken();
   const user = getAuthUser();
-  console.log(user);
+  const [switchState, setSwitchState] = useState({ open: false, role: '', path: '' });
+
+  const handleRoleSwitch = (role, path) => {
+    setSwitchState({ open: true, role, path });
+    setTimeout(() => {
+      navigate(path);
+      setSwitchState({ open: false, role: '', path: '' });
+    }, 1500); // 1.5 seconds loading animation
+  };
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -351,7 +361,7 @@ const Navbar = () => {
                 },
                 fontSize: "14px",
               }}
-              onClick={() => navigate("/hosting/today")}
+              onClick={() => handleRoleSwitch('host', '/hosting/today')}
             >
               {!token
                 ? t("navbar.airbnbYourHome")
@@ -416,6 +426,7 @@ const Navbar = () => {
               handleLogout={handleLogout}
               handleLoginModalOpen={handleLoginModalOpen}
               handleSignUpModalOpen={handleSignUpModalOpen}
+              onRoleSwitch={handleRoleSwitch}
             />
           </Box>
         </Box>
@@ -498,8 +509,8 @@ const Navbar = () => {
 
                 <Button
                   onClick={() => {
-                    navigate("/hosting/listings");
                     setDrawerOpen(false);
+                    handleRoleSwitch('host', "/hosting/listings");
                   }}
                   startIcon={<DashboardCustomizeOutlinedIcon />}
                   sx={drawerBtnSx}
@@ -584,6 +595,8 @@ const Navbar = () => {
         />
       )}
       <Language open={open} toggleModal={toggleModal} />
+
+      {switchState.open && <RoleSwitchLoader open={switchState.open} targetRole={switchState.role} />}
     </AppBar>
   );
 };

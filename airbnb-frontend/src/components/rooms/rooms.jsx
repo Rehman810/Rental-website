@@ -60,6 +60,9 @@ import Tooltip from "@mui/material/Tooltip";
 import ReviewsSection from "../../components/reviews/ReviewsSection";
 import Amenities from "../amenities/amenities";
 
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
+
 import WifiIcon from "@mui/icons-material/Wifi";
 import TvIcon from "@mui/icons-material/Tv";
 import KitchenIcon from "@mui/icons-material/Kitchen";
@@ -88,6 +91,183 @@ const { RangePicker } = DatePicker;
 
 const MemoizedHostSection = React.memo(HostSection);
 const MemoizedLeafletMap = React.memo(LeafletMap);
+
+const RoomSkeleton = () => (
+  <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1200, mx: "auto" }}>
+    <Box sx={{ mb: 2 }}>
+      <Skeleton variant="rounded" width={100} height={40} animation="wave" sx={{ borderRadius: 2 }} />
+    </Box>
+
+    {/* Top Header */}
+    <Paper
+      elevation={0}
+      sx={{
+        p: { xs: 2, md: 2.5 },
+        borderRadius: 3,
+        border: "1px solid",
+        borderColor: "divider",
+        mb: 2.5,
+      }}
+    >
+      <Stack
+        direction={{ xs: "column", sm: "row" }}
+        alignItems={{ xs: "flex-start", sm: "center" }}
+        justifyContent="space-between"
+        spacing={1.5}
+      >
+        <Box sx={{ width: "100%" }}>
+          <Skeleton variant="text" width="60%" height={40} animation="wave" />
+          <Stack
+            direction="row"
+            spacing={1}
+            alignItems="center"
+            sx={{ mt: 1, flexWrap: "wrap" }}
+          >
+            {[1, 2, 3, 4].map((i) => (
+              <Skeleton key={i} variant="rounded" width={100} height={24} animation="wave" sx={{ borderRadius: 2 }} />
+            ))}
+          </Stack>
+        </Box>
+        <Skeleton variant="rounded" width={100} height={40} animation="wave" sx={{ borderRadius: 2 }} />
+      </Stack>
+    </Paper>
+
+    {/* Image Gallery */}
+    <Paper
+      elevation={0}
+      sx={{
+        borderRadius: 3,
+        border: "1px solid",
+        borderColor: "divider",
+        overflow: "hidden",
+        position: "relative",
+        mb: 3,
+      }}
+    >
+      <Grid container spacing={0}>
+        <Grid item xs={12} md={6}>
+          <Skeleton variant="rectangular" width="100%" height={460} animation="wave" />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Grid container spacing={0}>
+            {[1, 2, 3, 4].map((i) => (
+              <Grid item xs={6} key={i}>
+                <Skeleton
+                  variant="rectangular"
+                  width="100%"
+                  height={230}
+                  animation="wave"
+                  sx={{ border: "1px solid rgba(0,0,0,0.06)" }}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        </Grid>
+      </Grid>
+    </Paper>
+
+    <Grid container spacing={3}>
+      {/* Left Column */}
+      <Grid item xs={12} md={8}>
+        <Paper
+          elevation={0}
+          sx={{
+            p: 2.5,
+            borderRadius: 3,
+            border: "1px solid",
+            borderColor: "divider",
+          }}
+        >
+          <Skeleton variant="text" width="60%" height={32} animation="wave" />
+          <Skeleton variant="text" width="40%" height={24} animation="wave" sx={{ mt: 1 }} />
+          <Divider sx={{ my: 2 }} />
+          <Skeleton variant="text" width="30%" height={28} animation="wave" />
+          <Box sx={{ mt: 1 }}>
+            <Skeleton variant="text" width="100%" animation="wave" />
+            <Skeleton variant="text" width="95%" animation="wave" />
+            <Skeleton variant="text" width="90%" animation="wave" />
+            <Skeleton variant="text" width="40%" animation="wave" />
+          </Box>
+        </Paper>
+
+        <Paper
+          elevation={0}
+          sx={{
+            mt: 3,
+            p: 2.5,
+            borderRadius: 3,
+            border: "1px solid",
+            borderColor: "divider",
+          }}
+        >
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Box>
+              <Skeleton variant="text" width={200} height={32} animation="wave" />
+              <Skeleton variant="text" width={150} height={20} animation="wave" />
+            </Box>
+          </Stack>
+          <Divider sx={{ my: 2 }} />
+          <Grid container spacing={2}>
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <Grid item xs={6} key={i}>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Skeleton variant="circular" width={24} height={24} animation="wave" />
+                  <Skeleton variant="text" width="50%" animation="wave" />
+                </Stack>
+              </Grid>
+            ))}
+          </Grid>
+        </Paper>
+      </Grid>
+
+      {/* Right Column */}
+      <Grid item xs={12} md={4}>
+        <Paper
+          elevation={0}
+          sx={{
+            p: 2.5,
+            borderRadius: 3,
+            border: "1px solid",
+            borderColor: "divider",
+          }}
+        >
+          <Stack spacing={2}>
+            <Box>
+              <Skeleton variant="text" width="50%" height={40} animation="wave" />
+              <Skeleton variant="text" width="70%" height={20} animation="wave" />
+            </Box>
+            <Box>
+              <Skeleton variant="text" width="30%" height={20} animation="wave" sx={{ mb: 1 }} />
+              <Skeleton variant="rectangular" width="100%" height={56} animation="wave" sx={{ borderRadius: 2 }} />
+            </Box>
+            <Box>
+              <Skeleton variant="text" width="30%" height={20} animation="wave" sx={{ mb: 1 }} />
+              <Skeleton variant="rectangular" width="100%" height={56} animation="wave" sx={{ borderRadius: 2 }} />
+            </Box>
+            <Divider />
+            <Stack spacing={1}>
+              <Stack direction="row" justifyContent="space-between">
+                <Skeleton variant="text" width="40%" animation="wave" />
+                <Skeleton variant="text" width="20%" animation="wave" />
+              </Stack>
+              <Stack direction="row" justifyContent="space-between">
+                <Skeleton variant="text" width="40%" animation="wave" />
+                <Skeleton variant="text" width="20%" animation="wave" />
+              </Stack>
+            </Stack>
+            <Divider />
+            <Stack direction="row" justifyContent="space-between">
+              <Skeleton variant="text" width="30%" height={32} animation="wave" />
+              <Skeleton variant="text" width="25%" height={32} animation="wave" />
+            </Stack>
+            <Skeleton variant="rectangular" width="100%" height={48} animation="wave" sx={{ borderRadius: 2, mt: 1 }} />
+          </Stack>
+        </Paper>
+      </Grid>
+    </Grid>
+  </Box>
+);
+
 
 const RoomPage = () => {
   const [place, setPlace] = useState({});
@@ -453,6 +633,10 @@ const RoomPage = () => {
     return parts.join(". ") + ".";
   };
 
+  if (loadingText) {
+    return <RoomSkeleton />;
+  }
+
   return (
     <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1200, mx: "auto" }}>
       <BackButton />
@@ -575,13 +759,9 @@ const RoomPage = () => {
           spacing={1.5}
         >
           <Box>
-            {loadingText ? (
-              <Skeleton variant="text" width={320} height={40} animation="wave" />
-            ) : (
-              <Typography variant="h5" fontWeight={900}>
-                {toPascalCase(place?.title)}
-              </Typography>
-            )}
+            <Typography variant="h5" fontWeight={900}>
+              {toPascalCase(place?.title)}
+            </Typography>
 
             <Stack
               direction="row"
@@ -1043,12 +1223,17 @@ const RoomPage = () => {
                       sx={{
                         cursor: "pointer",
                         border: "1px solid",
-                        borderColor: "divider",
+                        borderColor: guestsAnchorEl ? "primary.main" : "divider",
                         borderRadius: 2,
                         p: 1.6,
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
+                        transition: "all 0.2s ease",
+                        boxShadow: guestsAnchorEl ? "0 0 0 1px var(--primary-main)" : "none",
+                        "&:hover": {
+                          borderColor: "primary.main",
+                        }
                       }}
                     >
                       <Box>
@@ -1056,26 +1241,78 @@ const RoomPage = () => {
                           {guests.adults} Guest{guests.adults !== 1 && "s"}
                         </Typography>
                       </Box>
-                      <ArrowForwardIcon2 sx={{ transform: "rotate(90deg)", fontSize: 18, color: "var(--text-secondary)" }} />
+                      <ArrowForwardIcon2 sx={{ transform: guestsAnchorEl ? "rotate(-90deg)" : "rotate(90deg)", fontSize: 18, color: "var(--text-secondary)", transition: "transform 0.3s ease" }} />
                     </Box>
+
                     <Menu
                       anchorEl={guestsAnchorEl}
                       open={Boolean(guestsAnchorEl)}
                       onClose={closeGuestsMenu}
-                      PaperProps={{ sx: { width: 280, borderRadius: 3, mt: 1, p: 2 } }}
+                      PaperProps={{
+                        sx: {
+                          width: 300,
+                          borderRadius: 4,
+                          mt: 1,
+                          p: 2.5,
+                          boxShadow: "0 10px 40px rgba(0,0,0,0.12)",
+                          border: "1px solid var(--border-light)"
+                        }
+                      }}
+                      anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'right',
+                      }}
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
+                      }}
                     >
-                      <Stack spacing={2}>
+                      <Stack spacing={2.5}>
                         <Stack direction="row" justifyContent="space-between" alignItems="center">
                           <Box>
-                            <Typography fontWeight={800}>Adults</Typography>
+                            <Typography fontWeight={800} sx={{ fontSize: "1rem" }}>Adults</Typography>
                             <Typography variant="caption" color="var(--text-secondary)">Age 13+</Typography>
                           </Box>
-                          <Stack direction="row" alignItems="center" spacing={1}>
-                            <IconButton size="small" onClick={() => decrementGuest('adults')} disabled={guests.adults <= 1}>-</IconButton>
-                            <Typography>{guests.adults}</Typography>
-                            <IconButton size="small" onClick={() => incrementGuest('adults')} disabled={guests.adults >= maxGuests}>+</IconButton>
+                          <Stack direction="row" alignItems="center" spacing={2}>
+                            <IconButton
+                              size="small"
+                              onClick={(e) => { e.stopPropagation(); decrementGuest('adults'); }}
+                              disabled={guests.adults <= 1}
+                              sx={{
+                                border: "1px solid",
+                                borderColor: "divider",
+                                transition: "all 0.2s",
+                                "&:hover:not(:disabled)": { borderColor: "primary.main", color: "primary.main" }
+                              }}
+                            >
+                              <RemoveIcon fontSize="small" />
+                            </IconButton>
+                            <Typography fontWeight={800} sx={{ minWidth: 24, textAlign: "center", fontSize: "1.1rem" }}>
+                              {guests.adults}
+                            </Typography>
+                            <IconButton
+                              size="small"
+                              onClick={(e) => { e.stopPropagation(); incrementGuest('adults'); }}
+                              disabled={guests.adults >= maxGuests}
+                              sx={{
+                                border: "1px solid",
+                                borderColor: "divider",
+                                transition: "all 0.2s",
+                                "&:hover:not(:disabled)": { borderColor: "primary.main", color: "primary.main" }
+                              }}
+                            >
+                              <AddIcon fontSize="small" />
+                            </IconButton>
                           </Stack>
                         </Stack>
+
+                        <Divider />
+
+                        <Box>
+                          <Typography variant="caption" color="var(--text-secondary)" sx={{ display: "block", lineHeight: 1.4 }}>
+                            This place has a maximum capacity of <b>{maxGuests}</b> guests.
+                          </Typography>
+                        </Box>
                       </Stack>
                     </Menu>
                   </Box>
@@ -1206,7 +1443,7 @@ const RoomPage = () => {
             Everything included with this place.
           </Typography>
 
-            <Amenities backendAmenities={place?.amenities} variant="card" />
+          <Amenities backendAmenities={place?.amenities} variant="card" />
         </DialogContent>
 
         <DialogActions sx={{ px: 3, pb: 2 }}>

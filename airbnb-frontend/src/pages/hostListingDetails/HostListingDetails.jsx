@@ -318,7 +318,7 @@ const HostListingDetails = () => {
                 </Box>
                 <Divider />
                 <DialogContent>
-                   <Amenities backendAmenities={listing?.amenities} variant="card" />
+                    <Amenities backendAmenities={listing?.amenities} variant="card" />
                 </DialogContent>
             </Dialog>
         </Box>

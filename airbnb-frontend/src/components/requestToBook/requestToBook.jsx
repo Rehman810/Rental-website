@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { getAuthToken, getAuthUser } from "../../utils/cookieUtils";
 import {
   Box,
@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import Swal from "sweetalert2";
 import { useNavigate, useParams } from "react-router-dom";
-import { postDataById } from "../../config/ServiceApi/serviceApi";
+import { postDataById, fetchDataById } from "../../config/ServiceApi/serviceApi";
 import { useBookingContext } from "../../context/booking";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
@@ -28,11 +28,12 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import toast from "react-hot-toast";
 import { CURRENCY } from "../../config/env";
 import usePageTitle from "../../hooks/usePageTitle";
-
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import BackButton from "../backButton/backButton";
 
 const BookingComponent = () => {
   usePageTitle("Request to Book");
-  const { bookListing, bookingData } = useBookingContext();
+  const { bookListing, bookingData, setBookListing, setBookingData, resetBookingState } = useBookingContext();
   const navigate = useNavigate();
   const { roomId } = useParams();
   const token = getAuthToken();
@@ -42,6 +43,42 @@ const BookingComponent = () => {
   const elements = useElements();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [fetchingListing, setFetchingListing] = useState(false);
+
+  useEffect(() => {
+    const fetchListingData = async () => {
+      if (!roomId) return;
+
+      // If we already have the correct listing, don't fetch again
+      if (bookListing?._id === roomId) return;
+
+      setFetchingListing(true);
+      try {
+        const response = await fetchDataById("listing", roomId);
+        if (response?.listing) {
+          setBookListing(response.listing);
+        }
+      } catch (error) {
+        console.error("Failed to fetch listing:", error);
+        toast.error("Could not load listing details.");
+      } finally {
+        setFetchingListing(false);
+      }
+    };
+
+    fetchListingData();
+  }, [roomId, bookListing?._id, setBookListing]);
+
+  useEffect(() => {
+    // If we have no booking data (dates/guests), we can't show this page
+    if (!bookingData || !bookingData.startDate || !bookingData.endDate) {
+      if (!fetchingListing) {
+        toast.error("Booking session expired. Please select dates again.");
+        navigate(`/room/${roomId}`);
+      }
+    }
+  }, [bookingData, roomId, navigate, fetchingListing]);
+
 
   const validateForm = () => {
     if (!stripe || !elements) return false;
@@ -138,6 +175,7 @@ const BookingComponent = () => {
           try {
             await postDataById(`confirm-booking`, {}, bookingId);
             toast.success("Payment successful! Booking confirmed 🎉", { id: toastId });
+            resetBookingState();
             setTimeout(() => {
               navigate("/");
             }, 2000);
@@ -150,6 +188,7 @@ const BookingComponent = () => {
           try {
             await postDataById(`request-booking`, {}, bookingId);
             toast.success("Request sent to host. Waiting for approval.", { id: toastId });
+            resetBookingState();
             setTimeout(() => {
               navigate("/");
             }, 2000);
@@ -211,8 +250,19 @@ const BookingComponent = () => {
     return parts.join(". ") + ".";
   };
 
+  if (fetchingListing && (!bookListing || Object.keys(bookListing).length === 0)) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return (
     <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1200, mx: "auto" }}>
+      <Box sx={{ mb: 3 }}>
+        <BackButton />
+      </Box>
       {/* Header */}
       <Paper
         elevation={0}
@@ -337,33 +387,35 @@ const BookingComponent = () => {
             </Paper>
 
             {/* Requirements */}
-            <Paper
-              elevation={0}
-              sx={{
-                p: 2.5,
-                borderRadius: 3,
-                border: "1px solid",
-                borderColor: "divider",
-              }}
-            >
-              <Typography variant="h6" fontWeight={900}>
-                Required for your trip
-              </Typography>
 
-              <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.6 }}>
-                Complete these items before requesting a booking.
-              </Typography>
+            {(() => {
+              const reqs = bookListing?.effectiveGuestRequirements || {};
+              const createdDate = new Date(user?.createdAt || Date.now());
+              const accountAge =
+                (Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
 
-              <Divider sx={{ my: 2 }} />
+              return (
+                (reqs.requireVerifiedPhone || !user?.phoneNumber || reqs.requireProfilePhoto || !user?.photoProfile) &&
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 2.5,
+                    borderRadius: 3,
+                    border: "1px solid",
+                    borderColor: "divider",
+                  }}
+                >
+                  <Typography variant="h6" fontWeight={900}>
+                    Required for your trip
+                  </Typography>
 
-              {/* Dynamic Requirements */}
-              {(() => {
-                const reqs = bookListing?.effectiveGuestRequirements || {};
-                const createdDate = new Date(user?.createdAt || Date.now());
-                const accountAge =
-                  (Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
+                  <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.6 }}>
+                    Complete these items before requesting a booking.
+                  </Typography>
 
-                return (
+                  <Divider sx={{ my: 2 }} />
+
+                  {/* Dynamic Requirements */}
                   <>
                     {/* Phone */}
                     {(reqs.requireVerifiedPhone || !user?.phoneNumber) && (
@@ -389,9 +441,9 @@ const BookingComponent = () => {
                       />
                     )}
                   </>
-                );
-              })()}
-            </Paper>
+                </Paper>
+              );
+            })()}
 
 
             {/* Policy */}

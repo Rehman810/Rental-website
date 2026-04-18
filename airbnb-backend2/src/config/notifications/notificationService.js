@@ -26,26 +26,24 @@ export const setSocket = (io) => {
     ioInstance = io;
 };
 
+import { publishNotification } from '../rabbitmq/producer.js';
+
 export const createNotification = async ({ userId, type, title, message, role, data }) => {
     try {
-        const notification = new Notification({
+        const payload = {
             userId,
             type,
             title,
             message,
             role,
             data,
-        });
-        const savedNotification = await notification.save();
+            channels: ['DB', 'SOCKET', 'PUSH'] // New service will handle these
+        };
 
-        if (ioInstance) {
-            // Emit to the user's room (userId)
-            ioInstance.to(userId.toString()).emit('notification:new', savedNotification);
-        }
-
-        return savedNotification;
+        await publishNotification(payload);
+        return { success: true, message: 'Notification queued' };
     } catch (error) {
-        console.error('Error creating notification:', error.message);
+        console.error('Error publishing notification:', error.message);
         return null;
     }
 };

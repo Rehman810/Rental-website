@@ -6,6 +6,7 @@ import { generateAiReply } from '../../service/ai/aiProvider.js';
 import { buildHostAssistantPrompt } from '../../service/ai/promptBuilder.js';
 
 import { generateListingSummary } from '../../service/ai/summaryGenerator.js';
+import { publishEvent, QUEUES } from '../../config/rabbitmq/producer.js';
 export const chatController = {
   sendMessage: async (io, req, res) => {
     const { guestId, message, listingId, role } = req.body;
@@ -35,26 +36,22 @@ export const chatController = {
       chat.messages.push(newMessage);
       await chat.save();
 
-      // Retrieve the saved message with its _id
-      const savedMessage = chat.messages[chat.messages.length - 1];
-
       const chatRoomId = `${user1}_${user2}`;
 
-      // Emit 'receive_message' to match frontend listener
-      io.to(chatRoomId).emit('receive_message', savedMessage);
-
-      // Notification
-      await createNotification({
-        userId: guestId,
-        type: NOTIFICATION_TYPES.NEW_MESSAGE,
-        title: 'New Message',
-        message: 'You have received a new message.',
-        role: 'guest',
-        data: { actionUrl: '/user/guestAllMessages' }
+      // Publish to RabbitMQ for Chat Service to handle persistence and socket emit
+      await publishEvent(QUEUES.CHAT_MESSAGES, 'MESSAGE_SENT', {
+        senderId: hostId,
+        receiverId: guestId,
+        message,
+        listingId,
+        role: senderRole
       });
-      res.status(201).json({ message: 'Message sent successfully.', chat });
 
-      // AI Response Flow (ASYNC - do not block API)
+      res.status(201).json({ message: 'Message sent successfully (Async).' });
+
+      // AI Response Flow (Should ideally move to Chat Service too)
+      // For now, keeping it here or moving it depends on readiness.
+      // Assuming we move it to Chat Service eventually.
       if (senderRole === 'guest' && chat.listingId) setTimeout(async () => {
         try {
           const listing = await Listing.findById(chat.listingId);

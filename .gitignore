@@ -1,0 +1,27 @@
+# Root .gitignore for Rental Website Monorepo
+
+# Dependencies
+**/node_modules/
+
+# Environment Variables
+**/.env
+**/.env.local
+**/.env.*.local
+
+# Build outputs
+**/dist/
+**/build/
+**/dev-dist/
+
+# Logs
+**/logs
+**/*.log
+
+# IDEs
+.vscode/
+.idea/
+.DS_Store
+
+# Service specific ignores
+airbnb-backend2/config/serviceAccountKey/
+chat-notification-service/firebase-credentials.json

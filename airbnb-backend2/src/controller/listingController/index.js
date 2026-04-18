@@ -5,6 +5,7 @@ import Host from '../../model/hostModel/index.js'
 import Review from '../../model/reviewListings/index.js';
 import Notification from '../../model/notification/index.js';
 import CancellationPolicy from '../../model/cancellationPolicy/index.js';
+import { deleteCachePattern } from '../../services/redisService.js';
 
 export const listingController = {
 
@@ -250,6 +251,9 @@ export const listingController = {
       }
       await listing.save();
 
+      // Invalidate relevant caches
+      await deleteCachePattern('req:api:listings:search*');
+
       res.status(200).json({ message: 'Listing updated successfully', listing });
     } catch (error) {
       console.error('Error updating listing:', error);
@@ -265,6 +269,9 @@ export const listingController = {
       if (!deletedListing) {
         return res.status(404).json({ message: 'Listing not found' });
       }
+
+      // Invalidate relevant caches
+      await deleteCachePattern('req:api:listings:search*');
 
       res.status(200).json({ message: 'Listing deleted successfully' });
     } catch (error) {
@@ -421,6 +428,9 @@ export const listingController = {
       updateField('unavailableDates', unavailableDates);
 
       await listing.save();
+
+      // Invalidate relevant caches to refresh availability data
+      await deleteCachePattern('req:api:listings:search*');
 
       // Calculate effective values
       const host = await Host.findById(hostId);

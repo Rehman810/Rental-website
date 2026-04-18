@@ -133,12 +133,15 @@ export const searchListings = async (req, res) => {
         if (sortBy === 'priceLow') sortOptions.weekdayActualPrice = 1;
         else if (sortBy === 'priceHigh') sortOptions.weekdayActualPrice = -1;
 
-        const listings = await Listing.find(query)
-            .sort(sortOptions)
-            .skip((page - 1) * limit)
-            .limit(Number(limit));
-
-        const total = await Listing.countDocuments(query);
+        // Run Count and Fetch concurrently to reduce total I/O time
+        const [listings, total] = await Promise.all([
+            Listing.find(query)
+                .sort(sortOptions)
+                .lean() // Returns POJOs (2x-5x faster)
+                .skip((page - 1) * limit)
+                .limit(Number(limit)),
+            Listing.countDocuments(query)
+        ]);
 
         res.status(200).json({
             success: true,

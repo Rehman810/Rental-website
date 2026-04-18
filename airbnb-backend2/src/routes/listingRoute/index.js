@@ -1,11 +1,13 @@
 import { listingController } from '../../controller/listingController/index.js';
 import { searchListings, aiSearch } from '../../controller/search.controller.js';
 import upload from '../../config/cloudnry/index.js';
-import combinedAuthenticate from '../../middleWare/combineAuthenticate/index.js'
-import { limiter } from '../../app.js'
+import combinedAuthenticate from '../../middleWare/combineAuthenticate/index.js';
+import { limiter } from '../../app.js';
+import cacheMiddleware from '../../middlewares/cacheMiddleware.js';
 
 const listingRoute = (app) => {
-    app.get('/api/listings/search', searchListings);
+    // Cache search results for 5 minutes (300 seconds)
+    app.get('/api/listings/search', cacheMiddleware(300), searchListings);
     app.post('/api/search/ai', aiSearch);
 
     app.post('/listings', combinedAuthenticate, upload.array('photos', 8), limiter, listingController.createListing);

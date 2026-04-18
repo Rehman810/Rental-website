@@ -60,10 +60,10 @@ const CounterRow = ({ label, value, onDecrement, onIncrement }) => (
 );
 
 const GuestCounter = () => {
-  const [guests, setGuests] = useState(4);
-  const [bedrooms, setBedrooms] = useState(1);
-  const [beds, setBeds] = useState(1);
-  const { setGuestCount } = useAppContext();
+  const { guestCount, setGuestCount } = useAppContext();
+  const [guests, setGuests] = useState(guestCount?.guests || 4);
+  const [bedrooms, setBedrooms] = useState(guestCount?.bedrooms || 1);
+  const [beds, setBeds] = useState(guestCount?.beds || 1);
 
   useEffect(() => {
     setGuestCount({ guests, bedrooms, beds });

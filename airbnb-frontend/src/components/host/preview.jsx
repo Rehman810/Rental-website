@@ -69,7 +69,7 @@ const ListingCard = () => {
           <CardMedia
             component="img"
             height="250"
-            image={URL.createObjectURL(uploadedImages[0].file)}
+            image={URL?.createObjectURL(uploadedImages[0]?.file)}
             alt="Listing Image"
             sx={{ cursor: "pointer" }}
             onClick={openModal}

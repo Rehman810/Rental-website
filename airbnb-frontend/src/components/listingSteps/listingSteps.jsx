@@ -115,8 +115,16 @@ function ListingSteps() {
   const navigate = useNavigate();
   usePageTitle("Create your listing");
   const theme = useTheme();
-  const [activeStep, setActiveStep] = useState(0);
+  const [activeStep, setActiveStep] = useState(() => {
+    return parseInt(localStorage.getItem("listing_activeStep")) || 0;
+  });
   const [isNextDisabled, setIsNextDisabled] = useState(true);
+
+  // Sync activeStep to localStorage
+  useEffect(() => {
+    localStorage.setItem("listing_activeStep", activeStep.toString());
+  }, [activeStep]);
+
 
   // Helper setters for configs
   const setMonthlyRent = (val) => setLeaseConfig(prev => ({ ...prev, monthlyRent: val }));
@@ -143,6 +151,7 @@ function ListingSteps() {
           label: "Weekend Price",
           content: (
             <Pricing
+              isWeekDay={false}
               heading={"Set a weekend price"}
               para={`Add a premium for Fridays and Sunday.`}
               pricing={3000}
@@ -356,6 +365,7 @@ function ListingSteps() {
         confirmButtonText: "Go to Listings",
       }).then(() => {
         // Handle post-creation navigation/reset
+        resetListingState();
         navigate("/hosting/listings");
       });
     } catch (error) {

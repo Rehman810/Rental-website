@@ -10,14 +10,21 @@ import EditIcon from "@mui/icons-material/Edit";
 import { useAppContext } from "../../context/context";
 
 const PriceSection = ({ pricing, heading, para, isWeekDay }) => {
-  const [price, setPrice] = useState(2000);
-  const [isEditable, setIsEditable] = useState(false);
-  const { setWeekEndPrice, setWeekDayPrice } = useAppContext();
+  const { weekDayPrice, weekendPrice, setWeekEndPrice, setWeekDayPrice } = useAppContext();
+  
+  // Use the price from context if it exists, otherwise use the default pricing prop
+  const getInitialPrice = () => {
+    const val = isWeekDay ? weekDayPrice : weekendPrice;
+    return (val !== null && val !== undefined) ? val : pricing;
+  };
 
+  const [price, setPrice] = useState(getInitialPrice);
+  const [isEditable, setIsEditable] = useState(false);
+
+  // Sync state when props or context changes (crucial for multi-step navigation)
   useEffect(() => {
-    setPrice(pricing);
-    isWeekDay ? setWeekDayPrice(pricing) : setWeekEndPrice(pricing);
-  }, [pricing]);
+    setPrice(getInitialPrice());
+  }, [isWeekDay, weekDayPrice, weekendPrice, pricing]);
 
   const handlePriceChange = (event) => {
     const value = parseFloat(event.target.value) || 0;

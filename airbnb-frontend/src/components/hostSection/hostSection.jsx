@@ -22,6 +22,22 @@ import { useNavigate } from "react-router-dom";
 const HostSection = ({ data, listing }) => {
   const navigate = useNavigate();
 
+  const yearsHosting = data?.joinedDate
+    ? new Date().getFullYear() - new Date(data.joinedDate).getFullYear()
+    : 0;
+
+  const isSuperhost = data?.isSuperhost || false;
+
+  // Helper to format numbers safely
+  const formatRating = (val) => {
+    const num = parseFloat(val);
+    return isNaN(num) ? "0.0" : num.toFixed(1);
+  };
+
+  // Logic to get the most accurate stats
+  const hostRating = data?.stats?.averageRating || listing?.averageRating || "0.0";
+  const hostReviews = data?.stats?.reviewsCount || listing?.reviewsCount || listing?.reviews?.length || 0;
+
   return (
     <Box sx={{ mt: 5 }}>
       {/* Section Header */}
@@ -74,19 +90,21 @@ const HostSection = ({ data, listing }) => {
                 </Stack>
 
                 <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 0.6 }}>
-                  <Chip
-                    label="Superhost"
-                    size="small"
-                    sx={{
-                      fontWeight: 800,
-                      borderRadius: 2,
-                      bgcolor: "rgba(46,125,50,0.10)",
-                      color: "success.main",
-                    }}
-                  />
+                  {isSuperhost && (
+                    <Chip
+                      label="Superhost"
+                      size="small"
+                      sx={{
+                        fontWeight: 800,
+                        borderRadius: 2,
+                        bgcolor: "rgba(46,125,50,0.10)",
+                        color: "success.main",
+                      }}
+                    />
+                  )}
                   <Chip
                     icon={<StarIcon sx={{ fontSize: 18 }} />}
-                    label="4.9"
+                    label={formatRating(hostRating)}
                     size="small"
                     sx={{
                       fontWeight: 800,
@@ -105,22 +123,22 @@ const HostSection = ({ data, listing }) => {
               <Grid item xs={4}>
                 <StatPill
                   icon={<ReviewsIcon sx={{ fontSize: 18 }} />}
-                  value="227"
+                  value={hostReviews}
                   label="Reviews"
                 />
               </Grid>
               <Grid item xs={4}>
                 <StatPill
                   icon={<StarIcon sx={{ fontSize: 18 }} />}
-                  value="4.9"
+                  value={formatRating(hostRating)}
                   label="Rating"
                 />
               </Grid>
               <Grid item xs={4}>
                 <StatPill
                   icon={<TrendingUpIcon sx={{ fontSize: 18 }} />}
-                  value="9"
-                  label="Years"
+                  value={yearsHosting > 0 ? yearsHosting : "New"}
+                  label={yearsHosting > 0 ? "Years" : "Host"}
                 />
               </Grid>
             </Grid>
@@ -167,11 +185,12 @@ const HostSection = ({ data, listing }) => {
               {/* Summary */}
               <Box>
                 <Typography variant="subtitle1" fontWeight={900}>
-                  {data?.userName || "Host"} is a Superhost
+                  {data?.userName || "Host"} {isSuperhost ? "is a Superhost" : "on ThePakbnb"}
                 </Typography>
                 <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
-                  Superhosts are experienced, highly rated hosts who are committed
-                  to providing great stays for guests.
+                  {isSuperhost
+                    ? "Superhosts are experienced, highly rated hosts who are committed to providing great stays for guests."
+                    : `${data?.userName || "The host"} is dedicated to providing high-quality hospitality and memorable local experiences.`}
                 </Typography>
               </Box>
 
@@ -187,12 +206,12 @@ const HostSection = ({ data, listing }) => {
                   <DetailRow
                     icon={<TrendingUpIcon sx={{ fontSize: 18 }} />}
                     title="Response rate"
-                    value="100%"
+                    value={data?.stats?.responseRate || "100%"}
                   />
                   <DetailRow
                     icon={<AccessTimeIcon sx={{ fontSize: 18 }} />}
                     title="Response time"
-                    value="Responds within an hour"
+                    value={`Responds ${data?.stats?.responseTime || "within an hour"}`}
                   />
                 </Stack>
               </Box>

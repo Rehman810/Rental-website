@@ -39,17 +39,11 @@ const propertyTypes = [
 ];
 
 const PlaceType = () => {
-  const [selected, setSelected] = useState("Entire Place");
-  const { setPlaceType } = useAppContext();
+  const { placeType, setPlaceType } = useAppContext();
 
   const select = (type) => {
-    setSelected(type);
-    setPlaceType(type)
-  }
-
-  useEffect(() => {
-    setPlaceType(selected);
-  }, [selected, setPlaceType]);
+    setPlaceType(type);
+  };
 
   return (
     <Box sx={{ py: 5, px: 5 }}>
@@ -60,9 +54,9 @@ const PlaceType = () => {
         {propertyTypes.map((property) => (
           <Grid item xs={12} sm={12} md={8} key={property.name}>
             <StyledPaper
-              selected={selected === property.name}
+              selected={placeType === property.name}
               onClick={() => select(property.name)}
-              elevation={selected === property.name ? 6 : 1}
+              elevation={placeType === property.name ? 6 : 1}
             >
               <Box>
                 <Typography variant="h6" fontWeight="bold">

@@ -23,23 +23,16 @@ const StyledPaper = styled(Paper)(({ theme, selected }) => ({
 }));
 
 const PropertyType = ({ type = [], heading, isAmenties }) => {
-  const [selected, setSelected] = useState(isAmenties ? [] : "House");
-  const { setAmenties, setPropertyType } = useAppContext();
+  const { amenties, setAmenties, propertyType, setPropertyType } = useAppContext();
 
   const select = (name) => {
     if (isAmenties) {
-      setSelected((prevSelected) =>
-        prevSelected.includes(name)
-          ? prevSelected.filter((item) => item !== name)
-          : [...prevSelected, name]
-      );
       setAmenties((prevSelected) =>
         prevSelected.includes(name)
           ? prevSelected.filter((item) => item !== name)
           : [...prevSelected, name]
       );
     } else {
-      setSelected(name);
       setPropertyType(name);
     }
   };
@@ -60,18 +53,17 @@ const PropertyType = ({ type = [], heading, isAmenties }) => {
             {console.log(property.name)}
             <StyledPaper
               selected={
-
                 isAmenties
-                  ? selected.includes(property.name)
-                  : selected === property.name
+                  ? amenties.includes(property.name)
+                  : propertyType === property.name
               }
               onClick={() => select(property.name)}
               elevation={
                 isAmenties
-                  ? selected.includes(property.name)
+                  ? amenties.includes(property.name)
                     ? 6
                     : 2
-                  : selected === property.name
+                  : propertyType === property.name
                     ? 6
                     : 2
               }

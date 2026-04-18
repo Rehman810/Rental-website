@@ -1,4 +1,6 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
+import apiClient from "../config/ServiceApi/apiClient";
+import { getAuthToken } from "../utils/cookieUtils";
 
 const AppContext = createContext();
 
@@ -8,20 +10,54 @@ export const useAppContext = () => {
 
 export const AppProvider = ({ children }) => {
   const [searchVisible, setSearchVisible] = useState(false);
-  const [placeType, setPlaceType] = useState();
-  const [propertyType, setPropertyType] = useState();
-  const [address, setAddress] = useState({});
-  const [amenties, setAmenties] = useState([]);
-  const [guestCount, setGuestCount] = useState({});
-  const [description, setDescription] = useState("");
-  const [title, setTitle] = useState("");
-  const [uploadedImages, setUploadedImages] = useState([]);
-  const [weekDayPrice, setWeekDayPrice] = useState();
-  const [weekendPrice, setWeekEndPrice] = useState();
-  const [contextLatitude, setContextLatitude] = useState();
-  const [contextLongitude, setContextLongitude] = useState();
-  const [wifiPassword, setWifiPassword] = useState("");
-  const [checkInInstructions, setCheckInInstructions] = useState("");
+
+  // Persistence Helpers
+  const getSaved = (key, fallback) => {
+    const saved = localStorage.getItem(key);
+    if (!saved) return fallback;
+    try {
+      return JSON.parse(saved);
+    } catch {
+      return saved;
+    }
+  };
+
+  const [placeType, setPlaceType] = useState(() => getSaved("ls_placeType", null));
+  const [propertyType, setPropertyType] = useState(() => getSaved("ls_propertyType", null));
+  const [address, setAddress] = useState(() => getSaved("ls_address", {}));
+  const [amenties, setAmenties] = useState(() => getSaved("ls_amenties", []));
+  const [guestCount, setGuestCount] = useState(() => getSaved("ls_guestCount", {}));
+  const [description, setDescription] = useState(() => getSaved("ls_description", ""));
+  const [title, setTitle] = useState(() => getSaved("ls_title", ""));
+  const [uploadedImages, setUploadedImages] = useState([]); // Cannot persist File objects easily
+  const [weekDayPrice, setWeekDayPrice] = useState(() => getSaved("ls_weekDayPrice", null));
+  const [weekendPrice, setWeekEndPrice] = useState(() => getSaved("ls_weekendPrice", null));
+  const [contextLatitude, setContextLatitude] = useState(() => getSaved("ls_contextLatitude", null));
+  const [contextLongitude, setContextLongitude] = useState(() => getSaved("ls_contextLongitude", null));
+  const [wifiPassword, setWifiPassword] = useState(() => getSaved("ls_wifiPassword", ""));
+  const [checkInInstructions, setCheckInInstructions] = useState(() => getSaved("ls_checkInInstructions", ""));
+  
+  const [listingType, setListingType] = useState(() => getSaved("ls_listingType", 'SHORT_TERM'));
+  const [leaseConfig, setLeaseConfig] = useState(() => getSaved("ls_leaseConfig", {}));
+  const [saleConfig, setSaleConfig] = useState(() => getSaved("ls_saleConfig", {}));
+
+  const [hostSettings, setHostSettings] = useState(null);
+
+  const fetchHostSettings = async () => {
+    try {
+      const response = await apiClient.get('/host/settings');
+      if (response.data.settings) {
+        setHostSettings(response.data.settings);
+      }
+    } catch (error) {
+      console.error("Error fetching host settings:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchHostSettings();
+  }, []);
+
   const [searchParams, setSearchParams] = useState({
     destination: "",
     checkIn: null,
@@ -33,7 +69,39 @@ export const AppProvider = ({ children }) => {
       pets: 0,
     },
   });
-  const [langauge, setLanguage] = useState({})
+  const [langauge, setLanguage] = useState({});
+
+  // Persistence Effect
+  useEffect(() => {
+    const state = {
+      ls_placeType: placeType,
+      ls_propertyType: propertyType,
+      ls_address: address,
+      ls_amenties: amenties,
+      ls_guestCount: guestCount,
+      ls_description: description,
+      ls_title: title,
+      ls_weekDayPrice: weekDayPrice,
+      ls_weekendPrice: weekendPrice,
+      ls_contextLatitude: contextLatitude,
+      ls_contextLongitude: contextLongitude,
+      ls_wifiPassword: wifiPassword,
+      ls_checkInInstructions: checkInInstructions,
+      ls_listingType: listingType,
+      ls_leaseConfig: leaseConfig,
+      ls_saleConfig: saleConfig,
+    };
+
+    Object.entries(state).forEach(([key, value]) => {
+      if (value !== undefined) {
+        localStorage.setItem(key, JSON.stringify(value));
+      }
+    });
+  }, [
+    placeType, propertyType, address, amenties, guestCount, description,
+    title, weekDayPrice, weekendPrice, contextLatitude, contextLongitude,
+    wifiPassword, checkInInstructions, listingType, leaseConfig, saleConfig
+  ]);
 
   const resetListingState = () => {
     setPlaceType(null);
@@ -44,7 +112,6 @@ export const AppProvider = ({ children }) => {
     setDescription("");
     setTitle("");
     setUploadedImages([]);
-    setUploadedImages([]);
     setWeekDayPrice(null);
     setWeekEndPrice(null);
     setListingType('SHORT_TERM');
@@ -54,11 +121,19 @@ export const AppProvider = ({ children }) => {
     setContextLongitude(null);
     setWifiPassword("");
     setCheckInInstructions("");
+
+    // Clear persistence keys
+    const keys = [
+      "ls_placeType", "ls_propertyType", "ls_address", "ls_amenties",
+      "ls_guestCount", "ls_description", "ls_title", "ls_weekDayPrice",
+      "ls_weekendPrice", "ls_contextLatitude", "ls_contextLongitude",
+      "ls_wifiPassword", "ls_checkInInstructions", "ls_listingType",
+      "ls_leaseConfig", "ls_saleConfig", "listing_activeStep"
+    ];
+    keys.forEach(key => localStorage.removeItem(key));
   };
 
-  const [listingType, setListingType] = useState('SHORT_TERM');
-  const [leaseConfig, setLeaseConfig] = useState({});
-  const [saleConfig, setSaleConfig] = useState({});
+
 
   const value = {
     searchVisible,
@@ -101,7 +176,9 @@ export const AppProvider = ({ children }) => {
     searchParams,
     setSearchParams,
     langauge,
-    setLanguage
+    setLanguage,
+    hostSettings,
+    fetchHostSettings
   };
 
   return (

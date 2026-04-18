@@ -5,23 +5,23 @@ import { useAppContext } from "../../context/context";
 import { postData } from "../../config/ServiceApi/serviceApi";
 
 const DescriptionInput = ({ max, heading, para, placholder, isTitle }) => {
-  const [description, setDescriptions] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
-  const maxCharacters = max;
   const {
+    description: contextDescription,
+    title: contextTitle,
     setDescription,
     setTitle,
-    placeType,
-    propertyType,
     address,
+    propertyType,
+    guestCount,
     amenties,
-    guestCount
+    hostSettings
   } = useAppContext();
 
-  useEffect(() => {
-    setDescriptions(placholder);
-    isTitle ? setTitle(placholder) : setDescription(placholder);
-  }, [placholder]);
+  const isAiEnabled = hostSettings?.aiAssistant?.enabled && hostSettings?.aiAssistant?.geminiApiKey;
+
+  const [description, setDescriptions] = useState(isTitle ? (contextTitle || "") : (contextDescription || ""));
+  const [isGenerating, setIsGenerating] = useState(false);
+  const maxCharacters = max;
 
   const handleGenerateWithAI = async () => {
     setIsGenerating(true);
@@ -66,25 +66,27 @@ const DescriptionInput = ({ max, heading, para, placholder, isTitle }) => {
             {para}
           </Typography>
         </Box>
-        <Button
-          variant="outlined"
-          onClick={handleGenerateWithAI}
-          disabled={isGenerating}
-          startIcon={isGenerating ? <CircularProgress size={20} /> : <AutoAwesomeIcon sx={{ color: '#e81948' }} />}
-          sx={{
-            borderColor: 'var(--border-medium)',
-            color: 'var(--text-primary)',
-            textTransform: 'none',
-            borderRadius: '8px',
-            px: 2,
-            '&:hover': {
-              borderColor: '#e81948',
-              backgroundColor: 'rgba(232, 25, 72, 0.04)'
-            }
-          }}
-        >
-          {isGenerating ? "Generating..." : "Generate with AI"}
-        </Button>
+        {isAiEnabled && (
+          <Button
+            variant="outlined"
+            onClick={handleGenerateWithAI}
+            disabled={isGenerating}
+            startIcon={isGenerating ? <CircularProgress size={20} /> : <AutoAwesomeIcon sx={{ color: '#e81948' }} />}
+            sx={{
+              borderColor: 'var(--border-medium)',
+              color: 'var(--text-primary)',
+              textTransform: 'none',
+              borderRadius: '8px',
+              px: 2,
+              '&:hover': {
+                borderColor: '#e81948',
+                backgroundColor: 'rgba(232, 25, 72, 0.04)'
+              }
+            }}
+          >
+            {isGenerating ? "Generating..." : "Generate with AI"}
+          </Button>
+        )}
       </Box>
 
       <TextField

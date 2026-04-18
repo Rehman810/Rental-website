@@ -39,6 +39,14 @@ export const sendBookingReminders = async () => {
                 const listing = booking.listingId;
                 const host = listing?.hostId;
 
+                const fullAddress = [
+                    listing?.flat,
+                    listing?.street,
+                    listing?.town,
+                    listing?.city,
+                    listing?.postcode
+                ].filter(Boolean).join(', ');
+
                 // Send to Guest
                 if (guest && guest.email) {
                     await sendAppEmail({
@@ -52,7 +60,11 @@ export const sendBookingReminders = async () => {
                             guestCapacity: booking.guestCapacity,
                             totalPrice: booking.totalPrice,
                             bookingId: booking._id,
-                            actionUrl: `${FRONTEND_BASE_URL}/trips`
+                            actionUrl: `${FRONTEND_BASE_URL}/trips`,
+                            fullAddress,
+                            hostPhone: host?.phoneNumber,
+                            wifiPassword: listing?.wifiPassword,
+                            checkInInstructions: listing?.checkInInstructions
                         }
                     });
                 }

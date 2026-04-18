@@ -1,25 +1,13 @@
-import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
-
-dotenv.config();
-
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+import { sendEmail as resendSendEmail } from "../../services/emailService.js";
 
 const sendResetEmail = async (email, code) => {
-  const mailOptions = {
-    from: `"Needs and Luxuries" <${process.env.EMAIL}>`,
-    to: email,
-    subject: 'Password Reset',
-    text: `You requested a password reset. Your reset code is: ${code}`,
-  };
-
-  await transporter.sendMail(mailOptions);
+    await resendSendEmail({
+        to: email,
+        subject: 'Password Reset',
+        html: `<p>You requested a password reset. Your reset code is: <strong>${code}</strong></p>`,
+        text: `You requested a password reset. Your reset code is: ${code}`,
+        from: 'Needs and Luxuries <onboarding@resend.dev>'
+    });
 };
 
 export default sendResetEmail;

@@ -22,7 +22,8 @@ export const listingController = {
       const {
         placeType, roomType, guestCapacity, bedrooms, beds, bathrooms, amenities,
         title, description, street, flat, city, town, postcode,
-        latitude, longitude, listingType = 'SHORT_TERM'
+        latitude, longitude, listingType = 'SHORT_TERM',
+        wifiPassword, checkInInstructions
       } = req.body;
 
       // Extract prices and configs
@@ -90,6 +91,8 @@ export const listingController = {
         postcode,
         latitude,
         longitude,
+        wifiPassword,
+        checkInInstructions
       });
 
       await newListing.save();

@@ -3,10 +3,29 @@ import jwt from 'jsonwebtoken';
 import authUser from '../../model/hostModel/index.js';
 import { sendAppEmail, EMAIL_TYPES } from '../../config/email/sendAppEmail.js';
 import { createNotification, NOTIFICATION_TYPES } from '../../config/notifications/notificationService.js';
+import { sendVerificationEmail } from '../../services/emailService.js';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const authController = {
+  /**
+   * Example usage of the centralized email service.
+   * Demonstrates sending a verification email manually.
+   */
+  testEmail: async (req, res) => {
+    try {
+      const { email } = req.body;
+      const verificationLink = `${process.env.FRONTEND_BASE_URL}/verify?token=example-token`;
+      
+      await sendVerificationEmail(email, verificationLink);
+      
+      return res.status(200).json({ message: 'Example verification email sent successfully via Resend.' });
+    } catch (error) {
+      console.error('Test Email Error:', error.message);
+      return res.status(500).json({ message: 'Failed to send test email', error: error.message });
+    }
+  },
+
   signUp: async (req, res) => {
     try {
       const { userName, email, password } = req.body;
@@ -69,6 +88,8 @@ const authController = {
   },
   updateProfile: async (req, res) => {
     try {
+      console.log("UPDATE PROFILE - BODY:", req.body);
+      console.log("UPDATE PROFILE - FILES:", req.files);
       const { hostId } = req.params;
       const dataUpdate = { ...req.body };
 
@@ -91,11 +112,15 @@ const authController = {
         return res.status(400).json({ message: "Both front and back CNIC images are required." });
       }
 
+      console.log("DATA UPDATE OBJECT:", dataUpdate);
+
       const updatedHost = await authUser.findByIdAndUpdate(
         hostId,
         { $set: dataUpdate },
         { new: true }
       );
+
+      console.log("UPDATED HOST RESULT:", updatedHost);
 
       if (!updatedHost) {
         return res.status(404).json({ message: "Host Not Found" });

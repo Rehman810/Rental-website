@@ -20,6 +20,8 @@ export const AppProvider = ({ children }) => {
   const [weekendPrice, setWeekEndPrice] = useState();
   const [contextLatitude, setContextLatitude] = useState();
   const [contextLongitude, setContextLongitude] = useState();
+  const [wifiPassword, setWifiPassword] = useState("");
+  const [checkInInstructions, setCheckInInstructions] = useState("");
   const [searchParams, setSearchParams] = useState({
     destination: "",
     checkIn: null,
@@ -50,6 +52,8 @@ export const AppProvider = ({ children }) => {
     setSaleConfig({});
     setContextLatitude(null);
     setContextLongitude(null);
+    setWifiPassword("");
+    setCheckInInstructions("");
   };
 
   const [listingType, setListingType] = useState('SHORT_TERM');
@@ -90,6 +94,10 @@ export const AppProvider = ({ children }) => {
     setContextLongitude,
     contextLatitude,
     contextLongitude,
+    wifiPassword,
+    setWifiPassword,
+    checkInInstructions,
+    setCheckInInstructions,
     searchParams,
     setSearchParams,
     langauge,

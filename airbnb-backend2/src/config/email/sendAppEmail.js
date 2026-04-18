@@ -1,5 +1,5 @@
 
-import { sendEmail } from './transporter.js';
+import { sendEmail } from '../../services/emailService.js';
 import { EMAIL_TYPES } from './emailTypes.js';
 import { getAuthEmailContent } from './templates/types/authTemplates.js';
 import { getBookingEmailContent } from './templates/types/bookingTemplates.js';

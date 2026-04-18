@@ -1,31 +1,27 @@
 
-import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
-dotenv.config();
-
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL,
-        pass: process.env.EMAIL_PASS,
-    },
-});
+import { sendEmail as resendSendEmail } from '../../services/emailService.js';
 
 export const sendEmail = async ({ to, subject, html }) => {
     try {
-        const mailOptions = {
-            from: `"Airbnb" <${process.env.EMAIL}>`,
-            to,
-            subject,
-            html,
-        };
-
-        await transporter.sendMail(mailOptions);
-        console.log(`Email sent to: ${to}`);
+        await resendSendEmail({ to, subject, html });
         return true;
     } catch (error) {
-        console.error('Error sending email:', error.message);
+        console.error('Error sending email via transporter wrapper:', error.message);
         return false;
+    }
+};
+
+// Exporting a dummy transporter for backward compatibility if needed, 
+// though direct use of sendMail will now fail if anything relies on the specific nodemailer transporter instance.
+const transporter = {
+    sendMail: async (options) => {
+        return await resendSendEmail({
+            to: options.to,
+            subject: options.subject,
+            html: options.html,
+            text: options.text,
+            from: options.from
+        });
     }
 };
 

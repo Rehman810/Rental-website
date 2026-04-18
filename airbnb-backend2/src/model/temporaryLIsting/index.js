@@ -83,6 +83,8 @@ const temporaryListingSchema = new mongoose.Schema({
     documentUrls: [{ type: String }],
     visitAvailability: { type: String }
   },
+  wifiPassword: { type: String },
+  checkInInstructions: { type: String },
 }, {
   timestamps: true,
   toJSON: { virtuals: true },

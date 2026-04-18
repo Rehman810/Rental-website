@@ -153,7 +153,11 @@ const listingSchema = new mongoose.Schema({
 
   // AI Assistant Configuration
   aiSummary: { type: String },
-  autoReplyEnabled: { type: Boolean, default: false }
+  autoReplyEnabled: { type: Boolean, default: false },
+
+  // Check-in details
+  wifiPassword: { type: String },
+  checkInInstructions: { type: String },
 }, {
   timestamps: true,
   toJSON: { virtuals: true },

@@ -1,7 +1,7 @@
 const env = {
     APP_NAME: import.meta.env.VITE_APP_NAME || "ThePakbnb",
     API_BASE_URL: import.meta.env.VITE_API_BASE_URL || "http://localhost:5000",
-    FRONTEND_BASE_URL: import.meta.env.VITE_FRONTEND_BASE_URL || "http://localhost:5173",
+    FRONTEND_BASE_URL: import.meta.env.VITE_FRONTEND_BASE_URL || "http://localhost:5174",
     CURRENCY: import.meta.env.VITE_CURRENCY || "PKR",
 };
 

@@ -59,7 +59,9 @@ const EditListing = () => {
             bathrooms: 1,
             minNights: 1,
             maxNights: 30,
-            photos: []
+            photos: [],
+            wifiPassword: '',
+            checkInInstructions: ''
         }
     });
 
@@ -292,6 +294,30 @@ const EditListing = () => {
                                     </Grid>
                                 )}
                             />
+                        </Stack>
+                    </Paper>
+
+                    {/* Check-in Details */}
+                    <Paper variant="outlined" sx={{ p: 3, borderRadius: 2 }}>
+                        <Typography variant="h6" mb={2}>Check-in Details</Typography>
+                        <Stack spacing={2}>
+                            <Controller
+                                name="wifiPassword"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField {...field} label="WiFi Password" fullWidth />
+                                )}
+                            />
+                            <Controller
+                                name="checkInInstructions"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField {...field} label="Check-in Instructions & Pre-requisites" multiline rows={4} fullWidth />
+                                )}
+                            />
+                            <Typography variant="caption" color="textSecondary">
+                                These details will be sent to guests one day before check-in.
+                            </Typography>
                         </Stack>
                     </Paper>
 

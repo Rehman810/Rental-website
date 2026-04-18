@@ -17,7 +17,11 @@ export const getBookingEmailContent = (type, payload) => {
         guestCapacity,
         bookingId,
         rejectionReason,
-        actionUrl
+        actionUrl,
+        fullAddress,
+        hostPhone,
+        wifiPassword,
+        checkInInstructions
     } = payload;
 
     const commonDetails = [
@@ -100,8 +104,14 @@ export const getBookingEmailContent = (type, payload) => {
             return masterTemplate({
                 title: 'Trip Reminder: Check-in Tomorrow!',
                 greeting: `Ready for your trip, ${userName}?`,
-                message: 'Your stay begins tomorrow! accurate details are below.',
-                details: commonDetails,
+                message: 'Your stay begins tomorrow! Your full stay details are below.',
+                details: [
+                    ...commonDetails,
+                    { label: 'Address', value: fullAddress || 'See details in app' },
+                    { label: 'Host Phone', value: hostPhone || 'N/A' },
+                    { label: 'WiFi Password', value: wifiPassword || 'Provided at check-in' },
+                    ...(checkInInstructions ? [{ label: 'Instructions', value: checkInInstructions }] : [])
+                ],
                 action: { label: 'View Trip Info', url: actionUrl || `${FRONTEND_BASE_URL}/trips` },
             });
 

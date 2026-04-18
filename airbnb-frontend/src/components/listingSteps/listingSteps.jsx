@@ -62,6 +62,7 @@ import ListingTypeSelection from "../host/listingTypeSelection";
 import LeaseDetails from "../host/leaseDetails";
 import SaleDetails from "../host/saleDetails";
 import GenericPricing from "../host/genericPricing";
+import CheckInDetails from "../host/checkInDetails";
 import { ALL_AMENITIES } from "../amenities/amenitiesData";
 import { useAppContext } from "../../context/context";
 import { postData } from "../../config/ServiceApi/serviceApi";
@@ -105,7 +106,9 @@ function ListingSteps() {
     leaseConfig,
     setLeaseConfig,
     saleConfig,
-    setSaleConfig
+    setSaleConfig,
+    wifiPassword,
+    checkInInstructions
   } = useAppContext();
 
   const token = getAuthToken();
@@ -275,6 +278,10 @@ function ListingSteps() {
       },
       {
         label: "Step 13",
+        content: <CheckInDetails />,
+      },
+      {
+        label: "Step 14",
         content: (
           <Step1
             stepNo={3}
@@ -323,6 +330,8 @@ function ListingSteps() {
     formData.append("amenities", amenties || []);
     formData.append("title", title || "Untitled Listing");
     formData.append("description", description || "No description provided.");
+    formData.append("wifiPassword", wifiPassword || "");
+    formData.append("checkInInstructions", checkInInstructions || "");
 
     if (listingType === 'SHORT_TERM') {
       formData.append("weekdayPrice", weekDayPrice || 0);

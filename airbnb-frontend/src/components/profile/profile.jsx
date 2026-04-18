@@ -88,21 +88,30 @@ const ProfileSection = () => {
       if (type === "profile") {
         const newPhoto = reader.result;
 
-        // update local
-        const updatedUser = { ...user, photoProfile: newPhoto };
-        setUser(updatedUser);
-        setAuthCookies(token, updatedUser);
+        // update local state for immediate preview
+        setUser(prev => ({ ...prev, photoProfile: newPhoto }));
 
         // upload server
         const formData = new FormData();
         formData.append("profileImage", file);
 
         try {
-          await updateDataById("update-profile", user._id, formData);
-          toast.success("Profile photo updated!");
+          const res = await updateDataById("update-profile", user._id, formData);
+          
+          if (res?.updatedHost) {
+            const currentToken = getAuthToken();
+            const updatedUser = { ...user, ...res.updatedHost };
+            setAuthCookies(currentToken, updatedUser);
+            setUser(updatedUser);
+            toast.success("Profile photo updated!");
+          }
         } catch (error) {
           console.error("Error updating profile photo:", error);
           toast.error("Failed to update profile photo");
+          // Revert on failure
+          const currentToken = getAuthToken();
+          const originalUser = getAuthUser();
+          setUser(originalUser);
         }
       }
 

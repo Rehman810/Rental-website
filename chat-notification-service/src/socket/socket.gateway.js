@@ -33,7 +33,14 @@ export const initializeSocket = (server) => {
   });
 
   io.on('connection', (socket) => {
-    const userId = socket.user._id || socket.user.id;
+    // The JWT from airbnb-backend2 contains the ID in `userId`
+    const userId = socket.user.userId || socket.user._id || socket.user.id;
+    
+    if (!userId) {
+      console.warn('Warning: Socket connected without user ID in token payload', socket.user);
+      return;
+    }
+
     console.log(`User connected: ${userId} (Socket: ${socket.id})`);
 
     // Join a room specifically for this user to enable targeted emits

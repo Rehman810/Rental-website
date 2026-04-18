@@ -1,5 +1,5 @@
 import express from 'express';
-import { generateListing, assistantChat } from '../../controller/aiController/index.js';
+import { generateListing, assistantChat, getSmartRecommendations, getSmartPricing } from '../../controller/aiController/index.js';
 
 
 const aiRoute = (app) => {
@@ -7,7 +7,10 @@ const aiRoute = (app) => {
 
     router.post('/generate-listing', generateListing);
     router.post('/assistant-chat', assistantChat);
-
+    
+    // New Intelligent System Routes
+    router.get('/recommendations', getSmartRecommendations);
+    router.post('/smart-pricing', getSmartPricing);
 
     app.use('/api/v1/ai', router);
 };

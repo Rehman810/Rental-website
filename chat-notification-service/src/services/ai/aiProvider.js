@@ -3,9 +3,14 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const ai = new GoogleGenAI({
-    apiKey: process.env.GEMINI_API_KEY,
-});
+let ai = null;
+try {
+    ai = new GoogleGenAI({
+        apiKey: process.env.GEMINI_API_KEY || "dummy_key",
+    });
+} catch (e) {
+    console.error("Warning: Gemini API failed to initialize:", e.message);
+}
 
 export const generateAiReply = async (prompt, customApiKey = null) => {
     const startTime = Date.now();

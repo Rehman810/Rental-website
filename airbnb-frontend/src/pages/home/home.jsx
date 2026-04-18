@@ -445,6 +445,39 @@ const Home = () => {
                 >
                   List Your Property
                 </Button>
+                <Button
+                  variant="contained"
+                  size="large"
+                  sx={{
+                    bgcolor: "#9b51e0",
+                    color: "white",
+                    fontWeight: 800,
+                    px: 4,
+                    py: 1.5,
+                    borderRadius: "999px",
+                    textTransform: "none",
+                    "&:hover": { bgcolor: "#7b1fa2" }
+                  }}
+                  onClick={async () => {
+                     const listingsSection = document.getElementById("listings-section");
+                     if (listingsSection) listingsSection.scrollIntoView({ behavior: "smooth" });
+                     
+                     setLoading(true);
+                     try {
+                        const res = await fetchData("api/v1/ai/recommendations");
+                        if(res?.data?.results) {
+                            setListings(res.data.results);
+                            toast.success("Loaded personalized AI Recommendations! 🪄");
+                        }
+                     } catch(e) {
+                         toast.error("Failed to fetch AI recommendations.");
+                     } finally {
+                         setLoading(false);
+                     }
+                  }}
+                >
+                  For You 🪄
+                </Button>
               </Stack>
 
 

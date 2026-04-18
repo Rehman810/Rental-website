@@ -72,6 +72,7 @@
 import io from "socket.io-client";
 import { API_BASE_URL } from "../config/env";
 import API_CONFIG from "../config/Api/Api";
+import { getAuthToken } from "../utils/cookieUtils";
 
 const { apiKey } = API_CONFIG;
 let socket;
@@ -81,12 +82,16 @@ let socket;
  */
 export const initializeSocket = () => {
   if (!socket) {
-    socket = io(API_BASE_URL, {
+    const token = getAuthToken();
+    const CHAT_SERVICE_URL = import.meta.env.VITE_CHAT_SERVICE_URL || "http://localhost:4001";
+
+    socket = io(CHAT_SERVICE_URL, {
       transports: ["websocket", "polling"],
       reconnection: true,
       reconnectionAttempts: 5, // Limit to 5 reconnection attempts
       reconnectionDelay: 1000, // Initial delay (in ms) between retries
       reconnectionDelayMax: 5000, // Max delay (in ms) between retries
+      auth: { token },
       query: { apiKey }, // Optional: Add API key or other query params
       withCredentials: true,
     });

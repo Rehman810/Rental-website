@@ -1,60 +1,30 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React from 'react';
 import { useTheme } from '../../context/ThemeContext';
-import { FiSun, FiMoon, FiMonitor } from 'react-icons/fi';
+import { FiSun, FiMoon } from 'react-icons/fi';
 import './ThemeToggle.css';
 
 const ThemeToggle = () => {
-    const { themeMode, toggleTheme } = useTheme();
-    const [isOpen, setIsOpen] = useState(false);
-    const dropdownRef = useRef(null);
+    const { resolvedTheme, toggleTheme } = useTheme();
 
-    const options = [
-        { value: 'light', label: 'Light', icon: <FiSun /> },
-        { value: 'dark', label: 'Dark', icon: <FiMoon /> },
-        { value: 'system', label: 'System', icon: <FiMonitor /> },
-    ];
-
-    const currentOption = options.find(opt => opt.value === themeMode) || options[2];
-
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                setIsOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
+    const handleToggle = () => {
+        const nextTheme = resolvedTheme === 'light' ? 'dark' : 'light';
+        toggleTheme(nextTheme);
+    };
 
     return (
-        <div className="theme-toggle-container" ref={dropdownRef}>
+        <div className="theme-toggle-container">
             <button
                 className="theme-toggle-btn"
-                onClick={() => setIsOpen(!isOpen)}
-                aria-label="Switch Theme"
+                onClick={handleToggle}
+                aria-label={`Switch to ${resolvedTheme === 'light' ? 'dark' : 'light'} mode`}
             >
-                <span className="theme-icon-current">{currentOption.icon}</span>
+                <span className="theme-icon-current">
+                    {resolvedTheme === 'light' ? <FiMoon /> : <FiSun />}
+                </span>
             </button>
-
-            {isOpen && (
-                <div className="theme-dropdown">
-                    {options.map((option) => (
-                        <button
-                            key={option.value}
-                            className={`theme-option ${themeMode === option.value ? 'active' : ''}`}
-                            onClick={() => {
-                                toggleTheme(option.value);
-                                setIsOpen(false);
-                            }}
-                        >
-                            <span className="theme-icon">{option.icon}</span>
-                            <span className="theme-label">{option.label}</span>
-                        </button>
-                    ))}
-                </div>
-            )}
         </div>
     );
 };
 
 export default ThemeToggle;
+

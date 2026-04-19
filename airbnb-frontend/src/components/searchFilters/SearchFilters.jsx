@@ -17,7 +17,7 @@ import {
     DialogContent,
     DialogActions,
     IconButton,
-    Tooltip
+    Tooltip,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
@@ -26,28 +26,28 @@ import CloseIcon from '@mui/icons-material/Close';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
 import { CURRENCY } from "../../config/env";
 import { ALL_AMENITIES } from "../amenities/amenitiesData";
-
+import Stack from "@mui/material/Stack"
 const SearchFilters = ({
     filters,
     onFilterChange,
     onAiSearch,
     searchAsMove,
-    setSearchAsMove,
     onClear
 }) => {
     const [aiQuery, setAiQuery] = useState("");
     const [open, setOpen] = useState(false);
-
+    const [draftFilters, setDraftFilters] = useState(filters);
     const handlePriceChange = (event, newValue) => {
-        onFilterChange({ ...filters, priceRange: newValue });
+        setDraftFilters({ ...draftFilters, priceRange: newValue });
     };
 
     const handleAmenityToggle = (amenity) => {
-        const current = filters.amenities || [];
+        const current = draftFilters.amenities || [];
         const newAmenities = current.includes(amenity)
             ? current.filter(a => a !== amenity)
             : [...current, amenity];
-        onFilterChange({ ...filters, amenities: newAmenities });
+
+        setDraftFilters({ ...draftFilters, amenities: newAmenities });
     };
 
     const handleAiSubmit = () => {
@@ -76,20 +76,23 @@ const SearchFilters = ({
         <>
             {/* Main Search Bar Area */}
             <Paper
-                elevation={3}
+                elevation={6}
                 sx={{
-                    p: 1.5,
+                    p: { xs: 1, md: 1.5 },
                     mb: 4,
-                    borderRadius: 4,
-                    border: '1px solid',
-                    borderColor: 'divider',
+                    borderRadius: "20px", // Pill shape back for both
+                    border: '1px solid rgba(255,255,255,0.1)',
                     display: 'flex',
+                    flexDirection: 'row', // Keep row even on mobile for that "search bar" feel
                     alignItems: 'center',
-                    gap: 2,
-                    maxWidth: '900px',
-                    mx: 'auto',
-                    background: 'rgba(255, 255, 255, 0.95)',
-                    backdropFilter: 'blur(10px)'
+                    gap: { xs: 0.5, md: 2 },
+                    maxWidth: '850px',
+                    mx: { xs: 1, md: 'auto' },
+                    background: 'rgba(20, 20, 20, 0.85)',
+                    backdropFilter: 'blur(16px)',
+                    boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
+                    position: 'relative',
+                    zIndex: 10
                 }}
             >
                 {/* AI / Text Search Input */}
@@ -102,48 +105,87 @@ const SearchFilters = ({
                     onKeyDown={handleKeyDown}
                     InputProps={{
                         disableUnderline: true,
-                        sx: { fontSize: '1.1rem', px: 1 },
+                        sx: (theme) => ({
+                            fontSize: { xs: "0.85rem", md: "1.1rem" },
+                            px: { xs: 1, md: 2 },
+                            color: "#fff",
+                            "& input::placeholder": {
+                                color: "rgba(255, 255, 255, 0.5)",
+                                opacity: 1,
+                            },
+                        }),
+
                         startAdornment: (
                             <InputAdornment position="start">
-                                <AutoAwesomeIcon sx={{ color: 'primary.main', fontSize: 28 }} />
+                                <AutoAwesomeIcon sx={{ color: "primary.main", fontSize: { xs: 20, md: 28 }, ml: 1 }} />
                             </InputAdornment>
-                        )
+                        ),
+                        endAdornment: aiQuery && (
+                            <InputAdornment position="end">
+                                <IconButton
+                                    onClick={() => {
+                                        setAiQuery("");
+                                        onClear();
+                                    }}
+                                    edge="end"
+                                    size="small"
+                                    sx={{ color: "rgba(255,255,255,0.5)" }}
+                                >
+                                    <CloseIcon fontSize="small" />
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
+
+                />
+
+                <Divider
+                    orientation="vertical"
+                    flexItem
+                    sx={{
+                        height: 28,
+                        alignSelf: 'center',
+                        borderColor: 'rgba(255,255,255,0.1)',
+                        display: { xs: 'none', sm: 'block' }
                     }}
                 />
 
-                <Divider orientation="vertical" flexItem sx={{ height: 28, alignSelf: 'center' }} />
-
                 {/* Quick Actions */}
-                <Button
-                    onClick={handleAiSubmit}
-                    variant="contained"
-                    sx={{
-                        borderRadius: '50px',
-                        textTransform: 'none',
-                        fontWeight: 'bold',
-                        px: 3,
-                        boxShadow: 'none'
-                    }}
-                >
-                    Search
-                </Button>
+                <Stack direction="row" spacing={1} sx={{ pr: 0.5 }}>
+                    <IconButton
+                        onClick={handleAiSubmit}
+                        sx={{
+                            bgcolor: "primary.main",
+                            color: "#fff",
+                            width: { xs: 36, md: 45 },
+                            height: { xs: 36, md: 45 },
+                            "&:hover": { bgcolor: "primary.dark" }
+                        }}
+                    >
+                        <SearchIcon sx={{ fontSize: { xs: "1.1rem", md: "1.4rem", color: "#fff" } }} />
+                    </IconButton>
 
-                <Button
-                    variant="outlined"
-                    onClick={handleOpen}
-                    startIcon={<FilterListIcon />}
-                    sx={{
-                        borderRadius: '50px',
-                        textTransform: 'none',
-                        fontWeight: 'bold',
-                        color: 'primary.main',
-                        borderColor: 'divider',
-                        whiteSpace: 'nowrap',
-                        minWidth: 'auto'
-                    }}
-                >
-                    Filters {activeCount > 0 && <Chip label={activeCount} size="small" color="primary" sx={{ height: 20, ml: 1, fontSize: 10 }} />}
-                </Button>
+                    <IconButton
+                        onClick={handleOpen}
+                        sx={{
+                            color: "#fff",
+                            border: '1px solid rgba(255,255,255,0.2)',
+                            width: { xs: 36, md: 45 },
+                            height: { xs: 36, md: 45 },
+                        }}
+                    >
+                        {activeCount > 0 ? (
+                            <Chip
+                                label={activeCount}
+                                size="small"
+                                color="primary"
+                                sx={{ height: 18, fontSize: 10, px: 0 }}
+                            />
+                        ) : (
+                            <FilterListIcon sx={{ fontSize: { xs: "1.1rem", md: "1.4rem" } }} />
+                        )}
+                    </IconButton>
+                </Stack>
             </Paper>
 
             {/* Filters Modal */}
@@ -177,10 +219,10 @@ const SearchFilters = ({
                         </Box> */}
 
                         {/* Price Range */}
-                        <Box sx={{ mb: 4 }}>
+                        <Box sx={{ mb: 4, width: "95%" }}>
                             <Typography fontWeight="bold" gutterBottom>Price Range (${CURRENCY})</Typography>
                             <Slider
-                                value={filters.priceRange || [0, 100000]}
+                                value={draftFilters.priceRange || [0, 100000]}
                                 onChange={handlePriceChange}
                                 valueLabelDisplay="auto"
                                 min={0}
@@ -191,15 +233,15 @@ const SearchFilters = ({
                             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <TextField
                                     size="small"
-                                    value={filters.priceRange?.[0] || 0}
-                                    InputProps={{ readOnly: true, startAdornment: <InputAdornment sx={{ color: "var(--text-primary)" }} position="start">{CURRENCY}</InputAdornment> }}
+                                    value={draftFilters.priceRange?.[0] || 0}
+                                    InputProps={{ readOnly: true, startAdornment: <InputAdornment sx={{ color: "var(--text-primary)" }} position="start"><span style={{ color: "var(--text-primary)" }}>{CURRENCY}</span></InputAdornment> }}
                                     sx={{ width: 120, color: "var(--text-primary)" }}
                                 />
                                 <Typography color="var(--text-secondary)">-</Typography>
                                 <TextField
                                     size="small"
-                                    value={filters.priceRange?.[1] || 100000}
-                                    InputProps={{ readOnly: true, startAdornment: <InputAdornment sx={{ color: "var(--text-primary)" }} position="start">{CURRENCY}</InputAdornment> }}
+                                    value={draftFilters.priceRange?.[1] || 100000}
+                                    InputProps={{ readOnly: true, startAdornment: <InputAdornment sx={{ color: "var(--text-primary)" }} position="start"><span style={{ color: "var(--text-primary)" }}></span>{CURRENCY}</InputAdornment> }}
                                     sx={{ width: 120, color: "var(--text-primary)" }}
                                 />
                             </Box>
@@ -211,8 +253,7 @@ const SearchFilters = ({
                             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                                 {ALL_AMENITIES.map(amenityObj => {
                                     const amenity = amenityObj.name;
-                                    const isSelected = (filters.amenities || []).includes(amenity);
-                                    return (
+                                    const isSelected = (draftFilters.amenities || []).includes(amenity); return (
                                         <Chip
                                             key={amenity}
                                             label={amenity}
@@ -251,10 +292,13 @@ const SearchFilters = ({
                 </DialogContent>
 
                 <DialogActions sx={{ p: 3, justifyContent: 'space-between' }}>
-                    <Button onClick={onClear} color="error" sx={{ textTransform: 'none' }}>Clear all</Button>
+                    <Button onClick={onClear} color="error" variant="outlined" sx={{ textTransform: 'none' }}>Clear all</Button>
                     <Button
                         variant="contained"
-                        onClick={handleClose}
+                        onClick={() => {
+                            onFilterChange(draftFilters);
+                            handleClose();
+                        }}
                         sx={{ borderRadius: '50px', px: 4, textTransform: 'none', fontWeight: 'bold' }}
                     >
                         Show {activeCount > 0 ? 'Results' : 'Listings'}

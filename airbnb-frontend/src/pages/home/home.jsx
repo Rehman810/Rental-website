@@ -336,13 +336,16 @@ const Home = () => {
           <Box
             sx={{
               position: "relative",
-              height: { xs: 350, md: 500 }, // taller for 360
-              transition: "all 0.3s ease",
+              height: { xs: 450, md: 500 }, // Slightly taller on mobile for better button fit
+              transition: "all 0.30s ease",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              mb: { xs: 2, md: 4 }, // less gap on mobile
+              mb: { xs: 2, md: 4 },
               bgcolor: "var(--bg-secondary)",
+              overflow: "hidden", // Prevent image bleed
+              zIndex: 1, // Keep it below fixed navbar
+              mt: { xs: "0px", md: 0 }, // Ensure no gap if nav is fixed
             }}
           >
             {/* 360 Viewer Background */}
@@ -376,11 +379,10 @@ const Home = () => {
                   mb: { xs: 1.5, md: 3 },
                   textAlign: "center",
 
-                  /* 🔑 Responsive font sizing */
                   fontSize: {
                     xs: "1.2rem",   // mobile
                     sm: "1.6rem",
-                    md: listings.length > 0 ? "2rem" : "2.6rem",
+                    md: listings.length > 0 ? "3rem" : "3.6rem",
                   },
 
                   lineHeight: 1.2,
@@ -401,21 +403,32 @@ const Home = () => {
                   textShadow: "0 2px 4px rgba(0,0,0,0.5)"
                 }}
               >
-                Explore properties in immersive 360° experience
               </Typography>
-
-              <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ zIndex: 2, mb: 4 }}>
+              <Stack
+                direction="row"
+                spacing={1.5}
+                sx={{
+                  zIndex: 2,
+                  mb: { xs: 4, md: 4 },
+                  width: { xs: "auto", sm: "auto" },
+                  px: { xs: 2, sm: 0 },
+                  justifyContent: 'center'
+                }}
+              >
                 <Button
                   variant="contained"
-                  size="large"
+                  size="medium"
                   sx={{
                     bgcolor: "#FF385C",
                     color: "white",
                     fontWeight: 800,
-                    px: 4,
-                    py: 1.5,
+                    px: { xs: 2, md: 4 },
+                    py: { xs: 1.2, md: 1.5 },
                     borderRadius: "999px",
                     textTransform: "none",
+                    whiteSpace: 'nowrap',
+                    fontSize: { xs: "0.8rem", md: "1.05rem" },
+                    boxShadow: "0 8px 20px rgba(255, 56, 92, 0.3)",
                     "&:hover": { bgcolor: "#E31C5F" }
                   }}
                   onClick={() => {
@@ -425,58 +438,33 @@ const Home = () => {
                     }
                   }}
                 >
-                  Browse Properties
+                  Browse properties
                 </Button>
                 <Button
                   variant="outlined"
-                  size="large"
+                  size="medium"
                   sx={{
                     borderColor: "white",
                     color: "white",
                     fontWeight: 800,
-                    px: 4,
-                    py: 1.5,
+                    px: { xs: 2, md: 4 },
+                    py: { xs: 1.2, md: 1.5 },
                     borderRadius: "999px",
                     textTransform: "none",
                     borderWidth: 2,
-                    "&:hover": { borderColor: "rgba(255,255,255,0.8)", bgcolor: "rgba(255,255,255,0.1)", borderWidth: 2 }
+                    fontSize: { xs: "0.8rem", md: "1.05rem" },
+                    backdropFilter: "blur(5px)",
+                    whiteSpace: 'nowrap',
+                    backgroundColor: "rgba(255,255,255,0.05)",
+                    "&:hover": {
+                      borderColor: "rgba(255,255,255,0.8)",
+                      bgcolor: "rgba(255,255,255,0.15)",
+                      borderWidth: 2
+                    }
                   }}
                   onClick={() => navigate("/hosting/today")}
                 >
-                  List Your Property
-                </Button>
-                <Button
-                  variant="contained"
-                  size="large"
-                  sx={{
-                    bgcolor: "#9b51e0",
-                    color: "white",
-                    fontWeight: 800,
-                    px: 4,
-                    py: 1.5,
-                    borderRadius: "999px",
-                    textTransform: "none",
-                    "&:hover": { bgcolor: "#7b1fa2" }
-                  }}
-                  onClick={async () => {
-                     const listingsSection = document.getElementById("listings-section");
-                     if (listingsSection) listingsSection.scrollIntoView({ behavior: "smooth" });
-                     
-                     setLoading(true);
-                     try {
-                        const res = await fetchData("api/v1/ai/recommendations");
-                        if(res?.data?.results) {
-                            setListings(res.data.results);
-                            toast.success("Loaded personalized AI Recommendations! 🪄");
-                        }
-                     } catch(e) {
-                         toast.error("Failed to fetch AI recommendations.");
-                     } finally {
-                         setLoading(false);
-                     }
-                  }}
-                >
-                  For You 🪄
+                  List property
                 </Button>
               </Stack>
 
@@ -593,27 +581,62 @@ const Home = () => {
               )}
             </Grid>
             {Math.ceil(totalCount / 30) > 1 && !hasMore && !loading && (
-              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4, mb: 4, width: '100%' }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  mt: 4,
+                  mb: 4,
+                  width: "100%",
+                }}
+              >
                 <Pagination
                   count={Math.ceil(totalCount / 30)}
                   page={Math.ceil(page / 3)}
                   onChange={(e, value) => {
                     const targetPage = (value - 1) * 3 + 1;
                     setPage(targetPage);
+
                     if (targetPage === 1) {
                       performSearch(filters, 1, false);
                     }
+
                     const listSection = document.getElementById("listings-section");
-                    if (listSection) listSection.scrollIntoView({ behavior: "smooth" });
+                    if (listSection) {
+                      listSection.scrollIntoView({ behavior: "smooth" });
+                    }
                   }}
                   color="primary"
                   size="large"
-                  sx={{
+                  sx={(theme) => ({
                     "& .MuiPaginationItem-root": {
                       fontWeight: 800,
-                      fontSize: "1rem"
-                    }
-                  }}
+                      fontSize: "1rem",
+                      color:
+                        theme.palette.mode === "dark"
+                          ? "#fff"
+                          : "var(--text-primary)",
+                      border:
+                        theme.palette.mode === "dark"
+                          ? "1px solid rgba(255,255,255,0.2)"
+                          : "1px solid rgba(0,0,0,0.2)",
+                    },
+
+                    "& .Mui-selected": {
+                      backgroundColor:
+                        theme.palette.mode === "dark"
+                          ? theme.palette.primary.main
+                          : theme.palette.primary.light,
+                      color: "#fff",
+                    },
+
+                    "& .MuiPaginationItem-ellipsis": {
+                      color:
+                        theme.palette.mode === "dark"
+                          ? "#aaa"
+                          : theme.palette.text.secondary,
+                    },
+                  })}
                 />
               </Box>
             )}

@@ -12,13 +12,15 @@ const ListingSchema = new mongoose.Schema({
 // Minimal User/Host schema for AI settings
 const UserSchema = new mongoose.Schema({
   userName: String,
+  firstName: String,
+  lastName: String,
   settings: {
     aiAssistant: {
       enabled: Boolean,
       geminiApiKey: String,
     }
   }
-}, { strict: false });
+}, { strict: false, collection: 'hosts' });
 
 export const Listing = mongoose.model('Listing', ListingSchema);
 export const User = mongoose.model('User', UserSchema);

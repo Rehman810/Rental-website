@@ -32,11 +32,14 @@ class ChatService {
     emitToUser(senderId, 'receive_message', savedMessage);
 
     // 3. Trigger Notification
+    const sender = await User.findById(senderId);
+    const senderName = sender?.firstName || sender?.userName || 'Someone';
+
     await notificationService.notify({
       userId: receiverId,
       type: 'NEW_MESSAGE',
       title: 'New Message',
-      message: `You have a new message from ${senderId}`,
+      message: `You have a new message from ${senderName}`,
       data: { conversationId: conversation._id },
       channels: ['DB', 'SOCKET', 'PUSH']
     });

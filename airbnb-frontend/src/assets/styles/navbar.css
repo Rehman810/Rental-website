@@ -13,3 +13,54 @@
   transform: translateY(-150px);
   transition: transform 0.5s ease-in-out;
 }
+
+/* Input text */
+.ant-picker-input>input {
+  color: var(--text-primary) !important;
+}
+
+/* Placeholder */
+.ant-picker-input>input::placeholder {
+  color: var(--text-secondary) !important;
+  opacity: 1 !important;
+}
+
+/* Container */
+.ant-picker {
+  background: transparent !important;
+  border: none !important;
+  color: var(--text-primary) !important;
+}
+
+/* Icon */
+.ant-picker-suffix {
+  color: var(--text-secondary) !important;
+}
+
+/* Disabled dates */
+.ant-picker-cell-disabled .ant-picker-cell-inner {
+  color: var(--text-tertiary) !important;
+  opacity: 0.4;
+}
+
+/* Header */
+.ant-picker-header {
+  background: var(--bg-secondary) !important;
+  border-bottom: 1px solid var(--border-medium) !important;
+}
+
+/* Month + Year */
+.ant-picker-header-view {
+  color: var(--text-primary) !important;
+  font-weight: 600;
+}
+
+/* Arrows */
+.ant-picker-header button {
+  color: var(--text-secondary) !important;
+}
+
+.ant-picker-header button:hover {
+  color: var(--text-primary) !important;
+  background: var(--bg-secondary) !important;
+}

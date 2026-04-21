@@ -22,16 +22,16 @@ dotenv.config();
 const app = express();
 // app.use(cors({ origin: FRONTEND_BASE_URL, credentials: true }));
 const allowedOrigins = [
+  FRONTEND_BASE_URL,
   "http://localhost:5174",
+  "http://localhost:5173",
   "https://rental-website-alpha.vercel.app",
   "https://www.mehman.site"
 ];
 
-app.use(cors({
+const corsOptions = {
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true); // allow non-browser requests
-
-    if (allowedOrigins.includes(origin)) {
+    if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
@@ -39,13 +39,12 @@ app.use(cors({
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-}));
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept"],
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
 
-app.options("*", cors({
-  origin: allowedOrigins,
-  credentials: true
-}));
+app.use(cors(corsOptions));
+
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
@@ -61,10 +60,7 @@ app.use(passport.initialize());
 const server = http.createServer(app);
 
 const io = new Server(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST", "DELETE", "PUT"],
-  },
+  cors: corsOptions,
   transports: ["websocket", "polling"],
 });
 

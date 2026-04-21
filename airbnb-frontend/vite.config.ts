@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => {
             VitePWA({
                 registerType: 'autoUpdate',
                 injectRegister: 'auto',
-                includeAssets: ['favicon.png', 'icons/apple-touch-icon.png'],
+                includeAssets: ['favicon.png', 'icons/apple-touch-icon.png', 'icons/pwa-192x192.png', 'icons/pwa-512x512.png'],
                 manifest: {
                     name: appName,
                     short_name: appName,
@@ -58,7 +58,7 @@ export default defineConfig(({ mode }) => {
                             }
                         },
                         {
-                            urlPattern: ({ url }) => url.pathname.startsWith('/api') || url.hostname.includes('api'),
+                            urlPattern: ({ url }) => url.pathname.includes('/api/') || url.hostname.includes('api'),
                             handler: 'NetworkFirst',
                             options: {
                                 cacheName: 'api-cache',
@@ -68,7 +68,7 @@ export default defineConfig(({ mode }) => {
                                     maxAgeSeconds: 24 * 60 * 60 // 1 Day
                                 },
                                 cacheableResponse: {
-                                    statuses: [0, 200]
+                                    statuses: [200]
                                 }
                             }
                         },

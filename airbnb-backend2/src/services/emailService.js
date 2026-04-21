@@ -12,7 +12,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export const sendEmail = async ({ to, subject, html, text, from }) => {
     try {
         const payload = {
-            from: from || process.env.RESEND_FROM_EMAIL || 'Airbnb <onboarding@resend.dev>',
+            from: from || process.env.RESEND_FROM_EMAIL || ` ${process.env.APP_NAME} <onboarding@resend.dev>`,
             to: Array.isArray(to) ? to : [to],
             subject: subject,
             html: html,
@@ -61,7 +61,7 @@ export const sendVerificationEmail = async (email, verificationLink) => {
                 <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff; border-radius:14px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.06);">
                     <tr>
                         <td style="background:#ff385c; padding:22px 26px;">
-                            <h1 style="margin:0; color:#ffffff; font-size:20px; font-weight:700;">Airbnb</h1>
+                            <h1 style="margin:0; color:#ffffff; font-size:20px; font-weight:700;">${process.env.APP_NAME}</h1>
                         </td>
                     </tr>
                     <tr>
@@ -71,10 +71,10 @@ export const sendVerificationEmail = async (email, verificationLink) => {
                                 ${isUrl ? 'Please click the button below to verify your email address.' : 'Use the following code to verify your email address. This code will expire in 10 minutes.'}
                             </p>
                             <div style="background:#f9fafb; border:1px solid #eef2f7; padding:14px; border-radius:12px; margin:18px 0; text-align:center;">
-                                ${isUrl 
-                                    ? `<a href="${verificationLink}" style="display:inline-block; background:#ff385c; color:white; padding:12px 24px; border-radius:8px; text-decoration:none; font-weight:bold;">Verify Email</a>`
-                                    : `<p style="margin:0; color:#111827; font-size:24px; font-weight:700; letter-spacing: 2px;">${verificationLink}</p>`
-                                }
+                                ${isUrl
+            ? `<a href="${verificationLink}" style="display:inline-block; background:#ff385c; color:white; padding:12px 24px; border-radius:8px; text-decoration:none; font-weight:bold;">Verify Email</a>`
+            : `<p style="margin:0; color:#111827; font-size:24px; font-weight:700; letter-spacing: 2px;">${verificationLink}</p>`
+        }
                             </div>
                             <p style="margin:18px 0 0; color:#9ca3af; font-size:12px; line-height:1.6;">
                                 If you did not request this, please ignore this email.
@@ -83,7 +83,7 @@ export const sendVerificationEmail = async (email, verificationLink) => {
                     </tr>
                     <tr>
                         <td style="background:#f9fafb; padding:16px 26px; text-align:center; border-top:1px solid #eef2f7;">
-                            <p style="margin:0; color:#9ca3af; font-size:12px;">© ${currentYear} Airbnb. All rights reserved.</p>
+                            <p style="margin:0; color:#9ca3af; font-size:12px;">© ${currentYear} ${process.env.APP_NAME}. All rights reserved.</p>
                         </td>
                     </tr>
                 </table>

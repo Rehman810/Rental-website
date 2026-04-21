@@ -2,15 +2,15 @@
 const currentYear = new Date().getFullYear();
 
 const masterTemplate = ({
-    title = "Notification",
-    greeting = "Hello",
-    message = "",
-    details = [], // Array of { label, value }
-    action = null, // { label, url }
-    supportEmail = "support@airbnb.com",
-    footerText = "",
+  title = "Notification",
+  greeting = "Hello",
+  message = "",
+  details = [], // Array of { label, value }
+  action = null, // { label, url }
+  supportEmail = "support@" + process.env.APP_NAME + ".com",
+  footerText = "",
 }) => {
-    return `
+  return `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,7 +28,7 @@ const masterTemplate = ({
           <tr>
             <td style="background:#ff385c; padding:24px; text-align: center;">
               <h1 style="margin:0; color:#ffffff; font-size:24px; font-weight:bold; letter-spacing:1px;">
-                Airbnb
+                ${process.env.APP_NAME}
               </h1>
               <p style="margin:5px 0 0; color:rgba(255,255,255,0.9); font-size:14px;">
                 ${title}
@@ -48,12 +48,12 @@ const masterTemplate = ({
               </p>
 
               ${details && details.length > 0
-            ? `
+      ? `
                 <div style="background:#f7f7f7; border-radius:8px; padding:20px; margin:24px 0;">
                   <table width="100%" cellpadding="0" cellspacing="0">
                     ${details
-                .map(
-                    (item) => `
+        .map(
+          (item) => `
                       <tr>
                         <td style="padding:8px 0; border-bottom:1px solid #eaeaea; color:#717171; font-size:14px; width: 40%;">
                           ${item.label}
@@ -63,16 +63,16 @@ const masterTemplate = ({
                         </td>
                       </tr>
                     `
-                )
-                .join("")}
+        )
+        .join("")}
                   </table>
                 </div>
                 `
-            : ""
-        }
+      : ""
+    }
 
               ${action
-            ? `
+      ? `
                 <div style="text-align:center; margin:32px 0;">
                   <a href="${action.url}"
                      style="display:inline-block; background:#ff385c; color:#ffffff; text-decoration:none;
@@ -81,8 +81,8 @@ const masterTemplate = ({
                   </a>
                 </div>
                 `
-            : ""
-        }
+      : ""
+    }
 
               <p style="margin:24px 0 0; color:#717171; font-size:14px; line-height:1.5; border-top: 1px solid #eaeaea; padding-top: 20px;">
                 Need help? Contact us at <a href="mailto:${supportEmail}" style="color:#ff385c; text-decoration:none;">${supportEmail}</a>
@@ -94,12 +94,12 @@ const masterTemplate = ({
           <tr>
             <td style="background:#f7f7f7; padding:20px; text-align:center; border-top:1px solid #eaeaea;">
               <p style="margin:0; color:#999999; font-size:12px;">
-                © ${currentYear} Airbnb Clone. All rights reserved.
+                © ${currentYear} ${process.env.APP_NAME}. All rights reserved.
               </p>
               ${footerText
-            ? `<p style="margin:8px 0 0; color:#999999; font-size:12px;">${footerText}</p>`
-            : ""
-        }
+      ? `<p style="margin:8px 0 0; color:#999999; font-size:12px;">${footerText}</p>`
+      : ""
+    }
               <div style="margin-top: 10px;">
                 <a href="#" style="color:#999999; text-decoration:none; margin: 0 5px; font-size: 12px;">Privacy</a>
                 <span style="color:#999999;">•</span>

@@ -92,7 +92,7 @@ export default function Navbar({
             fontWeight: "bold",
             fontSize: "1.5rem",
           }}>
-          Airbnb
+          {import.meta.env.VITE_APP_NAME}
         </Typography>
 
         {/* {(lastSegment === "all-products" ||

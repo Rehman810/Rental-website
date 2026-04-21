@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
-import Logo from "../../assets/images/logo.png";
+import { useTheme as useAppTheme } from "../../context/ThemeContext";
 import usePageTitle from "../../hooks/usePageTitle";
 import Step1 from "../host/step1";
 import PropertyType from "../host/propertyType";
@@ -110,6 +110,8 @@ function ListingSteps() {
     wifiPassword,
     checkInInstructions
   } = useAppContext();
+
+  const { resolvedTheme } = useAppTheme();
 
   const token = getAuthToken();
   const navigate = useNavigate();
@@ -394,9 +396,9 @@ function ListingSteps() {
         <Toolbar>
           <Box
             component="img"
-            src={Logo}
+            src={resolvedTheme === "dark" ? "/Logo-dark.png" : "/Logo-light.png"}
             alt="Logo"
-            sx={{ height: 42, marginRight: 2, marginLeft: 2 }}
+            sx={{ height: 42, marginRight: 2, marginLeft: 2, objectFit: "contain" }}
           />
           <Box sx={{ flexGrow: 1 }} />
           <Box>

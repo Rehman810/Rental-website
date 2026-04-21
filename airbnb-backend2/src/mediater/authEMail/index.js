@@ -1,11 +1,11 @@
 import { sendEmail as resendSendEmail } from "../../services/emailService.js";
 
 const authEmail = async (email, userName = "User") => {
-    if (!email) throw new Error("Recipient email is required");
+  if (!email) throw new Error("Recipient email is required");
 
-    const currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear();
 
-    const html = `
+  const html = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,7 +21,7 @@ const authEmail = async (email, userName = "User") => {
           <tr>
             <td style="background:#ff385c; padding:22px 26px;">
               <h1 style="margin:0; color:#ffffff; font-size:20px; font-weight:700; letter-spacing:0.4px;">
-                Airbnb
+                 ${process.env.APP_NAME}
               </h1>
               <p style="margin:6px 0 0; color:rgba(255,255,255,0.9); font-size:13px;">
                 Account Notification
@@ -63,7 +63,7 @@ const authEmail = async (email, userName = "User") => {
           <tr>
             <td style="background:#f9fafb; padding:16px 26px; text-align:center; border-top:1px solid #eef2f7;">
               <p style="margin:0; color:#9ca3af; font-size:12px;">
-                © ${currentYear} Airbnb. All rights reserved.
+                © ${currentYear} ${process.env.APP_NAME}. All rights reserved.
               </p>
             </td>
           </tr>
@@ -75,11 +75,11 @@ const authEmail = async (email, userName = "User") => {
 </html>
     `;
 
-    await resendSendEmail({
-        to: email,
-        subject: "Welcome to Airbnb — Account Created Successfully",
-        html: html
-    });
+  await resendSendEmail({
+    to: email,
+    subject: `Welcome to ${process.env.APP_NAME} — Account Created Successfully`,
+    html: html
+  });
 };
 
 export default authEmail;

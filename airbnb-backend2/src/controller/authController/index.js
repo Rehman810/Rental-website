@@ -16,9 +16,9 @@ const authController = {
     try {
       const { email } = req.body;
       const verificationLink = `${process.env.FRONTEND_BASE_URL}/verify?token=example-token`;
-      
+
       await sendVerificationEmail(email, verificationLink);
-      
+
       return res.status(200).json({ message: 'Example verification email sent successfully via Resend.' });
     } catch (error) {
       console.error('Test Email Error:', error.message);
@@ -52,7 +52,7 @@ const authController = {
         userId: user._id,
         role: 'guest',
         type: NOTIFICATION_TYPES.AUTH_WELCOME,
-        title: 'Welcome to Airbnb!',
+        title: `Welcome to ${process.env.APP_NAME}!`,
         message: `Welcome ${userName}, thank you for joining our community.`,
         data: { actionUrl: '/user/profile' }
       }).catch(err => {

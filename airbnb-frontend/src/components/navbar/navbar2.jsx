@@ -49,10 +49,12 @@ import { APP_NAME } from "../../config/env";
 import NotificationBell from "../notifications/NotificationBell";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
 import RoleSwitchLoader from "../loading/RoleSwitchLoader";
+import { useTheme } from "../../context/ThemeContext";
 
 initializeSocket();
 
 const NavbarHost = () => {
+  const { resolvedTheme } = useTheme();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -138,25 +140,11 @@ const NavbarHost = () => {
             minWidth: 170,
           }}
         >
-          <Box
-            sx={{
-              width: 34,
-              height: 34,
-              borderRadius: 2,
-              background: "linear-gradient(135deg, #ff385c, #ff5a5f)",
-              boxShadow: "0 12px 30px rgba(255,56,92,0.25)",
-            }}
+          <img
+            src={resolvedTheme === "dark" ? "/Logo-dark.png" : "/Logo-light.png"}
+            alt={APP_NAME}
+            style={{ height: 60, objectFit: "contain" }}
           />
-          <Typography
-            variant="h6"
-            sx={{
-              fontWeight: 900,
-              letterSpacing: "-0.3px",
-              userSelect: "none",
-            }}
-          >
-            {APP_NAME}
-          </Typography>
 
           <ChipLike label="Host" />
         </Box>

@@ -2,8 +2,8 @@ import Listing from '../../model/listingModel/index.js';
 import { sendEmail as resendSendEmail } from '../../services/emailService.js';
 
 const sendConfirmationEmail = async (userId, confirmedBooking) => {
-    try {
-        const emailTemplate = `
+  try {
+    const emailTemplate = `
         <html>
           <head>
             <style>
@@ -35,22 +35,22 @@ const sendConfirmationEmail = async (userId, confirmedBooking) => {
                 <a href="${process.env.FRONTEND_BASE_URL}/my-bookings" class="button">View Your Booking</a>
               </div>
               <div class="footer">
-                <p>&copy; ${new Date().getFullYear()} Airbnb. All rights reserved.</p>
+                <p>&copy; ${new Date().getFullYear()} Mehman. All rights reserved.</p>
               </div>
             </div>
           </body>
         </html>
       `;
 
-        await resendSendEmail({
-            to: confirmedBooking.email || process.env.RESEND_FROM_EMAIL, // Fallback if email is missing
-            subject: 'Your Booking is Confirmed!',
-            html: emailTemplate,
-        });
+    await resendSendEmail({
+      to: confirmedBooking.email || process.env.RESEND_FROM_EMAIL, // Fallback if email is missing
+      subject: 'Your Booking is Confirmed!',
+      html: emailTemplate,
+    });
 
-    } catch (error) {
-        console.error('Error sending confirmation email:', error.message);
-    }
+  } catch (error) {
+    console.error('Error sending confirmation email:', error.message);
+  }
 };
 
 export default sendConfirmationEmail;

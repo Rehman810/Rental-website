@@ -1,7 +1,7 @@
-# Airbnb-Like Website - Frontend Documentation
+# Mehman Website - Frontend Documentation
 
 ## Overview
-This project is the frontend for an Airbnb-like platform, built with **React.js** and **Vite.js**, designed for dynamic, user-friendly listings, booking systems, and user account management. The website offers both guest and host experiences, including booking management, profile customization, reviews, and real-time messaging.
+This project is the frontend for an Mehman platform, built with **React.js** and **Vite.js**, designed for dynamic, user-friendly listings, booking systems, and user account management. The website offers both guest and host experiences, including booking management, profile customization, reviews, and real-time messaging.
 
 ---
 

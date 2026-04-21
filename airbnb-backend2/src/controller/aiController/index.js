@@ -19,7 +19,7 @@ export const generateListing = async (req, res) => {
         const prompt = `
 You are a senior real estate marketing strategist and pricing analyst.
 
-Generate a high-converting Airbnb-style rental listing.
+Generate a high-converting ${process.env.APP_NAME} listing.
 
 Return ONLY valid JSON in this format:
 
@@ -82,7 +82,7 @@ export const assistantChat = async (req, res) => {
         }
 
         const prompt = buildHostAssistantPrompt(propertyData, chatHistory || [], guestMessage);
-        
+
         const reply = await generateAiReply(prompt);
 
         return res.json({
@@ -105,21 +105,21 @@ import Listing from '../../model/listingModel/index.js'; // fixed import
 export const getSmartRecommendations = async (req, res) => {
     try {
         const userId = req.user ? req.user._id : 'guest';
-        
+
         const filters = { ...req.query };
         if (filters.price_max) filters.price_max = parseFloat(filters.price_max);
 
         const recommendations = await fetchRecommendations(userId, filters, 20);
-        
+
         if (!recommendations || recommendations.listings.length === 0) {
             // Fetch default latest listings
             const defaultListings = await Listing.find({ status: 'active' }).limit(10);
             return res.json({ success: true, message: "Fallback listings fetched", data: { results: defaultListings } });
         }
-        
+
         // Fetch full listing documents from MongoDB
         const listings = await Listing.find({ _id: { $in: recommendations.listings } });
-        
+
         return res.json({ success: true, message: "AI Recommendations fetched successfully", data: { results: listings } });
     } catch (error) {
         return res.status(500).json({ success: false, message: error.message });

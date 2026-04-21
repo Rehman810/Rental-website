@@ -48,6 +48,7 @@ import {
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
 import MobileSearchBar from "../searchBar/mobileSearchbar";
 import CloseIcon from "@mui/icons-material/Close";
+import { useTheme } from "../../context/ThemeContext";
 
 const VerifiedMenu = ({ anchorEl, handleMenuClose, navigate, handleLogout, onRoleSwitch }) => {
   const { t } = useTranslation();
@@ -222,6 +223,7 @@ const drawerBtnSx = {
 };
 
 const Navbar = () => {
+  const { resolvedTheme } = useTheme();
   const { t } = useTranslation();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const toggleDrawer = (open) => () => setDrawerOpen(open);
@@ -308,25 +310,11 @@ const Navbar = () => {
             minWidth: 160,
           }}
         >
-          <Box
-            sx={{
-              width: 34,
-              height: 34,
-              borderRadius: 2,
-              background: "linear-gradient(135deg, #ff385c, #ff5a5f)",
-              boxShadow: "0 12px 30px rgba(255,56,92,0.25)",
-            }}
+          <img
+            src={resolvedTheme === "dark" ? "/Logo-dark.png" : "/Logo-light.png"}
+            alt={APP_NAME}
+            style={{ height: 80, objectFit: "contain", paddingTop: "10px" }}
           />
-          <Typography
-            variant="h6"
-            sx={{
-              fontWeight: 900,
-              letterSpacing: "-0.3px",
-              userSelect: "none",
-            }}
-          >
-            {APP_NAME}
-          </Typography>
         </Box>
 
         {!isMobile && isHomePage && (

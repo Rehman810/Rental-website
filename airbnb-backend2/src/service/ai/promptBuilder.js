@@ -30,7 +30,7 @@ Rules:
 
 export const buildHostAssistantPrompt = (propertyData, chatHistory, guestMessage) => {
     return `
-You are an AI assistant representing a property host on a rental platform similar to Airbnb.
+You are an AI assistant representing a property host on a rental platform name as ${process.env.APP_NAME}.
 Your job is to help guests with questions about the property, pricing, availability, amenities, and booking details.
 
 CRITICAL BEHAVIOR RULES:

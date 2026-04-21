@@ -1,0 +1,17 @@
+{
+  "location": "Emplacement",
+  "checkIn": "Arrivée",
+  "checkOut": "Départ",
+  "guests": "Voyageurs",
+  "search": "Rechercher",
+  "filters": "Filtres",
+  "clearAll": "Tout effacer",
+  "showResults": "Afficher les résultats",
+  "showListings": "Afficher les annonces",
+  "priceRange": "Fourchette de prix",
+  "amenities": "Équipements",
+  "listProperty": "Mettre votre logement",
+  "appName": "Mehman",
+  "languageAndRegion": "Langue et région",
+  "recommended": "Recommandé"
+}

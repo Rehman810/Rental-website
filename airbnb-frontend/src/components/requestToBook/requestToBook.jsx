@@ -30,9 +30,11 @@ import { CURRENCY } from "../../config/env";
 import usePageTitle from "../../hooks/usePageTitle";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import BackButton from "../backButton/backButton";
+import { useTranslation } from "react-i18next";
 
 const BookingComponent = () => {
-  usePageTitle("Request to Book");
+  const { t } = useTranslation();
+  usePageTitle(t("booking.requestToBook"));
   const { bookListing, bookingData, setBookListing, setBookingData, resetBookingState } = useBookingContext();
   const navigate = useNavigate();
   const { roomId } = useParams();
@@ -48,8 +50,6 @@ const BookingComponent = () => {
   useEffect(() => {
     const fetchListingData = async () => {
       if (!roomId) return;
-
-      // If we already have the correct listing, don't fetch again
       if (bookListing?._id === roomId) return;
 
       setFetchingListing(true);
@@ -70,7 +70,6 @@ const BookingComponent = () => {
   }, [roomId, bookListing?._id, setBookListing]);
 
   useEffect(() => {
-    // If we have no booking data (dates/guests), we can't show this page
     if (!bookingData || !bookingData.startDate || !bookingData.endDate) {
       if (!fetchingListing) {
         toast.error("Booking session expired. Please select dates again.");
@@ -78,12 +77,6 @@ const BookingComponent = () => {
       }
     }
   }, [bookingData, roomId, navigate, fetchingListing]);
-
-
-  const validateForm = () => {
-    if (!stripe || !elements) return false;
-    return true;
-  };
 
   const formatDateRange = (startDate, endDate) => {
     const start = new Date(startDate);
@@ -98,9 +91,6 @@ const BookingComponent = () => {
     return `${startDay} ${startMonth} - ${endDay} ${endMonth}`;
   };
 
-  const missingPhone = !user?.phoneNumber;
-  const missingPhoto = !user?.photoProfile;
-
   const total = useMemo(() => {
     return bookingData?.total ? Number(bookingData.total) : 0;
   }, [bookingData]);
@@ -113,16 +103,6 @@ const BookingComponent = () => {
 
     if (!user?.phoneNumber && !user?.photoProfile) {
       toast.error("Please add phone number & profile photo to continue.");
-      return;
-    }
-
-    if (!user?.phoneNumber) {
-      toast.error("Please add your phone number to continue.");
-      return;
-    }
-
-    if (!user?.photoProfile) {
-      toast.error("Please upload a profile photo to continue.");
       return;
     }
 
@@ -144,8 +124,6 @@ const BookingComponent = () => {
       }
 
       const { bookingMode, booking } = response;
-      console.log(bookingMode, booking._id);
-
       const cardElement = elements.getElement(CardElement);
 
       const { error, paymentIntent } = await stripe.confirmCardPayment(
@@ -169,48 +147,21 @@ const BookingComponent = () => {
       const bookingId = booking._id;
 
       if (paymentIntent?.status === "requires_capture" || paymentIntent?.status === "succeeded") {
-
         if (bookingMode === 'instant') {
-          // Instant Book: Capture and Confirm
-          try {
-            await postDataById(`confirm-booking`, {}, bookingId);
-            toast.success("Payment successful! Booking confirmed 🎉", { id: toastId });
-            resetBookingState();
-            setTimeout(() => {
-              navigate("/");
-            }, 2000);
-          } catch (confirmError) {
-            toast.error("Payment authorized but confirmation failed. Please contact support.", { id: toastId });
-          }
-
+          await postDataById(`confirm-booking`, {}, bookingId);
+          toast.success("Payment successful! Booking confirmed 🎉", { id: toastId });
+          resetBookingState();
+          setTimeout(() => navigate("/"), 2000);
         } else {
-          // Request to Book: Mark as Pending Approval
-          try {
-            await postDataById(`request-booking`, {}, bookingId);
-            toast.success("Request sent to host. Waiting for approval.", { id: toastId });
-            resetBookingState();
-            setTimeout(() => {
-              navigate("/");
-            }, 2000);
-          } catch (reqError) {
-            toast.error("Payment authorized but request failed. Please contact support.", { id: toastId });
-          }
+          await postDataById(`request-booking`, {}, bookingId);
+          toast.success("Request sent to host. Waiting for approval.", { id: toastId });
+          resetBookingState();
+          setTimeout(() => navigate("/"), 2000);
         }
         return;
       }
-
-      toast.error(`Payment status: ${paymentIntent?.status}`, { id: toastId });
     } catch (error) {
-      console.error(error);
-      if (error.response?.data?.missing) {
-        // Handle guest requirement missing
-        const missing = error.response.data.missing;
-        const missingText = missing.map(m => m.replace(/_/g, ' ')).join(', ');
-        toast.error(`Missing requirements: ${missingText}`, { id: toastId, duration: 5000 });
-        // Optionally navigate to profile?
-      } else {
-        toast.error(error.response?.data?.message || error.message || "Something went wrong", { id: toastId });
-      }
+      toast.error(error.response?.data?.message || "Something went wrong", { id: toastId });
     } finally {
       setIsLoading(false);
     }
@@ -221,33 +172,8 @@ const BookingComponent = () => {
   };
 
   const getCancellationDescription = (policy) => {
-    if (!policy) {
-      return "Free cancellation for a limited time.";
-    }
-
-    if (policy.type === "PREDEFINED" && policy.description) {
-      return policy.description;
-    }
-    const rules = policy.rules;
-    if (!rules) return "Cancellation policy applies.";
-
-    const parts = [];
-
-    if (rules.fullRefundHours) {
-      parts.push(`Free cancellation within ${rules.fullRefundHours} hours of booking`);
-    }
-
-    if (rules.partialRefundBeforeCheckIn?.enabled) {
-      parts.push(
-        `${rules.partialRefundBeforeCheckIn.percentage}% refund up to ${rules.partialRefundBeforeCheckIn.hoursBeforeCheckIn} hours before check-in`
-      );
-    }
-
-    if (rules.noRefundAfterCheckIn) {
-      parts.push("No refund after check-in");
-    }
-
-    return parts.join(". ") + ".";
+    if (!policy) return "Free cancellation for a limited time.";
+    return policy.description || "Cancellation policy applies.";
   };
 
   if (fetchingListing && (!bookListing || Object.keys(bookListing).length === 0)) {
@@ -263,6 +189,7 @@ const BookingComponent = () => {
       <Box sx={{ mb: 3 }}>
         <BackButton />
       </Box>
+
       {/* Header */}
       <Paper
         elevation={0}
@@ -272,433 +199,102 @@ const BookingComponent = () => {
           border: "1px solid",
           borderColor: "divider",
           mb: 3,
-          background:
-            "linear-gradient(135deg, rgba(25,118,210,0.06), rgba(156,39,176,0.04))",
+          background: "linear-gradient(135deg, rgba(25,118,210,0.06), rgba(156,39,176,0.04))",
         }}
       >
         <Stack spacing={0.5}>
           <Typography variant="h5" fontWeight={900}>
-            {bookListing?.effectiveBookingMode === 'instant' ? "Confirm and Pay" : "Request to Book"}
+            {bookListing?.effectiveBookingMode === 'instant' ? t("booking:confirmAndPay") : t("booking:requestToBook")}
           </Typography>
           <Typography variant="body2" color="var(--text-secondary)">
-            Review your trip details and complete payment securely.
+            {t("booking:reviewDetails")}
           </Typography>
         </Stack>
       </Paper>
 
       <Grid container spacing={3}>
-        {/* LEFT */}
         <Grid item xs={12} md={7}>
           <Stack spacing={2.5}>
-            {/* Payment Card */}
-            <Paper
-              elevation={0}
-              sx={{
-                p: 2.5,
-                borderRadius: 3,
-                border: "1px solid",
-                borderColor: "divider",
-              }}
-            >
+            {/* Payment */}
+            <Paper elevation={0} sx={{ p: 2.5, borderRadius: 3, border: "1px solid", borderColor: "divider" }}>
               <Stack spacing={1.5}>
                 <Stack direction="row" alignItems="center" justifyContent="space-between">
-                  <Typography variant="h6" fontWeight={900}>
-                    Pay with card
-                  </Typography>
-
-                  <Chip
-                    icon={<LockIcon />}
-                    label="Secure checkout"
-                    size="small"
-                    sx={{
-                      borderRadius: 2,
-                      fontWeight: 800,
-                      bgcolor: "rgba(46,125,50,0.10)",
-                      color: "success.main",
-                    }}
-                  />
+                  <Typography variant="h6" fontWeight={900}>{t("booking:payWithCard")}</Typography>
+                  <Chip icon={<LockIcon />} label={t("booking:secureCheckout")} size="small" sx={{ fontWeight: 800, bgcolor: "rgba(46,125,50,0.1)", color: "success.main" }} />
                 </Stack>
-
                 <Divider />
-
-                <Box
-                  sx={{
-                    p: 1.6,
-                    borderRadius: 2,
-                    border: "1px solid",
-                    borderColor: "divider",
-                    backgroundColor: "rgba(0,0,0,0.02)",
-                  }}
-                >
-                  <CardElement
-                    options={{
-                      hidePostalCode: true,
-                      style: {
-                        base: {
-                          fontSize: "16px",
-                          color: "var(--text-primary)",
-                          "::placeholder": { color: "var(--text-secondary)" },
-                        },
-                        invalid: { color: "#b91c1c" },
-                      },
-                    }}
-                  />
+                <Box sx={{ p: 1.6, borderRadius: 2, border: "1px solid", borderColor: "divider", backgroundColor: "rgba(0,0,0,0.02)" }}>
+                  <CardElement options={{ hidePostalCode: true, style: { base: { fontSize: "16px", color: "var(--text-primary)" } } }} />
                 </Box>
-
-                <Typography variant="caption" color="var(--text-secondary)">
-                  Your card details are encrypted and processed by Stripe.
-                </Typography>
               </Stack>
             </Paper>
 
             {/* Trip Details */}
-            <Paper
-              elevation={0}
-              sx={{
-                p: 2.5,
-                borderRadius: 3,
-                border: "1px solid",
-                borderColor: "divider",
-              }}
-            >
-              <Typography variant="h6" fontWeight={900}>
-                Your trip
-              </Typography>
-
+            <Paper elevation={0} sx={{ p: 2.5, borderRadius: 3, border: "1px solid", borderColor: "divider" }}>
+              <Typography variant="h6" fontWeight={900}>{t("booking:yourTrip")}</Typography>
               <Divider sx={{ my: 2 }} />
-
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
-                  <InfoTile
-                    icon={<CalendarMonthIcon />}
-                    title="Dates"
-                    value={formatDateRange(bookingData?.startDate, bookingData?.endDate)}
-                  />
+                  <InfoTile icon={<CalendarMonthIcon />} title={t("common:checkIn")} value={formatDateRange(bookingData?.startDate, bookingData?.endDate)} />
                 </Grid>
-
                 <Grid item xs={12} sm={6}>
-                  <InfoTile
-                    icon={<GroupIcon />}
-                    title="Guests"
-                    value={`${bookingData?.guestCapacity || 0}`}
-                  />
+                  <InfoTile icon={<GroupIcon />} title={t("common:guests")} value={`${bookingData?.guestCapacity || 0}`} />
                 </Grid>
               </Grid>
-            </Paper>
-
-            {/* Requirements */}
-
-            {(() => {
-              const reqs = bookListing?.effectiveGuestRequirements || {};
-              const createdDate = new Date(user?.createdAt || Date.now());
-              const accountAge =
-                (Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
-
-              return (
-                (reqs.requireVerifiedPhone || !user?.phoneNumber || reqs.requireProfilePhoto || !user?.photoProfile) &&
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: 2.5,
-                    borderRadius: 3,
-                    border: "1px solid",
-                    borderColor: "divider",
-                  }}
-                >
-                  <Typography variant="h6" fontWeight={900}>
-                    Required for your trip
-                  </Typography>
-
-                  <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.6 }}>
-                    Complete these items before requesting a booking.
-                  </Typography>
-
-                  <Divider sx={{ my: 2 }} />
-
-                  {/* Dynamic Requirements */}
-                  <>
-                    {/* Phone */}
-                    {(reqs.requireVerifiedPhone || !user?.phoneNumber) && (
-                      <RequirementRow
-                        title="Phone number"
-                        description="Add and confirm your phone number."
-                        actionLabel={user?.phoneNumber ? "Completed" : "Add"}
-                        onAction={() => navigate("/user/profile")}
-                        status={user?.phoneNumber ? "done" : "required"}
-                        required={reqs.requireVerifiedPhone}
-                      />
-                    )}
-
-                    {/* Photo */}
-                    {(reqs.requireProfilePhoto || !user?.photoProfile) && (
-                      <RequirementRow
-                        title="Profile photo"
-                        description="Hosts want to know who’s staying."
-                        actionLabel={user?.photoProfile ? "Completed" : "Add"}
-                        onAction={() => navigate("/user/profile")}
-                        status={user?.photoProfile ? "done" : "required"}
-                        required={reqs.requireProfilePhoto}
-                      />
-                    )}
-                  </>
-                </Paper>
-              );
-            })()}
-
-
-            {/* Policy */}
-            <Paper
-              elevation={0}
-              sx={{
-                p: 2.5,
-                borderRadius: 3,
-                border: "1px solid",
-                borderColor: "divider",
-                backgroundColor: "rgba(0,0,0,0.02)",
-              }}
-            >
-              <Typography variant="body2" color="var(--text-secondary)">
-                <b>Cancellation policy:</b> {getCancellationName(bookListing?.cancellationPolicy)}.
-                <br />
-                {getCancellationDescription(bookListing?.cancellationPolicy)}
-              </Typography>
             </Paper>
           </Stack>
         </Grid>
 
-        {/* RIGHT */}
         <Grid item xs={12} md={5}>
           <Box sx={{ position: "sticky", top: 110 }}>
-            <Paper
-              elevation={0}
-              sx={{
-                borderRadius: 3,
-                border: "1px solid",
-                borderColor: "divider",
-                overflow: "hidden",
-              }}
-            >
-              <CardMedia
-                component="img"
-                height="170"
-                image={
-                  bookListing?.photos?.[0] || "https://via.placeholder.com/300"
-                }
-                alt="Listing"
-                sx={{ objectFit: "cover" }}
-              />
-
+            <Paper elevation={0} sx={{ borderRadius: 3, border: "1px solid", borderColor: "divider", overflow: "hidden" }}>
+              <CardMedia component="img" height="170" image={bookListing?.photos?.[0] || "https://via.placeholder.com/300"} sx={{ objectFit: "cover" }} />
               <Box sx={{ p: 2.3 }}>
-                <Typography variant="subtitle1" fontWeight={900}>
-                  {bookListing?.title || "Listing"}
-                </Typography>
-                <Typography variant="body2" color="var(--text-secondary)">
-                  {bookListing?.roomType || ""}
-                </Typography>
-
+                <Typography variant="subtitle1" fontWeight={900}>{bookListing?.title}</Typography>
                 <Divider sx={{ my: 2 }} />
-
                 <Stack spacing={1}>
-                  <PriceRow
-                    label={`For ${bookingData?.nights || 0} nights`}
-                    value={`Rs ${bookingData?.priceForHouse || 0}`}
-                  />
-                  <PriceRow
-                    label="Service fee"
-                    value={`Rs ${bookingData?.serviceFee || 0}`}
-                  />
+                  <PriceRow label={t("booking:forNights", { count: bookingData?.nights || 0 })} value={`Rs ${bookingData?.priceForHouse || 0}`} />
+                  <PriceRow label={t("booking:serviceFee")} value={`Rs ${bookingData?.serviceFee || 0}`} />
                 </Stack>
-
                 <Divider sx={{ my: 2 }} />
-
                 <Stack direction="row" justifyContent="space-between" alignItems="center">
-                  <Typography fontWeight={900}>Total ({CURRENCY})</Typography>
+                  <Typography fontWeight={900}>{t("booking:total")} ({CURRENCY})</Typography>
                   <Typography fontWeight={900}>{CURRENCY} {bookingData?.total || 0}</Typography>
                 </Stack>
-
                 <Divider sx={{ my: 2 }} />
-
                 <Button
                   variant="contained"
                   fullWidth
                   onClick={handleReserve}
-                  disabled={isLoading || missingPhone || missingPhoto}
-                  endIcon={!isLoading && <ArrowForwardIcon />}
-                  sx={{
-                    py: 1.35,
-                    borderRadius: 2,
-                    textTransform: "none",
-                    fontWeight: 900,
-
-                    /* ✅ normal state */
-                    boxShadow: "var(--shadow-md)",
-
-                    "&:hover": {
-                      transform: "translateY(-1px)",
-                      boxShadow: "var(--shadow-lg)",
-                    },
-
-                    /* 🔑 DISABLED / LOADING STATE */
-                    "&.Mui-disabled": {
-                      backgroundColor: "var(--bg-tertiary)",
-                      color: "var(--text-tertiary)",
-                      border: "1px solid var(--border-muted)",
-                      boxShadow: "none",
-                      cursor: "not-allowed",
-                    },
-
-                    "&.Mui-disabled:hover": {
-                      transform: "none",
-                      boxShadow: "none",
-                    },
-
-                    /* disabled icon */
-                    "&.Mui-disabled .MuiButton-endIcon": {
-                      color: "var(--text-tertiary)",
-                    },
-
-                    transition: "all 0.18s ease",
-                  }}
+                  disabled={isLoading}
+                  sx={{ py: 1.35, borderRadius: 2, textTransform: "none", fontWeight: 900 }}
                 >
-                  {isLoading ? (
-                    <Stack direction="row" spacing={1} alignItems="center">
-                      <CircularProgress
-                        size={18}
-                        sx={{ color: "var(--text-tertiary)" }}
-                      />
-                      <span>Processing...</span>
-                    </Stack>
-                  ) : (
-                    bookListing?.effectiveBookingMode === "instant"
-                      ? "Confirm and Pay"
-                      : "Request to Book"
-                  )}
+                  {isLoading ? t("booking:payNow") + "..." : (bookListing?.effectiveBookingMode === "instant" ? t("booking:confirmAndPay") : t("booking:requestToBook"))}
                 </Button>
-
-
-                <Typography
-                  variant="caption"
-                  color="var(--text-secondary)"
-                  sx={{ display: "block", mt: 1.3, textAlign: "center", lineHeight: 1.6 }}
-                >
-                  {bookListing?.effectiveBookingMode === 'instant'
-                    ? "Your booking will be confirmed immediately."
-                    : <span><b>Your reservation won’t be confirmed</b> until the host accepts your request (within 24 hours). You won’t be charged until then.</span>
-                  }
-                </Typography>
               </Box>
             </Paper>
           </Box>
         </Grid>
-      </Grid >
-    </Box >
-  );
-};
-
-/* ------------------- Small UI Components ------------------- */
-
-const InfoTile = ({ icon, title, value }) => {
-  return (
-    <Box
-      sx={{
-        p: 1.8,
-        borderRadius: 2.5,
-        border: "1px solid",
-        borderColor: "divider",
-        backgroundColor: "var(--bg-secondary)",
-        display: "flex",
-        gap: 1.2,
-        alignItems: "flex-start",
-      }}
-    >
-      <Box
-        sx={{
-          width: 38,
-          height: 38,
-          borderRadius: 2,
-          display: "grid",
-          placeItems: "center",
-          backgroundColor: "rgba(25,118,210,0.10)",
-          color: "primary.main",
-          flexShrink: 0,
-        }}
-      >
-        {icon}
-      </Box>
-
-      <Box>
-        <Typography variant="caption" color="var(--text-secondary)" fontWeight={800}>
-          {title}
-        </Typography>
-        <Typography fontWeight={900} sx={{ mt: 0.2 }}>
-          {value}
-        </Typography>
-      </Box>
+      </Grid>
     </Box>
   );
 };
 
-const RequirementRow = ({ title, description, actionLabel, onAction, status }) => {
-  const isDone = status === "done";
-
-  return (
-    <Box
-      sx={{
-        p: 1.8,
-        borderRadius: 2.5,
-        border: "1px solid",
-        borderColor: "divider",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        gap: 2,
-      }}
-    >
-      <Box sx={{ display: "flex", gap: 1.2, alignItems: "flex-start" }}>
-        <Box sx={{ mt: 0.2 }}>
-          {isDone ? (
-            <CheckCircleIcon sx={{ color: "success.main" }} />
-          ) : (
-            <ErrorIcon sx={{ color: "warning.main" }} />
-          )}
-        </Box>
-
-        <Box>
-          <Typography fontWeight={900}>{title}</Typography>
-          <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.2 }}>
-            {description}
-          </Typography>
-        </Box>
-      </Box>
-
-      <Button
-        variant={isDone ? "outlined" : "contained"}
-        onClick={onAction}
-        disabled={isDone}
-        sx={{
-          borderRadius: 2,
-          textTransform: "none",
-          fontWeight: 900,
-          minWidth: 110,
-        }}
-      >
-        {actionLabel}
-      </Button>
+const InfoTile = ({ icon, title, value }) => (
+  <Box sx={{ p: 1.8, borderRadius: 2.5, border: "1px solid", borderColor: "divider", backgroundColor: "var(--bg-secondary)", display: "flex", gap: 1.2, alignItems: "flex-start" }}>
+    <Box sx={{ width: 38, height: 38, borderRadius: 2, display: "grid", placeItems: "center", backgroundColor: "rgba(25,118,210,0.1)", color: "primary.main", flexShrink: 0 }}>{icon}</Box>
+    <Box>
+      <Typography variant="caption" color="var(--text-secondary)" fontWeight={800}>{title}</Typography>
+      <Typography fontWeight={900}>{value}</Typography>
     </Box>
-  );
-};
+  </Box>
+);
 
-const PriceRow = ({ label, value }) => {
-  return (
-    <Stack direction="row" justifyContent="space-between" alignItems="center">
-      <Typography variant="body2" color="var(--text-secondary)">
-        {label}
-      </Typography>
-      <Typography variant="body2" fontWeight={900}>
-        {value}
-      </Typography>
-    </Stack>
-  );
-};
+const PriceRow = ({ label, value }) => (
+  <Stack direction="row" justifyContent="space-between" alignItems="center">
+    <Typography variant="body2" color="var(--text-secondary)">{label}</Typography>
+    <Typography variant="body2" fontWeight={900}>{value}</Typography>
+  </Stack>
+);
 
 export default BookingComponent;

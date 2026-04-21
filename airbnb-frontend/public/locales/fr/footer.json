@@ -10,12 +10,12 @@
   },
   "Hosting": {
     "hosting": "Hébergement",
-    "airbnbYourHome": "Louer votre maison sur {{appName}}",
+    "airbnbYourHome": "Louer votre maison sur Mehman",
     "airCoverForHosts": "AirCover pour les hôtes",
     "hostingResources": "Ressources pour les hôtes",
     "CommunityForum": "Forum communautaire",
     "hostingResponsibly": "Héberger de manière responsable",
-    "airbnbFriendlyApartments": "Appartements compatibles {{appName}}",
+    "airbnbFriendlyApartments": "Appartements compatibles Mehman",
     "joinAFreeHostingClass": "Rejoindre un cours d'hébergement gratuit",
     "findACoHost": "Trouver un co-hôte"
   },
@@ -25,6 +25,6 @@
     "careers": "Carrières",
     "investors": "Investisseurs",
     "giftCards": "Cartes-cadeaux",
-    "airbnbOrgEmergencyStays": "Séjours d'urgence {{appName}}.Org"
+    "airbnbOrgEmergencyStays": "Séjours d'urgence Mehman.Org"
   }
 }

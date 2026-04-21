@@ -20,8 +20,10 @@ import { useNavigate } from "react-router-dom";
 import { useWishlist } from "../../context/wishlistProvider";
 import VerifyToken from "../protected/verifyToken";
 import LoginModal from "../Login/LoginModal";
+import { useTranslation } from "react-i18next";
 
 const CardItem = React.memo(({ data }) => {
+  const { t } = useTranslation();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [signUp, isSignUp] = useState(false);
 
@@ -177,7 +179,7 @@ const CardItem = React.memo(({ data }) => {
           {/* Guest favourite */}
           {data?.guestFavourite && (
             <Chip
-              label="Guest favourite"
+              label={t("listing:guestFavourite")}
               size="small"
               sx={{
                 position: "absolute",
@@ -196,7 +198,7 @@ const CardItem = React.memo(({ data }) => {
           {/* 360 Available Badge */}
           {data?.image360 && (
             <Chip
-              label="360° Available"
+              label={t("listing:available360")}
               size="small"
               sx={{
                 position: "absolute",
@@ -294,7 +296,7 @@ const CardItem = React.memo(({ data }) => {
             <Stack direction="row" spacing={0.5} alignItems="center">
               <StarIcon sx={{ fontSize: 16 }} />
               <Typography variant="body2" fontWeight={900}>
-                {data?.averageRating || "New"}
+                {data?.averageRating || t("listing:new")}
               </Typography>
             </Stack>
           </Stack>

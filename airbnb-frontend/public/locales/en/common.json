@@ -1,0 +1,15 @@
+{
+  "location": "Location",
+  "checkIn": "Check In",
+  "checkOut": "Check Out",
+  "guests": "Guests",
+  "search": "Search",
+  "filters": "Filters",
+  "clearAll": "Clear all",
+  "showResults": "Show Results",
+  "showListings": "Show Listings",
+  "priceRange": "Price Range",
+  "amenities": "Amenities",
+  "browseProperties": "Browse properties",
+  "listProperty": "List property"
+}

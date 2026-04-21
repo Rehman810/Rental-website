@@ -10,12 +10,12 @@
   },
   "Hosting": {
     "hosting": "Konaklama",
-    "airbnbYourHome": "Evini {{appName}}'ye Aç",
+    "airbnbYourHome": "Evini Mehman'ye Aç",
     "airCoverForHosts": "Ev Sahipleri İçin AirCover",
     "hostingResources": "Konaklama Kaynakları",
     "CommunityForum": "Topluluk Forumu",
     "hostingResponsibly": "Sorumlu Konaklama",
-    "airbnbFriendlyApartments": "{{appName}} Dostu Daireler",
+    "airbnbFriendlyApartments": "Mehman Dostu Daireler",
     "joinAFreeHostingClass": "Ücretsiz Konaklama Eğitimi Katıl",
     "findACoHost": "Bir Konuk Ev Sahibi Bul"
   },
@@ -25,6 +25,6 @@
     "careers": "Kariyerler",
     "investors": "Yatırımcılar",
     "giftCards": "Hediye Kartları",
-    "airbnbOrgEmergencyStays": "{{appName}}.Org Acil Konaklamalar"
+    "airbnbOrgEmergencyStays": "Mehman.Org Acil Konaklamalar"
   }
 }

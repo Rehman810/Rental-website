@@ -1,0 +1,17 @@
+{
+  "location": "الموقع",
+  "checkIn": "تسجيل الوصول",
+  "checkOut": "تسجيل المغادرة",
+  "guests": "الضيوف",
+  "search": "بحث",
+  "filters": "الفلاتر",
+  "clearAll": "مسح الكل",
+  "showResults": "عرض النتائج",
+  "showListings": "عرض القوائم",
+  "priceRange": "نطاق السعر",
+  "amenities": "المرافق",
+  "listProperty": "أدرج عقارك",
+  "appName": "Mehman",
+  "languageAndRegion": "اللغة والمنطقة",
+  "recommended": "موصى به"
+}

@@ -44,8 +44,8 @@ const DEFAULT_FILTERS = {
 
 const Home = () => {
   const navigate = useNavigate();
-  usePageTitle("Home");
   const { t } = useTranslation();
+  usePageTitle("Home");
   const [searchError, setSearchError] = useState(false);
   const { searchParams } = useAppContext(); // Get searchParams from context
   const [page, setPage] = useState(1);
@@ -310,7 +310,7 @@ const Home = () => {
           >
             <Stack direction="row" spacing={1.5} alignItems="center">
               <Typography fontWeight={900}>
-                {t("home.showMap") || "Map"}
+                {t("translation:home:showMap") || "Map"}
               </Typography>
 
               <IconButton size="small" onClick={toggleMapVisibility}>
@@ -390,7 +390,7 @@ const Home = () => {
                   zIndex: 2,
                 }}
               >
-                Find Your Perfect Rental Space
+                {t("homepage:title")}
               </Typography>
               <Typography
                 color="rgba(255,255,255,0.9)"
@@ -403,7 +403,9 @@ const Home = () => {
                   textShadow: "0 2px 4px rgba(0,0,0,0.5)"
                 }}
               >
+                {t("homepage:subtitle")}
               </Typography>
+
               <Stack
                 direction="row"
                 spacing={1.5}
@@ -438,7 +440,7 @@ const Home = () => {
                     }
                   }}
                 >
-                  Browse properties
+                  {t("common:browseProperties")}
                 </Button>
                 <Button
                   variant="outlined"
@@ -464,8 +466,9 @@ const Home = () => {
                   }}
                   onClick={() => navigate("/hosting/today")}
                 >
-                  List property
+                  {t("common:listProperty")}
                 </Button>
+
               </Stack>
 
 
@@ -490,20 +493,6 @@ const Home = () => {
           </Box>
 
           <Container maxWidth="xl" id="listings-section">
-            {/* <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-              mb={2}
-              sx={{ color: "primary.main" }}
-            >
-              <Typography variant="h6" fontWeight={900}>
-                {listings.length > 0
-                  ? `${listings.length} Stays found`
-                  : "Recommended for you"}
-              </Typography>
-            </Stack> */}
-
             <Grid container spacing={2}>
               {initialLoading ? (
                 Array.from({ length: 8 }).map((_, i) => (
@@ -542,7 +531,7 @@ const Home = () => {
                     }}
                   >
                     <Typography variant="h6" fontWeight={900}>
-                      No listings found
+                      {t("translation:home:noListingsPresent") || "No listings found"}
                     </Typography>
                     <Typography variant="body2" color="var(--text-secondary)">
                       Try adjusting your filters or area.
@@ -666,7 +655,7 @@ const Home = () => {
           boxShadow: "0 14px 35px rgba(0,0,0,0.20)",
         }}
       >
-        {mapVisible ? "Show List" : "Map"}
+        {mapVisible ? (t("translation:home:showList") || "Show List") : (t("translation:home:showMap") || "Map")}
       </Button>
     </Box >
   );

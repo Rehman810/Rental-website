@@ -10,12 +10,12 @@
   },
   "Hosting": {
     "hosting": "الاستضافة",
-    "airbnbYourHome": "استأجر منزلك عبر {{appName}}",
+    "airbnbYourHome": "استأجر منزلك عبر Mehman",
     "airCoverForHosts": "AirCover للمضيفين",
     "hostingResources": "موارد الاستضافة",
     "CommunityForum": "منتدى المجتمع",
     "hostingResponsibly": "الاستضافة بشكل مسؤول",
-    "airbnbFriendlyApartments": "شقق صديقة لـ {{appName}}",
+    "airbnbFriendlyApartments": "شقق صديقة لـ Mehman",
     "joinAFreeHostingClass": "الانضمام إلى دورة استضافة مجانية",
     "findACoHost": "ابحث عن مساعد مضيف"
   },
@@ -25,6 +25,6 @@
     "careers": "وظائف",
     "investors": "المستثمرين",
     "giftCards": "بطاقات الهدايا",
-    "airbnbOrgEmergencyStays": "الإقامات الطارئة من {{appName}}.Org"
+    "airbnbOrgEmergencyStays": "الإقامات الطارئة من Mehman.Org"
   }
 }

@@ -22,11 +22,14 @@
   "checkIn": "Check In",
   "checkOut": "Check Out",
   "who": "Who",
-  "addGuests": "Add Guests",
+  "addGuests": "Add guests",
   "adults": "Adults",
   "children": "Children",
   "infants": "Infants",
   "pets": "Pets",
+  "clear": "Clear",
+  "done": "Done",
+  "popularDestinations": "Popular destinations",
   "menu": {
     "verified": {
       "messages": "Messages",

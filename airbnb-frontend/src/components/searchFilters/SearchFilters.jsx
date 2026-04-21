@@ -27,6 +27,8 @@ import MyLocationIcon from '@mui/icons-material/MyLocation';
 import { CURRENCY } from "../../config/env";
 import { ALL_AMENITIES } from "../amenities/amenitiesData";
 import Stack from "@mui/material/Stack"
+import { useTranslation } from 'react-i18next';
+
 const SearchFilters = ({
     filters,
     onFilterChange,
@@ -34,9 +36,11 @@ const SearchFilters = ({
     searchAsMove,
     onClear
 }) => {
+    const { t } = useTranslation();
     const [aiQuery, setAiQuery] = useState("");
     const [open, setOpen] = useState(false);
     const [draftFilters, setDraftFilters] = useState(filters);
+    
     const handlePriceChange = (event, newValue) => {
         setDraftFilters({ ...draftFilters, priceRange: newValue });
     };
@@ -99,7 +103,7 @@ const SearchFilters = ({
                 <TextField
                     fullWidth
                     variant="standard"
-                    placeholder="Start your search (e.g., 'Modern apartment in DHA')"
+                    placeholder={t("homepage:searchPlaceholder")}
                     value={aiQuery}
                     onChange={(e) => setAiQuery(e.target.value)}
                     onKeyDown={handleKeyDown}
@@ -197,30 +201,16 @@ const SearchFilters = ({
                 PaperProps={{ sx: { borderRadius: 3 } }}
             >
                 <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}>
-                    <Typography variant="h5" fontWeight="bold">Filters</Typography>
+                    <Typography variant="h5" fontWeight="bold">{t("common:filters")}</Typography>
                     <IconButton onClick={handleClose}><CloseIcon /></IconButton>
                 </DialogTitle>
 
                 <DialogContent dividers>
                     <Box sx={{ py: 2 }}>
 
-                        {/* Search as Move */}
-                        {/* <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, p: 2, bgcolor: 'grey.50', borderRadius: 2, backgroundColor: "var(--bg-secondary)" }}>
-                            <Box>
-                                <Typography fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                    <MyLocationIcon fontSize="small" color="action" sx={{ color: "var(--text-primary)" }} /> Search as I move map
-                                </Typography>
-                                <Typography variant="caption" color="var(--text-secondary)">Automatically update results when dragging the map</Typography>
-                            </Box>
-                            <Switch
-                                checked={searchAsMove}
-                                onChange={(e) => setSearchAsMove(e.target.checked)}
-                            />
-                        </Box> */}
-
                         {/* Price Range */}
                         <Box sx={{ mb: 4, width: "95%" }}>
-                            <Typography fontWeight="bold" gutterBottom>Price Range (${CURRENCY})</Typography>
+                            <Typography fontWeight="bold" gutterBottom>{t("common:priceRange")} (${CURRENCY})</Typography>
                             <Slider
                                 value={draftFilters.priceRange || [0, 100000]}
                                 onChange={handlePriceChange}
@@ -249,7 +239,7 @@ const SearchFilters = ({
 
                         {/* Amenities */}
                         <Box>
-                            <Typography fontWeight="bold" gutterBottom>Amenities</Typography>
+                            <Typography fontWeight="bold" gutterBottom>{t("common:amenities")}</Typography>
                             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                                 {ALL_AMENITIES.map(amenityObj => {
                                     const amenity = amenityObj.name;
@@ -292,7 +282,7 @@ const SearchFilters = ({
                 </DialogContent>
 
                 <DialogActions sx={{ p: 3, justifyContent: 'space-between' }}>
-                    <Button onClick={onClear} color="error" variant="outlined" sx={{ textTransform: 'none' }}>Clear all</Button>
+                    <Button onClick={onClear} color="error" variant="outlined" sx={{ textTransform: 'none' }}>{t("common:clearAll")}</Button>
                     <Button
                         variant="contained"
                         onClick={() => {
@@ -301,7 +291,7 @@ const SearchFilters = ({
                         }}
                         sx={{ borderRadius: '50px', px: 4, textTransform: 'none', fontWeight: 'bold' }}
                     >
-                        Show {activeCount > 0 ? 'Results' : 'Listings'}
+                        {activeCount > 0 ? t("common:showResults") : t("common:showListings")}
                     </Button>
                 </DialogActions>
             </Dialog>

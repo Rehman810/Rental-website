@@ -1,0 +1,17 @@
+{
+  "location": "地点",
+  "checkIn": "入住",
+  "checkOut": "退房",
+  "guests": "房客",
+  "search": "搜索",
+  "filters": "筛选",
+  "clearAll": "清除全部",
+  "showResults": "显示结果",
+  "showListings": "显示房源",
+  "priceRange": "价格范围",
+  "amenities": "配套设施",
+  "listProperty": "发布房源",
+  "appName": "Mehman",
+  "languageAndRegion": "语言与地区",
+  "recommended": "推荐"
+}

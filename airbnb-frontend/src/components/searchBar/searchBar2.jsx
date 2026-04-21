@@ -83,7 +83,7 @@ const SearchBar2 = () => {
                 variant="body2"
                 sx={{ fontWeight: "bold", fontSize: "12px" }}
               >
-                {t("anyWhere")}
+                {t("translation:anyWhere")}
               </Typography>
             </Box>
 
@@ -94,7 +94,7 @@ const SearchBar2 = () => {
                 variant="body2"
                 sx={{ fontWeight: "bold", fontSize: "12px" }}
               >
-                {t("anyWeek")}
+                {t("translation:anyWeek")}
               </Typography>
             </Box>
 
@@ -111,7 +111,7 @@ const SearchBar2 = () => {
                 variant="body2"
                 sx={{ fontWeight: "bold", fontSize: "12px" }}
               >
-                {t("addGuests")}
+                {t("translation:addGuests")}
               </Typography>
             </Box>
 

@@ -10,12 +10,12 @@
   },
   "Hosting": {
     "hosting": "Hosting",
-    "airbnbYourHome": "{{appName}} Your Home",
+    "airbnbYourHome": "Mehman Your Home",
     "airCoverForHosts": "AirCover For Hosts",
     "hostingResources": "Hosting Resources",
     "CommunityForum": "Community Forum",
     "hostingResponsibly": "Hosting Responsibly",
-    "airbnbFriendlyApartments": "{{appName}} Friendly Apartments",
+    "airbnbFriendlyApartments": "Mehman Friendly Apartments",
     "joinAFreeHostingClass": "Join A Free Hosting Class",
     "findACoHost": "Find A Co-Host"
   },
@@ -25,6 +25,6 @@
     "careers": "careers",
     "investors": "investors",
     "giftCards": "Gift Cards",
-    "airbnbOrgEmergencyStays": "{{appName}}.Org Emergency Stays"
+    "airbnbOrgEmergencyStays": "Mehman.Org Emergency Stays"
   }
 }

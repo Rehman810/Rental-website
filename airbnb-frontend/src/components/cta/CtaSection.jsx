@@ -9,12 +9,14 @@ import {
   useSpring, 
   useTransform 
 } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 /**
  * SplitText Reveal Component
  * Animates each character with a staggered, springy entrance.
  */
 const SplitText = ({ children, delay = 0 }) => {
+  if (!children) return null;
   const letters = children.split("");
   return (
     <Box component="span" sx={{ display: 'inline-flex', overflow: 'hidden' }}>
@@ -66,6 +68,8 @@ const MotionTypography = motion(Typography);
 const MotionButton = motion(Button);
 
 const CtaSection = () => {
+  const { t, i18n } = useTranslation("homepage");
+  const isEn = i18n.language === "en";
   const containerRef = useRef(null);
   const isInView = useInView(containerRef, { once: true, amount: 0.2 });
   const shouldReduceMotion = useReducedMotion();
@@ -207,7 +211,7 @@ const CtaSection = () => {
               sx={{
                 color: "#fff",
                 fontWeight: 950,
-                fontSize: { xs: "2rem", sm: "3.5rem", md: "5rem" },
+                fontSize: { xs: "2.2rem", sm: "3.5rem", md: "5rem" },
                 mb: 3,
                 letterSpacing: "-0.05em",
                 lineHeight: 1.1,
@@ -216,9 +220,9 @@ const CtaSection = () => {
             >
               {isInView && (
                 <>
-                  <SplitText>Find Your Next</SplitText> <br />
+                  {isEn ? <SplitText>{t("ctaTitle")}</SplitText> : <span>{t("ctaTitle")}</span>} <br />
                   <Box component="span" sx={{ color: "#FF385C" }}>
-                    <SplitText delay={0.8}>Home With Confidence</SplitText>
+                    {isEn ? <SplitText delay={0.8}>{t("ctaTitleRed")}</SplitText> : <span>{t("ctaTitleRed")}</span>}
                   </Box>
                 </>
               )}
@@ -237,8 +241,7 @@ const CtaSection = () => {
                 lineHeight: 1.7,
               }}
             >
-              Whether it&apos;s a coastal retreat or a downtown loft, our curated collection 
-              of high-quality listings ensures your next stay is nothing short of extraordinary.
+              {t("ctaSubtitle")}
             </MotionTypography>
 
             <Box sx={{ display: "flex", justifyContent: "center" }}>
@@ -291,7 +294,7 @@ const CtaSection = () => {
                 }}
                 onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
               >
-                Start Searching Now
+                {t("ctaButton")}
               </MotionButton>
             </Box>
           </Box>

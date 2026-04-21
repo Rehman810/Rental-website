@@ -1,0 +1,17 @@
+{
+  "location": "Konum",
+  "checkIn": "Giriş",
+  "checkOut": "Çıkış",
+  "guests": "Misafirler",
+  "search": "Arama",
+  "filters": "Filtreler",
+  "clearAll": "Hepsini temizle",
+  "showResults": "Sonuçları göster",
+  "showListings": "İlanları göster",
+  "priceRange": "Fiyat aralığı",
+  "amenities": "Olanaklar",
+  "listProperty": "Mülkünüzü listeleyin",
+  "appName": "Mehman",
+  "languageAndRegion": "Dil ve Bölge",
+  "recommended": "Önerilen"
+}

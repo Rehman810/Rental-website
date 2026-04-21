@@ -46,6 +46,7 @@ import {
   PersonAddAlt as PersonAddAltIcon,
 } from "@mui/icons-material";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
+import LanguageToggle from "../LanguageToggle/LanguageToggle";
 import MobileSearchBar from "../searchBar/mobileSearchbar";
 import CloseIcon from "@mui/icons-material/Close";
 import { useTheme } from "../../context/ThemeContext";
@@ -85,21 +86,21 @@ const VerifiedMenu = ({ anchorEl, handleMenuClose, navigate, handleLogout, onRol
         <ListItemIcon>
           <MailOutlineIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} />
         </ListItemIcon>
-        <ListItemText primary={t("menu.verified.messages")} />
+        <ListItemText primary={t("translation:menu.verified.messages")} />
       </MenuItem>
 
       <MenuItem sx={itemSx} onClick={() => navigate("/user/trips")}>
         <ListItemIcon>
           <LuggageIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} />
         </ListItemIcon>
-        <ListItemText primary={t("menu.verified.trips")} />
+        <ListItemText primary={t("translation:menu.verified.trips")} />
       </MenuItem>
 
       <MenuItem sx={itemSx} onClick={() => navigate("/user/wishlist")}>
         <ListItemIcon>
           <FavoriteBorderIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} />
         </ListItemIcon>
-        <ListItemText primary={t("menu.verified.wishlists")} />
+        <ListItemText primary={t("translation:menu.verified.wishlists")} />
       </MenuItem>
 
       <Divider />
@@ -108,14 +109,14 @@ const VerifiedMenu = ({ anchorEl, handleMenuClose, navigate, handleLogout, onRol
         <ListItemIcon>
           <DashboardCustomizeOutlinedIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} />
         </ListItemIcon>
-        <ListItemText primary={t("menu.verified.manageListings")} />
+        <ListItemText primary={t("translation:menu.verified.manageListings")} />
       </MenuItem>
 
       <MenuItem sx={itemSx} onClick={() => navigate("/user/profile")}>
         <ListItemIcon>
           <PersonOutlineIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} />
         </ListItemIcon>
-        <ListItemText primary={t("menu.hostMenu2.userProfile")} />
+        <ListItemText primary={t("translation:menu.hostMenu2.userProfile")} />
       </MenuItem>
 
       <Divider />
@@ -124,7 +125,7 @@ const VerifiedMenu = ({ anchorEl, handleMenuClose, navigate, handleLogout, onRol
         <ListItemIcon>
           <HelpOutlineIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} />
         </ListItemIcon>
-        <ListItemText primary={t("menu.verified.helpCenter")} />
+        <ListItemText primary={t("translation:menu.verified.helpCenter")} />
       </MenuItem>
 
       <MenuItem
@@ -137,7 +138,7 @@ const VerifiedMenu = ({ anchorEl, handleMenuClose, navigate, handleLogout, onRol
         <ListItemIcon sx={{ color: "error.main" }}>
           <LogoutIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} />
         </ListItemIcon>
-        <ListItemText primary={t("menu.verified.logout")} />
+        <ListItemText primary={t("translation:menu.verified.logout")} />
       </MenuItem>
     </Menu>
   );
@@ -185,14 +186,14 @@ const UnverifiedMenu = ({
         <ListItemIcon>
           <LoginIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} />
         </ListItemIcon>
-        <ListItemText primary={t("menu.unverified.login")} />
+        <ListItemText primary={t("translation:menu.unverified.login")} />
       </MenuItem>
 
       <MenuItem sx={itemSx} onClick={handleSignUpModalOpen}>
         <ListItemIcon>
           <PersonAddAltIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} />
         </ListItemIcon>
-        <ListItemText primary={t("menu.unverified.signUp")} />
+        <ListItemText primary={t("translation:menu.unverified.signUp")} />
       </MenuItem>
 
       <Divider />
@@ -201,14 +202,14 @@ const UnverifiedMenu = ({
         <ListItemIcon>
           <HomeWorkOutlinedIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} />
         </ListItemIcon>
-        <ListItemText primary={t("menu.unverified.airbnbYourHome")} />
+        <ListItemText primary={t("translation:menu.unverified.airbnbYourHome", { appName: APP_NAME })} />
       </MenuItem>
 
       <MenuItem sx={itemSx} onClick={() => navigate("/user/help/feature")}>
         <ListItemIcon>
           <HelpOutlineIcon fontSize="small" sx={{ color: "var(--icon-primary)" }} />
         </ListItemIcon>
-        <ListItemText primary={t("menu.unverified.helpCenter")} />
+        <ListItemText primary={t("translation:menu.unverified.helpCenter")} />
       </MenuItem>
     </Menu>
   );
@@ -351,14 +352,11 @@ const Navbar = () => {
               }}
               onClick={() => handleRoleSwitch('host', '/hosting/today')}
             >
-              {!token
-                ? t("navbar.airbnbYourHome")
-                : t("navbar.switchToHosting")}
+              {t("navbar:switchToHosting")}
             </Button>
             {token && <NotificationBell />}
-            <IconButton sx={{ color: "var(--text-primary)" }}>
-              <GlobalIcon onClick={toggleModal} />
-            </IconButton>
+            <LanguageToggle />
+
             <ThemeToggle />
           </Box>
           <Box
@@ -471,7 +469,7 @@ const Navbar = () => {
                   startIcon={<MailOutlineIcon />}
                   sx={drawerBtnSx}
                 >
-                  {t("menu.verified.messages")}
+                  {t("translation:menu.verified.messages")}
                 </Button>
                 <Button
                   onClick={() => {
@@ -481,7 +479,7 @@ const Navbar = () => {
                   startIcon={<LuggageIcon />}
                   sx={drawerBtnSx}
                 >
-                  {t("menu.verified.trips")}
+                  {t("translation:menu.verified.trips")}
                 </Button>
 
                 <Button
@@ -492,7 +490,7 @@ const Navbar = () => {
                   startIcon={<FavoriteBorderIcon />}
                   sx={drawerBtnSx}
                 >
-                  {t("menu.verified.wishlists")}
+                  {t("translation:menu.verified.wishlists")}
                 </Button>
 
                 <Button
@@ -503,7 +501,7 @@ const Navbar = () => {
                   startIcon={<DashboardCustomizeOutlinedIcon />}
                   sx={drawerBtnSx}
                 >
-                  {t("menu.verified.manageListings")}
+                  {t("translation:menu.verified.manageListings")}
                 </Button>
 
                 <Button sx={drawerBtnSx}
@@ -511,7 +509,7 @@ const Navbar = () => {
                     navigate("/user/profile")
                     setDrawerOpen(false);
                   }} startIcon={<PersonOutlineIcon />}>
-                  {t("menu.hostMenu2.userProfile")}
+                  {t("translation:menu.hostMenu2.userProfile")}
                 </Button>
               </>
             )}

@@ -20,6 +20,7 @@ import { useAppContext } from "../../context/context";
 const Language = ({ open, toggleModal }) => {
   const { i18n } = useTranslation();
   const { setLanguage } = useAppContext();
+  const { t } = useTranslation();
 
   const languages = [
     { code: "en", lang: "English", region: "United States" },
@@ -113,17 +114,16 @@ const Language = ({ open, toggleModal }) => {
           justifyContent: "space-between",
           borderBottom: "1px solid",
           borderColor: "divider",
-          // backgroundColor: "rgba(255,255,255,0.92)",
           backgroundColor: "var(--bg-card)",
           backdropFilter: "blur(10px)",
         }}
       >
         <Box>
           <Typography variant="h6" fontWeight={900}>
-            Language & Region
+            {t("common:languageAndRegion")}
           </Typography>
           <Typography variant="body2" color="" sx={{ mt: 0.3 }}>
-            Select your preferred language for a better experience.
+            {t("common:selectPreferredLanguage")}
           </Typography>
         </Box>
 
@@ -149,7 +149,7 @@ const Language = ({ open, toggleModal }) => {
         {/* Primary Languages */}
         <Box sx={{ mb: 2 }}>
           <Typography fontWeight={900} sx={{ mb: 1 }}>
-            Recommended
+            {t("common:recommended")}
           </Typography>
           <Grid container spacing={2}>
             {languages.map((lng) => (
@@ -165,7 +165,7 @@ const Language = ({ open, toggleModal }) => {
         {/* Other Languages */}
         <Box>
           <Typography fontWeight={900} sx={{ mb: 1 }}>
-            More languages
+            {t("common:moreLanguages")}
           </Typography>
 
           <Grid container spacing={2}>

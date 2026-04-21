@@ -10,12 +10,12 @@
   },
   "Hosting": {
     "hosting": "房东",
-    "airbnbYourHome": "{{appName}} 你的家",
+    "airbnbYourHome": "Mehman 你的家",
     "airCoverForHosts": "房东空中保障",
     "hostingResources": "房东资源",
     "CommunityForum": "社区论坛",
     "hostingResponsibly": "负责任的房东",
-    "airbnbFriendlyApartments": "{{appName}} 友好公寓",
+    "airbnbFriendlyApartments": "Mehman 友好公寓",
     "joinAFreeHostingClass": "参加免费的房东课程",
     "findACoHost": "寻找合伙人"
   },
@@ -25,6 +25,6 @@
     "careers": "职业",
     "investors": "投资者",
     "giftCards": "礼品卡",
-    "airbnbOrgEmergencyStays": "{{appName}}.Org 紧急住宿"
+    "airbnbOrgEmergencyStays": "Mehman.Org 紧急住宿"
   }
 }

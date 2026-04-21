@@ -1,4 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap');
 @import "./styles/theme.css";
+
+.ur-font, .ur-font * {
+  font-family: 'Noto Nastaliq Urdu', serif !important;
+}
+
 
 @font-face {
   font-family: "Airbnb";

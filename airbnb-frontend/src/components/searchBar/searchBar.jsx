@@ -64,13 +64,15 @@ const SearchBar = () => {
   const decrementGuest = (type) =>
     setGuests((prev) => ({ ...prev, [type]: Math.max(0, prev[type] - 1) }));
 
-  const { karachi, islamabad, lahore } = t("cities");
+  // Fix: Explicitly point to the translation namespace for nested cities object
+  const citiesData = t("translation:cities", { returnObjects: true }) || {};
+  const { karachi, islamabad, lahore } = citiesData;
 
   const cities = useMemo(
     () => [
-      { name: karachi.name, text: karachi.text, icon: Icon1 },
-      { name: islamabad.name, text: islamabad.text, icon: Icon2 },
-      { name: lahore.name, text: lahore.text, icon: Icon3 },
+      { name: karachi?.name, text: karachi?.text, icon: Icon1 },
+      { name: islamabad?.name, text: islamabad?.text, icon: Icon2 },
+      { name: lahore?.name, text: lahore?.text, icon: Icon3 },
     ],
     [karachi, islamabad, lahore]
   );
@@ -80,10 +82,10 @@ const SearchBar = () => {
     if (!total) return "";
 
     const parts = [
-      guests.adults ? `${guests.adults} ${t("adults")}` : "",
-      guests.children ? `${guests.children} ${t("children")}` : "",
-      guests.infants ? `${guests.infants} ${t("infants")}` : "",
-      guests.pets ? `${guests.pets} ${t("pets")}` : "",
+      guests.adults ? `${guests.adults} ${t("translation:adults")}` : "",
+      guests.children ? `${guests.children} ${t("translation:children")}` : "",
+      guests.infants ? `${guests.infants} ${t("translation:infants")}` : "",
+      guests.pets ? `${guests.pets} ${t("translation:pets")}` : "",
     ].filter(Boolean);
 
     return parts.join(", ");
@@ -245,11 +247,11 @@ const SearchBar = () => {
               }}
             >
               <Typography sx={{ fontWeight: 900, fontSize: 12 }}>
-                {t("where")}
+                {t("translation:where")}
               </Typography>
 
               <TextField
-                placeholder={t("destination")}
+                placeholder={t("translation:destination")}
                 variant="standard"
                 fullWidth
                 InputProps={{ disableUnderline: true }}
@@ -282,7 +284,7 @@ const SearchBar = () => {
                   }}
                 >
                   <Typography sx={{ fontWeight: 900, fontSize: 12 }}>
-                    {t("addDates")}
+                    {t("translation:addDates")}
                   </Typography>
 
                   <Box sx={{ mt: 0.3 }}>
@@ -290,7 +292,7 @@ const SearchBar = () => {
                       value={dates}
                       allowClear={false}
                       onChange={(val) => setDates(val)}
-                      placeholder={[t("checkIn"), t("checkOut")]}
+                      placeholder={[t("translation:checkIn"), t("translation:checkOut")]}
                       disabledDate={disableDates}
                       format="DD MMM"
                       style={{
@@ -318,11 +320,11 @@ const SearchBar = () => {
                   }}
                 >
                   <Typography sx={{ fontWeight: 900, fontSize: 12 }}>
-                    {t("who")}
+                    {t("translation:who")}
                   </Typography>
 
                   <TextField
-                    placeholder={t("addGuests")}
+                    placeholder={t("translation:addGuests")}
                     variant="standard"
                     fullWidth
                     InputProps={{ disableUnderline: true }}
@@ -357,7 +359,7 @@ const SearchBar = () => {
                     "&:hover": { backgroundColor: "rgba(0,0,0,0.04)" },
                   }}
                 >
-                  Clear
+                  {t("translation:clear")}
                 </Button>
               )}
 
@@ -410,14 +412,14 @@ const SearchBar = () => {
               color: "var(--text-secondary)",
             }}
           >
-            Popular destinations
+            {t("translation:popularDestinations")}
           </Typography>
 
           {cities.map((city) => (
             <MenuItem
               key={city.name}
               onClick={() => {
-                setSelectedDestination(`${city.name}, ${t("country")}`);
+                setSelectedDestination(`${city.name}, ${t("translation:country")}`);
                 closeWhereMenu();
               }}
               sx={{
@@ -435,7 +437,7 @@ const SearchBar = () => {
                 />
                 <Box>
                   <Typography sx={{ fontWeight: 900, fontSize: 14 }}>
-                    {city.name}, {t("country")}
+                    {city.name}, {t("translation:country")}
                   </Typography>
                   <Typography variant="body2" sx={{ color: "var(--text-secondary)" }}>
                     {city.text}
@@ -461,17 +463,17 @@ const SearchBar = () => {
           }}
         >
           <Typography sx={{ fontWeight: 900, mb: 1 }}>
-            {t("who")}
+            {t("translation:who")}
           </Typography>
 
           <Stack spacing={1}>
-            <GuestRow label={t("adults")} type="adults" />
+            <GuestRow label={t("translation:adults")} type="adults" />
             <Divider />
-            <GuestRow label={t("children")} type="children" />
+            <GuestRow label={t("translation:children")} type="children" />
             <Divider />
-            <GuestRow label={t("infants")} type="infants" />
+            <GuestRow label={t("translation:infants")} type="infants" />
             <Divider />
-            <GuestRow label={t("pets")} type="pets" />
+            <GuestRow label={t("translation:pets")} type="pets" />
           </Stack>
 
           <Box
@@ -501,7 +503,7 @@ const SearchBar = () => {
                 "&:hover": { backgroundColor: "rgba(0,0,0,0.04)" },
               }}
             >
-              Clear
+              {t("translation:clear")}
             </Button>
 
             <Button
@@ -514,7 +516,7 @@ const SearchBar = () => {
                 fontWeight: 900,
               }}
             >
-              Done
+              {t("translation:done")}
             </Button>
           </Box>
 

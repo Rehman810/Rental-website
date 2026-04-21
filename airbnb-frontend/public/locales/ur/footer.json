@@ -10,12 +10,12 @@
   },
   "Hosting": {
     "hosting": "میزبانی",
-    "airbnbYourHome": "اپنے گھر کو {{appName}} پر کرایہ پر دیں",
+    "airbnbYourHome": "اپنے گھر کو Mehman پر کرایہ پر دیں",
     "airCoverForHosts": "میزبانوں کے لیے AirCover",
     "hostingResources": "میزبانی کے وسائل",
     "CommunityForum": "کمیونٹی فورم",
     "hostingResponsibly": "ذمہ داری کے ساتھ میزبانی کریں",
-    "airbnbFriendlyApartments": "{{appName}} دوستانہ اپارٹمنٹس",
+    "airbnbFriendlyApartments": "Mehman دوستانہ اپارٹمنٹس",
     "joinAFreeHostingClass": "مفت میزبانی کلاس میں شامل ہوں",
     "findACoHost": "ایک معاون میزبان تلاش کریں"
   },
@@ -25,6 +25,6 @@
     "careers": "کیریئر",
     "investors": "سرمایہ کار",
     "giftCards": "گفٹ کارڈز",
-    "airbnbOrgEmergencyStays": "{{appName}}.Org ہنگامی قیام"
+    "airbnbOrgEmergencyStays": "Mehman.Org ہنگامی قیام"
   }
 }

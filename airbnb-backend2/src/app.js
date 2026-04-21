@@ -23,7 +23,8 @@ const app = express();
 // app.use(cors({ origin: FRONTEND_BASE_URL, credentials: true }));
 const allowedOrigins = [
   "http://localhost:5174",
-  "https://rental-website-alpha.vercel.app"
+  "https://rental-website-alpha.vercel.app",
+  "https://www.mehman.site"
 ];
 
 app.use(cors({

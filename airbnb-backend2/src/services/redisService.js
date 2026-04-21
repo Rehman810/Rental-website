@@ -3,12 +3,26 @@ import Redis from 'ioredis';
 const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
 
 export const redis = new Redis(redisUrl, {
-  maxRetriesPerRequest: 3,
-  enableReadyCheck: true,
-  retryStrategy: (times) => Math.min(times * 50, 2000), // Exponential backoff
+  maxRetriesPerRequest: 1, // Don't block requests if Redis is down
+  enableReadyCheck: false, // Skip ready check to avoid hang
+  lazyConnect: true, // Only connect when used
+  retryStrategy: (times) => {
+    if (times > 3) {
+      console.warn('[Redis] Connection failed persistently. Caching will be disabled.');
+      return null; // Stop retrying after 3 attempts
+    }
+    return Math.min(times * 100, 2000);
+  },
 });
 
-redis.on('error', (err) => console.error('Redis Client Error', err));
+redis.on('error', (err) => {
+    if (err.code === 'ECONNREFUSED') {
+        // Log once and suppress further noise if necessary
+        // console.warn('[Redis] Not available at ' + redisUrl);
+    } else {
+        console.error('Redis Client Error', err);
+    }
+});
 
 export const setCache = async (key, data, ttlSeconds) => {
   try {

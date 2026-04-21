@@ -6,7 +6,6 @@ import { generateAiReply } from '../../service/ai/aiProvider.js';
 import { buildHostAssistantPrompt } from '../../service/ai/promptBuilder.js';
 
 import { generateListingSummary } from '../../service/ai/summaryGenerator.js';
-import { publishEvent, QUEUES } from '../../config/rabbitmq/producer.js';
 export const chatController = {
   sendMessage: async (io, req, res) => {
     const { guestId, message, listingId, role } = req.body;
@@ -16,7 +15,7 @@ export const chatController = {
     }
 
     try {
-      const [user1, user2] = [hostId, guestId].sort();
+      const [user1, user2] = [hostId.toString(), guestId.toString()].sort();
       let chat = await Chat.findOne({ hostId: user1, guestId: user2 });
       if (!chat) {
         chat = new Chat({ hostId: user1, guestId: user2, messages: [] });
@@ -37,17 +36,13 @@ export const chatController = {
       await chat.save();
 
       const chatRoomId = `${user1}_${user2}`;
+      const savedMessage = chat.messages[chat.messages.length -1];
+      
+      console.log(`[Socket] Emitting to room: ${chatRoomId}`);
+      // Reverting to direct socket emission
+      io.to(chatRoomId).emit('receive_message', savedMessage);
 
-      // Publish to RabbitMQ for Chat Service to handle persistence and socket emit
-      await publishEvent(QUEUES.CHAT_MESSAGES, 'MESSAGE_SENT', {
-        senderId: hostId,
-        receiverId: guestId,
-        message,
-        listingId,
-        role: senderRole
-      });
-
-      res.status(201).json({ message: 'Message sent successfully (Async).' });
+      res.status(201).json({ message: 'Message sent successfully.' });
 
       // AI Response Flow (Should ideally move to Chat Service too)
       // For now, keeping it here or moving it depends on readiness.

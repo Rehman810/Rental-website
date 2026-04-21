@@ -83,7 +83,7 @@ let socket;
 export const initializeSocket = () => {
   if (!socket) {
     const token = getAuthToken();
-    const CHAT_SERVICE_URL = import.meta.env.VITE_CHAT_SERVICE_URL || "http://localhost:4001";
+    const CHAT_SERVICE_URL = API_BASE_URL;
 
     socket = io(CHAT_SERVICE_URL, {
       transports: ["websocket", "polling"],

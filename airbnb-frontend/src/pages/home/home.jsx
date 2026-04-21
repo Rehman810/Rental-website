@@ -10,6 +10,7 @@ import {
   Paper,
   Stack,
   IconButton,
+  useMediaQuery,
 } from "@mui/material";
 
 import MapIcon from "@mui/icons-material/Map";
@@ -29,6 +30,10 @@ import Property360Viewer from "../../components/360/Property360Viewer";
 import CtaSection from "../../components/cta/CtaSection";
 import { useNavigate } from "react-router-dom";
 import Img from "../../assets/images/new-york-city-manhattan.jpg"
+
+import TrustBadges from "../../components/home/TrustBadges";
+import CategoriesSection from "../../components/home/CategoriesSection";
+import FeaturedLocations from "../../components/home/FeaturedLocations";
 const MemoizedCard = React.memo(({ data }) => <Card data={data} />);
 
 const DEFAULT_FILTERS = {
@@ -43,6 +48,7 @@ const DEFAULT_FILTERS = {
 };
 
 const Home = () => {
+  const isMobile = useMediaQuery("(max-width:600px)");
   const navigate = useNavigate();
   const { t } = useTranslation();
   usePageTitle("Home");
@@ -492,6 +498,9 @@ const Home = () => {
             </Box>
           </Box>
 
+          {/* PAKISTAN-SPECIFIC CATEGORIES */}
+          <CategoriesSection />
+
           <Container maxWidth="xl" id="listings-section">
             <Grid container spacing={2}>
               {initialLoading ? (
@@ -596,11 +605,15 @@ const Home = () => {
                     }
                   }}
                   color="primary"
-                  size="large"
+                  size={isMobile ? "small" : "large"}
                   sx={(theme) => ({
+                    "& .MuiPagination-ul": {
+                      flexWrap: "nowrap",
+                      justifyContent: "center",
+                    },
                     "& .MuiPaginationItem-root": {
                       fontWeight: 800,
-                      fontSize: "1rem",
+                      fontSize: isMobile ? "0.85rem" : "1rem",
                       color:
                         theme.palette.mode === "dark"
                           ? "#fff"
@@ -609,6 +622,8 @@ const Home = () => {
                         theme.palette.mode === "dark"
                           ? "1px solid rgba(255,255,255,0.2)"
                           : "1px solid rgba(0,0,0,0.2)",
+                      minWidth: isMobile ? 32 : 40,
+                      height: isMobile ? 32 : 40,
                     },
 
                     "& .Mui-selected": {
@@ -630,6 +645,12 @@ const Home = () => {
               </Box>
             )}
           </Container>
+
+          {/* FEATURED LOCATIONS */}
+          <FeaturedLocations />
+
+          {/* TRUST BADGES SECTION */}
+          <TrustBadges />
 
           <CtaSection />
         </>

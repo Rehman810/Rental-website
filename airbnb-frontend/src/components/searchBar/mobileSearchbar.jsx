@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
     Box,
     Paper,
@@ -12,6 +13,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import MobileSearchDialog from "./mobileSearchbarDialog";
 
 const MobileSearchBar = () => {
+    const { t } = useTranslation();
     const [open, setOpen] = useState(false);
 
     return (
@@ -32,7 +34,7 @@ const MobileSearchBar = () => {
                 >
                     <SearchIcon />
                     <Typography fontWeight={800}>
-                        Where to?
+                        {t("translation:anyWhere")}
                     </Typography>
                 </Paper>
             </Box>

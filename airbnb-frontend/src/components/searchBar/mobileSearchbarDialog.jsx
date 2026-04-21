@@ -61,13 +61,14 @@ const MobileSearchDialog = ({ open, onClose }) => {
 
     const [destinationAnchor, setDestinationAnchor] = useState(null);
 
-    const { karachi, islamabad, lahore } = t("cities");
+    const citiesData = t("translation:cities", { returnObjects: true }) || {};
+    const { karachi, islamabad, lahore } = citiesData;
 
     const cities = useMemo(
         () => [
-            { name: karachi.name, text: karachi.text, icon: Icon1 },
-            { name: islamabad.name, text: islamabad.text, icon: Icon2 },
-            { name: lahore.name, text: lahore.text, icon: Icon3 },
+            { name: karachi?.name, text: karachi?.text, icon: Icon1 },
+            { name: islamabad?.name, text: islamabad?.text, icon: Icon2 },
+            { name: lahore?.name, text: lahore?.text, icon: Icon3 },
         ],
         [karachi, islamabad, lahore]
     );
@@ -103,14 +104,14 @@ const MobileSearchDialog = ({ open, onClose }) => {
                             <CloseIcon />
                         </IconButton>
 
-                        <Typography fontWeight={900}>Search</Typography>
+                        <Typography fontWeight={900}>{t("search")}</Typography>
 
                         <Button
                             startIcon={<RestartAltIcon />}
                             onClick={handleClearAll}
                             sx={{ fontWeight: 900 }}
                         >
-                            Clear
+                            {t("translation:clear")}
                         </Button>
                     </Toolbar>
                 </AppBar>
@@ -118,7 +119,7 @@ const MobileSearchDialog = ({ open, onClose }) => {
                 <Box sx={{ p: 2.5, pt: 4 }}>
                     {/* DESTINATION */}
                     <Typography fontWeight={900} mb={1}>
-                        Where
+                        {t("translation:where")}
                     </Typography>
 
                     <Paper
@@ -133,7 +134,7 @@ const MobileSearchDialog = ({ open, onClose }) => {
                             border: "1px solid var(--border-light)",
                         }}
                     >
-                        {destination || "Search destination"}
+                        {destination || t("translation:destination")}
                     </Paper>
 
                     <Menu
@@ -146,18 +147,18 @@ const MobileSearchDialog = ({ open, onClose }) => {
                             <MenuItem
                                 key={city.name}
                                 onClick={() => {
-                                    setDestination(`${city.name}, ${t("country")}`);
+                                    setDestination(`${city.name}, ${t("translation:country")}`);
                                     setDestinationAnchor(null);
                                 }}
                             >
-                                {city.name}, {t("country")}
+                                {city.name}, {t("translation:country")}
                             </MenuItem>
                         ))}
                     </Menu>
 
                     {/* DATES */}
                     <Typography fontWeight={900} mb={1}>
-                        Dates
+                        {t("translation:addDates")}
                     </Typography>
 
                     <Stack spacing={2} mb={3}>
@@ -191,7 +192,7 @@ const MobileSearchDialog = ({ open, onClose }) => {
 
                     {/* GUESTS */}
                     <Typography fontWeight={900} mb={1} color="var(--text-primary)">
-                        Guests
+                        {t("translation:who")}
                     </Typography>
 
                     <Paper
@@ -205,7 +206,7 @@ const MobileSearchDialog = ({ open, onClose }) => {
                     >
                         <Stack spacing={2}>
                             <GuestRow
-                                label="Adults"
+                                label={t("translation:adults")}
                                 value={guests.adults}
                                 onAdd={() => setGuests({ ...guests, adults: guests.adults + 1 })}
                                 onRemove={() =>
@@ -214,7 +215,7 @@ const MobileSearchDialog = ({ open, onClose }) => {
                             />
                             <Divider />
                             <GuestRow
-                                label="Children"
+                                label={t("translation:children")}
                                 value={guests.children}
                                 onAdd={() =>
                                     setGuests({ ...guests, children: guests.children + 1 })
@@ -228,7 +229,7 @@ const MobileSearchDialog = ({ open, onClose }) => {
                             />
                             <Divider />
                             <GuestRow
-                                label="Infants"
+                                label={t("translation:infants")}
                                 value={guests.infants}
                                 onAdd={() =>
                                     setGuests({ ...guests, infants: guests.infants + 1 })
@@ -242,7 +243,7 @@ const MobileSearchDialog = ({ open, onClose }) => {
                             />
                             <Divider />
                             <GuestRow
-                                label="Pets"
+                                label={t("translation:pets")}
                                 value={guests.pets}
                                 onAdd={() => setGuests({ ...guests, pets: guests.pets + 1 })}
                                 onRemove={() =>
@@ -260,7 +261,7 @@ const MobileSearchDialog = ({ open, onClose }) => {
                         disabled={!destination || !checkIn || !checkOut || totalGuests === 0}
                         onClick={handleSearch}
                     >
-                        Search
+                        {t("search")}
                     </Button>
                 </Box>
             </Dialog>

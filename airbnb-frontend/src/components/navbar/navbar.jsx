@@ -440,7 +440,6 @@ const Navbar = () => {
                 {!user?.photoProfile && user?.userName?.charAt(0)?.toUpperCase()}
               </Avatar>
               <Box>
-                {console.log(user)}
                 <Typography fontWeight={900}>
                   {user?.userName || "Guest"}
                 </Typography>

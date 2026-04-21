@@ -1,30 +1,32 @@
 import Redis from 'ioredis';
 
-const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+const redisUrl = process.env.REDIS_URL;
 
-export const redis = new Redis(redisUrl, {
-  maxRetriesPerRequest: 1, // Don't block requests if Redis is down
-  enableReadyCheck: false, // Skip ready check to avoid hang
-  lazyConnect: true, // Only connect when used
+export const redis = redisUrl ? new Redis(redisUrl, {
+  maxRetriesPerRequest: 1,
+  enableReadyCheck: false,
+  lazyConnect: true,
   retryStrategy: (times) => {
     if (times > 3) {
       console.warn('[Redis] Connection failed persistently. Caching will be disabled.');
-      return null; // Stop retrying after 3 attempts
+      return null;
     }
     return Math.min(times * 100, 2000);
   },
-});
+}) : null;
 
-redis.on('error', (err) => {
-    if (err.code === 'ECONNREFUSED') {
-        // Log once and suppress further noise if necessary
-        // console.warn('[Redis] Not available at ' + redisUrl);
-    } else {
-        console.error('Redis Client Error', err);
+if (redis) {
+  redis.on('error', (err) => {
+    if (err.code !== 'ECONNREFUSED') {
+      console.error('Redis Client Error', err);
     }
-});
+  });
+} else {
+  console.log('[Redis] No REDIS_URL provided. Caching is disabled.');
+}
 
 export const setCache = async (key, data, ttlSeconds) => {
+  if (!redis || redis.status !== 'ready') return;
   try {
     await redis.set(key, JSON.stringify(data), 'EX', ttlSeconds);
   } catch (err) {
@@ -33,6 +35,7 @@ export const setCache = async (key, data, ttlSeconds) => {
 };
 
 export const getCache = async (key) => {
+  if (!redis || redis.status !== 'ready') return null;
   try {
     const data = await redis.get(key);
     return data ? JSON.parse(data) : null;
@@ -43,6 +46,7 @@ export const getCache = async (key) => {
 };
 
 export const deleteCachePattern = async (pattern) => {
+  if (!redis) return;
   try {
     const keys = await redis.keys(pattern);
     if (keys.length) await redis.del(...keys);

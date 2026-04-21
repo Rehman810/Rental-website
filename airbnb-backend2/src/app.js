@@ -26,7 +26,8 @@ const allowedOrigins = [
   "http://localhost:5174",
   "http://localhost:5173",
   "https://rental-website-alpha.vercel.app",
-  "https://www.mehman.site"
+  "https://www.mehman.site",
+  "https://mehman.site"
 ];
 
 const corsOptions = {
@@ -34,13 +35,14 @@ const corsOptions = {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      console.log('CORS rejected origin:', origin);
       callback(new Error("Not allowed by CORS"));
     }
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept"],
-  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+  optionsSuccessStatus: 200
 };
 
 app.use(cors(corsOptions));

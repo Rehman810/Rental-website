@@ -35,6 +35,7 @@ export const searchListings = async (req, res) => {
                 { title: { $regex: searchTerm, $options: 'i' } },
                 { city: { $regex: searchTerm, $options: 'i' } },
                 { town: { $regex: searchTerm, $options: 'i' } },
+                { province: { $regex: searchTerm, $options: 'i' } },
                 { description: { $regex: searchTerm, $options: 'i' } }
             ];
         }
@@ -224,6 +225,7 @@ export const aiSearch = async (req, res) => {
             { title: { $regex: query, $options: 'i' } },
             { city: { $regex: query, $options: 'i' } },
             { town: { $regex: query, $options: 'i' } },
+            { province: { $regex: query, $options: 'i' } },
             { description: { $regex: query, $options: 'i' } }
         ];
 

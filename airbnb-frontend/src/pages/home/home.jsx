@@ -498,9 +498,6 @@ const Home = () => {
             </Box>
           </Box>
 
-          {/* PAKISTAN-SPECIFIC CATEGORIES */}
-          <CategoriesSection />
-
           <Container maxWidth="xl" id="listings-section">
             <Grid container spacing={2}>
               {initialLoading ? (
@@ -646,12 +643,11 @@ const Home = () => {
             )}
           </Container>
 
-          {/* FEATURED LOCATIONS */}
+          <CategoriesSection />
+
           <FeaturedLocations />
 
-          {/* TRUST BADGES SECTION */}
           <TrustBadges />
-
           <CtaSection />
         </>
       )

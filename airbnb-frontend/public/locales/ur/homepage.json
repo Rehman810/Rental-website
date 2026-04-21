@@ -6,5 +6,30 @@
   "ctaTitle": "اپنا اگلا گھر تلاش کریں",
   "ctaTitleRed": "اعتماد کے ساتھ",
   "ctaSubtitle": "چاہے وہ ساحلی تفریح گاہ ہو یا شہر کا مرکز، ہماری معیاری لسٹنگز آپ کے اگلے قیام کو غیر معمولی بنا دیں گی۔",
-  "ctaButton": "ابھی تلاش شروع کریں"
+  "ctaButton": "ابھی تلاش شروع کریں",
+  "exploreByType": "پراپرٹی کی قسم کے لحاظ سے دریافت کریں",
+  "exploreSubtitle": "ہر موقع اور منظر کے لیے منفرد قیام",
+  "categories": {
+    "haveli": "حویلی",
+    "hillRetreat": "پہاڑی تفریح گاہ",
+    "beachVilla": "ساحلی ولا",
+    "mountainCottage": "پہاڑی کاٹیج"
+  },
+  "featuredLocations": "نمایاں مقامات",
+  "featuredLocationsSubtitle": "ان بہترین مقامات میں پاکستان کی خوبصورتی دریافت کریں",
+  "staysCount": "{{count}}+ قیام",
+  "trustBadges": {
+    "verifiedHosts": {
+      "title": "تصدیق شدہ میزبان",
+      "description": "شناختی کارڈ سے تصدیق شدہ مالکان"
+    },
+    "securePayments": {
+      "title": "محفوظ ادائیگیاں",
+      "description": "محفوظ اور تحفظ شدہ لین دین"
+    },
+    "support": {
+      "title": "24/7 مدد",
+      "description": "ہمیشہ آپ کی مدد کے لیے حاضر ہیں"
+    }
+  }
 }

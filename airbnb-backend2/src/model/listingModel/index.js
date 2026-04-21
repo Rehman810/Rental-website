@@ -47,6 +47,7 @@ const listingSchema = new mongoose.Schema({
   street: { type: String, required: false },
   flat: { type: String },
   city: { type: String, required: false },
+  province: { type: String },
   town: { type: String },
   postcode: { type: String, required: false },
   latitude: { type: Number, required: false },

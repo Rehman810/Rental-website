@@ -6,5 +6,30 @@
   "ctaTitle": "Find Your Next",
   "ctaTitleRed": "Home With Confidence",
   "ctaSubtitle": "Whether it's a coastal retreat or a downtown loft, our curated collection of high-quality listings ensures your next stay is nothing short of extraordinary.",
-  "ctaButton": "Start Searching Now"
+  "ctaButton": "Start Searching Now",
+  "exploreByType": "Explore by Property Type",
+  "exploreSubtitle": "Unique stays for every occasion and landscape",
+  "categories": {
+    "haveli": "Haveli",
+    "hillRetreat": "Hill Retreat",
+    "beachVilla": "Beach Villa",
+    "mountainCottage": "Mountain Cottage"
+  },
+  "featuredLocations": "Featured Locations",
+  "featuredLocationsSubtitle": "Discover the beauty of Pakistan in these top destinations",
+  "staysCount": "{{count}}+ stays",
+  "trustBadges": {
+    "verifiedHosts": {
+      "title": "Verified Hosts",
+      "description": "CNIC verified property owners"
+    },
+    "securePayments": {
+      "title": "Secure Payments",
+      "description": "Safe & protected transactions"
+    },
+    "support": {
+      "title": "24/7 Support",
+      "description": "Always here to help you"
+    }
+  }
 }

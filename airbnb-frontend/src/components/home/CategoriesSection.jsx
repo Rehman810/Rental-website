@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, Typography, Container, Grid, Paper, useTheme } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import CastleIcon from "@mui/icons-material/Castle";
 import AgricultureIcon from "@mui/icons-material/Agriculture";
 import TerrainIcon from "@mui/icons-material/Terrain";
@@ -15,6 +16,15 @@ const categories = [
 ];
 
 const CategoriesSection = () => {
+  const { t } = useTranslation();
+
+  const categories = [
+    { key: "haveli", icon: <CastleIcon sx={{ fontSize: 32 }} />, color: "#BA7517" },
+    { key: "hillRetreat", icon: <TerrainIcon sx={{ fontSize: 32 }} />, color: "#BA7517" },
+    { key: "beachVilla", icon: <BeachAccessIcon sx={{ fontSize: 32 }} />, color: "#BA7517" },
+    { key: "mountainCottage", icon: <HomeWorkIcon sx={{ fontSize: 32 }} />, color: "#BA7517" },
+  ];
+
   return (
     <Container maxWidth="xl" sx={{ my: { xs: 6, md: 10 } }}>
       <Box sx={{ mb: 4 }}>
@@ -28,10 +38,10 @@ const CategoriesSection = () => {
             mb: 1
           }}
         >
-          Explore by Property Type
+          {t("homepage:exploreByType")}
         </Typography>
         <Typography variant="body1" sx={{ color: "var(--text-secondary)", fontWeight: 500 }}>
-          Unique stays for every occasion and landscape
+          {t("homepage:exploreSubtitle")}
         </Typography>
       </Box>
 
@@ -40,7 +50,7 @@ const CategoriesSection = () => {
           <Grid item xs={6} sm={4} md={2.4} key={index}>
             <Paper
               elevation={0}
-              onClick={() => console.log(`Clicked ${cat.label}`)}
+              onClick={() => console.log(`Clicked ${cat.key}`)}
               sx={{
                 p: { xs: 3, md: 4 },
                 height: "100%",
@@ -96,7 +106,7 @@ const CategoriesSection = () => {
                   fontSize: "1.1rem"
                 }}
               >
-                {cat.label}
+                {t(`homepage:categories.${cat.key}`)}
               </Typography>
             </Paper>
           </Grid>

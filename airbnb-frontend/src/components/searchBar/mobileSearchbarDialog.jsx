@@ -11,6 +11,10 @@ import {
     Divider,
     Menu,
     MenuItem,
+    Autocomplete,
+    TextField,
+    Chip,
+    Avatar,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
@@ -25,6 +29,7 @@ import { useTranslation } from "react-i18next";
 import Icon1 from "../../assets/icons/icons1.png";
 import Icon2 from "../../assets/icons/icons2.png";
 import Icon3 from "../../assets/icons/icons3.png";
+import { pakistanCities, normalizeCityName, getCityName, getCityText } from "../../constants/pakistanCities";
 
 const GuestRow = ({ label, value, onAdd, onRemove }) => (
     <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -61,17 +66,19 @@ const MobileSearchDialog = ({ open, onClose }) => {
 
     const [destinationAnchor, setDestinationAnchor] = useState(null);
 
-    const citiesData = t("translation:cities", { returnObjects: true }) || {};
-    const { karachi, islamabad, lahore } = citiesData;
+    const popularDestinations = useMemo(() =>
+        pakistanCities.filter(city => city.popular).slice(0, 4),
+        []);
 
-    const cities = useMemo(
-        () => [
-            { name: karachi?.name, text: karachi?.text, icon: Icon1 },
-            { name: islamabad?.name, text: islamabad?.text, icon: Icon2 },
-            { name: lahore?.name, text: lahore?.text, icon: Icon3 },
-        ],
-        [karachi, islamabad, lahore]
-    );
+    const getCityIcon = (city) => {
+        const name = city?.name || "";
+        let hash = 0;
+        for (let i = 0; i < name.length; i++) {
+            hash = (hash * 31 + name.charCodeAt(i)) % 10000;
+        }
+        const icons = [Icon1, Icon2, Icon3];
+        return icons[hash % 3];
+    };
 
     const totalGuests =
         guests.adults + guests.children + guests.infants + guests.pets;
@@ -122,39 +129,89 @@ const MobileSearchDialog = ({ open, onClose }) => {
                         {t("translation:where")}
                     </Typography>
 
-                    <Paper
-                        onClick={(e) => setDestinationAnchor(e.currentTarget)}
-                        sx={{
-                            p: 2,
-                            borderRadius: 3,
-                            mb: 3,
-                            fontWeight: 700,
-                            cursor: "pointer",
-                            backgroundColor: "var(--bg-input)",
-                            border: "1px solid var(--border-light)",
+                    <Autocomplete
+                        freeSolo
+                        options={pakistanCities}
+                        getOptionLabel={(option) => typeof option === 'string' ? option : option.name}
+                        value={destination}
+                        onChange={(event, newValue) => {
+                            if (typeof newValue === 'string') {
+                                setDestination(normalizeCityName(newValue));
+                            } else if (newValue && newValue.name) {
+                                setDestination(`${newValue.name}, ${t("translation:country")}`);
+                            }
                         }}
-                    >
-                        {destination || t("translation:destination")}
-                    </Paper>
-
-                    <Menu
-                        anchorEl={destinationAnchor}
-                        open={Boolean(destinationAnchor)}
-                        onClose={() => setDestinationAnchor(null)}
-                        PaperProps={{ sx: { borderRadius: 3 } }}
-                    >
-                        {cities.map((city) => (
-                            <MenuItem
-                                key={city.name}
-                                onClick={() => {
-                                    setDestination(`${city.name}, ${t("translation:country")}`);
-                                    setDestinationAnchor(null);
+                        onInputChange={(event, newInputValue) => {
+                            if (event && event.type === 'change') {
+                                setDestination(newInputValue);
+                            }
+                        }}
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                placeholder={t("translation:destination")}
+                                variant="outlined"
+                                fullWidth
+                                sx={{
+                                    mb: 1.5,
+                                    "& .MuiOutlinedInput-root": {
+                                        borderRadius: 3,
+                                        backgroundColor: "var(--bg-input)",
+                                    },
                                 }}
-                            >
-                                {city.name}, {t("translation:country")}
-                            </MenuItem>
+                            />
+                        )}
+                        renderOption={(props, option) => {
+                            const cityName = getCityName(option, t);
+                            const cityText = getCityText(option, t);
+                            const cityIcon = getCityIcon(option);
+
+                            return (
+                                <li {...props} style={{ padding: 0 }}>
+                                    <MenuItem
+                                        sx={{
+                                            width: "100%",
+                                            borderRadius: 2,
+                                            py: 1.2,
+                                            px: 1.5,
+                                            "&:hover": { backgroundColor: "var(--bg-secondary)" },
+                                        }}
+                                    >
+                                        <Stack direction="row" alignItems="center" spacing={1.5}>
+                                            <Avatar
+                                                src={cityIcon}
+                                                variant="rounded"
+                                                sx={{ width: 44, height: 44, borderRadius: 2 }}
+                                            />
+                                            <Box>
+                                                <Typography sx={{ fontWeight: 900, fontSize: 14 }}>
+                                                    {cityName}, {t("translation:country")}
+                                                </Typography>
+                                                <Typography variant="body2" sx={{ color: "var(--text-secondary)" }}>
+                                                    {cityText}
+                                                </Typography>
+                                            </Box>
+                                        </Stack>
+                                    </MenuItem>
+                                </li>
+                            );
+                        }}
+                    />
+
+                    {/* Quick Picks */}
+                    <Typography variant="caption" fontWeight={700} color="var(--text-secondary)" sx={{ mb: 1, display: 'block' }}>
+                        {t("translation:popularDestinations")}
+                    </Typography>
+                    <Stack direction="row" spacing={1} sx={{ mb: 3, overflowX: 'auto', pb: 1 }}>
+                        {popularDestinations.map((city) => (
+                            <Chip
+                                key={city.name}
+                                label={city.name}
+                                onClick={() => setDestination(`${city.name}, ${t("translation:country")}`)}
+                                sx={{ fontWeight: 700, borderRadius: 2, color: "var(--text-primary)" }}
+                            />
                         ))}
-                    </Menu>
+                    </Stack>
 
                     {/* DATES */}
                     <Typography fontWeight={900} mb={1}>

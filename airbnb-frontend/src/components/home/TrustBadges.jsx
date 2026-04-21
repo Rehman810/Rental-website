@@ -4,25 +4,26 @@ import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import SecurityIcon from "@mui/icons-material/Security";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 
-const badges = [
-  {
-    icon: <VerifiedUserIcon sx={{ fontSize: 32 }} />,
-    title: "Verified Hosts",
-    description: "CNIC verified property owners",
-  },
-  {
-    icon: <SecurityIcon sx={{ fontSize: 32 }} />,
-    title: "Secure Payments",
-    description: "Safe & protected transactions",
-  },
-  {
-    icon: <SupportAgentIcon sx={{ fontSize: 32 }} />,
-    title: "24/7 Support",
-    description: "Always here to help you",
-  },
-];
+import { useTranslation } from "react-i18next";
 
 const TrustBadges = () => {
+  const { t } = useTranslation();
+
+  const badges = [
+    {
+      icon: <VerifiedUserIcon sx={{ fontSize: 32 }} />,
+      key: "verifiedHosts",
+    },
+    {
+      icon: <SecurityIcon sx={{ fontSize: 32 }} />,
+      key: "securePayments",
+    },
+    {
+      icon: <SupportAgentIcon sx={{ fontSize: 32 }} />,
+      key: "support",
+    },
+  ];
+
   return (
     <Box
       sx={{
@@ -78,7 +79,7 @@ const TrustBadges = () => {
                     mb: 0.5
                   }}
                 >
-                  {badge.title}
+                  {t(`homepage:trustBadges.${badge.key}.title`)}
                 </Typography>
                 <Typography
                   variant="body2"
@@ -90,7 +91,7 @@ const TrustBadges = () => {
                     fontWeight: 500
                   }}
                 >
-                  {badge.description}
+                  {t(`homepage:trustBadges.${badge.key}.description`)}
                 </Typography>
               </Box>
             </Grid>

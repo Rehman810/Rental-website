@@ -14,9 +14,53 @@
     },
     "lahore": {
       "name": "Lahore",
-      "text": "For a trip abroad"
+      "text": "The heart of Pakistan"
+    },
+    "rawalpindi": {
+      "name": "Rawalpindi",
+      "text": "The gateway to the North"
+    },
+    "peshawar": {
+      "name": "Peshawar",
+      "text": "The city of flowers"
+    },
+    "multan": {
+      "name": "Multan",
+      "text": "The city of saints"
+    },
+    "quetta": {
+      "name": "Quetta",
+      "text": "The fruit garden of Pakistan"
+    },
+    "faisalabad": {
+      "name": "Faisalabad",
+      "text": "The Manchester of Pakistan"
+    },
+    "murree": {
+      "name": "Murree",
+      "text": "The Queen of Hills"
+    },
+    "hunza": {
+      "name": "Hunza",
+      "text": "Heaven on Earth"
+    },
+    "skardu": {
+      "name": "Skardu",
+      "text": "Gateway to the high peaks"
+    },
+    "swat": {
+      "name": "Swat",
+      "text": "The Switzerland of the East"
+    },
+    "naran": {
+      "name": "Naran",
+      "text": "Breathtaking landscapes"
     }
   },
+  "majorCitypk": "Major city in Pakistan",
+  "popularTouristSpot": "Popular tourist destination",
+  "premiumArea": "Premium residential neighborhood",
+  "anyWhere": "Anywhere in Pakistan",
   "country": "Pakistan",
   "addDates": "Add Dates",
   "checkIn": "Check In",

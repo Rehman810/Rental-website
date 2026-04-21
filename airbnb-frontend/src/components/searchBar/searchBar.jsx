@@ -12,8 +12,11 @@ import {
   Paper,
   Stack,
   Avatar,
+  Autocomplete,
+  Chip,
+  Popper,
 } from "@mui/material";
-import { Search as SearchIcon } from "@mui/icons-material";
+import { Search as SearchIcon, LocationOn as LocationIcon } from "@mui/icons-material";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "antd";
@@ -25,6 +28,7 @@ import { useTranslation } from "react-i18next";
 import Icon1 from "../../assets/icons/icons1.png";
 import Icon2 from "../../assets/icons/icons2.png";
 import Icon3 from "../../assets/icons/icons3.png";
+import { pakistanCities, normalizeCityName, getCityName, getCityText } from "../../constants/pakistanCities";
 
 const SearchBar = () => {
   const { t } = useTranslation();
@@ -64,18 +68,16 @@ const SearchBar = () => {
   const decrementGuest = (type) =>
     setGuests((prev) => ({ ...prev, [type]: Math.max(0, prev[type] - 1) }));
 
-  // Fix: Explicitly point to the translation namespace for nested cities object
-  const citiesData = t("translation:cities", { returnObjects: true }) || {};
-  const { karachi, islamabad, lahore } = citiesData;
+  const popularDestinations = useMemo(() =>
+    pakistanCities.filter(city => city.popular).slice(0, 4),
+    []);
 
-  const cities = useMemo(
-    () => [
-      { name: karachi?.name, text: karachi?.text, icon: Icon1 },
-      { name: islamabad?.name, text: islamabad?.text, icon: Icon2 },
-      { name: lahore?.name, text: lahore?.text, icon: Icon3 },
-    ],
-    [karachi, islamabad, lahore]
-  );
+  const icons = [Icon1, Icon2, Icon3];
+
+  const getCityIcon = () => {
+    const randomIndex = Math.floor(Math.random() * icons.length);
+    return icons[randomIndex];
+  };
 
   const guestsText = useMemo(() => {
     const total = guests.adults + guests.children + guests.infants + guests.pets;
@@ -236,7 +238,6 @@ const SearchBar = () => {
           <Stack direction="row" alignItems="center" sx={{ width: "100%" }}>
             {/* WHERE */}
             <Box
-              onClick={openWhereMenu}
               sx={{
                 flex: 1.2,
                 px: 2,
@@ -244,28 +245,113 @@ const SearchBar = () => {
                 borderRadius: 999,
                 cursor: "pointer",
                 transition: "all 0.18s ease",
+                "&:hover": { backgroundColor: "rgba(0,0,0,0.04)" },
               }}
             >
               <Typography sx={{ fontWeight: 900, fontSize: 12 }}>
                 {t("translation:where")}
               </Typography>
 
-              <TextField
-                placeholder={t("translation:destination")}
-                variant="standard"
-                fullWidth
-                InputProps={{ disableUnderline: true }}
-                sx={{
-                  mt: 0.2,
-                  "& input": {
-                    fontWeight: 700,
-                    fontSize: 13,
-                    color: selectedDestination ? "var(--text-primary)" : "var(--text-secondary)",
-                    cursor: "pointer",
-                  },
-                }}
+              <Autocomplete
+                freeSolo
+                openOnFocus
+                options={pakistanCities}
+                getOptionLabel={(option) => typeof option === 'string' ? option : option.name}
                 value={selectedDestination}
-                readOnly
+                onChange={(event, newValue) => {
+                  if (typeof newValue === 'string') {
+                    setSelectedDestination(normalizeCityName(newValue));
+                  } else if (newValue && newValue.name) {
+                    setSelectedDestination(`${newValue.name}, ${t("translation:country")}`);
+                  }
+                }}
+                onInputChange={(event, newInputValue) => {
+                  if (event && event.type === 'change') {
+                    setSelectedDestination(newInputValue);
+                  }
+                }}
+                PaperComponent={({ children, ...other }) => (
+                  <Paper {...other} sx={{ borderRadius: 3, mt: 1, boxShadow: 'var(--shadow-xl)', minWidth: 350 }}>
+                    {children}
+                    <Divider />
+                    <Box sx={{ p: 2 }}>
+                      <Typography sx={{ mb: 1.5, fontWeight: 900, fontSize: 12, color: "var(--text-secondary)" }}>
+                        {t("translation:popularDestinations")}
+                      </Typography>
+                      <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                        {popularDestinations.map((city) => (
+                          <Chip
+                            key={city.name}
+                            label={city.name}
+                            onClick={() => {
+                              setSelectedDestination(`${city.name}, ${t("translation:country")}`);
+                            }}
+                            variant="outlined"
+                            size="small"
+                            sx={{ fontWeight: 700, borderRadius: 2, color: "var(--text-primary)" }}
+                          />
+                        ))}
+                      </Stack>
+                    </Box>
+                  </Paper>
+                )}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    placeholder={t("translation:destination")}
+                    variant="standard"
+                    fullWidth
+                    InputProps={{
+                      ...params.InputProps,
+                      disableUnderline: true
+                    }}
+                    sx={{
+                      mt: 0.2,
+                      "& input": {
+                        fontWeight: 700,
+                        fontSize: 13,
+                        color: "var(--text-primary)",
+                        cursor: "text",
+                        padding: '0 !important',
+                      },
+                    }}
+                  />
+                )}
+                renderOption={(props, option) => {
+                  const cityName = getCityName(option, t);
+                  const cityText = getCityText(option, t);
+                  const cityIcon = getCityIcon(option.cityKey);
+
+                  return (
+                    <li {...props} style={{ padding: 0 }}>
+                      <MenuItem
+                        sx={{
+                          width: "100%",
+                          borderRadius: 2,
+                          py: 1.2,
+                          px: 1.5,
+                          "&:hover": { backgroundColor: "var(--bg-secondary)" },
+                        }}
+                      >
+                        <Stack direction="row" alignItems="center" spacing={1.5}>
+                          <Avatar
+                            src={cityIcon}
+                            variant="rounded"
+                            sx={{ width: 44, height: 44, borderRadius: 2 }}
+                          />
+                          <Box>
+                            <Typography sx={{ fontWeight: 900, fontSize: 14 }}>
+                              {cityName}, {t("translation:country")}
+                            </Typography>
+                            <Typography variant="body2" sx={{ color: "var(--text-secondary)" }}>
+                              {cityText}
+                            </Typography>
+                          </Box>
+                        </Stack>
+                      </MenuItem>
+                    </li>
+                  );
+                }}
               />
             </Box>
 
@@ -385,68 +471,8 @@ const SearchBar = () => {
           </Stack>
         </Paper>
 
-        {/* WHERE MENU */}
-        <Menu
-          anchorEl={whereAnchorEl}
-          open={Boolean(whereAnchorEl)}
-          onClose={closeWhereMenu}
-          PaperProps={{
-            sx: {
-              mt: 1,
-              borderRadius: 3,
-              boxShadow: "var(--shadow-lg)",
-              p: 1,
-              minWidth: 360,
-              backgroundColor: "var(--bg-card)",
-              color: "var(--text-primary)",
-            },
-          }}
-        >
-          <Typography
-            sx={{
-              px: 2,
-              pt: 1,
-              pb: 1,
-              fontWeight: 900,
-              fontSize: 13,
-              color: "var(--text-secondary)",
-            }}
-          >
-            {t("translation:popularDestinations")}
-          </Typography>
+        {/* POPULAR DESTINATIONS REMOVED - integrated into Autocomplete */}
 
-          {cities.map((city) => (
-            <MenuItem
-              key={city.name}
-              onClick={() => {
-                setSelectedDestination(`${city.name}, ${t("translation:country")}`);
-                closeWhereMenu();
-              }}
-              sx={{
-                borderRadius: 2,
-                py: 1.2,
-                px: 1.5,
-                "&:hover": { backgroundColor: "var(--bg-secondary)" },
-              }}
-            >
-              <Stack direction="row" alignItems="center" spacing={1.5}>
-                <Avatar
-                  src={city.icon}
-                  variant="rounded"
-                  sx={{ width: 44, height: 44, borderRadius: 2 }}
-                />
-                <Box>
-                  <Typography sx={{ fontWeight: 900, fontSize: 14 }}>
-                    {city.name}, {t("translation:country")}
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: "var(--text-secondary)" }}>
-                    {city.text}
-                  </Typography>
-                </Box>
-              </Stack>
-            </MenuItem>
-          ))}
-        </Menu>
 
         {/* GUESTS MENU */}
         <Menu

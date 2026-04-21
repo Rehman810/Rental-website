@@ -43,7 +43,7 @@
       "login": "登录",
       "signUp": "注册",
       "giftCards": "礼品卡",
-      "airbnbYourHome": "在 Airbnb 上发布房源",
+      "airbnbYourHome": "在 {{appName}} 上发布房源",
       "hostAnExperience": "组织一次体验",
       "helpCenter": "帮助中心"
     },
@@ -69,7 +69,7 @@
     }
   },
   "navbar": {
-    "airbnbYourHome": "在 Airbnb 上发布房源",
+    "airbnbYourHome": "在 {{appName}} 上发布房源",
     "switchToHosting": "切换为房东"
   },
   "home": {

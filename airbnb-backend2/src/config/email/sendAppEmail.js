@@ -30,7 +30,7 @@ export const sendAppEmail = async ({ to, type, payload }) => {
         // For now, let's extract the <title> tag or use a simple switch map for Subjects if needed.
         // But simplistic way: regex the title tag.
         const titleMatch = htmlContent.match(/<title>(.*?)<\/title>/);
-        const subject = titleMatch ? titleMatch[1] : 'Notification from Airbnb';
+        const subject = titleMatch ? titleMatch[1] : 'Notification from ' + process.env.APP_NAME;
 
         return await sendEmail({
             to,

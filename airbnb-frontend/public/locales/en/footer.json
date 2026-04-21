@@ -10,21 +10,21 @@
   },
   "Hosting": {
     "hosting": "Hosting",
-    "airbnbYourHome": "ThePakbnb Your Home",
+    "airbnbYourHome": "{{appName}} Your Home",
     "airCoverForHosts": "AirCover For Hosts",
     "hostingResources": "Hosting Resources",
     "CommunityForum": "Community Forum",
     "hostingResponsibly": "Hosting Responsibly",
-    "airbnbFriendlyApartments": "ThePakbnb Friendly Apartments",
+    "airbnbFriendlyApartments": "{{appName}} Friendly Apartments",
     "joinAFreeHostingClass": "Join A Free Hosting Class",
     "findACoHost": "Find A Co-Host"
   },
-  "Airbnb": {
+  "{{appName}}": {
     "newsroom": "Newsroom",
     "newFeatures": "New Features",
     "careers": "careers",
     "investors": "investors",
     "giftCards": "Gift Cards",
-    "airbnbOrgEmergencyStays": "ThePakbnb.Org Emergency Stays"
+    "airbnbOrgEmergencyStays": "{{appName}}.Org Emergency Stays"
   }
 }

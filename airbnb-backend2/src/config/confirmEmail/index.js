@@ -35,7 +35,7 @@ const sendConfirmationEmail = async (userId, confirmedBooking) => {
                 <a href="${process.env.FRONTEND_BASE_URL}/my-bookings" class="button">View Your Booking</a>
               </div>
               <div class="footer">
-                <p>&copy; ${new Date().getFullYear()} Mehman. All rights reserved.</p>
+                <p>&copy; ${new Date().getFullYear()} ${process.env.APP_NAME || "Mehman"}. All rights reserved.</p>
               </div>
             </div>
           </body>

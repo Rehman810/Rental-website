@@ -43,7 +43,7 @@
       "login": "Giriş Yap",
       "signUp": "Kaydol",
       "giftCards": "Hediye Kartları",
-      "airbnbYourHome": "Evini Airbnb'ye Aç",
+      "airbnbYourHome": "Evini {{appName}}'ye Aç",
       "hostAnExperience": "Deneyim Sun",
       "helpCenter": "Yardım Merkezi"
     },
@@ -69,7 +69,7 @@
     }
   },
   "navbar": {
-    "airbnbYourHome": "Evini Airbnb'ye Aç",
+    "airbnbYourHome": "Evini {{appName}}'ye Aç",
     "switchToHosting": "Konuk Olmaya Geç"
   },
   "home": {

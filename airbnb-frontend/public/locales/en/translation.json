@@ -43,7 +43,7 @@
       "login": "Login",
       "signUp": "Sign up",
       "giftCards": "Gift cards",
-      "airbnbYourHome": "ThePakbnb your home",
+      "airbnbYourHome": "{{appName}} your home",
       "hostAnExperience": "Host an experience",
       "helpCenter": "Help center"
     },

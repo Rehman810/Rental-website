@@ -13,6 +13,9 @@ i18n
     returnObjects: true,
     interpolation: {
       escapeValue: false, 
+      defaultVariables: {
+        appName: import.meta.env.VITE_APP_NAME || "Mehman"
+      }
     },
   });
 

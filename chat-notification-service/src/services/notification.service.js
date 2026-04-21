@@ -61,7 +61,7 @@ class NotificationService {
     
     try {
       await this.transporter.sendMail({
-        from: '"Airbnb Clone" <notifications@airbnb-clone.com>',
+        from: `"${process.env.APP_NAME || 'Mehman'}" <notifications@airbnb-clone.com>`,
         to: userEmail,
         subject: title,
         text: message,

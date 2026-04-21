@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Typography, Grid, Card, CardContent, CardMedia } from '@mui/material';
+import { APP_NAME } from '../../config/env';
 
 import bed from '../../assets/images/bed.webp'
 import sofa from '../../assets/images/sofa.webp'
@@ -35,7 +36,7 @@ const GetStarted = () => {
             variant="h3"
             sx={{ mb: { xs: 3, md: 0 }, fontWeight: 'bold', color: 'var(--text-primary)', textAlign: { xs: 'center', md: 'left' } }}
           >
-            It’s easy to get started on Airbnb
+            It’s easy to get started on {APP_NAME}
           </Typography>
         </Grid>
 

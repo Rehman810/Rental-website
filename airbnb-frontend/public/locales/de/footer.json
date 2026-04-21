@@ -1,31 +1,30 @@
 {
-    "support": {
-      "support": "Support",
-      "helpCenter": "Hilfezentrum",
-      "airCover": "Air Cover",
-      "antiDiscrimination": "Gegen Diskriminierung",
-      "disabilitySupport": "Unterstützung für Menschen mit Behinderungen",
-      "cancellationOptions": "Stornierungsoptionen",
-      "reportNeighborhoodConcern": "Nachbarschaftsproblem melden"
-    },
-    "Hosting": {
-      "hosting": "Hosting",
-      "airbnbYourHome": "Vermiete dein Zuhause über ThePakbnb",
-      "airCoverForHosts": "AirCover für Gastgeber",
-      "hostingResources": "Hosting-Ressourcen",
-      "CommunityForum": "Community-Forum",
-      "hostingResponsibly": "Verantwortungsvolles Hosting",
-      "airbnbFriendlyApartments": "ThePakbnb-freundliche Apartments",
-      "joinAFreeHostingClass": "Nimm an einem kostenlosen Hosting-Kurs teil",
-      "findACoHost": "Finde einen Co-Host"
-    },
-    "Airbnb": {
-      "newsroom": "Pressebereich",
-      "newFeatures": "Neue Funktionen",
-      "careers": "Karriere",
-      "investors": "Investoren",
-      "giftCards": "Geschenkkarten",
-      "airbnbOrgEmergencyStays": "ThePakbnb.Org Notunterkünfte"
-    }
+  "support": {
+    "support": "Support",
+    "helpCenter": "Hilfezentrum",
+    "airCover": "Air Cover",
+    "antiDiscrimination": "Gegen Diskriminierung",
+    "disabilitySupport": "Unterstützung für Menschen mit Behinderungen",
+    "cancellationOptions": "Stornierungsoptionen",
+    "reportNeighborhoodConcern": "Nachbarschaftsproblem melden"
+  },
+  "Hosting": {
+    "hosting": "Hosting",
+    "airbnbYourHome": "Vermiete dein Zuhause über {{appName}}",
+    "airCoverForHosts": "AirCover für Gastgeber",
+    "hostingResources": "Hosting-Ressourcen",
+    "CommunityForum": "Community-Forum",
+    "hostingResponsibly": "Verantwortungsvolles Hosting",
+    "airbnbFriendlyApartments": "{{appName}}-freundliche Apartments",
+    "joinAFreeHostingClass": "Nimm an einem kostenlosen Hosting-Kurs teil",
+    "findACoHost": "Finde einen Co-Host"
+  },
+  "Airbnb": {
+    "newsroom": "Pressebereich",
+    "newFeatures": "Neue Funktionen",
+    "careers": "Karriere",
+    "investors": "Investoren",
+    "giftCards": "Geschenkkarten",
+    "airbnbOrgEmergencyStays": "{{appName}}.Org Notunterkünfte"
   }
-  
+}

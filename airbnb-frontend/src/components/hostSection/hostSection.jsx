@@ -18,6 +18,7 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useNavigate } from "react-router-dom";
+import { APP_NAME } from "../../config/env";
 
 const HostSection = ({ data, listing }) => {
   const navigate = useNavigate();
@@ -185,7 +186,7 @@ const HostSection = ({ data, listing }) => {
               {/* Summary */}
               <Box>
                 <Typography variant="subtitle1" fontWeight={900}>
-                  {data?.userName || "Host"} {isSuperhost ? "is a Superhost" : "on ThePakbnb"}
+                  {data?.userName || "Host"} {isSuperhost ? "is a Superhost" : `on ${APP_NAME}`}
                 </Typography>
                 <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
                   {isSuperhost

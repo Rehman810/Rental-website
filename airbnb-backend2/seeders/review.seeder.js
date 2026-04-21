@@ -9,7 +9,7 @@ const POSITIVE_COMMENTS = [
     "Had a wonderful stay. Everything was as described. Would definitely come back!",
     "Great value for money. The apartment was spotless and had all the amenities we needed.",
     "Beautiful home in a great neighborhood. The host was very responsive and helpful.",
-    "One of the best Mehman experiences I've had. The attention to detail was impressive.",
+    "One of the best platform experiences I've had. The attention to detail was impressive.",
     "Lovely place! Very cozy and felt just like home.",
     "Fantastic location, close to everything. The host provided great local tips.",
     "Super clean and modern. Bed was very comfortable.",

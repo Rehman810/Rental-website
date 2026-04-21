@@ -12,6 +12,12 @@ import {
 import SendIcon from "@mui/icons-material/Send";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import SearchIcon from "@mui/icons-material/Search";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
+import AttachFileIcon from "@mui/icons-material/AttachFile";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
+import { motion, AnimatePresence } from "framer-motion";
 import usePageTitle from "../../hooks/usePageTitle";
 import { API_BASE_URL } from "../../config/env";
 
@@ -142,13 +148,14 @@ const GuestMessages = () => {
         sx={{
           display: "flex",
           alignItems: "center",
-          padding: 2,
-          borderBottom: "1px solid #ccc",
-          backgroundColor: "var(--bg-primary)",
+          padding: '10px 16px',
+          borderBottom: "1px solid var(--border-light)",
+          backgroundColor: "#f0f2f5",
+          zIndex: 10,
         }}
       >
         <IconButton
-          sx={{ display: { xs: "inline-flex", md: "none" } }}
+          sx={{ display: { xs: "inline-flex", md: "none" }, mr: 1 }}
           onClick={() => navigate(-1)}
         >
           <ArrowBackIcon />
@@ -157,18 +164,24 @@ const GuestMessages = () => {
           direction="row"
           spacing={2}
           alignItems="center"
-          sx={{ ml: 2, cursor: 'pointer' }}
+          sx={{ flex: 1, cursor: 'pointer' }}
           onClick={() => {
             if (host?._id) navigate(`/profile/host/${host._id}`);
           }}
         >
-          {host && <Avatar src={host.photoProfile} alt={host.userName} />}
+          {host && <Avatar src={host.photoProfile} alt={host.userName} sx={{ width: 40, height: 40 }} />}
           <Box>
-            <Typography variant="h6">
+            <Typography variant="subtitle1" fontWeight={700} sx={{ lineHeight: 1.2 }}>
               {host ? host.userName : "Chat with Host"}
             </Typography>
-            {host && <Typography variant="caption" color="text.secondary">View Profile</Typography>}
+            <Typography variant="caption" sx={{ color: 'success.main', fontWeight: 600 }}>
+               Online
+            </Typography>
           </Box>
+        </Stack>
+        <Stack direction="row" spacing={1}>
+          <IconButton size="small"><SearchIcon fontSize="small" /></IconButton>
+          <IconButton size="small"><MoreVertIcon fontSize="small" /></IconButton>
         </Stack>
       </Box>
 
@@ -178,7 +191,10 @@ const GuestMessages = () => {
           flex: 1,
           overflowY: "auto",
           padding: 2,
-          backgroundColor: "var(--bg-secondary)",
+          backgroundColor: "#efeae2",
+          backgroundImage: 'url("https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png")',
+          backgroundOpacity: 0.06,
+          backgroundBlendMode: 'overlay',
           display: "flex",
           flexDirection: "column",
         }}
@@ -188,80 +204,103 @@ const GuestMessages = () => {
             <CircularProgress />
           </Box>
         ) : (
-          <>
-            {messages.map((msg, index) => {
-              const mine = msg.senderId === senderId;
-              const isAssistant = msg.role === 'assistant' || msg.isAI;
+          <Stack spacing={0.5}>
+            <AnimatePresence>
+              {messages.map((msg, index) => {
+                const mine = msg.senderId === senderId;
+                const isAssistant = msg.role === 'assistant' || msg.isAI;
 
-              return (
-                <Box
-                  key={index}
-                  sx={{
-                    display: "flex",
-                    justifyContent:
-                      !mine ? "flex-start" : "flex-end",
-                    marginBottom: 1,
-                  }}
-                >
+                return (
                   <Box
+                    key={index}
+                    component={motion.div}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
                     sx={{
-                      maxWidth: { xs: "85%", md: "70%" },
-                      padding: "10px 16px",
-                      backgroundColor: isAssistant ? "#e8f5e9" :
-                        !mine ? "#ffffff" : "primary.main",
-                      backgroundImage: isAssistant
-                        ? "linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)"
-                        : 'none',
-                      color: isAssistant ? "#1b5e20" :
-                        !mine ? "#000" : "primary.contrastText",
-                      position: "relative",
-                      borderRadius: '20px',
-                      borderBottomLeftRadius: !mine ? (isAssistant ? '4px' : '20px') : "20px",
-                      borderBottomRightRadius: !mine ? "20px" : "4px",
-                      boxShadow: isAssistant ? '0 4px 15px rgba(46, 125, 50, 0.1)' : '0 2px 5px rgba(0,0,0,0.05)',
-                      border: isAssistant ? '1px solid rgba(46, 125, 50, 0.1)' : 'none',
+                      display: "flex",
+                      justifyContent: !mine ? "flex-start" : "flex-end",
+                      mb: 0.5,
                     }}
                   >
-                    {isAssistant && (
-                      <Box sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        mb: 0.5,
-                        bgcolor: 'rgba(46, 125, 50, 0.1)',
-                        width: 'fit-content',
-                        px: 1,
-                        py: 0.2,
-                        borderRadius: '10px',
-                      }}>
-                        <AutoAwesomeIcon sx={{ fontSize: 12, mr: 0.5, color: '#2e7d32' }} />
-                        <Typography variant="caption" sx={{ fontWeight: 800, color: '#2e7d32', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                          Host Assistant
-                        </Typography>
-                      </Box>
-                    )}
-                    <Typography variant="body2" sx={{ wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
-                      {msg.message}
-                    </Typography>
-                    <Typography
-                      variant="caption"
+                    <Box
                       sx={{
-                        display: "block",
-                        textAlign: "right",
-                        marginTop: 0.5,
-                        opacity: 0.6,
+                        maxWidth: { xs: "85%", md: "70%" },
+                        padding: "6px 12px",
+                        backgroundColor: isAssistant ? "#e8f5e9" :
+                          !mine ? "#ffffff" : "#d9fdd3",
+                        backgroundImage: isAssistant
+                          ? "linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)"
+                          : 'none',
+                        color: "#111b21",
+                        position: "relative",
+                        borderRadius: '12px',
+                        borderTopLeftRadius: !mine ? '0px' : '12px',
+                        borderTopRightRadius: mine ? '0px' : '12px',
+                        boxShadow: '0 1px 1px rgba(0,0,0,0.1)',
+                        border: isAssistant ? '1px solid rgba(46, 125, 50, 0.1)' : 'none',
+                        '&::after': {
+                          content: '""',
+                          position: 'absolute',
+                          top: 0,
+                          width: 0,
+                          height: 0,
+                          border: '8px solid transparent',
+                          ...(mine ? {
+                            right: -8,
+                            borderLeftColor: isAssistant ? '#c8e6c9' : '#d9fdd3',
+                            borderTopColor: isAssistant ? '#c8e6c9' : '#d9fdd3',
+                          } : {
+                            left: -8,
+                            borderRightColor: '#ffffff',
+                            borderTopColor: '#ffffff',
+                          })
+                        }
                       }}
                     >
-                      {new Date(msg.timestamp).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </Typography>
+                      {isAssistant && (
+                        <Box sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          mb: 0.5,
+                          bgcolor: 'rgba(46, 125, 50, 0.1)',
+                          width: 'fit-content',
+                          px: 1,
+                          py: 0.2,
+                          borderRadius: '6px',
+                        }}>
+                          <AutoAwesomeIcon sx={{ fontSize: 10, mr: 0.5, color: '#2e7d32' }} />
+                          <Typography variant="caption" sx={{ fontWeight: 800, color: '#2e7d32', fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            Assistant
+                          </Typography>
+                        </Box>
+                      )}
+                      <Typography variant="body2" sx={{ wordBreak: 'break-word', whiteSpace: 'pre-wrap', fontSize: '0.9rem' }}>
+                        {msg.message}
+                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', mt: 0.2, gap: 0.5 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            display: "block",
+                            textAlign: "right",
+                            opacity: 0.5,
+                            fontSize: '0.65rem'
+                          }}
+                        >
+                          {new Date(msg.timestamp).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </Typography>
+                        {mine && <DoneAllIcon sx={{ fontSize: 14, color: '#53bdeb' }} />}
+                      </Box>
+                    </Box>
                   </Box>
-                </Box>
-              );
-            })}
+                );
+              })}
+            </AnimatePresence>
             <div ref={messagesEndRef} />
-          </>
+          </Stack>
         )}
       </Box>
 
@@ -270,26 +309,38 @@ const GuestMessages = () => {
         sx={{
           display: "flex",
           alignItems: "center",
-          padding: 2,
-          borderTop: "1px solid #ccc",
-          backgroundColor: "var(--bg-primary)",
+          padding: '10px 16px',
+          backgroundColor: "#f0f2f5",
+          gap: 1,
         }}
       >
+        <IconButton size="small"><EmojiEmotionsIcon sx={{ color: '#54656f' }} /></IconButton>
+        <IconButton size="small"><AttachFileIcon sx={{ color: '#54656f', transform: 'rotate(45deg)' }} /></IconButton>
         <TextField
           fullWidth
           variant="outlined"
-          placeholder="Type a message..."
+          size="small"
+          placeholder="Type a message"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") handleSendMessage();
           }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              borderRadius: '10px',
+              bgcolor: '#ffffff',
+              '& fieldset': { border: 'none' }
+            }
+          }}
         />
         <IconButton
-          color="primary"
           onClick={handleSendMessage}
           disabled={!newMessage}
-          sx={{ marginLeft: 2 }}
+          sx={{ 
+            color: newMessage ? '#00a884' : '#54656f',
+            transition: 'all 0.2s'
+          }}
         >
           <SendIcon />
         </IconButton>

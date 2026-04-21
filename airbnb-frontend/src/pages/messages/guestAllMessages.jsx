@@ -13,12 +13,20 @@ import {
   useTheme,
   useMediaQuery,
   CircularProgress,
+  Stack
 } from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import SendIcon from "@mui/icons-material/Send";
-import InboxOutlinedIcon from "@mui/icons-material/InboxOutlined";
-import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import SearchIcon from "@mui/icons-material/Search";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
+import AttachFileIcon from "@mui/icons-material/AttachFile";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
+import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
+import SendIcon from "@mui/icons-material/Send";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import InboxOutlinedIcon from "@mui/icons-material/InboxOutlined";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import {
   emitEvent,
@@ -38,6 +46,7 @@ const GuestAllMessages = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [senders, setSenders] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedSenderId, setSelectedSenderId] = useState(null);
   const [showChat, setShowChat] = useState(false);
   const [loadingChat, setLoadingChat] = useState(false);
@@ -131,47 +140,96 @@ const GuestAllMessages = () => {
             overflowY: "auto",
           }}
         >
-          <Typography fontWeight={900} sx={{ p: 2, color: "var(--text-secondary)" }}>
-            Conversations
-          </Typography>
+          <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Typography variant="h5" fontWeight={900}>
+              Chats
+            </Typography>
+            <Stack direction="row" spacing={1}>
+              <IconButton size="small"><FilterListIcon fontSize="small" /></IconButton>
+              <IconButton size="small"><MoreVertIcon fontSize="small" /></IconButton>
+            </Stack>
+          </Box>
+
+          <Box sx={{ px: 2, pb: 2 }}>
+            <TextField
+              fullWidth
+              size="small"
+              placeholder="Search or start new chat"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <SearchIcon sx={{ color: 'text.secondary', mr: 1, fontSize: 20 }} />
+                ),
+                sx: {
+                  borderRadius: '10px',
+                  bgcolor: 'var(--bg-secondary)',
+                  '& fieldset': { border: 'none' }
+                }
+              }}
+            />
+          </Box>
 
           <List disablePadding>
-            {senders.length === 0 ? (
+            {senders.filter(s => s.name?.toLowerCase().includes(searchTerm.toLowerCase())).length === 0 ? (
               <Box sx={{ textAlign: "center", mt: 8, opacity: 0.6 }}>
                 <InboxOutlinedIcon sx={{ fontSize: 60 }} />
                 <Typography>No messages yet</Typography>
               </Box>
             ) : (
-              senders.map((s) => (
-                <ListItem
-                  key={s.id}
-                  onClick={() => {
-                    setSelectedSenderId(s.id);
-                    setShowChat(true);
-                  }}
-                  sx={{
-                    cursor: "pointer",
-                    px: 2,
-                    py: 1.5,
-                    bgcolor:
-                      selectedSenderId === s.id
-                        ? "var(--bg-secondary)"
-                        : isMobile ? "var(--bg-secondary)" : "transparent",
-                    "&:hover": { bgcolor: "var(--bg-secondary)" },
-                  }}
-                >
-                  <Avatar src={s.photoProfile} sx={{ mr: 2 }}>
-                    {s.name?.[0]}
-                  </Avatar>
-                  <ListItemText
-                    primary={
-                      <Typography fontWeight={700}>
-                        {s.name}
-                      </Typography>
-                    }
-                  />
-                </ListItem>
-              ))
+              senders
+                .filter(s => s.name?.toLowerCase().includes(searchTerm.toLowerCase()))
+                .map((s) => (
+                  <ListItem
+                    key={s.id}
+                    component={motion.div}
+                    whileHover={{ backgroundColor: "var(--bg-secondary)" }}
+                    onClick={() => {
+                      setSelectedSenderId(s.id);
+                      setShowChat(true);
+                    }}
+                    sx={{
+                      cursor: "pointer",
+                      px: 2,
+                      py: 1.5,
+                      transition: 'all 0.2s',
+                      bgcolor:
+                        selectedSenderId === s.id
+                          ? "var(--bg-secondary)"
+                          : "transparent",
+                      borderLeft: selectedSenderId === s.id ? '4px solid var(--primary)' : '4px solid transparent',
+                    }}
+                  >
+                    <Avatar
+                      src={s.photoProfile}
+                      sx={{ width: 48, height: 48, mr: 2, border: '1px solid var(--border-light)' }}
+                    >
+                      {s.name?.[0]}
+                    </Avatar>
+                    <ListItemText
+                      primary={
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <Typography fontWeight={700} variant="body1">{s.name}</Typography>
+                          <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.7rem' }}>
+                            12:45 PM
+                          </Typography>
+                        </Box>
+                      }
+                      secondary={
+                        <Typography variant="body2" sx={{
+                          color: 'text.secondary',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                          fontSize: '0.8rem',
+                          mt: 0.5
+                        }}>
+                          {"Start a conversation"}
+                        </Typography>
+                      }
+                    />
+                  </ListItem>
+                ))
             )}
           </List>
         </Box>
@@ -202,18 +260,37 @@ const GuestAllMessages = () => {
                   </IconButton>
                 )}
 
-                <Typography fontWeight={900} ml={1}>
-                  {senders.find((s) => s.id === selectedSenderId)?.name}
-                </Typography>
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  spacing={1.5}
+                  sx={{ ml: 1, cursor: 'pointer', flex: 1 }}
+                >
+                  <Avatar src={senders.find((s) => s.id === selectedSenderId)?.photoProfile} sx={{ width: 40, height: 40 }} />
+                  <Box>
+                    <Typography fontWeight={700} sx={{ lineHeight: 1.2 }}>
+                      {senders.find((s) => s.id === selectedSenderId)?.name}
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: 'success.main', fontWeight: 600 }}>
+                      Online
+                    </Typography>
+                  </Box>
+                </Stack>
+                <Stack direction="row" spacing={1}>
+                  <IconButton size="small"><SearchIcon fontSize="small" /></IconButton>
+                  <IconButton size="small"><MoreVertIcon fontSize="small" /></IconButton>
+                </Stack>
               </Box>
 
-              {/* Messages */}
               <Box
                 sx={{
                   flex: 1,
                   overflowY: "auto",
                   p: 2,
-                  bgcolor: "var(--bg-secondary)",
+                  bgcolor: "#efeae2",
+                  backgroundImage: 'url("https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png")',
+                  backgroundOpacity: 0.06,
+                  backgroundBlendMode: 'overlay',
                 }}
               >
                 {loadingChat ? (
@@ -221,108 +298,144 @@ const GuestAllMessages = () => {
                     <CircularProgress />
                   </Box>
                 ) : (
-                  <>
-                    {messages.map((m, i) => {
-                      const mine = m.senderId === receiverId;
-                      const isAssistant = m.role === 'assistant' || m.isAI;
+                  <Stack spacing={0.5}>
+                    <AnimatePresence>
+                      {messages.map((m, i) => {
+                        const mine = m.senderId === receiverId;
+                        const isAssistant = m.role === 'assistant' || m.isAI;
 
-                      return (
-                        <Box
-                          key={i}
-                          sx={{
-                            display: "flex",
-                            justifyContent: mine ? "flex-end" : "flex-start",
-                            mb: 1.2,
-                          }}
-                        >
+                        return (
                           <Box
+                            key={i}
+                            component={motion.div}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
                             sx={{
-                              px: 2,
-                              py: 1.2,
-                              maxWidth: { xs: "85%", md: "70%" },
-                              bgcolor: isAssistant
-                                ? "linear-gradient(135deg, #f0f7f4 0%, #e8f5e9 100%)"
-                                : mine
-                                  ? "primary.main"
-                                  : "background.paper",
-                              backgroundImage: isAssistant
-                                ? "linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)"
-                                : 'none',
-                              color: isAssistant
-                                ? "#1b5e20"
-                                : mine
-                                  ? "primary.contrastText"
-                                  : "text.primary",
-                              position: "relative",
-                              borderRadius: '20px',
-                              borderBottomLeftRadius: !mine ? (isAssistant ? '4px' : '20px') : "20px",
-                              borderBottomRightRadius: !mine ? "20px" : "4px",
-                              boxShadow: isAssistant ? '0 4px 15px rgba(46, 125, 50, 0.1)' : '0 2px 5px rgba(0,0,0,0.05)',
-                              border: isAssistant ? '1px solid rgba(46, 125, 50, 0.1)' : 'none',
+                              display: "flex",
+                              justifyContent: mine ? "flex-end" : "flex-start",
+                              mb: 0.5,
                             }}
                           >
-                            {isAssistant && (
-                              <Box sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                mb: 0.5,
-                                bgcolor: 'rgba(46, 125, 50, 0.1)',
-                                width: 'fit-content',
-                                px: 1,
-                                py: 0.2,
-                                borderRadius: '10px',
-                              }}>
-                                <AutoAwesomeIcon sx={{ fontSize: 12, mr: 0.5, color: '#2e7d32' }} />
-                                <Typography variant="caption" sx={{ fontWeight: 800, color: '#2e7d32', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                  Host Assistant
-                                </Typography>
-                              </Box>
-                            )}
-                            <Typography variant="body2" sx={{ wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>
-                              {m.message}
-                            </Typography>
-                            <Typography
-                              variant="caption"
+                            <Box
                               sx={{
-                                opacity: 0.6,
-                                mt: 0.5,
-                                display: "block",
-                                textAlign: "right",
+                                px: 1.5,
+                                py: 0.8,
+                                maxWidth: { xs: "85%", md: "70%" },
+                                bgcolor: isAssistant
+                                  ? "#e8f5e9"
+                                  : mine
+                                    ? "#d9fdd3"
+                                    : "#ffffff",
+                                backgroundImage: isAssistant
+                                  ? "linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)"
+                                  : 'none',
+                                color: "#111b21",
+                                position: "relative",
+                                borderRadius: '12px',
+                                borderTopLeftRadius: !mine ? '0px' : '12px',
+                                borderTopRightRadius: mine ? '0px' : '12px',
+                                boxShadow: '0 1px 1px rgba(0,0,0,0.1)',
+                                border: isAssistant ? '1px solid rgba(46, 125, 50, 0.1)' : 'none',
+                                '&::before': {
+                                  content: '""',
+                                  position: 'absolute',
+                                  top: 0,
+                                  width: 0,
+                                  height: 0,
+                                  border: '8px solid transparent',
+                                  ...(mine ? {
+                                    right: -8,
+                                    borderLeftColor: isAssistant ? '#c8e6c9' : '#d9fdd3',
+                                    borderTopColor: isAssistant ? '#c8e6c9' : '#d9fdd3',
+                                  } : {
+                                    left: -8,
+                                    borderRightColor: '#ffffff',
+                                    borderTopColor: '#ffffff',
+                                  })
+                                }
                               }}
                             >
-                              {new Date(m.timestamp).toLocaleTimeString([], {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}
-                            </Typography>
+                              {isAssistant && (
+                                <Box sx={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  mb: 0.5,
+                                  bgcolor: 'rgba(46, 125, 50, 0.1)',
+                                  width: 'fit-content',
+                                  px: 1,
+                                  py: 0.2,
+                                  borderRadius: '6px',
+                                }}>
+                                  <AutoAwesomeIcon sx={{ fontSize: 10, mr: 0.5, color: '#2e7d32' }} />
+                                  <Typography variant="caption" sx={{ fontWeight: 800, color: '#2e7d32', fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                    Assistant
+                                  </Typography>
+                                </Box>
+                              )}
+                              <Typography variant="body2" sx={{ wordBreak: 'break-word', whiteSpace: 'pre-wrap', fontSize: '0.9rem' }}>
+                                {m.message}
+                              </Typography>
+                              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', mt: 0.2, gap: 0.5 }}>
+                                <Typography
+                                  variant="caption"
+                                  sx={{
+                                    opacity: 0.5,
+                                    fontSize: '0.65rem'
+                                  }}
+                                >
+                                  {new Date(m.timestamp).toLocaleTimeString([], {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })}
+                                </Typography>
+                                {mine && <DoneAllIcon sx={{ fontSize: 14, color: '#53bdeb' }} />}
+                              </Box>
+                            </Box>
                           </Box>
-                        </Box>
-                      );
-                    })}
+                        );
+                      })}
+                    </AnimatePresence>
                     <div ref={messagesEndRef} />
-                  </>
+                  </Stack>
                 )}
               </Box>
 
               {/* Input */}
               <Box
                 sx={{
-                  p: 2,
-                  borderTop: 1,
-                  borderColor: "divider",
+                  p: 1.5,
                   display: "flex",
+                  alignItems: "center",
                   gap: 1,
-                  bgcolor: "var(--bg-primary)",
+                  bgcolor: "#f0f2f5",
                 }}
               >
+                <IconButton size="small"><EmojiEmotionsIcon sx={{ color: '#54656f' }} /></IconButton>
+                <IconButton size="small"><AttachFileIcon sx={{ color: '#54656f', transform: 'rotate(45deg)' }} /></IconButton>
                 <TextField
                   fullWidth
-                  placeholder="Type a message…"
+                  placeholder="Type a message"
+                  variant="outlined"
+                  size="small"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '10px',
+                      bgcolor: '#ffffff',
+                      '& fieldset': { border: 'none' }
+                    }
+                  }}
                 />
-                <IconButton onClick={handleSendMessage} disabled={!newMessage}>
+                <IconButton
+                  onClick={handleSendMessage}
+                  disabled={!newMessage}
+                  sx={{
+                    color: newMessage ? '#00a884' : '#54656f',
+                    transition: 'all 0.2s'
+                  }}
+                >
                   <SendIcon />
                 </IconButton>
               </Box>

@@ -14,6 +14,7 @@ import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "../../context/context";
+import { getAuthToken } from "../../utils/cookieUtils";
 
 const MotionBox = motion(Box);
 
@@ -29,7 +30,9 @@ const MobileBottomNav = () => {
     return pathname.startsWith(path) && !mapVisible;
   };
 
-  const tabs = [
+  const token = getAuthToken();
+
+  const allTabs = [
     {
       label: t("common:mobileNav.home", "Home"),
       path: "/",
@@ -70,6 +73,8 @@ const MobileBottomNav = () => {
     },
   ];
 
+  const visibleTabs = token ? allTabs : allTabs.slice(0, 2);
+
   return (
     <MotionBox
       initial={{ y: 80 }}
@@ -89,7 +94,7 @@ const MobileBottomNav = () => {
         paddingBottom: "env(safe-area-inset-bottom, 0px)",
       }}
     >
-      {tabs.map((tab) => {
+      {visibleTabs.map((tab) => {
         const active = tab.isMap ? mapVisible : isActive(tab.path);
         return (
           <Box

@@ -12,9 +12,11 @@ import {
 } from "@mui/icons-material";
 import { useAppContext } from "../../context/context";
 import { useTranslation } from "react-i18next";
+import { RTLWrapper, useRTL } from "../language/Localization";
 
 const SearchBar2 = () => {
   const { t } = useTranslation();
+  const isRTL = useRTL();
 
   const [isVisible, setIsVisible] = useState(true);
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -42,7 +44,7 @@ const SearchBar2 = () => {
   };
 
   return (
-    <Box
+    <RTLWrapper
       onClick={toggleVisibility}
       className={`${!isVisible ? "search-visible" : "search-hidden"}`}
       sx={{
@@ -52,7 +54,7 @@ const SearchBar2 = () => {
         width: "105%",
         paddingBottom: "20px",
         marginTop: "10px",
-        marginLeft: "100px",
+        [isRTL ? "marginRight" : "marginLeft"]: "100px",
       }}
     >
       {!isMobile && (
@@ -115,7 +117,7 @@ const SearchBar2 = () => {
               </Typography>
             </Box>
 
-            <Box sx={{ marginLeft: "8px" }}>
+            <Box sx={{ [isRTL ? "marginRight" : "marginLeft"]: "8px" }}>
               <IconButton
                 sx={{
                   backgroundColor: "var(--primary)",
@@ -131,7 +133,7 @@ const SearchBar2 = () => {
           </Box>
         </>
       )}
-    </Box>
+    </RTLWrapper>
   );
 };
 

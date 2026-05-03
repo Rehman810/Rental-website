@@ -16,10 +16,14 @@ import { fetchData } from "../../config/ServiceApi/serviceApi";
 import dayjs from "dayjs";
 
 import { getAuthToken } from "../../utils/cookieUtils";
+import { useTranslation } from "react-i18next";
 import usePageTitle from "../../hooks/usePageTitle";
-// ...
+import { RTLWrapper, useRTL } from "../../components/language/Localization";
+
 const HostBookingsCalendar = () => {
-  usePageTitle("Calendar");
+  const { t, i18n } = useTranslation("translation");
+  usePageTitle(t("menu.hostMenu.calendar"));
+  const isRTL = useRTL();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const token = getAuthToken();
@@ -62,7 +66,8 @@ const HostBookingsCalendar = () => {
   const totalBookings = useMemo(() => bookings?.length || 0, [bookings]);
 
   return (
-    <Container maxWidth="lg" sx={{ py: { xs: 2, md: 4 } }}>
+    <RTLWrapper sx={{ py: { xs: 2, md: 4 } }}>
+      <Container maxWidth="lg">
       <Paper
         elevation={0}
         sx={{
@@ -77,10 +82,10 @@ const HostBookingsCalendar = () => {
         <Box sx={{ p: { xs: 2, md: 3 } }}>
           <Stack spacing={0.5}>
             <Typography variant="h5" fontWeight={900} sx={{ color: "var(--text-primary)" }}>
-              Bookings Calendar
+              {t("hosting.calendar.title")}
             </Typography>
             <Typography variant="body2" sx={{ color: "var(--text-secondary)" }}>
-              Track confirmed reservations at a glance • {totalBookings} bookings
+              {t("hosting.calendar.desc", { count: totalBookings })}
             </Typography>
           </Stack>
         </Box>
@@ -102,7 +107,7 @@ const HostBookingsCalendar = () => {
             >
               <CircularProgress />
               <Typography variant="body2" sx={{ color: "var(--text-secondary)" }}>
-                Loading calendar data...
+                {t("hosting.calendar.loading")}
               </Typography>
             </Box>
           ) : (
@@ -172,23 +177,14 @@ const HostBookingsCalendar = () => {
                 plugins={[dayGridPlugin, interactionPlugin]}
                 initialView="dayGridMonth"
                 events={bookings}
+                direction={isRTL ? "rtl" : "ltr"}
+                locale={i18n.language}
 
                 headerToolbar={{
                   left: "prev,next today",
                   center: "title",
                   right: "dayGridMonth",
                 }}
-                selectAllow={(selectInfo) => {
-                  const start = dayjs(selectInfo.start);
-                  const end = dayjs(selectInfo.end);
-
-                  return !events.some(ev => {
-                    const evStart = dayjs(ev.start);
-                    const evEnd = dayjs(ev.end);
-                    return start.isBefore(evEnd) && end.isAfter(evStart);
-                  });
-                }}
-
                 height="auto"
                 eventContent={(eventInfo) => {
                   const title = eventInfo.event.title || "Booking";
@@ -227,7 +223,8 @@ const HostBookingsCalendar = () => {
           )}
         </Box>
       </Paper>
-    </Container>
+      </Container>
+    </RTLWrapper>
   );
 };
 

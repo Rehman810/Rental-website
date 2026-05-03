@@ -1,0 +1,9 @@
+{
+  "en": { "lang": "English", "region": "United States" },
+  "zh": { "lang": "Chinese", "region": "China" },
+  "tr": { "lang": "Turkish", "region": "Türkiye" },
+  "ar": { "lang": "Arabic", "region": "Middle East" },
+  "ur": { "lang": "Urdu", "region": "Pakistan" },
+  "fr": { "lang": "French", "region": "France" },
+  "de": { "lang": "German", "region": "Germany" }
+}

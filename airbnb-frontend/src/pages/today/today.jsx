@@ -18,9 +18,13 @@ import { useBookingContext } from "../../context/booking";
 import ConfirmedBookings from "../../components/confirmedBookings/confirmedBookings";
 import { fetchData } from "../../config/ServiceApi/serviceApi";
 
+import { useTranslation } from "react-i18next";
+import { RTLWrapper, useRTL } from "../../components/language/Localization";
+
 const ReservationSection = () => {
-  const [selectedTab, setSelectedTab] = useState("Pending Booking");
-  usePageTitle("Host Dashboard");
+  const { t } = useTranslation("translation");
+  const [selectedTab, setSelectedTab] = useState(t("hosting.tabs.pending"));
+  usePageTitle(t("hosting.dashboard.pageTitle"));
 
   const user = getAuthUser();
   const {
@@ -38,13 +42,13 @@ const ReservationSection = () => {
 
   const tabs = useMemo(
     () => [
-      { label: "Pending Booking", count: pendingBooking || 0 },
-      { label: "Confirmed Bookings", count: confirmedBookings || 0 },
-      { label: "Checking out", count: checkingOut || 0 },
-      { label: "Currently hosting", count: currentlyHosting || 0 },
-      { label: "Upcoming", count: upcoming || 0 },
+      { label: t("hosting.tabs.pending"), key: "Pending Booking", count: pendingBooking || 0 },
+      { label: t("hosting.tabs.confirmed"), key: "Confirmed Bookings", count: confirmedBookings || 0 },
+      { label: t("hosting.tabs.checkingOut"), key: "Checking out", count: checkingOut || 0 },
+      { label: t("hosting.tabs.currentlyHosting"), key: "Currently hosting", count: currentlyHosting || 0 },
+      { label: t("hosting.tabs.upcoming"), key: "Upcoming", count: upcoming || 0 },
     ],
-    [pendingBooking, confirmedBookings, checkingOut, currentlyHosting, upcoming]
+    [t, pendingBooking, confirmedBookings, checkingOut, currentlyHosting, upcoming]
   );
 
   const totalReservations = useMemo(() => {
@@ -52,7 +56,10 @@ const ReservationSection = () => {
   }, [pendingBooking, confirmedBookings, checkingOut, currentlyHosting, upcoming]);
 
   const renderContent = () => {
-    switch (selectedTab) {
+    const activeTab = tabs.find(tab => tab.label === selectedTab);
+    const tabKey = activeTab ? activeTab.key : selectedTab;
+
+    switch (tabKey) {
       case "Checking out":
         return <CheckingOut />;
       case "Confirmed Bookings":
@@ -66,7 +73,7 @@ const ReservationSection = () => {
       default:
         return (
           <Typography variant="body2" color="var(--text-secondary)">
-            No data available.
+            {t("hosting.dashboard.noData")}
           </Typography>
         );
     }
@@ -120,8 +127,10 @@ const ReservationSection = () => {
     setConfirmedBookings
   ]);
 
+  const isRTL = useRTL();
+
   return (
-    <Box sx={{ p: { xs: 2, md: 3 }, maxWidth: 1200, mx: "auto" }}>
+    <RTLWrapper sx={{ p: { xs: 2, md: 3 }, maxWidth: 1200, mx: "auto" }}>
       {/* Header Card */}
       <Paper
         elevation={0}
@@ -142,21 +151,23 @@ const ReservationSection = () => {
         >
           <Box>
             <Typography variant="h5" fontWeight={900}>
-              Welcome, {formatUserName(user?.userName)} 👋
+              {t("hosting.today.welcome", { name: formatUserName(user?.userName) })}
+            </Typography>
+            <Typography variant="body2" color="var(--text-secondary)" sx={{ mb: 1 }}>
+              {t("hosting.dashboard.account")}
             </Typography>
             <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
-              Manage your bookings and stay on top of upcoming guests.
+              {t("hosting.today.manageBookings")}
             </Typography>
           </Box>
 
           <Stack direction="row" spacing={1} alignItems="center">
             <Chip
-              label={`Total: ${totalReservations}`}
+              label={`${t("hosting.today.total")}: ${totalReservations}`}
               variant="outlined"
               sx={{
                 borderRadius: 999,
                 fontWeight: 900,
-
                 bgcolor: "transparent",
                 borderColor: "var(--border-light)",
                 color: "var(--text-primary)",
@@ -172,9 +183,9 @@ const ReservationSection = () => {
                 textTransform: "none",
                 boxShadow: "0 14px 35px rgba(0,0,0,0.15)",
               }}
-              onClick={() => setSelectedTab("Pending Booking")}
+              onClick={() => setSelectedTab(t("hosting.tabs.pending"))}
             >
-              View reservations
+              {t("hosting.today.viewReservations")}
             </Button>
           </Stack>
         </Stack>
@@ -190,10 +201,10 @@ const ReservationSection = () => {
       >
         <Box>
           <Typography variant="h6" fontWeight={900}>
-            Your reservations
+            {t("hosting.today.yourReservations")}
           </Typography>
-          <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.3 }}>
-            Filter bookings by status to take quick actions.
+          <Typography variant="body2" color="var(--text-secondary)" sx={{ mb: 1 }}>
+            {t("hosting.dashboard.navigation")}
           </Typography>
         </Box>
 
@@ -208,7 +219,7 @@ const ReservationSection = () => {
             "&:hover": { backgroundColor: "rgba(0,0,0,0.04)" },
           }}
         >
-          All reservations ({totalReservations})
+          {t("hosting.today.allReservations")} ({totalReservations})
         </Button>
       </Stack>
 
@@ -263,6 +274,7 @@ const ReservationSection = () => {
                       ? "var(--primary-color)"
                       : "var(--border-light)",
                     color: active ? "white" : "var(--text-primary)",
+                    [isRTL ? "mr" : "ml"]: 1,
                   }}
                 >
                   {tab.count}
@@ -292,7 +304,7 @@ const ReservationSection = () => {
             </Typography>
 
             <Chip
-              label="Live"
+              label={t("hosting.today.live")}
               size="small"
               sx={{
                 borderRadius: 999,
@@ -310,7 +322,7 @@ const ReservationSection = () => {
           {renderContent()}
         </Box>
       </Paper>
-    </Box>
+    </RTLWrapper>
   );
 };
 

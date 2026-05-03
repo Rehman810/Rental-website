@@ -22,6 +22,8 @@ import {
     useMediaQuery,
     InputAdornment
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
+import { RTLWrapper, useRTL } from "../../components/language/Localization";
 import {
     AutoAwesome as AutoAwesomeIcon,
     VpnKey as KeyIcon,
@@ -35,10 +37,12 @@ import apiClient from '../../config/ServiceApi/apiClient';
 import usePageTitle from "../../hooks/usePageTitle";
 
 const HostSettings = () => {
-    usePageTitle("Settings");
+    const { t } = useTranslation("translation");
+    usePageTitle(t("hosting.settings.title"));
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const isMobile = useMediaQuery("(max-width:1100px)");
+    const isRTL = useRTL();
     const [settings, setSettings] = useState({
         bookingMode: 'request',
         cancellationPolicy: 'moderate',
@@ -87,7 +91,7 @@ const HostSettings = () => {
             }
         } catch (error) {
             console.error("Error fetching settings:", error);
-            toast.error("Failed to load settings");
+            toast.error(t("hosting.settings.loadError"));
         } finally {
             setLoading(false);
         }
@@ -99,10 +103,10 @@ const HostSettings = () => {
             await apiClient.put(`${API_BASE_URL}/host/settings`, { settings }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            toast.success("Settings saved successfully!");
+            toast.success(t("hosting.settings.saveSuccess"));
         } catch (error) {
             console.error("Error saving settings:", error);
-            toast.error("Failed to save settings");
+            toast.error(t("hosting.settings.saveError"));
         } finally {
             setSaving(false);
         }
@@ -190,12 +194,13 @@ const HostSettings = () => {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
                 <CircularProgress />
+                <Typography sx={{ ml: 2 }}>{t("hosting.settings.loading")}</Typography>
             </Box>
         );
     }
 
     return (
-        <Box sx={pageWrapSx}>
+        <RTLWrapper sx={pageWrapSx}>
             <Container maxWidth="md">
                 {/* Page Header */}
                 <Box sx={{ mb: 3 }}>
@@ -207,11 +212,11 @@ const HostSettings = () => {
                             mb: 0.5
                         }}
                     >
-                        Host Settings
+                        {t("hosting.settings.title")}
                     </Typography>
 
                     <Typography variant="body1" sx={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-                        Manage booking rules, availability, guest requirements, and notifications — clean and simple.
+                        {t("hosting.settings.desc")}
                     </Typography>
                 </Box>
 
@@ -221,10 +226,10 @@ const HostSettings = () => {
                         <Box sx={sectionHeaderSx}>
                             <Box>
                                 <Typography variant="h6" sx={sectionTitleSx}>
-                                    Booking Preferences
+                                    {t("hosting.settings.bookingPrefs")}
                                 </Typography>
                                 <Typography variant="body2" sx={sectionDescSx}>
-                                    Choose how guests can book your listings.
+                                    {t("hosting.settings.bookingPrefsDesc")}
                                 </Typography>
                             </Box>
                         </Box>
@@ -256,9 +261,9 @@ const HostSettings = () => {
                                     control={<Radio />}
                                     label={
                                         <Box>
-                                            <Typography fontWeight={900}>Instant Book (Recommended)</Typography>
+                                            <Typography fontWeight={900}>{t("hosting.settings.instantBook")}</Typography>
                                             <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.25, lineHeight: 1.6 }}>
-                                                Guests who meet your requirements can book instantly. Status becomes <b>CONFIRMED</b> immediately.
+                                                {t("hosting.settings.instantBookDesc")}
                                             </Typography>
                                         </Box>
                                     }
@@ -268,9 +273,9 @@ const HostSettings = () => {
                                     control={<Radio />}
                                     label={
                                         <Box>
-                                            <Typography fontWeight={900}>Request to Book</Typography>
+                                            <Typography fontWeight={900}>{t("hosting.settings.requestToBook")}</Typography>
                                             <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.25, lineHeight: 1.6 }}>
-                                                Guests must send a reservation request. You have <b>24 hours</b> to approve or decline. Status starts as <b>PENDING</b>.
+                                                {t("hosting.settings.requestToBookDesc")}
                                             </Typography>
                                         </Box>
                                     }
@@ -286,10 +291,10 @@ const HostSettings = () => {
                         <Box sx={sectionHeaderSx}>
                             <Box>
                                 <Typography variant="h6" sx={sectionTitleSx}>
-                                    Availability Rules (Default)
+                                    {t("hosting.settings.availabilityRules")}
                                 </Typography>
                                 <Typography variant="body2" sx={sectionDescSx}>
-                                    Set default availability rules for your listings. You can override these per listing.
+                                    {t("hosting.settings.availabilityRulesDesc")}
                                 </Typography>
                             </Box>
                         </Box>
@@ -302,7 +307,7 @@ const HostSettings = () => {
                                     fullWidth
                                     size="small"
                                     sx={fieldSx}
-                                    label="Minimum Nights"
+                                    label={t("hosting.settings.minNights")}
                                     type="number"
                                     value={settings.availability?.minNights ?? 1}
                                     onChange={(e) => handleChange('availability', 'minNights', parseInt(e.target.value))}
@@ -314,7 +319,7 @@ const HostSettings = () => {
                                     fullWidth
                                     size="small"
                                     sx={fieldSx}
-                                    label="Maximum Nights"
+                                    label={t("hosting.settings.maxNights")}
                                     type="number"
                                     value={settings.availability?.maxNights ?? 30}
                                     onChange={(e) => handleChange('availability', 'maxNights', parseInt(e.target.value))}
@@ -336,41 +341,41 @@ const HostSettings = () => {
                                             }}
                                         />
                                     }
-                                    label="Allow same-day booking"
+                                    label={t("hosting.settings.allowSameDay")}
                                     labelPlacement="start"
                                 />
                             </Grid>
 
                             <Grid item xs={12} sm={6}>
                                 <FormControl fullWidth size="small" sx={fieldSx}>
-                                    <InputLabel>Minimum Notice</InputLabel>
+                                    <InputLabel>{t("hosting.settings.minNotice")}</InputLabel>
                                     <Select
                                         value={settings.availability?.minNoticeDays ?? 1}
-                                        label="Minimum Notice"
+                                        label={t("hosting.settings.minNotice")}
                                         onChange={(e) => handleChange('availability', 'minNoticeDays', e.target.value)}
                                     >
                                         <MenuItem value={0} disabled={!settings.availability?.allowSameDayBooking}>
-                                            Same Day (0 days)
+                                            {t("hosting.settings.sameDay")}
                                         </MenuItem>
-                                        <MenuItem value={1}>1 Day</MenuItem>
-                                        <MenuItem value={2}>2 Days</MenuItem>
-                                        <MenuItem value={7}>7 Days</MenuItem>
+                                        <MenuItem value={1}>{t("hosting.settings.day", { count: 1 })}</MenuItem>
+                                        <MenuItem value={2}>{t("hosting.settings.days", { count: 2 })}</MenuItem>
+                                        <MenuItem value={7}>{t("hosting.settings.days", { count: 7 })}</MenuItem>
                                     </Select>
                                 </FormControl>
                             </Grid>
 
                             <Grid item xs={12} sm={6}>
                                 <FormControl fullWidth size="small" sx={fieldSx}>
-                                    <InputLabel>Booking Window</InputLabel>
+                                    <InputLabel>{t("hosting.settings.bookingWindow")}</InputLabel>
                                     <Select
                                         value={settings.availability?.bookingWindowMonths ?? 6}
-                                        label="Booking Window"
+                                        label={t("hosting.settings.bookingWindow")}
                                         onChange={(e) => handleChange('availability', 'bookingWindowMonths', e.target.value)}
                                     >
-                                        <MenuItem value={1}>1 Month</MenuItem>
-                                        <MenuItem value={3}>3 Months</MenuItem>
-                                        <MenuItem value={6}>6 Months</MenuItem>
-                                        <MenuItem value={12}>12 Months</MenuItem>
+                                        <MenuItem value={1}>{t("hosting.settings.month", { count: 1 })}</MenuItem>
+                                        <MenuItem value={3}>{t("hosting.settings.months", { count: 3 })}</MenuItem>
+                                        <MenuItem value={6}>{t("hosting.settings.months", { count: 6 })}</MenuItem>
+                                        <MenuItem value={12}>{t("hosting.settings.months", { count: 12 })}</MenuItem>
                                     </Select>
                                 </FormControl>
                             </Grid>
@@ -380,7 +385,7 @@ const HostSettings = () => {
                                     fullWidth
                                     size="small"
                                     sx={fieldSx}
-                                    label="Check-in From"
+                                    label={t("hosting.settings.checkInFrom")}
                                     type="time"
                                     value={settings.availability?.checkInFrom ?? "14:00"}
                                     onChange={(e) => handleChange('availability', 'checkInFrom', e.target.value)}
@@ -394,7 +399,7 @@ const HostSettings = () => {
                                     fullWidth
                                     size="small"
                                     sx={fieldSx}
-                                    label="Check-out By"
+                                    label={t("hosting.settings.checkOutBy")}
                                     type="time"
                                     value={settings.availability?.checkOutBy ?? "11:00"}
                                     onChange={(e) => handleChange('availability', 'checkOutBy', e.target.value)}
@@ -412,10 +417,10 @@ const HostSettings = () => {
                         <Box sx={sectionHeaderSx}>
                             <Box>
                                 <Typography variant="h6" sx={sectionTitleSx}>
-                                    Cancellation Policy
+                                    {t("hosting.settings.cancellationPolicy")}
                                 </Typography>
                                 <Typography variant="body2" sx={sectionDescSx}>
-                                    Define your refund terms so guests know what to expect.
+                                    {t("hosting.settings.cancellationPolicyDesc")}
                                 </Typography>
                             </Box>
                         </Box>
@@ -438,9 +443,9 @@ const HostSettings = () => {
                                     }
                                 }}
                             >
-                                <FormControlLabel value="flexible" control={<Radio />} label="Flexible (Full refund 1 day prior to arrival)" />
-                                <FormControlLabel value="moderate" control={<Radio />} label="Moderate (Full refund 5 days prior to arrival)" />
-                                <FormControlLabel value="strict" control={<Radio />} label="Strict (No refund)" />
+                                <FormControlLabel value="flexible" control={<Radio />} label={t("hosting.settings.flexible")} />
+                                <FormControlLabel value="moderate" control={<Radio />} label={t("hosting.settings.moderate")} />
+                                <FormControlLabel value="strict" control={<Radio />} label={t("hosting.settings.strict")} />
                             </RadioGroup>
                         </FormControl>
                     </CardContent>
@@ -452,10 +457,10 @@ const HostSettings = () => {
                         <Box sx={sectionHeaderSx}>
                             <Box>
                                 <Typography variant="h6" sx={sectionTitleSx}>
-                                    House Rules
+                                    {t("hosting.settings.houseRules")}
                                 </Typography>
                                 <Typography variant="body2" sx={sectionDescSx}>
-                                    Set expectations upfront to avoid drama later.
+                                    {t("hosting.settings.houseRulesDesc")}
                                 </Typography>
                             </Box>
                         </Box>
@@ -467,7 +472,7 @@ const HostSettings = () => {
                                 <FormControlLabel
                                     sx={switchRowSx}
                                     control={<Switch checked={settings.houseRules.quietHours} onChange={(e) => handleChange('houseRules', 'quietHours', e.target.checked)} />}
-                                    label="Quiet hours (10:00 PM - 8:00 AM)"
+                                    label={t("hosting.settings.quietHours")}
                                     labelPlacement="start"
                                 />
                             </Grid>
@@ -475,7 +480,7 @@ const HostSettings = () => {
                                 <FormControlLabel
                                     sx={switchRowSx}
                                     control={<Switch checked={settings.houseRules.smokingAllowed} onChange={(e) => handleChange('houseRules', 'smokingAllowed', e.target.checked)} />}
-                                    label="Smoking allowed"
+                                    label={t("hosting.settings.smokingAllowed")}
                                     labelPlacement="start"
                                 />
                             </Grid>
@@ -483,7 +488,7 @@ const HostSettings = () => {
                                 <FormControlLabel
                                     sx={switchRowSx}
                                     control={<Switch checked={settings.houseRules.petsAllowed} onChange={(e) => handleChange('houseRules', 'petsAllowed', e.target.checked)} />}
-                                    label="Pets allowed"
+                                    label={t("hosting.settings.petsAllowed")}
                                     labelPlacement="start"
                                 />
                             </Grid>
@@ -497,10 +502,10 @@ const HostSettings = () => {
                         <Box sx={sectionHeaderSx}>
                             <Box>
                                 <Typography variant="h6" sx={sectionTitleSx}>
-                                    Guest Requirements
+                                    {t("hosting.settings.guestRequirements")}
                                 </Typography>
                                 <Typography variant="body2" sx={sectionDescSx}>
-                                    Decide what a guest must have before they can book.
+                                    {t("hosting.settings.guestRequirementsDesc")}
                                 </Typography>
                             </Box>
                         </Box>
@@ -512,7 +517,7 @@ const HostSettings = () => {
                                 <FormControlLabel
                                     sx={switchRowSx}
                                     control={<Switch checked={settings.guestRequirements.requireVerifiedPhone} onChange={(e) => handleChange('guestRequirements', 'requireVerifiedPhone', e.target.checked)} />}
-                                    label="Require verified phone number"
+                                    label={t("hosting.settings.requirePhone")}
                                     labelPlacement="start"
                                 />
                             </Grid>
@@ -521,7 +526,7 @@ const HostSettings = () => {
                                 <FormControlLabel
                                     sx={switchRowSx}
                                     control={<Switch checked={settings.guestRequirements.requireVerifiedEmail} onChange={(e) => handleChange('guestRequirements', 'requireVerifiedEmail', e.target.checked)} />}
-                                    label="Require verified email"
+                                    label={t("hosting.settings.requireEmail")}
                                     labelPlacement="start"
                                 />
                             </Grid>
@@ -530,7 +535,7 @@ const HostSettings = () => {
                                 <FormControlLabel
                                     sx={switchRowSx}
                                     control={<Switch checked={settings.guestRequirements.requireCNIC} onChange={(e) => handleChange('guestRequirements', 'requireCNIC', e.target.checked)} />}
-                                    label="Require CNIC verification"
+                                    label={t("hosting.settings.requireCNIC")}
                                     labelPlacement="start"
                                 />
                             </Grid>
@@ -539,7 +544,7 @@ const HostSettings = () => {
                                 <FormControlLabel
                                     sx={switchRowSx}
                                     control={<Switch checked={settings.guestRequirements.requireProfilePhoto} onChange={(e) => handleChange('guestRequirements', 'requireProfilePhoto', e.target.checked)} />}
-                                    label="Require profile photo"
+                                    label={t("hosting.settings.requirePhoto")}
                                     labelPlacement="start"
                                 />
                             </Grid>
@@ -548,7 +553,7 @@ const HostSettings = () => {
                                 <FormControlLabel
                                     sx={switchRowSx}
                                     control={<Switch checked={settings.guestRequirements.requireCompletedProfile} onChange={(e) => handleChange('guestRequirements', 'requireCompletedProfile', e.target.checked)} />}
-                                    label="Require completed profile"
+                                    label={t("hosting.settings.requireProfile")}
                                     labelPlacement="start"
                                 />
                             </Grid>
@@ -558,7 +563,7 @@ const HostSettings = () => {
                                     fullWidth
                                     size="small"
                                     sx={fieldSx}
-                                    label="Minimum Account Age (Days)"
+                                    label={t("hosting.settings.minAccountAge")}
                                     type="number"
                                     value={settings.guestRequirements.minAccountAgeDays ?? 0}
                                     onChange={(e) => handleChange('guestRequirements', 'minAccountAgeDays', parseInt(e.target.value))}
@@ -575,10 +580,10 @@ const HostSettings = () => {
                             <Box>
                                 <Typography variant="h6" sx={{ ...sectionTitleSx, display: 'flex', alignItems: 'center', gap: 1 }}>
                                     <AutoAwesomeIcon sx={{ color: '#8b5cf6' }} />
-                                    AI Host Assistant
+                                    {t("hosting.settings.aiAssistant")}
                                 </Typography>
                                 <Typography variant="body2" sx={sectionDescSx}>
-                                    Activate the AI Guest Assistant for your listings by connecting your Google Gemini API Key.
+                                    {t("hosting.settings.aiAssistantDesc")}
                                 </Typography>
                             </Box>
                         </Box>
@@ -587,20 +592,20 @@ const HostSettings = () => {
 
                         <Box sx={{ mb: 3 }}>
                             <Typography variant="subtitle1" fontWeight={700} gutterBottom>
-                                How it works
+                                {t("hosting.settings.howItWorks")}
                             </Typography>
                             <Typography variant="body2" color="var(--text-secondary)" sx={{ mb: 2, lineHeight: 1.6 }}>
-                                The AI uses the Gemini model to generate responses on your behalf. It automatically helps you respond to guest messages, answer questions about your property, share pricing and availability, and assist during the booking process.
+                                {t("hosting.settings.howItWorksDesc")}
                             </Typography>
 
                             <Typography variant="subtitle1" fontWeight={700} gutterBottom>
-                                Steps to enable
+                                {t("hosting.settings.stepsToEnable")}
                             </Typography>
                             <Box component="ol" sx={{ pl: 2, mb: 3, '& li': { mb: 0.5, fontSize: '0.875rem', color: 'var(--text-secondary)' } }}>
-                                <li>Go to <b>Google AI Studio</b></li>
-                                <li>Generate your <b>Gemini API Key</b></li>
-                                <li>Paste the key in the field below</li>
-                                <li>Toggle the switch to Activate AI Assistant</li>
+                                <li>{t("hosting.settings.step1")}</li>
+                                <li>{t("hosting.settings.step2")}</li>
+                                <li>{t("hosting.settings.step3")}</li>
+                                <li>{t("hosting.settings.step4")}</li>
                             </Box>
                         </Box>
 
@@ -610,8 +615,8 @@ const HostSettings = () => {
                                     fullWidth
                                     size="small"
                                     sx={fieldSx}
-                                    label="Gemini API Key"
-                                    placeholder="Paste your Gemini API key here"
+                                    label={t("hosting.settings.apiKey")}
+                                    placeholder={t("hosting.settings.apiKeyPlaceholder")}
                                     type="password"
                                     value={settings.aiAssistant?.geminiApiKey ?? ''}
                                     onChange={(e) => handleChange('aiAssistant', 'geminiApiKey', e.target.value)}
@@ -633,7 +638,7 @@ const HostSettings = () => {
                                             onChange={(e) => handleChange('aiAssistant', 'enabled', e.target.checked)}
                                         />
                                     }
-                                    label={settings.aiAssistant?.enabled ? "AI Assistant Active" : "Activate AI Assistant"}
+                                    label={settings.aiAssistant?.enabled ? t("hosting.settings.aiActive") : t("hosting.settings.activateAi")}
                                     labelPlacement="start"
                                 />
                             </Grid>
@@ -641,12 +646,12 @@ const HostSettings = () => {
 
                         <Box sx={{ mt: 3, p: 2, borderRadius: 2, bgcolor: 'rgba(25, 118, 210, 0.05)', border: '1px solid rgba(25, 118, 210, 0.1)' }}>
                             <Typography variant="caption" color="var(--text-primary)" display="block" sx={{ fontWeight: 600, mb: 0.5 }}>
-                                Important Notes:
+                                {t("hosting.settings.importantNotes")}:
                             </Typography>
                             <Typography variant="caption" color="var(--text-secondary)" component="div">
-                                • Your API key is stored securely and used only for AI responses.<br />
-                                • You can disable or replace your API key anytime.<br />
-                                • API usage costs depend on your Gemini account and Google billing.
+                                • {t("hosting.settings.note1")}<br />
+                                • {t("hosting.settings.note2")}<br />
+                                • {t("hosting.settings.note3")}
                             </Typography>
                         </Box>
                     </CardContent>
@@ -658,10 +663,10 @@ const HostSettings = () => {
                         <Box sx={sectionHeaderSx}>
                             <Box>
                                 <Typography variant="h6" sx={sectionTitleSx}>
-                                    Notifications
+                                    {t("hosting.settings.notifications")}
                                 </Typography>
                                 <Typography variant="body2" sx={sectionDescSx}>
-                                    Keep your comms tight — get updates your way.
+                                    {t("hosting.settings.notificationsDesc")}
                                 </Typography>
                             </Box>
                         </Box>
@@ -673,7 +678,7 @@ const HostSettings = () => {
                                 <FormControlLabel
                                     sx={switchRowSx}
                                     control={<Switch checked={settings.notifications.email} onChange={(e) => handleChange('notifications', 'email', e.target.checked)} />}
-                                    label="Email notifications"
+                                    label={t("hosting.settings.emailNotifications")}
                                     labelPlacement="start"
                                 />
                             </Grid>
@@ -681,7 +686,7 @@ const HostSettings = () => {
                                 <FormControlLabel
                                     sx={switchRowSx}
                                     control={<Switch checked={settings.notifications.sms} onChange={(e) => handleChange('notifications', 'sms', e.target.checked)} />}
-                                    label="SMS notifications"
+                                    label={t("hosting.settings.smsNotifications")}
                                     labelPlacement="start"
                                 />
                             </Grid>
@@ -726,11 +731,11 @@ const HostSettings = () => {
                     >
                         <Box>
                             <Typography sx={{ fontWeight: 900, lineHeight: 1.2 }}>
-                                Ready to apply changes?
+                                {t("hosting.settings.readyToApply")}
                             </Typography>
                             {!isMobile && (
                                 <Typography variant="body2" sx={{ color: 'var(--text-secondary)' }}>
-                                    Save once and you’re good to go.
+                                    {t("hosting.settings.saveOnce")}
                                 </Typography>
                             )}
                         </Box>
@@ -750,12 +755,12 @@ const HostSettings = () => {
                                 boxShadow: '0 12px 30px rgba(0,0,0,0.18)',
                             }}
                         >
-                            {saving ? 'Saving...' : 'Save'}
+                            {saving ? t("hosting.settings.saving") : t("hosting.settings.save")}
                         </Button>
                     </Box>
                 </Box>
             </Container>
-        </Box>
+        </RTLWrapper>
     );
 };
 

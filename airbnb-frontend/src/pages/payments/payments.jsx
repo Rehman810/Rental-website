@@ -19,9 +19,12 @@ import PaymentsIcon from "@mui/icons-material/Payments";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import toast from "react-hot-toast";
 import usePageTitle from "../../hooks/usePageTitle";
+import { useTranslation } from "react-i18next";
+import { RTLWrapper, useRTL } from "../../components/language/Localization";
 
 const Payments = () => {
-    usePageTitle("Payments");
+    const { t } = useTranslation("translation");
+    usePageTitle(t("menu.hostMenu.payments"));
     const [loading, setLoading] = useState(true);
     const [connecting, setConnecting] = useState(false);
     const [status, setStatus] = useState({
@@ -31,6 +34,7 @@ const Payments = () => {
     });
 
     const token = getAuthToken();
+    const isRTL = useRTL();
 
     useEffect(() => {
         const getStatus = async () => {
@@ -53,7 +57,7 @@ const Payments = () => {
             if (response?.url) window.location.href = response.url;
         } catch (error) {
             console.error(error);
-            toast.error("Failed to initiate connection");
+            toast.error(t("hosting.payments.failedInitiateConnection"));
         } finally {
             setConnecting(false);
         }
@@ -70,32 +74,29 @@ const Payments = () => {
     const statusConfig = useMemo(() => {
         if (isConnected) {
             return {
-                label: "Payouts Active",
+                label: t("hosting.payments.active"),
                 color: "success",
                 icon: <CheckCircleIcon />,
-                description:
-                    "Your Stripe account is fully verified and payouts are enabled.",
+                description: t("hosting.payments.activeDesc"),
             };
         }
 
         if (status.details_submitted) {
             return {
-                label: "Pending Verification",
+                label: t("hosting.payments.pending"),
                 color: "warning",
                 icon: <ErrorIcon />,
-                description:
-                    "Stripe is reviewing your details. This usually takes a short time.",
+                description: t("hosting.payments.pendingDesc"),
             };
         }
 
         return {
-            label: "Action Required",
+            label: t("hosting.payments.action"),
             color: "error",
             icon: <ErrorIcon />,
-            description:
-                "Complete Stripe onboarding to enable payouts and start receiving funds.",
+            description: t("hosting.payments.actionDesc"),
         };
-    }, [isConnected, status.details_submitted]);
+    }, [isConnected, status.details_submitted, t]);
 
     if (loading) {
         return (
@@ -110,7 +111,7 @@ const Payments = () => {
                 <Stack alignItems="center" spacing={2}>
                     <CircularProgress />
                     <Typography variant="body2" color="var(--text-secondary)">
-                        Loading payment settings...
+                        {t("hosting.payments.loading")}
                     </Typography>
                 </Stack>
             </Box>
@@ -118,7 +119,7 @@ const Payments = () => {
     }
 
     return (
-        <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1100, mx: "auto" }}>
+        <RTLWrapper sx={{ p: { xs: 2, md: 4 }, maxWidth: 1100, mx: "auto" }}>
             {/* Header */}
             <Paper
                 elevation={0}
@@ -151,11 +152,10 @@ const Payments = () => {
 
                         <Box>
                             <Typography variant="h5" fontWeight={800}>
-                                Payments & Payouts
+                                {t("hosting.payments.title")}
                             </Typography>
                             <Typography variant="body2" color="var(--text-secondary)">
-                                Connect Stripe to securely manage onboarding, verification, and
-                                payouts.
+                                {t("hosting.payments.desc")}
                             </Typography>
                         </Box>
                     </Stack>
@@ -188,7 +188,7 @@ const Payments = () => {
                 <Stack spacing={2.2}>
                     <Box>
                         <Typography variant="h6" fontWeight={800}>
-                            Stripe Connect Status
+                            {t("hosting.payments.status")}
                         </Typography>
                         <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
                             {statusConfig.description}
@@ -204,24 +204,27 @@ const Payments = () => {
                             color="var(--text-secondary)"
                             sx={{ mb: 1.2 }}
                         >
-                            Requirements
+                            {t("hosting.payments.requirements")}
                         </Typography>
 
                         <Stack spacing={1.2}>
                             <RequirementRow
-                                title="Charges Enabled"
+                                title={t("hosting.payments.charges")}
                                 ok={status.charges_enabled}
-                                hint="Allows you to accept payments from customers."
+                                hint={t("hosting.payments.chargesDesc")}
+                                t={t}
                             />
                             <RequirementRow
-                                title="Payouts Enabled"
+                                title={t("hosting.payments.payouts")}
                                 ok={status.payouts_enabled}
-                                hint="Allows Stripe to send payouts to your bank."
+                                hint={t("hosting.payments.payoutsDesc")}
+                                t={t}
                             />
                             <RequirementRow
-                                title="Details Submitted"
+                                title={t("hosting.payments.details")}
                                 ok={status.details_submitted}
-                                hint="Identity and business details are submitted for verification."
+                                hint={t("hosting.payments.detailsDesc")}
+                                t={t}
                             />
                         </Stack>
                     </Box>
@@ -246,13 +249,13 @@ const Payments = () => {
                             <Box>
                                 <Typography fontWeight={800}>
                                     {status.details_submitted
-                                        ? "Finish your Stripe onboarding"
-                                        : "Connect your Stripe account"}
+                                        ? t("hosting.payments.finish")
+                                        : t("hosting.payments.connect")}
                                 </Typography>
                                 <Typography variant="body2" color="var(--text-secondary)">
                                     {status.details_submitted
-                                        ? "Continue from where you left off to enable payouts."
-                                        : "It takes only a minute to get started."}
+                                        ? t("hosting.payments.continue")
+                                        : t("hosting.payments.minute")}
                                 </Typography>
                             </Box>
 
@@ -261,7 +264,7 @@ const Payments = () => {
                                 onClick={handleConnect}
                                 disabled={connecting}
                                 endIcon={
-                                    connecting ? null : <ArrowForwardIcon />
+                                    connecting ? null : <ArrowForwardIcon sx={{ transform: isRTL ? 'rotate(180deg)' : 'none' }} />
                                 }
                                 sx={{
                                     borderRadius: 2,
@@ -282,12 +285,12 @@ const Payments = () => {
                                 {connecting ? (
                                     <Stack direction="row" spacing={1.2} alignItems="center">
                                         <CircularProgress size={18} color="inherit" />
-                                        <span>Redirecting...</span>
+                                        <span>{t("hosting.payments.redirecting")}</span>
                                     </Stack>
                                 ) : status.details_submitted ? (
-                                    "Continue Onboarding"
+                                    t("hosting.payments.continueBtn")
                                 ) : (
-                                    "Connect with Stripe"
+                                    t("hosting.payments.connectBtn")
                                 )}
                             </Button>
 
@@ -309,11 +312,10 @@ const Payments = () => {
                                 <CheckCircleIcon color="success" />
                                 <Box>
                                     <Typography fontWeight={800}>
-                                        Stripe is fully connected 🎉
+                                        {t("hosting.payments.success")}
                                     </Typography>
                                     <Typography variant="body2" color="var(--text-secondary)">
-                                        You’re good to go — payouts will be processed automatically
-                                        based on Stripe schedule.
+                                        {t("hosting.payments.successDesc")}
                                     </Typography>
                                 </Box>
                             </Stack>
@@ -321,11 +323,11 @@ const Payments = () => {
                     )}
                 </Stack>
             </Paper>
-        </Box>
+        </RTLWrapper>
     );
 };
 
-const RequirementRow = ({ title, ok, hint }) => {
+const RequirementRow = ({ title, ok, hint, t }) => {
     return (
         <Box
             sx={{
@@ -346,10 +348,10 @@ const RequirementRow = ({ title, ok, hint }) => {
                 </Typography>
             </Stack>
 
-            <Tooltip title={ok ? "Completed" : "Not completed"} arrow>
+            <Tooltip title={ok ? t("hosting.payments.done") : t("hosting.payments.missing")} arrow>
                 <Chip
                     icon={ok ? <CheckCircleIcon /> : <ErrorIcon />}
-                    label={ok ? "Done" : "Missing"}
+                    label={ok ? t("hosting.payments.done") : t("hosting.payments.missing")}
                     color={ok ? "success" : "error"}
                     variant={ok ? "filled" : "outlined"}
                     sx={{

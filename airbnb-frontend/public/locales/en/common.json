@@ -11,5 +11,9 @@
   "priceRange": "Price Range",
   "amenities": "Amenities",
   "browseProperties": "Browse properties",
-  "listProperty": "List property"
+  "listProperty": "List property",
+  "languageAndRegion": "Language and region",
+  "selectPreferredLanguage": "Select your preferred language and region below.",
+  "recommended": "Recommended",
+  "moreLanguages": "More languages"
 }

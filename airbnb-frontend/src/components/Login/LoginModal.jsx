@@ -24,6 +24,8 @@ import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import { googleLogin } from '../../config/ServiceApi/serviceApi';
 import { useWishlist } from "../../context/wishlistProvider";
 import { setAuthCookies } from "../../utils/cookieUtils";
+import { useTranslation } from "react-i18next";
+import { RTLWrapper, useRTL } from "../language/Localization";
 
 // Custom Google Icon SVG
 const GoogleIcon = () => (
@@ -36,6 +38,8 @@ const GoogleIcon = () => (
 );
 
 const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
+  const { t } = useTranslation("login");
+  const isRTL = useRTL();
   const { mergeLocalToBackend } = useWishlist();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -55,7 +59,7 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
 
         await mergeLocalToBackend();
 
-        toast.success("Welcome back 👋", {
+        toast.success(t("welcomeBack"), {
           duration: 2000,
         });
 
@@ -63,7 +67,7 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
       }
     } catch (error) {
       onClose();
-      toast.error("Google Login Failed", {
+      toast.error(t("googleLoginFailed"), {
         duration: 2000,
       });
       console.error("Google Login Error:", error);
@@ -85,7 +89,7 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
 
         await mergeLocalToBackend();
 
-        toast.success("Welcome back 👋", {
+        toast.success(t("welcomeBack"), {
           duration: 2000,
         });
 
@@ -103,7 +107,7 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
 
   return (
     <Modal open={open} onClose={onClose}>
-      <Box
+      <RTLWrapper
         component="form"
         onSubmit={handleSubmit(onSubmit)}
         sx={{
@@ -130,7 +134,7 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
           }}
         >
           <Typography variant="subtitle1" fontWeight={900}>
-            {signUp ? "Sign up" : "Log in"}
+            {signUp ? t("signup") : t("login")}
           </Typography>
 
           <IconButton onClick={onClose} size="small">
@@ -141,21 +145,21 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
         {/* Body */}
         <Box sx={{ px: 2.5, py: 2.5 }}>
           <Typography variant="h5" fontWeight={900} sx={{ mb: 0.5 }}>
-            Welcome to {APP_NAME}
+            {t("welcome", { appName: APP_NAME })}
           </Typography>
           <Typography variant="body2" color="var(--text-secondary)" sx={{ mb: 2 }}>
             {signUp
-              ? "Create your account in a few seconds."
-              : "Log in to continue booking and hosting."}
+              ? t("signupDesc")
+              : t("loginDesc")}
           </Typography>
 
           <Stack spacing={1.6}>
             {signUp && (
               <TextField
                 fullWidth
-                label="Full Name"
-                placeholder="e.g. Abdul Rehman"
-                {...register("userName", { required: "Name is required" })}
+                label={t("fullName")}
+                placeholder={t("fullNamePlaceholder")}
+                {...register("userName", { required: t("nameRequired") })}
                 error={!!errors.userName}
                 helperText={errors.userName?.message}
                 sx={{
@@ -168,9 +172,9 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
 
             <TextField
               fullWidth
-              label="Email"
-              placeholder="example@email.com"
-              {...register("email", { required: "Email is required" })}
+              label={t("email")}
+              placeholder={t("emailPlaceholder")}
+              {...register("email", { required: t("emailRequired") })}
               error={!!errors.email}
               helperText={errors.email?.message}
               sx={{
@@ -182,10 +186,10 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
 
             <TextField
               fullWidth
-              label="Password"
-              placeholder="Enter password"
+              label={t("password")}
+              placeholder={t("passwordPlaceholder")}
               type={showPassword ? "text" : "password"}
-              {...register("password", { required: "Password is required" })}
+              {...register("password", { required: t("passwordRequired") })}
               error={!!errors.password}
               helperText={errors.password?.message}
               sx={{
@@ -232,27 +236,28 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
                 },
               }}
             >
-              {isSubmitting ? "Please wait..." : "Continue"}
+              {isSubmitting ? t("pleaseWait") : t("continue")}
             </Button>
 
             <Typography variant="body2" sx={{ textAlign: "center" }}>
-              {signUp ? "Already have an account?" : "Don’t have an account?"}{" "}
+              {signUp ? t("alreadyHaveAccount") : t("dontHaveAccount")}{" "}
               <Box
                 component="span"
                 sx={{
                   fontWeight: 800,
                   color: "var(--primary)",
                   cursor: "pointer",
+                  [isRTL ? "marginRight" : "marginLeft"]: 0.5,
                 }}
                 onClick={() => isSignUp(!signUp)}
               >
-                {signUp ? "Log in" : "Sign up"}
+                {signUp ? t("login") : t("signup")}
               </Box>
             </Typography>
 
             <Divider sx={{ my: 1.5 }}>
               <Typography variant="caption" sx={{ color: "var(--text-tertiary)", fontWeight: 700, letterSpacing: '1px' }}>
-                OR
+                {t("or")}
               </Typography>
             </Divider>
             <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
@@ -294,11 +299,11 @@ const LoginModal = ({ open, onClose, signUp, isSignUp }) => {
               color="var(--text-secondary)"
               sx={{ textAlign: "center", display: "block", mt: 1, opacity: 0.8 }}
             >
-              By continuing, you agree to our Terms & Privacy Policy.
+              {t("termsAgreement")}
             </Typography>
           </Stack>
         </Box>
-      </Box>
+      </RTLWrapper>
     </Modal>
   );
 };

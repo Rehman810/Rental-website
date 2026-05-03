@@ -25,6 +25,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { useState, useMemo } from "react";
 import { useAppContext } from "../../context/context";
 import { useTranslation } from "react-i18next";
+import { RTLWrapper, useRTL } from "../language/Localization";
 
 import Icon1 from "../../assets/icons/icons1.png";
 import Icon2 from "../../assets/icons/icons2.png";
@@ -51,6 +52,7 @@ const GuestRow = ({ label, value, onAdd, onRemove }) => (
 
 const MobileSearchDialog = ({ open, onClose }) => {
     const { t } = useTranslation();
+    const isRTL = useRTL();
     const { setSearchParams } = useAppContext();
 
     const [destination, setDestination] = useState("");
@@ -104,6 +106,7 @@ const MobileSearchDialog = ({ open, onClose }) => {
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <Dialog fullScreen open={open} onClose={onClose}>
+                <RTLWrapper>
                 {/* HEADER */}
                 <AppBar elevation={0} sx={{ background: "var(--bg-card)" }}>
                     <Toolbar sx={{ justifyContent: "space-between" }}>
@@ -114,7 +117,7 @@ const MobileSearchDialog = ({ open, onClose }) => {
                         <Typography fontWeight={900}>{t("search")}</Typography>
 
                         <Button
-                            startIcon={<RestartAltIcon />}
+                            startIcon={<RestartAltIcon sx={{ transform: isRTL ? "scaleX(-1)" : "none" }} />}
                             onClick={handleClearAll}
                             sx={{ fontWeight: 900 }}
                         >
@@ -220,7 +223,7 @@ const MobileSearchDialog = ({ open, onClose }) => {
 
                     <Stack spacing={2} mb={3}>
                         <DatePicker
-                            label="Check-in"
+                            label={t("translation:checkIn")}
                             value={checkIn}
                             onChange={setCheckIn}
                             disablePast
@@ -233,7 +236,7 @@ const MobileSearchDialog = ({ open, onClose }) => {
                         />
 
                         <DatePicker
-                            label="Check-out"
+                            label={t("translation:checkOut")}
                             value={checkOut}
                             onChange={setCheckOut}
                             disablePast
@@ -321,6 +324,7 @@ const MobileSearchDialog = ({ open, onClose }) => {
                         {t("search")}
                     </Button>
                 </Box>
+                </RTLWrapper>
             </Dialog>
         </LocalizationProvider>
     );

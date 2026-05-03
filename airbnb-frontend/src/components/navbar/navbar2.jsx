@@ -39,6 +39,7 @@ import {
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import handleLogout from "../logout/logout";
 import { useTranslation } from "react-i18next";
+import { RTLWrapper, useRTL } from "../language/Localization";
 import {
   initializeSocket,
   subscribeToUpdates,
@@ -55,7 +56,7 @@ initializeSocket();
 
 const NavbarHost = () => {
   const { resolvedTheme } = useTheme();
-  const { t } = useTranslation();
+  const { t } = useTranslation("translation");
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -85,13 +86,13 @@ const NavbarHost = () => {
 
   const menuItems = useMemo(
     () => [
-      { name: "Dashboard", route: "/hosting/dashboard", icon: <DashboardIcon fontSize="small" /> },
+      { name: t("menu.hostMenu.dashboard"), route: "/hosting/dashboard", icon: <DashboardIcon fontSize="small" /> },
       { name: t("menu.hostMenu.today"), route: "/hosting/today", icon: <DashboardIcon fontSize="small" /> },
       { name: t("menu.hostMenu.calendar"), route: "/hosting/calendar", icon: <CalendarIcon fontSize="small" /> },
       { name: t("menu.hostMenu.listings"), route: "/hosting/listings", icon: <ListingsIcon fontSize="small" /> },
       { name: t("menu.hostMenu.messages"), route: "/hosting/messages", icon: <MailIcon fontSize="small" /> },
-      { name: "Payments", route: "/hosting/payments", icon: <PaymentsIcon fontSize="small" /> },
-      { name: "Settings", route: "/hosting/settings", icon: <SettingsIcon fontSize="small" /> },
+      { name: t("menu.hostMenu.payments"), route: "/hosting/payments", icon: <PaymentsIcon fontSize="small" /> },
+      { name: t("menu.hostMenu.settings"), route: "/hosting/settings", icon: <SettingsIcon fontSize="small" /> },
     ],
     [t]
   );
@@ -106,7 +107,10 @@ const NavbarHost = () => {
 
   const initials = user?.userName?.charAt(0)?.toUpperCase() || "H";
 
+  const isRTL = useRTL();
+
   return (
+    <RTLWrapper>
     <AppBar
       position="sticky"
       sx={{
@@ -146,7 +150,7 @@ const NavbarHost = () => {
             style={{ height: 60, objectFit: "contain" }}
           />
 
-          <ChipLike label="Host" />
+          <ChipLike label={t("hosting.dashboard.host")} />
         </Box>
 
         {/* Center - Host Tabs (Desktop only) */}
@@ -335,14 +339,14 @@ const NavbarHost = () => {
 
       {/* Mobile Drawer (Right side - better UX) */}
       <Drawer
-        anchor="right"
+        anchor={isRTL ? "left" : "right"}
         open={drawerOpen}
         onClose={toggleDrawer(false)}
         PaperProps={{
           sx: {
             width: 320,
-            borderTopLeftRadius: 18,
-            borderBottomLeftRadius: 18,
+            [isRTL ? "borderTopRightRadius" : "borderTopLeftRadius"]: 18,
+            [isRTL ? "borderBottomRightRadius" : "borderBottomLeftRadius"]: 18,
           },
         }}
       >
@@ -356,9 +360,9 @@ const NavbarHost = () => {
                 {!user?.photoProfile && initials}
               </Avatar>
               <Box>
-                <Typography fontWeight={900}>{user?.userName || "Host"}</Typography>
+                <Typography fontWeight={900}>{user?.userName || t("hosting.dashboard.host")}</Typography>
                 <Typography variant="body2" color="var(--text-secondary)">
-                  Host dashboard
+                  {t("hosting.dashboard.hostDashboard")}
                 </Typography>
               </Box>
             </Stack>
@@ -371,7 +375,7 @@ const NavbarHost = () => {
           <Divider sx={{ my: 2 }} />
 
           <Typography variant="body2" color="var(--text-secondary)" sx={{ mb: 1 }}>
-            Navigation
+            {t("hosting.dashboard.navigation")}
           </Typography>
 
           <Stack spacing={0.8}>
@@ -403,7 +407,7 @@ const NavbarHost = () => {
           <Divider sx={{ my: 2 }} />
 
           <Typography variant="body2" color="var(--text-secondary)" sx={{ mb: 1 }}>
-            Account
+            {t("hosting.dashboard.account")}
           </Typography>
 
           {/* <Stack spacing={0.8}>
@@ -461,6 +465,7 @@ const NavbarHost = () => {
       <Divider />
       {switchState.open && <RoleSwitchLoader open={switchState.open} targetRole={switchState.role} />}
     </AppBar>
+    </RTLWrapper>
   );
 };
 

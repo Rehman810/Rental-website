@@ -31,6 +31,7 @@ import usePageTitle from "../../hooks/usePageTitle";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import BackButton from "../backButton/backButton";
 import { useTranslation } from "react-i18next";
+import { RTLWrapper } from "../language/Localization";
 
 const BookingComponent = () => {
   const { t } = useTranslation();
@@ -185,7 +186,7 @@ const BookingComponent = () => {
   }
 
   return (
-    <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1200, mx: "auto" }}>
+    <RTLWrapper sx={{ p: { xs: 2, md: 4 }, maxWidth: 1200, mx: "auto" }}>
       <Box sx={{ mb: 3 }}>
         <BackButton />
       </Box>
@@ -276,7 +277,7 @@ const BookingComponent = () => {
           </Box>
         </Grid>
       </Grid>
-    </Box>
+    </RTLWrapper>
   );
 };
 

@@ -21,6 +21,7 @@ import { useWishlist } from "../../context/wishlistProvider";
 import VerifyToken from "../protected/verifyToken";
 import LoginModal from "../Login/LoginModal";
 import { useTranslation } from "react-i18next";
+import { RTLWrapper, useRTL } from "../language/Localization";
 
 const CardItem = React.memo(({ data }) => {
   const { t } = useTranslation();
@@ -99,6 +100,7 @@ const CardItem = React.memo(({ data }) => {
   };
 
   const isMobile = useMediaQuery("(max-width:1100px)");
+  const isRTL = useRTL();
 
   return (
     <>
@@ -157,7 +159,7 @@ const CardItem = React.memo(({ data }) => {
             sx={{
               position: "absolute",
               top: 12,
-              right: 12,
+              [isRTL ? "left" : "right"]: 12,
               zIndex: 5,
               width: 42,
               height: 42,
@@ -184,7 +186,7 @@ const CardItem = React.memo(({ data }) => {
               sx={{
                 position: "absolute",
                 top: 12,
-                left: 12,
+                [isRTL ? "right" : "left"]: 12,
                 zIndex: 5,
                 borderRadius: 999,
                 fontWeight: 900,
@@ -203,7 +205,7 @@ const CardItem = React.memo(({ data }) => {
               sx={{
                 position: "absolute",
                 top: data?.guestFavourite ? 44 : 12,
-                left: 12,
+                [isRTL ? "right" : "left"]: 12,
                 zIndex: 5,
                 borderRadius: 999,
                 fontWeight: 900,
@@ -221,7 +223,7 @@ const CardItem = React.memo(({ data }) => {
               sx={{
                 position: "absolute",
                 bottom: 12,
-                right: 12,
+                [isRTL ? "left" : "right"]: 12,
                 zIndex: 5,
                 px: 1.2,
                 py: 0.6,
@@ -249,7 +251,7 @@ const CardItem = React.memo(({ data }) => {
               sx={{
                 position: "absolute",
                 bottom: 10,
-                left: 10,
+                [isRTL ? "right" : "left"]: 10,
                 display: "flex",
                 alignItems: "center",
                 gap: 1,
@@ -277,7 +279,7 @@ const CardItem = React.memo(({ data }) => {
         </Box>
 
         {/* Content */}
-        <CardContent sx={{ p: 2 }}>
+        <RTLWrapper sx={{ p: 2 }}>
           {/* Title + Rating */}
           <Stack direction="row" justifyContent="space-between" spacing={1}>
             <Typography
@@ -331,7 +333,7 @@ const CardItem = React.memo(({ data }) => {
           >
             {data?.description || "Comfortable stay with great amenities."}
           </Typography>
-        </CardContent>
+        </RTLWrapper>
       </Card>
 
       {/* Login Modal */}

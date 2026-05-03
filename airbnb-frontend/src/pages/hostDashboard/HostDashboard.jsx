@@ -25,6 +25,8 @@ import {
     Statistic,
     theme,
 } from "antd";
+import { useTranslation } from "react-i18next";
+import { RTLWrapper, useRTL } from "../../components/language/Localization";
 
 import {
     ReloadOutlined,
@@ -63,7 +65,8 @@ const softHover = {
 
 
 const HostDashboardAntd = () => {
-    usePageTitle("Host Dashboard");
+    const { t } = useTranslation("translation");
+    usePageTitle(t("hosting.dashboard.title"));
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState(null);
 
@@ -75,6 +78,8 @@ const HostDashboardAntd = () => {
     });
 
     const token = getAuthToken();
+
+    const isRTL = useRTL();
 
     const fetchDashboardData = async () => {
         try {
@@ -95,7 +100,7 @@ const HostDashboardAntd = () => {
             setData(response.data);
         } catch (err) {
             console.error(err);
-            toast.error("Failed to load dashboard data");
+            toast.error(t("hosting.settings.loadError"));
         } finally {
             setLoading(false);
         }
@@ -118,17 +123,17 @@ const HostDashboardAntd = () => {
                     {},
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
-                toast.success("Booking Approved");
+                toast.success(t("hosting.dashboard.bookingApproved"));
             } else {
                 await apiClient.delete(`${API_BASE_URL}/reject-booking/${bookingId}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
-                toast.success("Booking Rejected");
+                toast.success(t("hosting.dashboard.bookingRejected"));
             }
             fetchDashboardData();
         } catch (err) {
             console.error(err);
-            toast.error(`Failed to ${action} booking`);
+            toast.error(t("hosting.dashboard.actionFailed", { action }));
         }
     };
 
@@ -137,44 +142,44 @@ const HostDashboardAntd = () => {
 
     const revenueColumns = [
         {
-            title: "Date",
+            title: t("hosting.dashboard.date"),
             dataIndex: "date",
             key: "date",
             render: (d) => <Text style={{ fontWeight: 700, color: "var(--text-primary)" }}>{dayjs(d).format("MMM D, YYYY")}</Text>,
         },
         {
-            title: "Gross",
+            title: t("hosting.dashboard.gross"),
             dataIndex: "gross",
             key: "gross",
-            align: "right",
+            align: isRTL ? "left" : "right",
             render: (v) => <Text style={{ fontWeight: 700, color: "var(--text-primary)" }}>{money(v)}</Text>,
         },
         {
-            title: "Fee",
+            title: t("hosting.dashboard.fee"),
             dataIndex: "fee",
             key: "fee",
-            align: "right",
+            align: isRTL ? "left" : "right",
             render: (v) => <Text style={{ fontWeight: 700, color: "#cf1322" }}>- {money(v)}</Text>,
         },
         {
-            title: "Net",
+            title: t("hosting.dashboard.net"),
             dataIndex: "net",
             key: "net",
-            align: "right",
+            align: isRTL ? "left" : "right",
             render: (v) => <Text style={{ fontWeight: 800, color: "#237804" }}>{money(v)}</Text>,
         },
         {
-            title: "Bookings",
+            title: t("hosting.dashboard.bookings"),
             dataIndex: "bookings",
             key: "bookings",
-            align: "right",
+            align: isRTL ? "left" : "right",
             render: (v) => <Text style={{ fontWeight: 800, color: "var(--text-primary)" }}>{v}</Text>,
         },
     ];
 
     const activeColumns = [
         {
-            title: "Guest",
+            title: t("hosting.dashboard.guest"),
             key: "guest",
             render: (_, booking) => (
                 <Space>
@@ -186,14 +191,14 @@ const HostDashboardAntd = () => {
             ),
         },
         {
-            title: "Listing",
+            title: t("hosting.dashboard.listing"),
             key: "listing",
             render: (_, booking) => (
                 <Text style={{ fontWeight: 800 }}>{booking.listingId?.title || "-"}</Text>
             ),
         },
         {
-            title: "Dates",
+            title: t("hosting.dashboard.dates"),
             key: "dates",
             render: (_, booking) => {
                 const nights = dayjs(booking.endDate).diff(dayjs(booking.startDate), "day");
@@ -203,22 +208,22 @@ const HostDashboardAntd = () => {
                             {dayjs(booking.startDate).format("MMM D")} - {dayjs(booking.endDate).format("MMM D")}
                         </Text>
                         <Text type="secondary" style={{ fontSize: 12 }}>
-                            {nights} nights
+                            {t("hosting.dashboard.nights", { count: nights })}
                         </Text>
                     </Space>
                 );
             },
         },
         {
-            title: "Price",
+            title: t("hosting.dashboard.price"),
             key: "price",
-            align: "right",
+            align: isRTL ? "left" : "right",
             render: (_, booking) => <Text style={{ fontWeight: 900 }}>{money(booking.totalPrice)}</Text>,
         },
         {
-            title: "Status",
+            title: t("hosting.dashboard.status"),
             key: "status",
-            align: "right",
+            align: isRTL ? "left" : "right",
             render: (_, booking) => {
                 const isUpcoming = new Date(booking.startDate) > new Date();
                 return (
@@ -226,7 +231,7 @@ const HostDashboardAntd = () => {
                         color={isUpcoming ? "blue" : "green"}
                         style={{ fontWeight: 800, borderRadius: 999, padding: "4px 10px" }}
                     >
-                        {isUpcoming ? "Upcoming" : "Active / Past"}
+                        {isUpcoming ? t("hosting.dashboard.upcoming") : t("hosting.dashboard.activePast")}
                     </Tag>
                 );
             },
@@ -239,7 +244,7 @@ const HostDashboardAntd = () => {
                 <Space direction="vertical" align="center" size={12}>
                     <Spin size="large" />
                     <Text type="secondary" style={{ fontWeight: 700, color: "var(--text-secondary)" }}>
-                        Loading dashboard insights...
+                        {t("hosting.dashboard.loading")}
                     </Text>
                 </Space>
             </div>
@@ -247,7 +252,7 @@ const HostDashboardAntd = () => {
     }
 
     return (
-        <div style={pageShell}>
+        <RTLWrapper sx={{ ...pageShell, textAlign: 'inherit' }}>
             <div style={{ maxWidth: 1600, margin: "0 auto" }}>
                 {/* Header */}
                 <Card style={{ ...glassCard, marginBottom: 18 }}>
@@ -270,10 +275,10 @@ const HostDashboardAntd = () => {
 
                                 <div>
                                     <Title level={3} style={{ margin: 0, fontWeight: 900, letterSpacing: "-0.02em", color: "var(--color-blue)" }}>
-                                        Host Dashboard
+                                        {t("hosting.dashboard.title")}
                                     </Title>
                                     <Text type="secondary" style={{ fontWeight: 650, color: "var(--text-primary)" }}>
-                                        Bookings, revenue, approvals — everything in one clean control room.
+                                        {t("hosting.dashboard.desc")}
                                     </Text>
                                 </div>
                             </Space>
@@ -281,13 +286,13 @@ const HostDashboardAntd = () => {
 
                         <Col>
                             <Space>
-                                <Tooltip title="Refresh">
+                                <Tooltip title={t("hosting.dashboard.refresh")}>
                                     <Button
                                         icon={<ReloadOutlined style={{ color: "var(--text-secondary)" }} />}
                                         onClick={fetchDashboardData}
                                         style={{ borderRadius: 12, fontWeight: 800 }}
                                     >
-                                        Refresh
+                                        {t("hosting.dashboard.refresh")}
                                     </Button>
                                 </Tooltip>
 
@@ -301,7 +306,7 @@ const HostDashboardAntd = () => {
                                         boxShadow: "0 14px 28px rgba(0,0,0,0.14)",
                                     }}
                                 >
-                                    Apply Filters
+                                    {t("hosting.dashboard.applyFilters")}
                                 </Button>
                             </Space>
                         </Col>
@@ -332,9 +337,9 @@ const HostDashboardAntd = () => {
                                 </div>
 
                                 <Space direction="vertical" size={0}>
-                                    <Text style={{ fontWeight: 950, fontSize: 16, color: "var(--text-primary)" }}>Filters</Text>
+                                    <Text style={{ fontWeight: 950, fontSize: 16, color: "var(--text-primary)" }}>{t("hosting.dashboard.filters")}</Text>
                                     <Text type="secondary" style={{ fontSize: 12, fontWeight: 650, color: "var(--text-secondary)" }}>
-                                        Narrow down bookings & revenue
+                                        {t("hosting.dashboard.filtersDesc")}
                                     </Text>
                                 </Space>
                             </Space>
@@ -356,15 +361,15 @@ const HostDashboardAntd = () => {
                                         allowClear
                                         presets={[
                                             {
-                                                label: "Today",
+                                                label: t("hosting.dashboard.todayPreset"),
                                                 value: [dayjs().startOf("day"), dayjs().endOf("day")],
                                             },
                                             {
-                                                label: "Last 7 Days",
+                                                label: t("hosting.dashboard.last7Days"),
                                                 value: [dayjs().subtract(6, "day").startOf("day"), dayjs().endOf("day")],
                                             },
                                             {
-                                                label: "Last 30 Days",
+                                                label: t("hosting.dashboard.last30Days"),
                                                 value: [dayjs().subtract(29, "day").startOf("day"), dayjs().endOf("day")],
                                             },
                                         ]}
@@ -377,12 +382,12 @@ const HostDashboardAntd = () => {
                                         onChange={(val) => setFilters((p) => ({ ...p, status: val }))}
                                         style={{ width: "100%" }}
                                         size="middle"
-                                        placeholder="Status"
+                                        placeholder={t("hosting.dashboard.allStatus")}
                                         options={[
-                                            { value: "", label: "All Status" },
-                                            { value: "confirmed", label: "Confirmed" },
-                                            { value: "pending", label: "Pending" },
-                                            { value: "upcoming", label: "Upcoming" },
+                                            { value: "", label: t("hosting.dashboard.allStatus") },
+                                            { value: "confirmed", label: t("hosting.dashboard.confirmed") },
+                                            { value: "pending", label: t("hosting.dashboard.pending") },
+                                            { value: "upcoming", label: t("hosting.dashboard.upcoming") },
                                         ]}
                                     />
                                 </Col>
@@ -399,7 +404,7 @@ const HostDashboardAntd = () => {
                                                     fontWeight: 850,
                                                 }}
                                             >
-                                                Active Filters
+                                                {t("hosting.dashboard.activeFilters")}
                                             </Tag>
                                         ) : (
                                             <Tag
@@ -411,7 +416,7 @@ const HostDashboardAntd = () => {
                                                     backgroundColor: "var(--bg-secondary)",
                                                 }}
                                             >
-                                                No filters applied
+                                                {t("hosting.dashboard.noFilters")}
                                             </Tag>
                                         )}
 
@@ -423,7 +428,7 @@ const HostDashboardAntd = () => {
 
                                         {filters.status && (
                                             <Tag style={{ borderRadius: 999, padding: "4px 10px", fontWeight: 800 }}>
-                                                Status: {filters.status}
+                                                {t("hosting.dashboard.statusLabel", { status: filters.status })}
                                             </Tag>
                                         )}
                                     </Space>
@@ -444,7 +449,7 @@ const HostDashboardAntd = () => {
                                         backgroundColor: "var(--bg-secondary)",
                                     }}
                                 >
-                                    Reset
+                                    {t("hosting.dashboard.reset")}
                                 </Button>
 
                                 <Button
@@ -457,7 +462,7 @@ const HostDashboardAntd = () => {
                                         boxShadow: "0 12px 24px rgba(22, 119, 255, 0.22)",
                                     }}
                                 >
-                                    Apply
+                                    {t("hosting.dashboard.apply")}
                                 </Button>
                             </Space>
                         </Col>
@@ -469,28 +474,28 @@ const HostDashboardAntd = () => {
                 <Row gutter={[16, 16]} style={{ marginBottom: 18 }}>
                     {[
                         {
-                            title: "Total Bookings",
+                            title: t("hosting.dashboard.totalBookings"),
                             value: data?.kpis?.totalBookings || 0,
                             icon: <CheckCircleOutlined style={{ color: "#1677ff" }} />,
-                            meta: "All time (filtered)",
+                            meta: t("hosting.dashboard.allTime"),
                         },
                         {
-                            title: "Pending Requests",
+                            title: t("hosting.dashboard.pendingRequests"),
                             value: data?.kpis?.pendingRequests || 0,
                             icon: <ClockCircleOutlined style={{ color: "#faad14" }} />,
-                            meta: "Needs approval",
+                            meta: t("hosting.dashboard.needsApproval"),
                         },
                         {
-                            title: "Upcoming",
+                            title: t("hosting.dashboard.upcomingBookings"),
                             value: data?.kpis?.upcomingBookings || 0,
                             icon: <CalendarOutlined style={{ color: "#1677ff" }} />,
-                            meta: "Future stays",
+                            meta: t("hosting.dashboard.futureStays"),
                         },
                         {
-                            title: "Net Earnings",
+                            title: t("hosting.dashboard.netEarnings"),
                             value: money(data?.kpis?.hostNetEarnings || 0),
                             icon: <DollarOutlined style={{ color: "#52c41a" }} />,
-                            meta: "After platform fee",
+                            meta: t("hosting.dashboard.afterFee"),
                         },
                     ].map((kpi, idx) => (
                         <Col key={idx} xs={24} sm={12} lg={6}>
@@ -545,13 +550,13 @@ const HostDashboardAntd = () => {
                 {/* Revenue + Top Listings */}
                 <Row gutter={[16, 16]} style={{ marginBottom: 18 }}>
                     <Col xs={24} lg={16}>
-                        <Card style={glassCard} title={<Text style={{ fontWeight: 950, color: "var(--text-primary)" }}>Revenue Breakdown</Text>}>
+                        <Card style={glassCard} title={<Text style={{ fontWeight: 950, color: "var(--text-primary)" }}>{t("hosting.dashboard.revenueBreakdown")}</Text>}>
                             <Space style={{ marginBottom: 12 }}>
                                 <Tag
                                     color="blue"
                                     style={{ borderRadius: 999, padding: "4px 10px", fontWeight: 900 }}
                                 >
-                                    Avg Booking: {money(Math.round(data?.kpis?.avgBookingValue || 0))}
+                                    {t("hosting.dashboard.avgBooking", { value: money(Math.round(data?.kpis?.avgBookingValue || 0)) })}
                                 </Tag>
                             </Space>
 
@@ -564,7 +569,7 @@ const HostDashboardAntd = () => {
                                 pagination={{ pageSize: 6 }}
                                 style={{ borderRadius: 14, overflow: "hidden" }}
                                 locale={{
-                                    emptyText: <Empty description="No revenue data for this period" />,
+                                    emptyText: <Empty description={t("hosting.dashboard.noRevenue")} />,
                                 }}
                             />
 
@@ -574,7 +579,7 @@ const HostDashboardAntd = () => {
                             <Row gutter={[16, 12]} justify="end">
                                 <Col>
                                     <Space direction="vertical" size={0}>
-                                        <Text type="secondary" style={{ fontWeight: 700, color: "var(--text-secondary)" }}>Total Gross</Text>
+                                        <Text type="secondary" style={{ fontWeight: 700, color: "var(--text-secondary)" }}>{t("hosting.dashboard.totalGross")}</Text>
                                         <Text style={{ fontWeight: 950, fontSize: 16, color: "var(--text-primary)" }}>
                                             {money(data?.kpis?.totalGross)}
                                         </Text>
@@ -583,7 +588,7 @@ const HostDashboardAntd = () => {
 
                                 <Col>
                                     <Space direction="vertical" size={0}>
-                                        <Text type="secondary" style={{ fontWeight: 700, color: "var(--text-secondary)" }}>Total Fees</Text>
+                                        <Text type="secondary" style={{ fontWeight: 700, color: "var(--text-secondary)" }}>{t("hosting.dashboard.totalFees")}</Text>
                                         <Text style={{ fontWeight: 950, fontSize: 16, color: "#cf1322" }}>
                                             {money(data?.kpis?.platformFeeTotal)}
                                         </Text>
@@ -592,7 +597,7 @@ const HostDashboardAntd = () => {
 
                                 <Col>
                                     <Space direction="vertical" size={0}>
-                                        <Text type="secondary" style={{ fontWeight: 700, color: "var(--text-secondary)" }}>Net Income</Text>
+                                        <Text type="secondary" style={{ fontWeight: 700, color: "var(--text-secondary)" }}>{t("hosting.dashboard.netIncome")}</Text>
                                         <Text style={{ fontWeight: 950, fontSize: 16, color: "#237804" }}>
                                             {money(data?.kpis?.hostNetEarnings)}
                                         </Text>
@@ -603,13 +608,13 @@ const HostDashboardAntd = () => {
                     </Col>
 
                     <Col xs={24} lg={8}>
-                        <Card style={glassCard} title={<Text style={{ fontWeight: 950, color: "var(--text-primary)" }}>Top Listings</Text>}>
+                        <Card style={glassCard} title={<Text style={{ fontWeight: 950, color: "var(--text-primary)" }}>{t("hosting.dashboard.topListings")}</Text>}>
                             <Table
                                 size="middle"
                                 pagination={false}
                                 columns={[
                                     {
-                                        title: "Listing",
+                                        title: t("hosting.listings.title"),
                                         key: "listing",
                                         render: (_, listing) => (
                                             <Space>
@@ -619,14 +624,14 @@ const HostDashboardAntd = () => {
                                                 <Space direction="vertical" size={0}>
                                                     <Text style={{ fontWeight: 900, color: "var(--text-primary)" }}>{listing.title}</Text>
                                                     <Text type="secondary" style={{ fontSize: 12, fontWeight: 650, color: "var(--text-secondary)" }}>
-                                                        {listing.bookingCount} bookings
+                                                        {t("hosting.dashboard.bookingsCount", { count: listing.bookingCount })}
                                                     </Text>
                                                 </Space>
                                             </Space>
                                         ),
                                     },
                                     {
-                                        title: "Earnings",
+                                        title: t("hosting.dashboard.earnings"),
                                         key: "earnings",
                                         align: "right",
                                         render: (_, listing) => (
@@ -635,14 +640,14 @@ const HostDashboardAntd = () => {
                                     },
                                 ]}
                                 dataSource={topListings.map((l, i) => ({ ...l, key: l._id || i }))}
-                                locale={{ emptyText: <Empty description="No data" /> }}
+                                locale={{ emptyText: <Empty description={t("hosting.dashboard.noData")} /> }}
                             />
                         </Card>
                     </Col>
                 </Row>
 
             </div>
-        </div>
+        </RTLWrapper>
     );
 };
 

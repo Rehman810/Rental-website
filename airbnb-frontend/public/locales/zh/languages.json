@@ -1,0 +1,9 @@
+{
+  "en": { "lang": "英语", "region": "美国" },
+  "zh": { "lang": "中文", "region": "中国" },
+  "tr": { "lang": "土耳其语", "region": "土耳其" },
+  "ar": { "lang": "阿拉伯语", "region": "中东" },
+  "ur": { "lang": "乌尔都语", "region": "巴基斯坦" },
+  "fr": { "lang": "法语", "region": "法国" },
+  "de": { "lang": "德语", "region": "德国" }
+}

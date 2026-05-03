@@ -17,9 +17,13 @@ import PaymentsIcon from "@mui/icons-material/Payments";
 import { fetchData } from "../../config/ServiceApi/serviceApi";
 import { useBookingContext } from "../../context/booking";
 import { CURRENCY } from "../../config/env";
+import { useTranslation } from "react-i18next";
+import { RTLWrapper, useRTL } from "../language/Localization";
 
 
 const ConfirmedBookings = () => {
+    const { t } = useTranslation("translation");
+    const isRTL = useRTL();
     const [confirmed, setConfirmed] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -52,10 +56,10 @@ const ConfirmedBookings = () => {
             <Box sx={{ py: 6, textAlign: "center" }}>
                 <CircularProgress />
                 <Typography sx={{ mt: 2 }} fontWeight={900}>
-                    Loading confirmed bookings...
+                    {t("hosting.confirmed.loading")}
                 </Typography>
                 <Typography variant="body2" color="var(--text-secondary)">
-                    Syncing your confirmed reservations.
+                    {t("hosting.confirmed.fetching")}
                 </Typography>
             </Box>
         );
@@ -66,10 +70,10 @@ const ConfirmedBookings = () => {
             <Box sx={{ p: 4, textAlign: "center" }}>
                 <SentimentDissatisfiedIcon sx={{ fontSize: 52, color: "var(--text-secondary)" }} />
                 <Typography variant="h6" fontWeight={900} sx={{ mt: 1 }}>
-                    No confirmed bookings yet
+                    {t("hosting.confirmed.noBookings")}
                 </Typography>
                 <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
-                    Once you approve requests, they’ll show up here.
+                    {t("hosting.confirmed.noBookingsDesc")}
                 </Typography>
             </Box>
         );
@@ -121,11 +125,11 @@ const ConfirmedBookings = () => {
                                     />
 
                                     <Chip
-                                        label="Confirmed"
+                                        label={t("hosting.confirmed.reservation")}
                                         sx={{
                                             position: "absolute",
                                             top: 12,
-                                            left: 12,
+                                            [isRTL ? "right" : "left"]: 12,
                                             borderRadius: 999,
                                             fontWeight: 900,
                                             backgroundColor: "rgba(46,125,50,0.85)",
@@ -137,7 +141,7 @@ const ConfirmedBookings = () => {
 
                             {/* Content */}
                             <Grid item xs={12} md={8}>
-                                <Box sx={{ p: { xs: 2, md: 2.5 } }}>
+                                <RTLWrapper sx={{ p: { xs: 2, md: 2.5 } }}>
                                     <Stack
                                         direction={{ xs: "column", sm: "row" }}
                                         spacing={1}
@@ -146,7 +150,7 @@ const ConfirmedBookings = () => {
                                     >
                                         <Box>
                                             <Typography variant="h6" fontWeight={900}>
-                                                {listing?.title || "Untitled listing"}
+                                                {listing?.title || t("hosting.pending.request")}
                                             </Typography>
 
                                             <Stack direction="row" spacing={0.8} alignItems="center" sx={{ mt: 0.4 }}>
@@ -183,9 +187,9 @@ const ConfirmedBookings = () => {
                                     <Divider sx={{ my: 2 }} />
 
                                     <Typography variant="body2" color="var(--text-secondary)">
-                                        Guests: <b>{booking?.guestCapacity || 0}</b>
+                                        {t("guests")}: <b>{booking?.guestCapacity || 0}</b>
                                     </Typography>
-                                </Box>
+                                </RTLWrapper>
                             </Grid>
                         </Grid>
                     </Paper>

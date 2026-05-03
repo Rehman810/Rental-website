@@ -33,6 +33,7 @@ import handleLogout from "../logout/logout";
 import VerifyToken from "../protected/verifyToken";
 import Language from "../language/Language";
 import { useTranslation } from "react-i18next";
+import { RTLWrapper, useRTL } from "../language/Localization";
 import {
   Logout as LogoutIcon,
   FavoriteBorder as FavoriteBorderIcon,
@@ -277,8 +278,10 @@ const Navbar = () => {
   };
 
   const isMobile = useMediaQuery("(max-width:1100px)");
+  const isRTL = useRTL();
 
   return (
+    <RTLWrapper>
     <AppBar
       position="static"
       sx={{
@@ -418,14 +421,14 @@ const Navbar = () => {
         </Box>
       </Toolbar>
       <Drawer
-        anchor="right"
+        anchor={isRTL ? "left" : "right"}
         open={drawerOpen}
         onClose={toggleDrawer(false)}
         PaperProps={{
           sx: {
             width: 300,
-            borderTopLeftRadius: 18,
-            borderBottomLeftRadius: 18,
+            [isRTL ? "borderTopRightRadius" : "borderTopLeftRadius"]: 18,
+            [isRTL ? "borderBottomRightRadius" : "borderBottomLeftRadius"]: 18,
           },
         }}
       >
@@ -439,14 +442,14 @@ const Navbar = () => {
               >
                 {!user?.photoProfile && user?.userName?.charAt(0)?.toUpperCase()}
               </Avatar>
-              <Box>
-                <Typography fontWeight={900}>
-                  {user?.userName || "Guest"}
-                </Typography>
-                <Typography variant="body2" color="var(--text-secondary)">
-                  Account
-                </Typography>
-              </Box>
+                  <Box>
+                    <Typography fontWeight={900}>
+                      {user?.userName || t("translation:menu.unverified.guest")}
+                    </Typography>
+                    <Typography variant="body2" color="var(--text-secondary)">
+                      {t("translation:menu.verified.account")}
+                    </Typography>
+                  </Box>
             </Box>
 
             <IconButton onClick={toggleDrawer(false)}>
@@ -523,7 +526,7 @@ const Navbar = () => {
                   startIcon={<LoginIcon />}
                   sx={drawerBtnSx}
                 >
-                  Login
+                  {t("translation:menu.unverified.login")}
                 </Button>
 
                 <Button
@@ -534,7 +537,7 @@ const Navbar = () => {
                   startIcon={<PersonAddAltIcon />}
                   sx={drawerBtnSx}
                 >
-                  Sign up
+                  {t("translation:menu.unverified.signUp")}
                 </Button>
               </>
             )}
@@ -549,7 +552,7 @@ const Navbar = () => {
               startIcon={<HelpOutlineIcon />}
               sx={drawerBtnSx}
             >
-              Help Center
+              {t("translation:menu.unverified.helpCenter")}
             </Button>
 
             {token && (
@@ -560,7 +563,7 @@ const Navbar = () => {
                 variant="contained"
                 sx={{ borderRadius: 2, fontWeight: 900 }}
               >
-                Logout
+                {t("translation:menu.verified.logout")}
               </Button>
             )}
           </Stack>
@@ -583,6 +586,7 @@ const Navbar = () => {
 
       {switchState.open && <RoleSwitchLoader open={switchState.open} targetRole={switchState.role} />}
     </AppBar>
+    </RTLWrapper>
   );
 };
 

@@ -21,9 +21,13 @@ import EmailIcon from "@mui/icons-material/Email";
 
 import { fetchData } from "../../config/ServiceApi/serviceApi";
 import { useBookingContext } from "../../context/booking";
+import { useTranslation } from "react-i18next";
+import { RTLWrapper, useRTL } from "../language/Localization";
 
 
 const CheckingOut = () => {
+  const { t } = useTranslation("translation");
+  const isRTL = useRTL();
   const [checkouts, setCheckouts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -56,10 +60,10 @@ const CheckingOut = () => {
       <Box sx={{ py: 6, textAlign: "center" }}>
         <CircularProgress />
         <Typography sx={{ mt: 2 }} fontWeight={900}>
-          Loading checkouts...
+          {t("hosting.checkingOut.loading")}
         </Typography>
         <Typography variant="body2" color="var(--text-secondary)">
-          Fetching guests checking out today.
+          {t("hosting.checkingOut.fetching")}
         </Typography>
       </Box>
     );
@@ -75,10 +79,10 @@ const CheckingOut = () => {
       >
         <SentimentDissatisfiedIcon sx={{ fontSize: 52, color: "var(--text-secondary)" }} />
         <Typography variant="h6" fontWeight={900} sx={{ mt: 1 }}>
-          No checkouts today
+          {t("hosting.checkingOut.noBookings")}
         </Typography>
         <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
-          There are no guests checking out today. You’re all good.
+          {t("hosting.checkingOut.noBookingsDesc")}
         </Typography>
       </Box>
     );
@@ -131,11 +135,11 @@ const CheckingOut = () => {
                   />
 
                   <Chip
-                    label="Checking out today"
+                    label={t("hosting.checkingOut.today")}
                     sx={{
                       position: "absolute",
                       top: 12,
-                      left: 12,
+                      [isRTL ? "right" : "left"]: 12,
                       borderRadius: 999,
                       fontWeight: 900,
                       backgroundColor: "rgba(0,0,0,0.70)",
@@ -147,7 +151,7 @@ const CheckingOut = () => {
 
               {/* Right: Content */}
               <Grid item xs={12} md={8}>
-                <Box sx={{ p: { xs: 2, md: 2.5 } }}>
+                <RTLWrapper sx={{ p: { xs: 2, md: 2.5 } }}>
                   {/* Header */}
                   <Stack
                     direction={{ xs: "column", sm: "row" }}
@@ -157,7 +161,7 @@ const CheckingOut = () => {
                   >
                     <Box>
                       <Typography variant="h6" fontWeight={900}>
-                        {listing?.title || "Untitled listing"}
+                        {listing?.title || t("hosting.pending.request")}
                       </Typography>
 
                       <Stack direction="row" spacing={0.8} alignItems="center" sx={{ mt: 0.4 }}>
@@ -210,7 +214,7 @@ const CheckingOut = () => {
                               {guest?.name || "Guest"}
                             </Typography>
                             <Typography variant="body2" color="var(--text-secondary)">
-                              Guests: {checkout?.guestCapacity || 0}
+                              {t("guests")}: {checkout?.guestCapacity || 0}
                             </Typography>
                           </Box>
                         </Stack>
@@ -247,12 +251,12 @@ const CheckingOut = () => {
                       >
                         <Stack direction="row" spacing={1} alignItems="center">
                           <CalendarMonthIcon sx={{ color: "var(--text-secondary)" }} />
-                          <Typography fontWeight={900}>Trip dates</Typography>
+                          <Typography fontWeight={900}>{t("hosting.checkingOut.tripDates")}</Typography>
                         </Stack>
 
                         <Box sx={{ mt: 1.2 }}>
                           <Typography variant="body2" color="var(--text-secondary)">
-                            Check-in:{" "}
+                            {t("hosting.pending.checkIn")}:{" "}
                             <strong>
                               {checkout?.startDate
                                 ? new Date(checkout.startDate).toLocaleDateString()
@@ -261,7 +265,7 @@ const CheckingOut = () => {
                           </Typography>
 
                           <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
-                            Check-out:{" "}
+                            {t("hosting.pending.checkOut")}:{" "}
                             <strong>
                               {checkout?.endDate
                                 ? new Date(checkout.endDate).toLocaleDateString()
@@ -272,7 +276,7 @@ const CheckingOut = () => {
                       </Paper>
                     </Grid>
                   </Grid>
-                </Box>
+                </RTLWrapper>
               </Grid>
             </Grid>
           </Paper>

@@ -22,46 +22,49 @@ import PersonIcon from "@mui/icons-material/Person";
 
 import { fetchData } from "../../config/ServiceApi/serviceApi";
 import { useBookingContext } from "../../context/booking";
+import { useTranslation } from "react-i18next";
+import { RTLWrapper, useRTL } from "../language/Localization";
 
 
 const CurrentlyHosting = () => {
+  const { t } = useTranslation("translation");
+  const isRTL = useRTL();
   const [hosting, setHosting] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const token = getAuthToken();
   const { setCurrentlyHosting } = useBookingContext();
 
-  const fetchHosting = async () => {
-    try {
-      setLoading(true);
-      const response = await fetchData("currently-hosting");
-
-      const list = response?.currentlyHostingBookings || [];
-      setHosting(list);
-      setCurrentlyHosting(response?.count || list.length);
-    } catch (error) {
-      console.error("Error fetching currently hosting:", error);
-      setHosting([]);
-      setCurrentlyHosting(0);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchHosting = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchData("currently-hosting");
+
+        const list = response?.currentlyHostingBookings || [];
+        setHosting(list);
+        setCurrentlyHosting(response?.count || list.length);
+      } catch (err) {
+        console.error("CurrentlyHosting fetch error:", err);
+        setHosting([]);
+        setCurrentlyHosting(0);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchHosting();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [token, setCurrentlyHosting]);
 
   if (loading) {
     return (
       <Box sx={{ py: 6, textAlign: "center" }}>
         <CircularProgress />
         <Typography sx={{ mt: 2 }} fontWeight={900}>
-          Loading currently hosting...
+          {t("hosting.currentlyHosting.loading")}
         </Typography>
         <Typography variant="body2" color="var(--text-secondary)">
-          Pulling live reservations.
+          {t("hosting.currentlyHosting.fetching")}
         </Typography>
       </Box>
     );
@@ -77,25 +80,24 @@ const CurrentlyHosting = () => {
       >
         <SentimentDissatisfiedIcon sx={{ fontSize: 52, color: "var(--text-secondary)" }} />
         <Typography variant="h6" fontWeight={900} sx={{ mt: 1 }}>
-          No guests currently hosting
+          {t("hosting.currentlyHosting.noBookings")}
         </Typography>
         <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
-          You don’t have any active stays right now.
+          {t("hosting.currentlyHosting.noBookingsDesc")}
         </Typography>
-
       </Box>
     );
   }
 
   return (
     <Stack spacing={2}>
-      {hosting.map((checkout) => {
-        const listing = checkout?.listingId;
-        const guest = checkout?.userSpecificData;
+      {hosting.map((stay) => {
+        const listing = stay?.listingId;
+        const guest = stay?.userSpecificData;
 
         return (
           <Paper
-            key={checkout?._id || checkout?.id}
+            key={stay?._id || stay?.id}
             elevation={0}
             sx={{
               borderRadius: 4,
@@ -111,7 +113,7 @@ const CurrentlyHosting = () => {
             }}
           >
             <Grid container>
-              {/* Image */}
+              {/* Left: Listing Image */}
               <Grid item xs={12} md={4}>
                 <Box
                   sx={{
@@ -134,23 +136,23 @@ const CurrentlyHosting = () => {
                   />
 
                   <Chip
-                    label="Currently hosting"
+                    label={t("hosting.currentlyHosting.staying")}
                     sx={{
                       position: "absolute",
                       top: 12,
-                      left: 12,
+                      [isRTL ? "right" : "left"]: 12,
                       borderRadius: 999,
                       fontWeight: 900,
-                      backgroundColor: "rgba(0,0,0,0.70)",
+                      backgroundColor: "rgba(46,125,50,0.90)",
                       color: "white",
                     }}
                   />
                 </Box>
               </Grid>
 
-              {/* Content */}
+              {/* Right: Content */}
               <Grid item xs={12} md={8}>
-                <Box sx={{ p: { xs: 2, md: 2.5 } }}>
+                <RTLWrapper sx={{ p: { xs: 2, md: 2.5 } }}>
                   {/* Header */}
                   <Stack
                     direction={{ xs: "column", sm: "row" }}
@@ -160,7 +162,7 @@ const CurrentlyHosting = () => {
                   >
                     <Box>
                       <Typography variant="h6" fontWeight={900}>
-                        {listing?.title || "Untitled listing"}
+                        {listing?.title || t("hosting.pending.request")}
                       </Typography>
 
                       <Stack direction="row" spacing={0.8} alignItems="center" sx={{ mt: 0.4 }}>
@@ -173,7 +175,7 @@ const CurrentlyHosting = () => {
 
                     <Chip
                       icon={<PaymentsIcon />}
-                      label={`Rs ${checkout?.totalPrice || 0}`}
+                      label={`Rs ${stay?.totalPrice || 0}`}
                       variant="outlined"
                       sx={{
                         borderRadius: 999,
@@ -185,8 +187,8 @@ const CurrentlyHosting = () => {
 
                   <Divider sx={{ my: 2 }} />
 
+                  {/* Guest + Dates */}
                   <Grid container spacing={2}>
-                    {/* Guest */}
                     <Grid item xs={12} sm={6}>
                       <Paper
                         elevation={0}
@@ -212,7 +214,7 @@ const CurrentlyHosting = () => {
                               {guest?.name || "Guest"}
                             </Typography>
                             <Typography variant="body2" color="var(--text-secondary)">
-                              Guests: {checkout?.guestCapacity || 0}
+                              {t("guests")}: {stay?.guestCapacity || 0}
                             </Typography>
                           </Box>
                         </Stack>
@@ -235,7 +237,6 @@ const CurrentlyHosting = () => {
                       </Paper>
                     </Grid>
 
-                    {/* Dates */}
                     <Grid item xs={12} sm={6}>
                       <Paper
                         elevation={0}
@@ -249,24 +250,24 @@ const CurrentlyHosting = () => {
                       >
                         <Stack direction="row" spacing={1} alignItems="center">
                           <CalendarMonthIcon sx={{ color: "var(--text-secondary)" }} />
-                          <Typography fontWeight={900}>Trip dates</Typography>
+                          <Typography fontWeight={900}>{t("hosting.checkingOut.tripDates")}</Typography>
                         </Stack>
 
                         <Box sx={{ mt: 1.2 }}>
                           <Typography variant="body2" color="var(--text-secondary)">
-                            Check-in:{" "}
+                            {t("hosting.pending.checkIn")}:{" "}
                             <strong>
-                              {checkout?.startDate
-                                ? new Date(checkout.startDate).toLocaleDateString()
+                              {stay?.startDate
+                                ? new Date(stay.startDate).toLocaleDateString()
                                 : "N/A"}
                             </strong>
                           </Typography>
 
                           <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
-                            Check-out:{" "}
+                            {t("hosting.pending.checkOut")}:{" "}
                             <strong>
-                              {checkout?.endDate
-                                ? new Date(checkout.endDate).toLocaleDateString()
+                              {stay?.endDate
+                                ? new Date(stay.endDate).toLocaleDateString()
                                 : "N/A"}
                             </strong>
                           </Typography>
@@ -274,7 +275,7 @@ const CurrentlyHosting = () => {
                       </Paper>
                     </Grid>
                   </Grid>
-                </Box>
+                </RTLWrapper>
               </Grid>
             </Grid>
           </Paper>

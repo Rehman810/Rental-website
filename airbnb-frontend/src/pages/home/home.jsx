@@ -19,6 +19,7 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import Pagination from "@mui/material/Pagination";
 import { useTranslation } from "react-i18next";
+import { RTLWrapper, useRTL } from "../../components/language/Localization";
 import { fetchData, postData } from "../../config/ServiceApi/serviceApi";
 import Card from "../../components/cards/cards";
 import LeafletMap from "../../components/map/map";
@@ -284,8 +285,10 @@ const Home = () => {
     performSearch(filters, page, page % 3 !== 1);
   }, [page]);
 
+  const isRTL = useRTL();
+
   return (
-    <Box sx={{ minHeight: "100vh", pb: 6, bgcolor: "var(--bg-primary)" }}>
+    <RTLWrapper sx={{ minHeight: "100vh", pb: 6, bgcolor: "var(--bg-primary)" }}>
       {/* ===================== MAP OVERLAY VIEW ===================== */}
       {mapVisible ? (
         <Box
@@ -420,7 +423,8 @@ const Home = () => {
                   mb: { xs: 4, md: 4 },
                   width: { xs: "auto", sm: "auto" },
                   px: { xs: 2, sm: 0 },
-                  justifyContent: 'center'
+                  justifyContent: 'center',
+                  flexDirection: isRTL ? 'row-reverse' : 'row'
                 }}
               >
                 <Button
@@ -674,7 +678,7 @@ const Home = () => {
       >
         {mapVisible ? (t("translation:home:showList") || "Show List") : (t("translation:home:showMap") || "Map")}
       </Button>
-    </Box >
+    </RTLWrapper >
   );
 };
 

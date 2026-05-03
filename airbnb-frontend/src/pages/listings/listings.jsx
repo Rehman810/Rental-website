@@ -43,9 +43,13 @@ import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
 dayjs.extend(isBetween);
 
+import { useTranslation } from "react-i18next";
+import { RTLWrapper, useRTL } from "../../components/language/Localization";
 import apiClient from "../../config/ServiceApi/apiClient";
 
 const BlockedDatesManagementModal = ({ open, onClose, listing, token, onUpdate }) => {
+  const { t } = useTranslation("listings");
+  const isRTL = useRTL();
   const [unavailableDates, setUnavailableDates] = useState([]);
   const [newBlockStart, setNewBlockStart] = useState(null);
   const [newBlockEnd, setNewBlockEnd] = useState(null);
@@ -87,12 +91,12 @@ const BlockedDatesManagementModal = ({ open, onClose, listing, token, onUpdate }
       await apiClient.put(`${API_BASE_URL}/listing/${listing._id}/availability`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      toast.success("Blocked dates updated");
+      toast.success(t("blockedDatesUpdated"));
       onUpdate();
       onClose();
     } catch (e) {
       console.error(e);
-      toast.error("Failed to update blocked dates");
+      toast.error(t("failedUpdateBlocked"));
     } finally {
       setSaving(false);
     }
@@ -125,67 +129,71 @@ const BlockedDatesManagementModal = ({ open, onClose, listing, token, onUpdate }
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth sx={{ "& .MuiPaper-root": { borderRadius: 4 } }}>
-      <DialogTitle sx={{ pb: 1 }}>
-        <Typography fontWeight={900} fontSize={18}>Manage Blocked Dates</Typography>
-        <Typography variant="body2" color="var(--text-secondary)">Block specific dates or ranges from being booked.</Typography>
-      </DialogTitle>
-      <DialogContent dividers>
-        <Grid container spacing={4}>
-          <Grid item xs={12} md={6}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DateCalendar
-                slots={{ day: ServerDay }}
-                readOnly
-              />
-            </LocalizationProvider>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Stack spacing={3}>
-              <Box>
-                <Typography fontSize={12} fontWeight={900} color="var(--text-secondary)" gutterBottom>ADD BLOCK</Typography>
-                <Stack spacing={2}>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker label="Start Date" value={newBlockStart} onChange={setNewBlockStart} />
-                    <DatePicker label="End Date" value={newBlockEnd} onChange={setNewBlockEnd} minDate={newBlockStart} />
-                  </LocalizationProvider>
-                  <Button variant="outlined" onClick={handleAddBlock} startIcon={<EventBusyIcon />}>Block Dates</Button>
-                </Stack>
-              </Box>
+      <RTLWrapper>
+        <DialogTitle sx={{ pb: 1 }}>
+          <Typography fontWeight={900} fontSize={18}>{t("manageBlockedDates")}</Typography>
+          <Typography variant="body2" color="var(--text-secondary)">{t("blockDesc")}</Typography>
+        </DialogTitle>
+        <DialogContent dividers>
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={6}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DateCalendar
+                  slots={{ day: ServerDay }}
+                  readOnly
+                />
+              </LocalizationProvider>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Stack spacing={3}>
+                <Box>
+                  <Typography fontSize={12} fontWeight={900} color="var(--text-secondary)" gutterBottom>{t("addBlock")}</Typography>
+                  <Stack spacing={2}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker label={t("startDate")} value={newBlockStart} onChange={setNewBlockStart} />
+                      <DatePicker label={t("endDate")} value={newBlockEnd} onChange={setNewBlockEnd} minDate={newBlockStart} />
+                    </LocalizationProvider>
+                    <Button variant="outlined" onClick={handleAddBlock} startIcon={<EventBusyIcon />}>{t("blockDates")}</Button>
+                  </Stack>
+                </Box>
 
-              <Box sx={{ maxHeight: 200, overflow: 'auto' }}>
-                <Typography fontSize={12} fontWeight={900} color="var(--text-secondary)" gutterBottom>CURRENT BLOCKS</Typography>
-                <List dense>
-                  {unavailableDates.length === 0 && <Typography variant="caption" color="var(--text-secondary)">No dates blocked.</Typography>}
-                  {unavailableDates.map((block, index) => (
-                    <ListItem key={index} sx={{ bgcolor: 'var(--bg-secondary)', borderRadius: 2, mb: 1 }}>
-                      <ListItemText
-                        primary={`${dayjs(block.startDate).format('MMM D, YYYY')} - ${dayjs(block.endDate).format('MMM D, YYYY')}`}
-                        primaryTypographyProps={{ fontWeight: 600, fontSize: '0.9rem' }}
-                      />
-                      <ListItemSecondaryAction>
-                        <IconButton edge="end" size="small" onClick={() => handleDeleteBlock(index)}>
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
-                      </ListItemSecondaryAction>
-                    </ListItem>
-                  ))}
-                </List>
-              </Box>
-            </Stack>
+                <Box sx={{ maxHeight: 200, overflow: 'auto' }}>
+                  <Typography fontSize={12} fontWeight={900} color="var(--text-secondary)" gutterBottom>{t("currentBlocks")}</Typography>
+                  <List dense>
+                    {unavailableDates.length === 0 && <Typography variant="caption" color="var(--text-secondary)">{t("noDatesBlocked")}</Typography>}
+                    {unavailableDates.map((block, index) => (
+                      <ListItem key={index} sx={{ bgcolor: 'var(--bg-secondary)', borderRadius: 2, mb: 1 }}>
+                        <ListItemText
+                          primary={`${dayjs(block.startDate).format('MMM D, YYYY')} - ${dayjs(block.endDate).format('MMM D, YYYY')}`}
+                          primaryTypographyProps={{ fontWeight: 600, fontSize: '0.9rem' }}
+                        />
+                        <ListItemSecondaryAction>
+                          <IconButton edge="end" size="small" onClick={() => handleDeleteBlock(index)}>
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        </ListItemSecondaryAction>
+                      </ListItem>
+                    ))}
+                  </List>
+                </Box>
+              </Stack>
+            </Grid>
           </Grid>
-        </Grid>
-      </DialogContent>
-      <DialogActions sx={{ px: 3, py: 2 }}>
-        <Button onClick={onClose} disabled={saving}>Cancel</Button>
-        <Button onClick={handleSave} variant="contained" disabled={saving} sx={{ borderRadius: "999px", px: 3 }}>
-          {saving ? "Saving..." : "Save Changes"}
-        </Button>
-      </DialogActions>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, py: 2 }}>
+          <Button onClick={onClose} disabled={saving}>{t("back")}</Button>
+          <Button onClick={handleSave} variant="contained" disabled={saving} sx={{ borderRadius: "999px", px: 3 }}>
+            {saving ? t("saving") : t("saveChanges")}
+          </Button>
+        </DialogActions>
+      </RTLWrapper>
     </Dialog>
   );
 };
 
 const AvailabilityModal = ({ open, onClose, listing, token, onUpdate }) => {
+  const { t } = useTranslation("listings");
+  const isRTL = useRTL();
   const [formData, setFormData] = useState({});
   const [saving, setSaving] = useState(false);
 
@@ -227,12 +235,12 @@ const AvailabilityModal = ({ open, onClose, listing, token, onUpdate }) => {
       await apiClient.put(`${API_BASE_URL}/listing/${listing._id}/availability`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      toast.success("Availability rules updated");
+      toast.success(t("availabilityUpdated"));
       onUpdate();
       onClose();
     } catch (e) {
       console.error(e);
-      toast.error("Failed to update");
+      toast.error(t("failedUpdate"));
     } finally {
       setSaving(false);
     }
@@ -253,184 +261,188 @@ const AvailabilityModal = ({ open, onClose, listing, token, onUpdate }) => {
         },
       }}
     >
-      {/* Header */}
-      <DialogTitle sx={{ pb: 1 }}>
-        <Typography fontWeight={900} fontSize={18}>
-          Availability Overrides
-        </Typography>
-        <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
-          Customize availability rules for this listing only.
-        </Typography>
-      </DialogTitle>
-
-      <DialogContent dividers sx={{ pt: 3 }}>
-        {/* Stay Length */}
-        <Box sx={{ mb: 3 }}>
-          <Typography fontSize={12} fontWeight={900} color="var(--text-secondary)" gutterBottom>
-            STAY LENGTH
+      <RTLWrapper>
+        {/* Header */}
+        <DialogTitle sx={{ pb: 1 }}>
+          <Typography fontWeight={900} fontSize={18}>
+            {t("availabilityOverrides")}
           </Typography>
-
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <TextField
-                fullWidth
-                label="Minimum nights"
-                type="number"
-                value={formData.minNights}
-                onChange={(e) => handleChange("minNights", e.target.value)}
-                placeholder="Host default"
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                fullWidth
-                label="Maximum nights"
-                type="number"
-                value={formData.maxNights}
-                onChange={(e) => handleChange("maxNights", e.target.value)}
-                placeholder="Host default"
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-          </Grid>
-        </Box>
-
-        {/* Booking Rules */}
-        <Box sx={{ mb: 3 }}>
-          <Typography fontSize={12} fontWeight={900} color="var(--text-secondary)" gutterBottom>
-            BOOKING RULES
+          <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
+            {t("availabilityDesc")}
           </Typography>
+        </DialogTitle>
 
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <FormControl fullWidth>
-                <InputLabel shrink>Allow same-day booking</InputLabel>
-                <Select
-                  value={getBoolValue(formData.allowSameDayBooking)}
-                  onChange={(e) =>
-                    handleChange(
-                      "allowSameDayBooking",
-                      e.target.value === "default"
-                        ? undefined
-                        : e.target.value === "true"
-                    )
-                  }
-                  displayEmpty
-                >
-                  <MenuItem value="default">
-                    <em>Use host default</em>
-                  </MenuItem>
-                  <MenuItem value="true">Yes</MenuItem>
-                  <MenuItem value="false">No</MenuItem>
-                </Select>
-              </FormControl>
+        <DialogContent dividers sx={{ pt: 3 }}>
+          {/* Stay Length */}
+          <Box sx={{ mb: 3 }}>
+            <Typography fontSize={12} fontWeight={900} color="var(--text-secondary)" gutterBottom>
+              {t("stayLength")}
+            </Typography>
+
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label={t("minNights")}
+                  type="number"
+                  value={formData.minNights}
+                  onChange={(e) => handleChange("minNights", e.target.value)}
+                  placeholder={t("hostDefault")}
+                  InputLabelProps={{ shrink: true }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label={t("maxNights")}
+                  type="number"
+                  value={formData.maxNights}
+                  onChange={(e) => handleChange("maxNights", e.target.value)}
+                  placeholder={t("hostDefault")}
+                  InputLabelProps={{ shrink: true }}
+                />
+              </Grid>
             </Grid>
+          </Box>
 
-            <Grid item xs={6}>
-              <FormControl fullWidth>
-                <InputLabel shrink>Minimum notice</InputLabel>
-                <Select
-                  value={formData.minNoticeDays}
-                  onChange={(e) => handleChange("minNoticeDays", e.target.value)}
-                  displayEmpty
-                >
-                  <MenuItem value="default">
-                    <em>Use host default</em>
-                  </MenuItem>
-                  <MenuItem value={0}>Same day</MenuItem>
-                  <MenuItem value={1}>1 day</MenuItem>
-                  <MenuItem value={2}>2 days</MenuItem>
-                  <MenuItem value={7}>7 days</MenuItem>
-                </Select>
-              </FormControl>
+          {/* Booking Rules */}
+          <Box sx={{ mb: 3 }}>
+            <Typography fontSize={12} fontWeight={900} color="var(--text-secondary)" gutterBottom>
+              {t("bookingRules")}
+            </Typography>
+
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <FormControl fullWidth>
+                  <InputLabel shrink>{t("allowSameDay")}</InputLabel>
+                  <Select
+                    value={getBoolValue(formData.allowSameDayBooking)}
+                    onChange={(e) =>
+                      handleChange(
+                        "allowSameDayBooking",
+                        e.target.value === "default"
+                          ? undefined
+                          : e.target.value === "true"
+                      )
+                    }
+                    displayEmpty
+                  >
+                    <MenuItem value="default">
+                      <em>{t("useHostDefault")}</em>
+                    </MenuItem>
+                    <MenuItem value="true">{t("translation:yes")}</MenuItem>
+                    <MenuItem value="false">{t("translation:no")}</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={6}>
+                <FormControl fullWidth>
+                  <InputLabel shrink>{t("minNotice")}</InputLabel>
+                  <Select
+                    value={formData.minNoticeDays}
+                    onChange={(e) => handleChange("minNoticeDays", e.target.value)}
+                    displayEmpty
+                  >
+                    <MenuItem value="default">
+                      <em>{t("useHostDefault")}</em>
+                    </MenuItem>
+                    <MenuItem value={0}>Same day</MenuItem>
+                    <MenuItem value={1}>1 day</MenuItem>
+                    <MenuItem value={2}>2 days</MenuItem>
+                    <MenuItem value={7}>7 days</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={6}>
+                <FormControl fullWidth>
+                  <InputLabel shrink>{t("bookingWindow")}</InputLabel>
+                  <Select
+                    value={formData.bookingWindowMonths}
+                    onChange={(e) =>
+                      handleChange("bookingWindowMonths", e.target.value)
+                    }
+                    displayEmpty
+                  >
+                    <MenuItem value="default">
+                      <em>{t("useHostDefault")}</em>
+                    </MenuItem>
+                    <MenuItem value={1}>1 month</MenuItem>
+                    <MenuItem value={3}>3 months</MenuItem>
+                    <MenuItem value={6}>6 months</MenuItem>
+                    <MenuItem value={12}>12 months</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
             </Grid>
+          </Box>
 
-            <Grid item xs={6}>
-              <FormControl fullWidth>
-                <InputLabel shrink>Booking window</InputLabel>
-                <Select
-                  value={formData.bookingWindowMonths}
-                  onChange={(e) =>
-                    handleChange("bookingWindowMonths", e.target.value)
-                  }
-                  displayEmpty
-                >
-                  <MenuItem value="default">
-                    <em>Use host default</em>
-                  </MenuItem>
-                  <MenuItem value={1}>1 month</MenuItem>
-                  <MenuItem value={3}>3 months</MenuItem>
-                  <MenuItem value={6}>6 months</MenuItem>
-                  <MenuItem value={12}>12 months</MenuItem>
-                </Select>
-              </FormControl>
+          {/* Check-in / Check-out */}
+          <Box>
+            <Typography fontSize={12} fontWeight={900} color="var(--text-secondary)" gutterBottom>
+              {t("checkInAndOut")}
+            </Typography>
+
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label={t("checkInFrom")}
+                  type="time"
+                  value={formData.checkInFrom}
+                  onChange={(e) => handleChange("checkInFrom", e.target.value)}
+                  InputLabelProps={{ shrink: true }}
+                  inputProps={{ step: 300 }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label={t("checkOutBy")}
+                  type="time"
+                  value={formData.checkOutBy}
+                  onChange={(e) => handleChange("checkOutBy", e.target.value)}
+                  InputLabelProps={{ shrink: true }}
+                  inputProps={{ step: 300 }}
+                />
+              </Grid>
             </Grid>
-          </Grid>
-        </Box>
+          </Box>
+        </DialogContent>
 
-        {/* Check-in / Check-out */}
-        <Box>
-          <Typography fontSize={12} fontWeight={900} color="var(--text-secondary)" gutterBottom>
-            CHECK-IN & CHECK-OUT
-          </Typography>
-
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <TextField
-                fullWidth
-                label="Check-in from"
-                type="time"
-                value={formData.checkInFrom}
-                onChange={(e) => handleChange("checkInFrom", e.target.value)}
-                InputLabelProps={{ shrink: true }}
-                inputProps={{ step: 300 }}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                fullWidth
-                label="Check-out by"
-                type="time"
-                value={formData.checkOutBy}
-                onChange={(e) => handleChange("checkOutBy", e.target.value)}
-                InputLabelProps={{ shrink: true }}
-                inputProps={{ step: 300 }}
-              />
-            </Grid>
-          </Grid>
-        </Box>
-      </DialogContent>
-
-      {/* Actions */}
-      <DialogActions sx={{ px: 3, py: 2 }}>
-        <Button
-          onClick={onClose}
-          disabled={saving}
-          sx={{ textTransform: "none", fontWeight: 700 }}
-        >
-          Cancel
-        </Button>
-        <Button
-          onClick={handleSave}
-          variant="contained"
-          disabled={saving}
-          sx={{
-            textTransform: "none",
-            fontWeight: 900,
-            borderRadius: "999px",
-            px: 3,
-          }}
-        >
-          {saving ? "Saving…" : "Save changes"}
-        </Button>
-      </DialogActions>
+        {/* Actions */}
+        <DialogActions sx={{ px: 3, py: 2 }}>
+          <Button
+            onClick={onClose}
+            disabled={saving}
+            sx={{ textTransform: "none", fontWeight: 700 }}
+          >
+            {t("back")}
+          </Button>
+          <Button
+            onClick={handleSave}
+            variant="contained"
+            disabled={saving}
+            sx={{
+              textTransform: "none",
+              fontWeight: 900,
+              borderRadius: "999px",
+              px: 3,
+            }}
+          >
+            {saving ? t("saving") : t("saveChanges")}
+          </Button>
+        </DialogActions>
+      </RTLWrapper>
     </Dialog>
 
   );
 };
 
 const CancellationPolicyModal = ({ open, onClose, listing, token, onUpdate }) => {
+  const { t } = useTranslation("listings");
+  const isRTL = useRTL();
   const [policies, setPolicies] = useState([]);
   const [selectedPolicyId, setSelectedPolicyId] = useState("");
   const [loading, setLoading] = useState(false);
@@ -489,10 +501,10 @@ const CancellationPolicyModal = ({ open, onClose, listing, token, onUpdate }) =>
     setLoading(true);
     try {
       await apiClient.put(`${API_BASE_URL}/listing/${listing._id}/cancellation-policy`, { policyId: selectedPolicyId }, { headers: { Authorization: `Bearer ${token}` } });
-      toast.success("Policy updated");
+      toast.success(t("policyUpdated"));
       onUpdate();
       onClose();
-    } catch (e) { toast.error("Failed to update policy"); }
+    } catch (e) { toast.error(t("failedPolicyUpdate")); }
     finally { setLoading(false); }
   };
 
@@ -508,208 +520,211 @@ const CancellationPolicyModal = ({ open, onClose, listing, token, onUpdate }) =>
         },
       }}
     >
-      {/* Header */}
-      <DialogTitle sx={{ pb: 1 }}>
-        <Typography fontWeight={900} fontSize={18}>
-          Cancellation Policy
-        </Typography>
-        <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
-          Choose how cancellations and refunds are handled for this listing.
-        </Typography>
-      </DialogTitle>
+      <RTLWrapper>
+        {/* Header */}
+        <DialogTitle sx={{ pb: 1 }}>
+          <Typography fontWeight={900} fontSize={18}>
+            {t("cancellationPolicy")}
+          </Typography>
+          <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
+            {t("cancellationDesc")}
+          </Typography>
+        </DialogTitle>
 
-      <DialogContent dividers sx={{ pt: 3 }}>
-        {!creatingCustom ? (
-          <Stack spacing={3}>
-            {/* Select Policy */}
-            <Box>
-              <Typography
-                fontSize={12}
-                fontWeight={900}
-                color="var(--text-secondary)"
-                gutterBottom
-                mb={2}
-              >
-                SELECT A POLICY
-              </Typography>
-
-              <FormControl fullWidth>
-                <InputLabel shrink>Policy</InputLabel>
-                <Select
-                  value={selectedPolicyId || ""}
-                  onChange={(e) => setSelectedPolicyId(e.target.value)}
-                  displayEmpty
+        <DialogContent dividers sx={{ pt: 3 }}>
+          {!creatingCustom ? (
+            <Stack spacing={3}>
+              {/* Select Policy */}
+              <Box>
+                <Typography
+                  fontSize={12}
+                  fontWeight={900}
+                  color="var(--text-secondary)"
+                  gutterBottom
+                  mb={2}
                 >
-                  {policies.map((p) => (
-                    <MenuItem key={p._id} value={p._id}>
-                      <Stack spacing={0.4}>
-                        <Stack direction="row" spacing={1} alignItems="center">
-                          <Typography fontWeight={800}>{p.name}</Typography>
-                          {p.type === "CUSTOM" && (
-                            <Chip
-                              label="Custom"
-                              size="small"
-                              variant="outlined"
-                              color="primary"
-                            />
-                          )}
+                  {t("selectPolicy")}
+                </Typography>
+
+                <FormControl fullWidth>
+                  <InputLabel shrink>Policy</InputLabel>
+                  <Select
+                    value={selectedPolicyId || ""}
+                    onChange={(e) => setSelectedPolicyId(e.target.value)}
+                    displayEmpty
+                  >
+                    {policies.map((p) => (
+                      <MenuItem key={p._id} value={p._id}>
+                        <Stack spacing={0.4}>
+                          <Stack direction="row" spacing={1} alignItems="center">
+                            <Typography fontWeight={800}>{p.name}</Typography>
+                            {p.type === "CUSTOM" && (
+                              <Chip
+                                label="Custom"
+                                size="small"
+                                variant="outlined"
+                                color="primary"
+                              />
+                            )}
+                          </Stack>
+                          <Typography
+                            variant="caption"
+                            color="var(--text-secondary)"
+                            sx={{ whiteSpace: "normal" }}
+                          >
+                            {p.description ||
+                              `Free cancellation within ${p.rules?.fullRefundHours} hours`}
+                          </Typography>
                         </Stack>
-                        <Typography
-                          variant="caption"
-                          color="var(--text-secondary)"
-                          sx={{ whiteSpace: "normal" }}
-                        >
-                          {p.description ||
-                            `Free cancellation within ${p.rules?.fullRefundHours} hours`}
-                        </Typography>
-                      </Stack>
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Box>
 
-            <Divider sx={{ fontSize: 12, fontWeight: 800 }}>OR</Divider>
+              <Divider sx={{ fontSize: 12, fontWeight: 800 }}>OR</Divider>
 
-            {/* Create Custom */}
-            <Button
-              variant="outlined"
-              onClick={() => setCreatingCustom(true)}
-              sx={{
-                textTransform: "none",
-                fontWeight: 800,
-                borderRadius: "999px",
-                alignSelf: "flex-start",
-              }}
-            >
-              Create custom policy
-            </Button>
-          </Stack>
-        ) : (
-          <Stack spacing={3}>
-            {/* Custom Policy */}
-            <Box>
-              <Typography
-                fontSize={12}
-                fontWeight={900}
-                color="var(--text-secondary)"
-                gutterBottom
-              >
-                CUSTOM POLICY DETAILS
-              </Typography>
-
-              <Stack spacing={2}>
-                <TextField
-                  label="Policy name"
-                  fullWidth
-                  value={customName}
-                  onChange={(e) => setCustomName(e.target.value)}
-                  placeholder="e.g. Weekend Friendly"
-                />
-
-                <TextField
-                  label="Full refund period (hours after booking)"
-                  type="number"
-                  fullWidth
-                  value={fullRefundHours}
-                  onChange={(e) => setFullRefundHours(e.target.value)}
-                />
-              </Stack>
-            </Box>
-
-            {/* Partial Refund */}
-            <Box>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={partialEnabled}
-                    onChange={(e) => setPartialEnabled(e.target.checked)}
-                  />
-                }
-                label={
-                  <Typography fontWeight={700}>
-                    Enable partial refund before check-in
-                  </Typography>
-                }
-              />
-
-              {partialEnabled && (
-                <Stack direction="row" spacing={2} sx={{ mt: 1 }}>
-                  <TextField
-                    label="Refund %"
-                    type="number"
-                    fullWidth
-                    value={partialPercent}
-                    onChange={(e) => setPartialPercent(e.target.value)}
-                  />
-                  <TextField
-                    label="Hours before check-in"
-                    type="number"
-                    fullWidth
-                    value={partialHours}
-                    onChange={(e) => setPartialHours(e.target.value)}
-                  />
-                </Stack>
-              )}
-            </Box>
-
-            {/* Actions */}
-            <Stack direction="row" spacing={1} justifyContent="flex-end">
+              {/* Create Custom */}
               <Button
-                onClick={() => setCreatingCustom(false)}
-                sx={{ textTransform: "none", fontWeight: 700 }}
-              >
-                Back
-              </Button>
-              <Button
-                variant="contained"
-                onClick={handleCreateCustom}
+                variant="outlined"
+                onClick={() => setCreatingCustom(true)}
                 sx={{
                   textTransform: "none",
-                  fontWeight: 900,
+                  fontWeight: 800,
                   borderRadius: "999px",
-                  px: 3,
+                  alignSelf: "flex-start",
                 }}
               >
-                Create policy
+                {t("createCustomPolicy")}
               </Button>
             </Stack>
-          </Stack>
-        )}
-      </DialogContent>
+          ) : (
+            <Stack spacing={3}>
+              {/* Custom Policy */}
+              <Box>
+                <Typography
+                  fontSize={12}
+                  fontWeight={900}
+                  color="var(--text-secondary)"
+                  gutterBottom
+                >
+                  {t("customPolicyDetails")}
+                </Typography>
 
-      {/* Footer */}
-      <DialogActions sx={{ px: 3, py: 2 }}>
-        <Button
-          onClick={onClose}
-          disabled={loading}
-          sx={{ textTransform: "none", fontWeight: 700 }}
-        >
-          Cancel
-        </Button>
+                <Stack spacing={2}>
+                  <TextField
+                    label={t("policyName")}
+                    fullWidth
+                    value={customName}
+                    onChange={(e) => setCustomName(e.target.value)}
+                    placeholder="e.g. Weekend Friendly"
+                  />
 
-        {!creatingCustom && (
+                  <TextField
+                    label={t("fullRefundPeriod")}
+                    type="number"
+                    fullWidth
+                    value={fullRefundHours}
+                    onChange={(e) => setFullRefundHours(e.target.value)}
+                  />
+                </Stack>
+              </Box>
+
+              {/* Partial Refund */}
+              <Box>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={partialEnabled}
+                      onChange={(e) => setPartialEnabled(e.target.checked)}
+                    />
+                  }
+                  label={
+                    <Typography fontWeight={700}>
+                      {t("enablePartialRefund")}
+                    </Typography>
+                  }
+                />
+
+                {partialEnabled && (
+                  <Stack direction="row" spacing={2} sx={{ mt: 1 }}>
+                    <TextField
+                      label={t("refundPercent")}
+                      type="number"
+                      fullWidth
+                      value={partialPercent}
+                      onChange={(e) => setPartialPercent(e.target.value)}
+                    />
+                    <TextField
+                      label={t("hoursBeforeCheckIn")}
+                      type="number"
+                      fullWidth
+                      value={partialHours}
+                      onChange={(e) => setPartialHours(e.target.value)}
+                    />
+                  </Stack>
+                )}
+              </Box>
+
+              {/* Actions */}
+              <Stack direction="row" spacing={1} justifyContent="flex-end">
+                <Button
+                  onClick={() => setCreatingCustom(false)}
+                  sx={{ textTransform: "none", fontWeight: 700 }}
+                >
+                  {t("back")}
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={handleCreateCustom}
+                  sx={{
+                    textTransform: "none",
+                    fontWeight: 900,
+                    borderRadius: "999px",
+                    px: 3,
+                  }}
+                >
+                  {t("createPolicy")}
+                </Button>
+              </Stack>
+            </Stack>
+          )}
+        </DialogContent>
+
+        {/* Footer */}
+        <DialogActions sx={{ px: 3, py: 2 }}>
           <Button
-            onClick={handleSave}
-            variant="contained"
-            disabled={loading || !selectedPolicyId}
-            sx={{
-              textTransform: "none",
-              fontWeight: 900,
-              borderRadius: "999px",
-              px: 3,
-            }}
+            onClick={onClose}
+            disabled={loading}
+            sx={{ textTransform: "none", fontWeight: 700 }}
           >
-            {loading ? "Saving…" : "Save policy"}
+            {t("back")}
           </Button>
-        )}
-      </DialogActions>
+
+          {!creatingCustom && (
+            <Button
+              onClick={handleSave}
+              variant="contained"
+              disabled={loading || !selectedPolicyId}
+              sx={{
+                textTransform: "none",
+                fontWeight: 900,
+                borderRadius: "999px",
+                px: 3,
+              }}
+            >
+              {loading ? t("saving") : t("savePolicy")}
+            </Button>
+          )}
+        </DialogActions>
+      </RTLWrapper>
     </Dialog>
   );
 };
 
 
 const ListingPage = () => {
+  const { t } = useTranslation(["translation", "listings"]);
   const [listing, setListing] = useState([]);
   const [tempListing, setTempListing] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -722,7 +737,9 @@ const ListingPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
-  usePageTitle("Listings");
+  usePageTitle(t("menu.hostMenu.listings"));
+
+  const isRTL = useRTL();
 
   const token = getAuthToken();
   const user = getAuthUser();
@@ -744,13 +761,13 @@ const ListingPage = () => {
   }, [token, user?._id]);
 
   const formatAddress = (item) => {
-    if (!item) return "Address not available";
+    if (!item) return t("listings:addressNotAvailable");
 
     const formatted = [item?.flat, item?.city, item?.postcode, item?.country]
       .filter(Boolean)
       .join(", ");
 
-    return formatted || "Address not available";
+    return formatted || t("listings:addressNotAvailable");
   };
 
   const filteredConfirmed = useMemo(() => {
@@ -816,30 +833,30 @@ const ListingPage = () => {
 
     const handleUpdateMode = async (mode) => {
       handleClose();
-      const toastId = toast.loading("Updating booking mode...");
+      const toastId = toast.loading(t("updatingBookingMode"));
       try {
         await apiClient.put(`${API_BASE_URL}/listing/${item._id}/booking-mode`, { bookingMode: mode }, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        toast.success("Updated!", { id: toastId });
+        toast.success(t("updated"), { id: toastId });
         reloadListings();
       } catch (e) {
-        toast.error("Failed to update", { id: toastId });
+        toast.error(t("failedUpdate"), { id: toastId });
       }
     };
 
     const handleUpdateStatus = async (newStatus) => {
       handleClose();
-      const toastId = toast.loading(`Setting listing to ${newStatus}...`);
+      const toastId = toast.loading(t("settingStatus", { status: newStatus }));
       try {
         await apiClient.put(`${API_BASE_URL}/listing/${item._id}/availability`, { status: newStatus }, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        toast.success("Status updated!", { id: toastId });
+        toast.success(t("statusUpdated"), { id: toastId });
         reloadListings();
       } catch (e) {
         console.error(e);
-        toast.error("Failed to update status", { id: toastId });
+        toast.error(t("failedUpdate"), { id: toastId });
       }
     };
 
@@ -872,12 +889,13 @@ const ListingPage = () => {
           />
 
           <Chip
-            label={isDisabled ? "Disabled" : (item.status === 'active' ? "Active" : "Pending")}
+            label={isDisabled ? t("hosting.listings.disabled") : (item.status === 'active' ? t("hosting.listings.active") : t("hosting.listings.pending"))}
             size="small"
             sx={{
               position: "absolute",
               top: 12,
-              left: 12,
+              [isRTL ? "right" : "left"]: 12,
+              zIndex: 5,
               borderRadius: "999px",
               fontWeight: 900,
               bgcolor: isDisabled ? "var(--text-secondary)" : (item.status === 'active' ? "rgba(0,0,0,0.85)" : "rgba(255,56,92,0.92)"),
@@ -919,27 +937,27 @@ const ListingPage = () => {
             {/* Section: Booking Mode */}
             <Box sx={{ px: 2, py: 1.2 }}>
               <Typography fontSize={11} fontWeight={900} color="var(--text-secondary)">
-                BOOKING MODE
+                {t("bookingMode")}
               </Typography>
             </Box>
 
             <MenuItem onClick={() => handleUpdateMode(null)}>
               <MenuRow
-                label="Use Host Default"
+                label={t("useHostDefault")}
                 active={!item.bookingMode}
               />
             </MenuItem>
 
             <MenuItem onClick={() => handleUpdateMode("instant")}>
               <MenuRow
-                label="Instant Book"
+                label={t("instantBook")}
                 active={item.bookingMode === "instant"}
               />
             </MenuItem>
 
             <MenuItem onClick={() => handleUpdateMode("request")}>
               <MenuRow
-                label="Request to Book"
+                label={t("requestToBook")}
                 active={item.bookingMode === "request"}
               />
             </MenuItem>
@@ -949,27 +967,27 @@ const ListingPage = () => {
             {/* Section: Rules */}
             <Box sx={{ px: 2, py: 1.2 }}>
               <Typography fontSize={11} fontWeight={900} color="var(--text-secondary)">
-                LISTING RULES
+                {t("listingRules")}
               </Typography>
             </Box>
 
             <MenuItem onClick={() => { handleClose(); setEditingAvailability(item); }}>
               <MenuRow
-                label="Availability Rules"
+                label={t("availabilityRules")}
                 checked={item.minNights || item.maxNights || item.checkInFrom}
               />
             </MenuItem>
 
             <MenuItem onClick={() => { handleClose(); setEditingGuestRequirements(item); }}>
               <MenuRow
-                label="Guest Requirements"
+                label={t("guestRequirements")}
                 checked={item.guestRequirementsOverride && Object.keys(item.guestRequirementsOverride).length > 0}
               />
             </MenuItem>
 
             <MenuItem onClick={() => { handleClose(); setEditingBlockedDates(item); }}>
               <MenuRow
-                label="Block Dates"
+                label={t("blockDates")}
                 checked={item.unavailableDates && item.unavailableDates.length > 0}
               />
             </MenuItem>
@@ -979,27 +997,27 @@ const ListingPage = () => {
             {/* Section: Status */}
             <Box sx={{ px: 2, py: 1.2 }}>
               <Typography fontSize={11} fontWeight={900} color="var(--text-secondary)">
-                STATUS
+                {t("status")}
               </Typography>
             </Box>
 
             <MenuItem onClick={() => handleUpdateStatus("active")}>
               <MenuRow
-                label="Active"
+                label={t("active")}
                 active={item.status === 'active'}
               />
             </MenuItem>
 
             <MenuItem onClick={() => handleUpdateStatus("disabled")}>
               <MenuRow
-                label="Disabled"
+                label={t("disabled")}
                 active={item.status === 'disabled'}
               />
             </MenuItem>
 
             <MenuItem onClick={() => { handleClose(); setEditingCancellation(item); }}>
               <MenuRow
-                label="Cancellation Policy"
+                label={t("cancellationPolicy")}
                 checked={!!item.cancellationPolicy}
               />
             </MenuItem>
@@ -1009,13 +1027,13 @@ const ListingPage = () => {
             {/* Section: AI Assistant */}
             <Box sx={{ px: 2, py: 1.2 }}>
               <Typography fontSize={11} fontWeight={900} color="var(--text-secondary)">
-                AI ASSISTANT
+                {t("aiAssistant")}
               </Typography>
             </Box>
 
             <MenuItem onClick={() => { handleClose(); setEditingAiAssistant(item); }}>
               <MenuRow
-                label="Host Assistant"
+                label={t("hostAssistant")}
                 checked={item.autoReplyEnabled}
               />
             </MenuItem>
@@ -1054,7 +1072,7 @@ const ListingPage = () => {
 
           {showIcon && <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mt: 1.5 }} onClick={() => navigate(`/hosting/listings/${item._id}`)}>
             <Typography variant="caption" color="var(--text-secondary)" fontWeight={800}>
-              View →
+              {t("hosting.listings.view")} →
             </Typography>
           </Stack>}
         </CardContent>
@@ -1063,7 +1081,7 @@ const ListingPage = () => {
   };
 
   return (
-    <Box sx={{ bgcolor: "var(--bg-primary)", minHeight: "100vh" }}>
+    <RTLWrapper sx={{ bgcolor: "var(--bg-primary)", minHeight: "100vh" }}>
       {/* Header */}
       <AppBar
         position="sticky"
@@ -1086,12 +1104,12 @@ const ListingPage = () => {
           }}
         >
           {/* Left */}
-          <Box sx={{ textAlign: { xs: "center", md: "left" } }}>
+          <Box sx={{ textAlign: isRTL ? { xs: "center", md: "right" } : { xs: "center", md: "left" } }}>
             <Typography variant="h5" fontWeight={900}>
-              Your Listings
+              {t("hosting.listings.title")}
             </Typography>
             <Typography variant="body2" color="var(--text-secondary)">
-              Manage verified and pending listings in one place.
+              {t("hosting.listings.desc")}
             </Typography>
           </Box>
 
@@ -1106,7 +1124,7 @@ const ListingPage = () => {
             }}
           >
             <TextField
-              placeholder="Search listings..."
+              placeholder={t("hosting.listings.searchPlaceholder")}
               size="small"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -1120,7 +1138,7 @@ const ListingPage = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon sx={{ color: "var(--text-secondary)" }} />
+                    <SearchIcon sx={{ color: "var(--text-secondary)", [isRTL ? "ml" : "mr"]: 1 }} />
                   </InputAdornment>
                 ),
                 endAdornment: searchQuery ? (
@@ -1136,7 +1154,7 @@ const ListingPage = () => {
             <Button
               variant="outlined"
               onClick={async () => {
-                const confirm = window.confirm("This will reset ALL your listings to use your Host Settings default. Continue?");
+                const confirm = window.confirm(t("hosting.listings.resetConfirm"));
                 if (confirm) {
                   try {
                     await apiClient.post(`${API_BASE_URL}/listings/migrate-modes`, {}, {
@@ -1148,7 +1166,7 @@ const ListingPage = () => {
               }}
               sx={{ borderRadius: "999px", textTransform: "none", fontWeight: 800, color: "var(--text-secondary)" }}
             >
-              Reset All Defaults
+              {t("hosting.listings.resetAll")}
             </Button>
 
             <Button
@@ -1162,9 +1180,10 @@ const ListingPage = () => {
                 fontWeight: 900,
                 px: 2,
                 boxShadow: "0 12px 30px rgba(0,0,0,0.12)",
+                flexDirection: isRTL ? "row-reverse" : "row"
               }}
             >
-              New Listing
+              {t("hosting.listings.newListing")}
             </Button>
           </Stack>
         </Toolbar>
@@ -1176,10 +1195,10 @@ const ListingPage = () => {
         {/* Confirmed */}
         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
           <Typography variant="h6" fontWeight={900}>
-            Confirmed Listings
+            {t("hosting.listings.confirmed")}
           </Typography>
           <Chip
-            label={`${filteredConfirmed?.length || 0} items`}
+            label={`${filteredConfirmed?.length || 0} ${t("items")}`}
             variant="outlined"
             sx={{
               borderRadius: "999px",
@@ -1207,10 +1226,10 @@ const ListingPage = () => {
                 }}
               >
                 <Typography variant="h6" fontWeight={900}>
-                  No confirmed listings found
+                  {t("hosting.listings.noConfirmed")}
                 </Typography>
                 <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 1 }}>
-                  Try adjusting your search or create a new listing.
+                  {t("hosting.listings.noConfirmedDesc")}
                 </Typography>
 
                 <Button
@@ -1218,7 +1237,7 @@ const ListingPage = () => {
                   sx={{ mt: 2, borderRadius: "999px", fontWeight: 900, textTransform: "none" }}
                   onClick={() => navigate("/listingSteps")}
                 >
-                  Create Listing
+                  {t("hosting.createListing")}
                 </Button>
               </Paper>
             </Grid>
@@ -1236,10 +1255,10 @@ const ListingPage = () => {
         {/* Pending */}
         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
           <Typography variant="h6" fontWeight={900}>
-            Pending Verification
+            {t("hosting.listings.pendingVerification")}
           </Typography>
           <Chip
-            label={`${filteredTemp?.length || 0} items`}
+            label={`${filteredTemp?.length || 0} ${t("items")}`}
             variant="outlined"
             sx={{
               borderRadius: "999px",
@@ -1265,10 +1284,10 @@ const ListingPage = () => {
                 }}
               >
                 <Typography variant="h6" fontWeight={900}>
-                  No pending listings
+                  {t("noPending")}
                 </Typography>
                 <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 1 }}>
-                  Everything looks good — no listings are waiting for review.
+                  {t("everythingLooksGood")}
                 </Typography>
               </Paper>
             </Grid>
@@ -1326,11 +1345,13 @@ const ListingPage = () => {
         onUpdate={() => window.location.reload()}
       />
 
-    </Box>
+    </RTLWrapper>
   );
 };
 
 const GuestRequirementsModal = ({ open, onClose, listing, token, onUpdate }) => {
+  const { t } = useTranslation("listings");
+  const isRTL = useRTL();
   const [formData, setFormData] = useState({});
   const [saving, setSaving] = useState(false);
 
@@ -1368,12 +1389,12 @@ const GuestRequirementsModal = ({ open, onClose, listing, token, onUpdate }) => 
       await apiClient.put(`${API_BASE_URL}/listing/${listing._id}/guest-requirements`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      toast.success("Guest requirements updated");
+      toast.success(t("availabilityUpdated")); // Reusing similar message
       onUpdate();
       onClose();
     } catch (e) {
       console.error(e);
-      toast.error("Failed to update");
+      toast.error(t("failedUpdate"));
     } finally {
       setSaving(false);
     }
@@ -1389,9 +1410,9 @@ const GuestRequirementsModal = ({ open, onClose, listing, token, onUpdate }) => 
           label={label}
           displayEmpty
         >
-          <MenuItem value="default"><em>Use Host Default</em></MenuItem>
-          <MenuItem value="true">Yes</MenuItem>
-          <MenuItem value="false">No</MenuItem>
+          <MenuItem value="default"><em>{t("useHostDefault")}</em></MenuItem>
+          <MenuItem value="true">{t("translation:yes")}</MenuItem>
+          <MenuItem value="false">{t("translation:no")}</MenuItem>
         </Select>
       </FormControl>
     </Grid>
@@ -1399,39 +1420,43 @@ const GuestRequirementsModal = ({ open, onClose, listing, token, onUpdate }) => 
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle fontWeight={800}>Guest Requirements Override</DialogTitle>
-      <DialogContent dividers>
-        <Typography variant="body2" color="var(--text-secondary)" paragraph>
-          Override global host settings for this specific listing.
-        </Typography>
-        <Grid container spacing={2}>
-          <BooleanOverride label="Require Verified Phone" field="requireVerifiedPhone" />
-          <BooleanOverride label="Require Verified Email" field="requireVerifiedEmail" />
-          <BooleanOverride label="Require CNIC Verification" field="requireCNIC" />
-          <BooleanOverride label="Require Profile Photo" field="requireProfilePhoto" />
-          <BooleanOverride label="Require Completed Profile" field="requireCompletedProfile" />
+      <RTLWrapper>
+        <DialogTitle fontWeight={800}>{t("guestRequirementsOverride")}</DialogTitle>
+        <DialogContent dividers>
+          <Typography variant="body2" color="var(--text-secondary)" paragraph>
+            {t("guestRequirementsDesc")}
+          </Typography>
+          <Grid container spacing={2}>
+            <BooleanOverride label={t("requireVerifiedPhone")} field="requireVerifiedPhone" />
+            <BooleanOverride label={t("requireVerifiedEmail")} field="requireVerifiedEmail" />
+            <BooleanOverride label={t("requireCnicVerification")} field="requireCNIC" />
+            <BooleanOverride label={t("requireProfilePhoto")} field="requireProfilePhoto" />
+            <BooleanOverride label={t("requireCompletedProfile")} field="requireCompletedProfile" />
 
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth label="Min Account Age (Days)" type="number"
-              value={formData.minAccountAgeDays ?? ""}
-              onChange={(e) => handleChange('minAccountAgeDays', e.target.value === "" ? undefined : e.target.value)}
-              placeholder="Host Default"
-              InputLabelProps={{ shrink: true }}
-              helperText="Leave empty to use host default"
-            />
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth label={t("minAccountAge")} type="number"
+                value={formData.minAccountAgeDays ?? ""}
+                onChange={(e) => handleChange('minAccountAgeDays', e.target.value === "" ? undefined : e.target.value)}
+                placeholder={t("hostDefault")}
+                InputLabelProps={{ shrink: true }}
+                helperText={t("leaveEmptyDefault")}
+              />
+            </Grid>
           </Grid>
-        </Grid>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} disabled={saving}>Cancel</Button>
-        <Button onClick={handleSave} variant="contained" disabled={saving}>{saving ? "Saving..." : "Save Overrides"}</Button>
-      </DialogActions>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose} disabled={saving}>{t("back")}</Button>
+          <Button onClick={handleSave} variant="contained" disabled={saving}>{saving ? t("saving") : t("saveOverrides")}</Button>
+        </DialogActions>
+      </RTLWrapper>
     </Dialog>
   );
 };
 
 const AiAssistantModal = ({ open, onClose, listing, token, onUpdate }) => {
+  const { t } = useTranslation("listings");
+  const isRTL = useRTL();
   const [autoReplyEnabled, setAutoReplyEnabled] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -1448,12 +1473,12 @@ const AiAssistantModal = ({ open, onClose, listing, token, onUpdate }) => {
         { autoReplyEnabled },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      toast.success("Host Assistant settings updated");
+      toast.success(t("availabilityUpdated"));
       onUpdate();
       onClose();
     } catch (e) {
       console.error(e);
-      toast.error("Failed to update AI settings");
+      toast.error(t("failedUpdate"));
     } finally {
       setSaving(false);
     }
@@ -1461,36 +1486,38 @@ const AiAssistantModal = ({ open, onClose, listing, token, onUpdate }) => {
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth sx={{ "& .MuiPaper-root": { borderRadius: 4 } }}>
-      <DialogTitle fontWeight={800}>Host Assistant</DialogTitle>
-      <DialogContent dividers>
-        <Typography variant="body2" color="var(--text-secondary)" paragraph>
-          Enable an AI-powered assistant to automatically reply to guest messages for this listing.
-        </Typography>
+      <RTLWrapper>
+        <DialogTitle fontWeight={800}>{t("hostAssistant")}</DialogTitle>
+        <DialogContent dividers>
+          <Typography variant="body2" color="var(--text-secondary)" paragraph>
+            {t("hostAssistantDesc")}
+          </Typography>
 
-        <Box sx={{ py: 1 }}>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={autoReplyEnabled}
-                onChange={(e) => setAutoReplyEnabled(e.target.checked)}
-                color="primary"
-              />
-            }
-            label={
-              <Box>
-                <Typography fontWeight={700}>Auto Reply</Typography>
-                <Typography variant="caption" color="var(--text-secondary)">{autoReplyEnabled ? "ON - AI will reply to guests" : "OFF - Manual replies only"}</Typography>
-              </Box>
-            }
-          />
-        </Box>
-      </DialogContent>
-      <DialogActions sx={{ px: 3, py: 2 }}>
-        <Button onClick={onClose} disabled={saving} sx={{ borderRadius: 999 }}>Cancel</Button>
-        <Button onClick={handleSave} variant="contained" disabled={saving} sx={{ borderRadius: 999, px: 3 }}>
-          {saving ? "Saving..." : "Save Settings"}
-        </Button>
-      </DialogActions>
+          <Box sx={{ py: 1 }}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={autoReplyEnabled}
+                  onChange={(e) => setAutoReplyEnabled(e.target.checked)}
+                  color="primary"
+                />
+              }
+              label={
+                <Box>
+                  <Typography fontWeight={700}>{t("autoReply")}</Typography>
+                  <Typography variant="caption" color="var(--text-secondary)">{autoReplyEnabled ? t("aiWillReply") : t("manualRepliesOnly")}</Typography>
+                </Box>
+              }
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, py: 2 }}>
+          <Button onClick={onClose} disabled={saving} sx={{ borderRadius: 999 }}>{t("back")}</Button>
+          <Button onClick={handleSave} variant="contained" disabled={saving} sx={{ borderRadius: 999, px: 3 }}>
+            {saving ? t("saving") : t("saveSettings")}
+          </Button>
+        </DialogActions>
+      </RTLWrapper>
     </Dialog>
   );
 };

@@ -16,23 +16,25 @@ import CloseIcon from "@mui/icons-material/Close";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "../../context/context";
+import { RTLWrapper, useRTL } from "./Localization";
 
 const Language = ({ open, toggleModal }) => {
   const { i18n } = useTranslation();
   const { setLanguage } = useAppContext();
-  const { t } = useTranslation();
+  const { t } = useTranslation(["common", "languages"]);
+  const isRTL = useRTL();
 
   const languages = [
-    { code: "en", lang: "English", region: "United States" },
-    { code: "zh", lang: "Chinese", region: "China" },
+    { code: "en" },
+    { code: "zh" },
   ];
 
   const otherLanguages = [
-    { code: "tr", lang: "Turkish", region: "Türkiye" },
-    { code: "ar", lang: "Arabic", region: "Middle East" },
-    { code: "ur", lang: "Urdu", region: "Pakistan" },
-    { code: "fr", lang: "French", region: "France" },
-    { code: "de", lang: "German", region: "Germany" },
+    { code: "tr" },
+    { code: "ar" },
+    { code: "ur" },
+    { code: "fr" },
+    { code: "de" },
   ];
 
   const changeLanguage = (lng) => {
@@ -46,7 +48,7 @@ const Language = ({ open, toggleModal }) => {
       <Paper
         elevation={0}
         onClick={() => {
-          setLanguage({ code: lng.code, lang: lng.lang });
+          setLanguage({ code: lng.code, lang: t(`languages:${lng.code}.lang`) });
           changeLanguage(lng.code);
 
           const token = getAuthToken();
@@ -73,13 +75,14 @@ const Language = ({ open, toggleModal }) => {
           },
         }}
       >
-        <Stack direction="row" alignItems="center" justifyContent="space-between" >
+        <RTLWrapper>
+          <Stack direction="row" alignItems="center" justifyContent="space-between" >
           <Box>
             <Typography sx={{ fontWeight: 900, fontSize: 16 }}>
-              {lng.lang}
+              {t(`languages:${lng.code}.lang`)}
             </Typography>
             <Typography variant="body2" color="" sx={{ mt: 0.3 }}>
-              {lng.region}
+              {t(`languages:${lng.code}.region`)}
             </Typography>
           </Box>
 
@@ -87,7 +90,8 @@ const Language = ({ open, toggleModal }) => {
             <CheckCircleIcon sx={{ fontSize: 20, color: "success.main" }} />
           )}
         </Stack>
-      </Paper>
+      </RTLWrapper>
+    </Paper>
     );
   };
 
@@ -104,6 +108,7 @@ const Language = ({ open, toggleModal }) => {
         },
       }}
     >
+      <RTLWrapper>
       {/* Header */}
       <DialogTitle
         sx={{
@@ -177,6 +182,7 @@ const Language = ({ open, toggleModal }) => {
           </Grid>
         </Box>
       </DialogContent>
+      </RTLWrapper>
     </Dialog>
   );
 };

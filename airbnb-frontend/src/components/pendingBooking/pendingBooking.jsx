@@ -26,9 +26,13 @@ import PaymentsIcon from "@mui/icons-material/Payments";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CloseIcon from "@mui/icons-material/Close";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
+import { RTLWrapper, useRTL } from "../language/Localization";
 
 
 const PendingBooking = () => {
+  const { t } = useTranslation("translation");
+  const isRTL = useRTL();
   const [pendingBookings, setPendingBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(null);
@@ -94,10 +98,10 @@ const PendingBooking = () => {
       <Box sx={{ py: 6, textAlign: "center" }}>
         <CircularProgress />
         <Typography sx={{ mt: 2 }} fontWeight={900}>
-          Loading pending bookings...
+          {t("hosting.pending.loading")}
         </Typography>
         <Typography variant="body2" color="var(--text-secondary)">
-          Fetching latest requests.
+          {t("hosting.pending.fetching")}
         </Typography>
       </Box>
     );
@@ -118,10 +122,10 @@ const PendingBooking = () => {
       >
         <SentimentDissatisfiedIcon sx={{ fontSize: 52, color: "var(--text-secondary)" }} />
         <Typography variant="h6" fontWeight={900} sx={{ mt: 1 }}>
-          No pending bookings
+          {t("hosting.pending.noBookings")}
         </Typography>
         <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
-          Nothing is waiting for approval right now.
+          {t("hosting.pending.nothingWaiting")}
         </Typography>
       </Paper>
     );
@@ -176,11 +180,11 @@ const PendingBooking = () => {
                   />
 
                   <Chip
-                    label="Pending"
+                    label={t("hosting.tabs.pending")}
                     sx={{
                       position: "absolute",
                       top: 12,
-                      left: 12,
+                      [isRTL ? "right" : "left"]: 12,
                       borderRadius: 999,
                       fontWeight: 900,
                       backgroundColor: "rgba(0,0,0,0.70)",
@@ -192,7 +196,7 @@ const PendingBooking = () => {
 
               {/* RIGHT: Details */}
               <Grid item xs={12} md={8}>
-                <Box sx={{ p: { xs: 2, md: 2.5 } }}>
+                <RTLWrapper sx={{ p: { xs: 2, md: 2.5 } }}>
                   {/* Header */}
                   <Stack
                     direction={{ xs: "column", sm: "row" }}
@@ -202,7 +206,7 @@ const PendingBooking = () => {
                   >
                     <Box>
                       <Typography variant="h6" fontWeight={900}>
-                        {listing?.title || "Reservation request"}
+                        {listing?.title || t("hosting.pending.request")}
                       </Typography>
 
                       <Stack direction="row" spacing={0.8} alignItems="center" sx={{ mt: 0.4 }}>
@@ -254,7 +258,7 @@ const PendingBooking = () => {
                               {guest?.name || "Guest"}
                             </Typography>
                             <Typography variant="body2" color="var(--text-secondary)">
-                              Guests: {booking?.guestCapacity || 0}
+                              {t("guests")}: {booking?.guestCapacity || 0}
                             </Typography>
                           </Box>
                         </Stack>
@@ -275,11 +279,11 @@ const PendingBooking = () => {
                       >
                         <Stack direction="row" spacing={1} alignItems="center">
                           <CalendarMonthIcon sx={{ color: "var(--text-secondary)" }} />
-                          <Typography fontWeight={900}>Dates</Typography>
+                          <Typography fontWeight={900}>{t("hosting.pending.dates")}</Typography>
                         </Stack>
 
                         <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 1 }}>
-                          Check-in:{" "}
+                          {t("hosting.pending.checkIn")}:{" "}
                           <strong>
                             {booking?.startDate
                               ? new Date(booking.startDate).toLocaleDateString()
@@ -288,7 +292,7 @@ const PendingBooking = () => {
                         </Typography>
 
                         <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
-                          Check-out:{" "}
+                          {t("hosting.pending.checkOut")}:{" "}
                           <strong>
                             {booking?.endDate
                               ? new Date(booking.endDate).toLocaleDateString()
@@ -326,7 +330,7 @@ const PendingBooking = () => {
                         py: 1,
                       }}
                     >
-                      {isBusy ? "Accepting..." : "Accept"}
+                      {isBusy ? t("hosting.pending.accepting") : t("hosting.pending.accept")}
                     </Button>
 
                     <Button
@@ -343,10 +347,10 @@ const PendingBooking = () => {
                         py: 1,
                       }}
                     >
-                      Reject
+                      {t("hosting.pending.reject")}
                     </Button>
                   </Stack>
-                </Box>
+                </RTLWrapper>
               </Grid>
             </Grid>
           </Paper>

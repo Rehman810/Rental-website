@@ -41,10 +41,13 @@ initializeSocket();
 
 import { useNavigate } from "react-router-dom";
 import { Stack } from "@mui/material";
+import { useTranslation } from "react-i18next";
+import { RTLWrapper, useRTL } from "../../components/language/Localization";
 
 const GuestAllMessages = () => {
   const navigate = useNavigate();
   const theme = useTheme();
+  const { t } = useTranslation("translation");
   const isMobile = useMediaQuery("(max-width:900px)");
 
   const [messages, setMessages] = useState([]);
@@ -62,8 +65,8 @@ const GuestAllMessages = () => {
 
   usePageTitle(
     selectedSenderId
-      ? senders.find((s) => s.id === selectedSenderId)?.name || "Messages"
-      : "Messages"
+      ? senders.find((s) => s.id === selectedSenderId)?.name || t("hosting.chat.title")
+      : t("hosting.chat.title")
   );
 
   useEffect(() => {
@@ -136,8 +139,10 @@ const GuestAllMessages = () => {
     }
   };
 
+  const isRTL = useRTL();
+
   return (
-    <Box sx={{ height: { xs: "calc(100vh - 65px)", md: "calc(100vh - 85px)" }, display: "flex", bgcolor: "var(--bg-primary)" }}>
+    <RTLWrapper sx={{ height: { xs: "calc(100vh - 65px)", md: "calc(100vh - 85px)" }, display: "flex", bgcolor: "var(--bg-primary)" }}>
 
       {(!isMobile || !showChat) && (
         <Box
@@ -150,7 +155,7 @@ const GuestAllMessages = () => {
         >
           <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <Typography variant="h5" fontWeight={900}>
-              Chats
+              {t("hosting.chat.title")}
             </Typography>
             <Stack direction="row" spacing={1}>
               <IconButton size="small"><FilterListIcon fontSize="small" /></IconButton>
@@ -162,7 +167,7 @@ const GuestAllMessages = () => {
             <TextField
               fullWidth
               size="small"
-              placeholder="Search or start new chat"
+              placeholder={t("hosting.chat.searchPlaceholder")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               InputProps={{
@@ -182,7 +187,7 @@ const GuestAllMessages = () => {
             {senders.filter(s => s.name?.toLowerCase().includes(searchTerm.toLowerCase())).length === 0 ? (
               <Box sx={{ textAlign: "center", mt: 8, opacity: 0.6 }}>
                 <InboxOutlinedIcon sx={{ fontSize: 60 }} />
-                <Typography>No messages yet</Typography>
+                <Typography>{t("hosting.chat.noMessages")}</Typography>
               </Box>
             ) : (
               senders
@@ -210,7 +215,7 @@ const GuestAllMessages = () => {
                   >
                     <Avatar 
                       src={s.photoProfile} 
-                      sx={{ width: 48, height: 48, mr: 2, border: '1px solid var(--border-light)' }}
+                      sx={{ width: 48, height: 48, [isRTL ? "ml" : "mr"]: 2, border: '1px solid var(--border-light)' }}
                     >
                       {s.name?.[0]}
                     </Avatar>
@@ -232,7 +237,7 @@ const GuestAllMessages = () => {
                           fontSize: '0.8rem',
                           mt: 0.5
                         }}>
-                          {s.lastMessage || "Start a conversation"}
+                          {s.lastMessage || t("hosting.chat.startConversation")}
                         </Typography>
                       }
                     />
@@ -280,13 +285,13 @@ const GuestAllMessages = () => {
                     navigate(`/profile/${targetRole}/${targetId}`);
                   }}
                 >
-                  <Avatar src={senders.find((s) => s.id === selectedSenderId)?.photoProfile} sx={{ width: 40, height: 40 }} />
+                  <Avatar src={senders.find((s) => s.id === selectedSenderId)?.photoProfile} sx={{ width: 40, height: 40, [isRTL ? "ml" : "mr"]: 0 }} />
                   <Box>
                     <Typography fontWeight={700} sx={{ lineHeight: 1.2 }}>
                       {senders.find((s) => s.id === selectedSenderId)?.name}
                     </Typography>
                     <Typography variant="caption" sx={{ color: 'success.main', fontWeight: 600 }}>
-                       Online
+                       {t("hosting.chat.online")}
                     </Typography>
                   </Box>
                 </Stack>
@@ -348,8 +353,8 @@ const GuestAllMessages = () => {
                                   : "#111b21",
                                 position: "relative",
                                 borderRadius: '12px',
-                                borderTopLeftRadius: !mine ? '0px' : '12px',
-                                borderTopRightRadius: mine ? '0px' : '12px',
+                                borderTopLeftRadius: (isRTL ? mine : !mine) ? '0px' : '12px',
+                                borderTopRightRadius: (isRTL ? !mine : mine) ? '0px' : '12px',
                                 boxShadow: '0 1px 1px rgba(0,0,0,0.1)',
                                 border: isAssistant ? '1px solid rgba(46, 125, 50, 0.1)' : 'none',
                                 '&::before': {
@@ -360,12 +365,12 @@ const GuestAllMessages = () => {
                                   height: 0,
                                   border: '8px solid transparent',
                                   ...(mine ? {
-                                    right: -8,
-                                    borderLeftColor: isAssistant ? '#c8e6c9' : '#d9fdd3',
+                                    [isRTL ? "left" : "right"]: -8,
+                                    [isRTL ? "borderRightColor" : "borderLeftColor"]: isAssistant ? '#c8e6c9' : '#d9fdd3',
                                     borderTopColor: isAssistant ? '#c8e6c9' : '#d9fdd3',
                                   } : {
-                                    left: -8,
-                                    borderRightColor: '#ffffff',
+                                    [isRTL ? "right" : "left"]: -8,
+                                    [isRTL ? "borderLeftColor" : "borderRightColor"]: '#ffffff',
                                     borderTopColor: '#ffffff',
                                   })
                                 }
@@ -382,9 +387,9 @@ const GuestAllMessages = () => {
                                   py: 0.2,
                                   borderRadius: '6px',
                                 }}>
-                                  <AutoAwesomeIcon sx={{ fontSize: 10, mr: 0.5, color: '#2e7d32' }} />
+                                  <AutoAwesomeIcon sx={{ fontSize: 10, [isRTL ? "ml" : "mr"]: 0.5, color: '#2e7d32' }} />
                                   <Typography variant="caption" sx={{ fontWeight: 800, color: '#2e7d32', fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                    Assistant
+                                    {t("hosting.chat.assistant")}
                                   </Typography>
                                 </Box>
                               )}
@@ -429,7 +434,7 @@ const GuestAllMessages = () => {
                 <IconButton size="small"><AttachFileIcon sx={{ color: '#54656f', transform: 'rotate(45deg)' }} /></IconButton>
                 <TextField
                   fullWidth
-                  placeholder="Type a message"
+                  placeholder={t("hosting.chat.typeMessage")}
                   variant="outlined"
                   size="small"
                   value={newMessage}
@@ -467,11 +472,11 @@ const GuestAllMessages = () => {
               }}
             >
               <ChatBubbleOutlineIcon sx={{ fontSize: 80 }} />
-              <Typography>Select a conversation</Typography>
+              <Typography>{t("hosting.chat.selectConversation")}</Typography>
             </Box>
           )}
         </Box>)}
-    </Box>
+    </RTLWrapper>
   );
 };
 

@@ -13,228 +13,274 @@ import {
 } from "@mui/material";
 import { fetchData } from "../../config/ServiceApi/serviceApi";
 import { useBookingContext } from "../../context/booking";
-import { EventAvailable } from "@mui/icons-material";
+import {
+  LocationOn as LocationOnIcon,
+  Payments as PaymentsIcon,
+  Person as PersonIcon,
+  Phone as PhoneIcon,
+  Email as EmailIcon,
+  CalendarMonth as CalendarMonthIcon,
+} from "@mui/icons-material";
 import SentimentDissatisfiedIcon from "@mui/icons-material/SentimentDissatisfied";
-
+import { useTranslation } from "react-i18next";
+import { RTLWrapper, useRTL } from "../language/Localization";
 
 const Upcoming = () => {
-  const [upcomingBookings, setUpcomingBookings] = useState([]);
+  const { t } = useTranslation("translation");
+  const isRTL = useRTL();
+  const [upcoming, setUpcoming] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const token = getAuthToken();
-  const { setUpcoming } = useBookingContext();
+  const { setUpcoming: setUpcomingCount } = useBookingContext();
 
   useEffect(() => {
     const fetchUpcoming = async () => {
       try {
+        setLoading(true);
         const response = await fetchData("upcoming-bookings");
-        setUpcomingBookings(response?.upcomingBookings || []);
-        setUpcoming(response?.count || 0);
-      } catch (error) {
-        console.error("Failed to fetch upcoming bookings:", error);
+        const list = response?.upcomingBookings || [];
+        setUpcoming(list);
+        setUpcomingCount(response?.count || list.length);
+      } catch (err) {
+        console.error("Upcoming fetch error:", err);
+        setUpcoming([]);
+        setUpcomingCount(0);
       } finally {
         setLoading(false);
       }
     };
 
     fetchUpcoming();
-  }, [token, setUpcoming]);
+  }, [token, setUpcomingCount]);
 
   if (loading) {
     return (
-      <Box
-        sx={{
-          py: 6,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 2,
-        }}
-      >
+      <Box sx={{ py: 6, textAlign: "center" }}>
         <CircularProgress />
-        <Typography variant="body1" color="var(--text-secondary)">
-          Loading upcoming arrivals...
+        <Typography sx={{ mt: 2 }} fontWeight={900}>
+          {t("hosting.upcoming.loading")}
+        </Typography>
+        <Typography variant="body2" color="var(--text-secondary)">
+          {t("hosting.upcoming.fetching")}
         </Typography>
       </Box>
     );
   }
 
-  if (!upcomingBookings?.length) {
+  if (!upcoming || upcoming.length === 0) {
     return (
       <Box
         sx={{
-          py: 6,
+          p: 4,
           textAlign: "center",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 1,
         }}
       >
         <SentimentDissatisfiedIcon sx={{ fontSize: 52, color: "var(--text-secondary)" }} />
         <Typography variant="h6" fontWeight={900} sx={{ mt: 1 }}>
-          No upcoming arrivals
+          {t("hosting.upcoming.noBookings")}
         </Typography>
         <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
-          There are no upcoming bookings scheduled right now. Check back later.
+          {t("hosting.upcoming.noBookingsDesc")}
         </Typography>
       </Box>
     );
   }
 
   return (
-    <Box sx={{ p: { xs: 1, md: 2 } }}>
-      <Stack spacing={2}>
-        {upcomingBookings.map((booking) => {
-          const listing = booking?.listingId;
-          const guest = booking?.userSpecificData;
+    <Stack spacing={2}>
+      {upcoming.map((stay) => {
+        const listing = stay?.listingId;
+        const guest = stay?.userSpecificData;
 
-          return (
-            <Paper
-              key={booking?._id}
-              elevation={0}
-              sx={{
-                p: 2.5,
-                borderRadius: 3,
-                border: "1px solid",
-                borderColor: "var(--border-light)",
-                background: "var(--bg-card)",
-                transition: "all 0.2s ease",
-                "&:hover": {
-                  boxShadow: "var(--shadow-md)",
-                  transform: "translateY(-2px)",
-                },
-              }}
-            >
-              {/* Header */}
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  gap: 2,
-                  flexWrap: "wrap",
-                  mb: 2,
-                }}
-              >
-                <Box>
-                  <Typography variant="h6" fontWeight={900}>
-                    {listing?.title || "Untitled Listing"}
-                  </Typography>
-                  <Typography variant="body2" color="var(--text-secondary)">
-                    {listing?.city || "Pakistan"}
-                  </Typography>
-                </Box>
-
-                <Chip
-                  icon={<EventAvailable />}
-                  label="Upcoming"
-                  color="primary"
-                  variant="outlined"
-                  sx={{ fontWeight: 700 }}
-                />
-              </Box>
-
-              <Divider sx={{ mb: 2 }} />
-
-              <Grid container spacing={2} alignItems="center">
-                {/* Listing Image */}
-                <Grid item xs={12} md={4}>
-                  <Box
-                    sx={{
+        return (
+          <Paper
+            key={stay?._id || stay?.id}
+            elevation={0}
+            sx={{
+              borderRadius: 4,
+              border: "1px solid",
+              borderColor: "divider",
+              overflow: "hidden",
+              backgroundColor: "white",
+              transition: "0.2s ease",
+              "&:hover": {
+                boxShadow: "0 18px 45px rgba(0,0,0,0.10)",
+                transform: "translateY(-2px)",
+              },
+            }}
+          >
+            <Grid container>
+              {/* Image */}
+              <Grid item xs={12} md={4}>
+                <Box
+                  sx={{
+                    position: "relative",
+                    height: { xs: 220, md: "100%" },
+                    minHeight: { md: 220 },
+                    backgroundColor: "rgba(0,0,0,0.06)",
+                  }}
+                >
+                  <img
+                    src={listing?.photos?.[0]}
+                    alt={listing?.title || "Listing"}
+                    style={{
                       width: "100%",
-                      height: 180,
-                      borderRadius: 2,
-                      overflow: "hidden",
-                      border: "1px solid",
-                      borderColor: "var(--border-light)",
-                      backgroundColor: "var(--bg-secondary)",
+                      height: "100%",
+                      objectFit: "cover",
+                      display: "block",
                     }}
-                  >
-                    <img
-                      src={listing?.photos?.[0] || "/fallback-image.jpg"}
-                      alt={listing?.title || "Listing image"}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        display: "block",
-                      }}
-                      loading="lazy"
-                      onError={(e) => (e.target.src = "/fallback-image.jpg")}
-                    />
-                  </Box>
-                </Grid>
+                    loading="lazy"
+                  />
 
-                {/* Guest Info */}
-                <Grid item xs={12} md={4}>
-                  <Box
+                  <Chip
+                    label={t("hosting.upcoming.reservation")}
                     sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 2,
+                      position: "absolute",
+                      top: 12,
+                      [isRTL ? "right" : "left"]: 12,
+                      borderRadius: 999,
+                      fontWeight: 900,
+                      backgroundColor: "rgba(25,118,210,0.90)",
+                      color: "white",
                     }}
-                  >
-                    <Avatar
-                      src={guest?.photoProfile}
-                      alt={guest?.name || "Guest"}
-                      sx={{
-                        width: 56,
-                        height: 56,
-                        border: "2px solid",
-                        borderColor: "var(--border-light)",
-                      }}
-                    />
-                    <Box>
-                      <Typography fontWeight={800}>
-                        {guest?.name || "Guest"}
-                      </Typography>
-                      <Typography variant="body2" color="var(--text-secondary)">
-                        Guests: {booking?.guestCapacity || 0}
-                      </Typography>
-                      <Typography variant="body2" color="var(--text-secondary)">
-                        {guest?.phoneNumber || "Phone not provided"}
-                      </Typography>
-                      <Typography variant="body2" color="var(--text-secondary)">
-                        {guest?.email || "Email not provided"}
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Grid>
-
-                {/* Dates + Total */}
-                <Grid item xs={12} md={4}>
-                  <Box
-                    sx={{
-                      p: 2,
-                      borderRadius: 2,
-                      border: "1px solid",
-                      borderColor: "var(--border-light)",
-                      backgroundColor: "var(--bg-secondary)",
-                    }}
-                  >
-                    <Typography variant="body2" color="var(--text-secondary)">
-                      Check-in:{" "}
-                      <b>{new Date(booking?.startDate).toLocaleDateString()}</b>
-                    </Typography>
-                    <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
-                      Check-out:{" "}
-                      <b>{new Date(booking?.endDate).toLocaleDateString()}</b>
-                    </Typography>
-
-                    <Divider sx={{ my: 1.5 }} />
-
-                    <Typography variant="body1" fontWeight={900} color="primary">
-                      Total: Rs {booking?.totalPrice || 0}
-                    </Typography>
-                  </Box>
-                </Grid>
+                  />
+                </Box>
               </Grid>
-            </Paper>
-          );
-        })}
-      </Stack>
-    </Box>
+
+              {/* Content */}
+              <Grid item xs={12} md={8}>
+                <RTLWrapper sx={{ p: { xs: 2, md: 2.5 } }}>
+                  {/* Header */}
+                  <Stack
+                    direction={{ xs: "column", sm: "row" }}
+                    spacing={1}
+                    alignItems={{ xs: "flex-start", sm: "center" }}
+                    justifyContent="space-between"
+                  >
+                    <Box>
+                      <Typography variant="h6" fontWeight={900}>
+                        {listing?.title || t("hosting.pending.request")}
+                      </Typography>
+
+                      <Stack direction="row" spacing={0.8} alignItems="center" sx={{ mt: 0.4 }}>
+                        <LocationOnIcon sx={{ fontSize: 18, color: "var(--text-secondary)" }} />
+                        <Typography variant="body2" color="var(--text-secondary)">
+                          {listing?.city || "Unknown city"}
+                        </Typography>
+                      </Stack>
+                    </Box>
+
+                    <Chip
+                      icon={<PaymentsIcon />}
+                      label={`Rs ${stay?.totalPrice || 0}`}
+                      variant="outlined"
+                      sx={{
+                        borderRadius: 999,
+                        fontWeight: 900,
+                        px: 1,
+                      }}
+                    />
+                  </Stack>
+
+                  <Divider sx={{ my: 2 }} />
+
+                  <Grid container spacing={2}>
+                    {/* Guest */}
+                    <Grid item xs={12} sm={6}>
+                      <Paper
+                        elevation={0}
+                        sx={{
+                          p: 2,
+                          borderRadius: 3,
+                          border: "1px solid",
+                          borderColor: "divider",
+                          backgroundColor: "rgba(0,0,0,0.015)",
+                        }}
+                      >
+                        <Stack direction="row" spacing={1.5} alignItems="center">
+                          <Avatar
+                            src={guest?.photoProfile}
+                            alt={guest?.name || "Guest"}
+                            sx={{ width: 52, height: 52 }}
+                          >
+                            <PersonIcon />
+                          </Avatar>
+
+                          <Box>
+                            <Typography fontWeight={900}>
+                              {guest?.name || "Guest"}
+                            </Typography>
+                            <Typography variant="body2" color="var(--text-secondary)">
+                              {t("guests")}: {stay?.guestCapacity || 0}
+                            </Typography>
+                          </Box>
+                        </Stack>
+
+                        <Stack spacing={0.6} sx={{ mt: 1.5 }}>
+                          <Stack direction="row" spacing={1} alignItems="center">
+                            <PhoneIcon sx={{ fontSize: 16, color: "var(--text-secondary)" }} />
+                            <Typography variant="body2" color="var(--text-secondary)">
+                              {guest?.phoneNumber || "N/A"}
+                            </Typography>
+                          </Stack>
+
+                          <Stack direction="row" spacing={1} alignItems="center">
+                            <EmailIcon sx={{ fontSize: 16, color: "var(--text-secondary)" }} />
+                            <Typography variant="body2" color="var(--text-secondary)">
+                              {guest?.email || "N/A"}
+                            </Typography>
+                          </Stack>
+                        </Stack>
+                      </Paper>
+                    </Grid>
+
+                    {/* Dates */}
+                    <Grid item xs={12} sm={6}>
+                      <Paper
+                        elevation={0}
+                        sx={{
+                          p: 2,
+                          borderRadius: 3,
+                          border: "1px solid",
+                          borderColor: "divider",
+                          backgroundColor: "rgba(0,0,0,0.015)",
+                        }}
+                      >
+                        <Stack direction="row" spacing={1} alignItems="center">
+                          <CalendarMonthIcon sx={{ color: "var(--text-secondary)" }} />
+                          <Typography fontWeight={900}>{t("hosting.checkingOut.tripDates")}</Typography>
+                        </Stack>
+
+                        <Box sx={{ mt: 1.2 }}>
+                          <Typography variant="body2" color="var(--text-secondary)">
+                            {t("hosting.pending.checkIn")}:{" "}
+                            <strong>
+                              {stay?.startDate
+                                ? new Date(stay.startDate).toLocaleDateString()
+                                : "N/A"}
+                            </strong>
+                          </Typography>
+
+                          <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
+                            {t("hosting.pending.checkOut")}:{" "}
+                            <strong>
+                              {stay?.endDate
+                                ? new Date(stay.endDate).toLocaleDateString()
+                                : "N/A"}
+                            </strong>
+                          </Typography>
+                        </Box>
+                      </Paper>
+                    </Grid>
+                  </Grid>
+                </RTLWrapper>
+              </Grid>
+            </Grid>
+          </Paper>
+        );
+      })}
+    </Stack>
   );
 };
 

@@ -13,5 +13,7 @@
   "listProperty": "أدرج عقارك",
   "appName": "Mehman",
   "languageAndRegion": "اللغة والمنطقة",
-  "recommended": "موصى به"
+  "selectPreferredLanguage": "اختر لغتك ومنطقتك المفضلة أدناه.",
+  "recommended": "موصى به",
+  "moreLanguages": "المزيد من اللغات"
 }

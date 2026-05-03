@@ -1,0 +1,9 @@
+{
+  "en": { "lang": "İngilizce", "region": "Amerika Birleşik Devletleri" },
+  "zh": { "lang": "Çince", "region": "Çin" },
+  "tr": { "lang": "Türkçe", "region": "Türkiye" },
+  "ar": { "lang": "Arapça", "region": "Orta Doğu" },
+  "ur": { "lang": "Urduca", "region": "Pakistan" },
+  "fr": { "lang": "Fransızca", "region": "Fransa" },
+  "de": { "lang": "Almanca", "region": "Almanya" }
+}

@@ -24,6 +24,7 @@ import "antd/dist/reset.css";
 import "../../assets/styles/navbar.css";
 import { useAppContext } from "../../context/context";
 import { useTranslation } from "react-i18next";
+import { RTLWrapper } from "../language/Localization";
 
 import Icon1 from "../../assets/icons/icons1.png";
 import Icon2 from "../../assets/icons/icons2.png";
@@ -233,9 +234,11 @@ const SearchBar = () => {
             py: 0.6,
             backgroundColor: "var(--bg-card)",
             boxShadow: "var(--shadow-lg)",
+            overflow: "hidden"
           }}
         >
-          <Stack direction="row" alignItems="center" sx={{ width: "100%" }}>
+          <RTLWrapper>
+            <Stack direction="row" alignItems="center" sx={{ width: "100%" }}>
             {/* WHERE */}
             <Box
               sx={{
@@ -469,6 +472,7 @@ const SearchBar = () => {
             </Box>
 
           </Stack>
+          </RTLWrapper>
         </Paper>
 
         {/* POPULAR DESTINATIONS REMOVED - integrated into Autocomplete */}

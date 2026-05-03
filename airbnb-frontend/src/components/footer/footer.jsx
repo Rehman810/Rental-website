@@ -7,6 +7,7 @@ import Language from "../language/Language";
 import { useState } from "react";
 import { useAppContext } from "../../context/context";
 import { useNavigate } from "react-router-dom";
+import { RTLWrapper, useRTL } from "../language/Localization";
 
 const Footer = () => {
   const { t } = useTranslation("footer");
@@ -14,11 +15,12 @@ const Footer = () => {
   const { langauge } = useAppContext();
   const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
+  const isRTL = useRTL();
 
   const toggleModal = () => setOpen(!open);
 
   return (
-    <Box
+    <RTLWrapper
       component="footer"
       sx={{
         mt: 6,
@@ -48,8 +50,7 @@ const Footer = () => {
               </Typography>
 
               <Typography variant="body2" sx={{ color: "var(--text-secondary)", mt: 0.8, lineHeight: 1.7 }}>
-                Book trusted stays across Pakistan. Simple checkout, secure hosting,
-                and a smooth guest experience.
+                {t("brandDescription")}
               </Typography>
 
               <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
@@ -114,9 +115,9 @@ const Footer = () => {
             </Typography>
 
             <Stack direction="row" spacing={1.2} divider={<DotDivider />}>
-              <FooterMiniLink text="Terms" onClick={() => { }} />
-              <FooterMiniLink text="Privacy" onClick={() => { }} />
-              <FooterMiniLink text="Sitemap" onClick={() => { }} />
+              <FooterMiniLink text={t("terms")} onClick={() => { }} />
+              <FooterMiniLink text={t("privacy")} onClick={() => { }} />
+              <FooterMiniLink text={t("sitemap")} onClick={() => { }} />
             </Stack>
           </Stack>
 
@@ -154,7 +155,7 @@ const Footer = () => {
       </Container>
 
       <Language open={open} toggleModal={toggleModal} />
-    </Box>
+    </RTLWrapper>
   );
 };
 
@@ -179,7 +180,7 @@ const FooterLink = ({ text, onClick }) => {
       onClick={onClick}
       underline="none"
       sx={{
-        textAlign: "left",
+        textAlign: "inherit",
         width: "fit-content",
         color: "var(--text-secondary)",
         fontSize: "0.92rem",

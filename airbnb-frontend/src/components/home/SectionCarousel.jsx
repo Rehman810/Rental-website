@@ -153,7 +153,7 @@ const SectionCarousel = ({ title, subtitle, listings = [], loading = false }) =>
       {/* Scrollable Row */}
       <Box sx={{ position: "relative" }}>
         {/* Left fade */}
-        {canScrollLeft && (
+        {/* {canScrollLeft && (
           <Box
             sx={{
               position: "absolute",
@@ -166,7 +166,7 @@ const SectionCarousel = ({ title, subtitle, listings = [], loading = false }) =>
               pointerEvents: "none",
             }}
           />
-        )}
+        )} */}
         {/* Right fade */}
         {canScrollRight && (
           <Box
@@ -199,21 +199,21 @@ const SectionCarousel = ({ title, subtitle, listings = [], loading = false }) =>
         >
           {loading
             ? Array.from({ length: 5 }).map((_, i) => (
-                <SkeletonCard key={i} />
-              ))
+              <SkeletonCard key={i} />
+            ))
             : listings.map((item) => (
-                <Box
-                  key={item._id}
-                  sx={{
-                    minWidth: { xs: 230, sm: 270, md: 310 },
-                    maxWidth: { xs: 230, sm: 270, md: 310 },
-                    flexShrink: 0,
-                    scrollSnapAlign: "start",
-                  }}
-                >
-                  <Card data={item} />
-                </Box>
-              ))}
+              <Box
+                key={item._id}
+                sx={{
+                  minWidth: { xs: 230, sm: 270, md: 310 },
+                  maxWidth: { xs: 230, sm: 270, md: 310 },
+                  flexShrink: 0,
+                  scrollSnapAlign: "start",
+                }}
+              >
+                <Card data={item} />
+              </Box>
+            ))}
         </Box>
       </Box>
     </MotionBox>

@@ -623,9 +623,9 @@ const Navbar = () => {
       )}
       <Language open={open} toggleModal={toggleModal} />
 
+      </AppBar>
       {switchState.open && <RoleSwitchLoader open={switchState.open} targetRole={switchState.role} />}
-    </AppBar>
-    {/* Spacer so page content starts below the fixed navbar */}
+      {/* Spacer so page content starts below the fixed navbar */}
     <Box sx={{ height: { xs: "64px", md: "80px" } }} />
     </RTLWrapper>
   );

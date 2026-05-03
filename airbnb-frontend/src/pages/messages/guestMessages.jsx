@@ -43,6 +43,15 @@ const GuestMessages = () => {
   const user = getAuthUser();
   const senderId = user?._id;
   const messagesEndRef = useRef(null);
+  const [listingDetails, setListingDetails] = useState(null);
+
+  useEffect(() => {
+    if (listingId) {
+      axios.get(`${API_BASE_URL}/listing/${listingId}`)
+        .then(res => setListingDetails(res.data.listing))
+        .catch(err => console.error("Error fetching listing details:", err));
+    }
+  }, [listingId]);
 
   useEffect(() => {
     if (hostId) {
@@ -79,6 +88,47 @@ const GuestMessages = () => {
 
     fetchChat();
   }, [receiverId, senderId, token]);
+
+  // Automated first message with listing details
+  useEffect(() => {
+    if (listingDetails && messages.length === 0 && !loading && !sending) {
+      const sendAutomatedInquiry = async () => {
+        const inquiryData = {
+          type: "LISTING_INQUIRY",
+          listingId: listingDetails._id,
+          title: listingDetails.title,
+          image: listingDetails.photos?.[0],
+          price: listingDetails.weekdayPrice,
+          location: `${listingDetails.city}, ${listingDetails.country || 'Pakistan'}`
+        };
+
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        };
+
+        try {
+          await axios.post(
+            `${API_BASE_URL}/send-message`,
+            {
+              guestId: receiverId,
+              message: `JSON_TYPE_LISTING:${JSON.stringify(inquiryData)}`,
+              listingId: listingDetails._id,
+              role: 'guest'
+            },
+            config
+          );
+          // The socket will handle updating the messages state
+        } catch (error) {
+          console.error("Error sending automated inquiry:", error);
+        }
+      };
+
+      sendAutomatedInquiry();
+    }
+  }, [listingDetails, messages.length, loading]);
 
   useEffect(() => {
     const handleMessage = (payload) => {
@@ -181,7 +231,7 @@ const GuestMessages = () => {
               {host ? host.userName : "Chat with Host"}
             </Typography>
             <Typography variant="caption" sx={{ color: 'success.main', fontWeight: 600 }}>
-               Online
+              Online
             </Typography>
           </Box>
         </Stack>
@@ -190,6 +240,50 @@ const GuestMessages = () => {
           <IconButton size="small"><MoreVertIcon fontSize="small" /></IconButton>
         </Stack>
       </Box>
+
+      {/* Listing Preview Card */}
+      {listingDetails && (
+        <Box
+          sx={{
+            p: 1.5,
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+            backgroundColor: "#ffffff",
+            borderBottom: "1px solid var(--border-light)",
+            animation: "slideDown 0.3s ease-out",
+            "@keyframes slideDown": {
+              from: { transform: "translateY(-10px)", opacity: 0 },
+              to: { transform: "translateY(0)", opacity: 1 },
+            },
+          }}
+        >
+          <Avatar
+            variant="rounded"
+            src={listingDetails.photos?.[0]}
+            sx={{ width: 60, height: 60, borderRadius: 1.5 }}
+          />
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="caption" fontWeight={800} color="primary" sx={{ textTransform: 'uppercase', letterSpacing: 1 }}>
+              Inquiring about
+            </Typography>
+            <Typography variant="body2" fontWeight={700} noWrap>
+              {listingDetails.title}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              {listingDetails.city}, {listingDetails.country || "Pakistan"}
+            </Typography>
+          </Box>
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => navigate(`/rooms/${listingId}`)}
+            sx={{ borderRadius: '999px', textTransform: 'none', fontWeight: 700 }}
+          >
+            View
+          </Button>
+        </Box>
+      )}
 
       {/* Messages */}
       <Box
@@ -280,9 +374,59 @@ const GuestMessages = () => {
                           </Typography>
                         </Box>
                       )}
-                      <Typography variant="body2" sx={{ wordBreak: 'break-word', whiteSpace: 'pre-wrap', fontSize: '0.9rem' }}>
-                        {msg.message}
-                      </Typography>
+                      {msg.message?.startsWith("JSON_TYPE_LISTING:") ? (() => {
+                        try {
+                          const data = JSON.parse(msg.message.replace("JSON_TYPE_LISTING:", ""));
+                          return (
+                            <Box sx={{ minWidth: { xs: 200, sm: 250 }, my: 1 }}>
+                              <Box
+                                component="img"
+                                src={data.image}
+                                sx={{
+                                  width: '100%',
+                                  height: 140,
+                                  borderRadius: 2,
+                                  objectFit: 'cover',
+                                  mb: 1
+                                }}
+                              />
+                              <Typography variant="caption" fontWeight={800} color="primary" sx={{ display: 'block', textTransform: 'uppercase' }}>
+                                Listing Inquiry
+                              </Typography>
+                              <Typography variant="subtitle2" fontWeight={800} gutterBottom>
+                                {data.title}
+                              </Typography>
+                              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                                {data.location}
+                              </Typography>
+                              <Button
+                                fullWidth
+                                variant="contained"
+                                size="small"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  navigate(`/rooms/${data.listingId}`);
+                                }}
+                                sx={{
+                                  textTransform: 'none',
+                                  fontWeight: 800,
+                                  borderRadius: '8px',
+                                  bgcolor: 'primary.main',
+                                  boxShadow: 'none'
+                                }}
+                              >
+                                View Listing
+                              </Button>
+                            </Box>
+                          );
+                        } catch (e) {
+                          return <Typography variant="body2">{msg.message}</Typography>;
+                        }
+                      })() : (
+                        <Typography variant="body2" sx={{ wordBreak: 'break-word', whiteSpace: 'pre-wrap', fontSize: '0.9rem' }}>
+                          {msg.message}
+                        </Typography>
+                      )}
                       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', mt: 0.2, gap: 0.5 }}>
                         <Typography
                           variant="caption"
@@ -343,7 +487,7 @@ const GuestMessages = () => {
         <IconButton
           onClick={handleSendMessage}
           disabled={!newMessage}
-          sx={{ 
+          sx={{
             color: newMessage ? '#00a884' : '#54656f',
             transition: 'all 0.2s'
           }}

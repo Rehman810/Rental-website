@@ -10,9 +10,12 @@ const RoleSwitchLoader = ({ open, targetRole }) => {
     <Box
       sx={{
         position: 'fixed',
-        top: 0, left: 0, right: 0, bottom: 0,
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
         backgroundColor: 'var(--bg-primary)',
-        zIndex: 99999,
+        zIndex: 999999, // Extremely high to stay on top
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',

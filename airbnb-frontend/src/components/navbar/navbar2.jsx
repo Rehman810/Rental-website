@@ -496,9 +496,9 @@ const NavbarHost = () => {
       </Drawer>
 
       <Divider />
-      {switchState.open && <RoleSwitchLoader open={switchState.open} targetRole={switchState.role} />}
       <Language open={langModalOpen} toggleModal={toggleLangModal} />
     </AppBar>
+    {switchState.open && <RoleSwitchLoader open={switchState.open} targetRole={switchState.role} />}
     </RTLWrapper>
   );
 };

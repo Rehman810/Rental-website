@@ -133,6 +133,7 @@ export const chatController = {
         chatId: chat._id,
         host: chat.hostId,
         guest: chat.guestId,
+        listingId: chat.listingId,
         messages: chat.messages,
       });
     } catch (error) {

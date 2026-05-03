@@ -57,6 +57,8 @@ const GuestAllMessages = () => {
   const [selectedSenderId, setSelectedSenderId] = useState(null);
   const [showChat, setShowChat] = useState(false);
   const [loadingChat, setLoadingChat] = useState(false);
+  const [listingId, setListingId] = useState(null);
+  const [listingDetails, setListingDetails] = useState(null);
 
   const token = getAuthToken();
   const user = getAuthUser();
@@ -95,6 +97,7 @@ const GuestAllMessages = () => {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setMessages(res.data.messages);
+        setListingId(res.data.listingId);
       } catch (e) {
         console.error(e);
       } finally {
@@ -113,6 +116,16 @@ const GuestAllMessages = () => {
     subscribeToUpdates("receive_message", handler);
     return () => unsubscribeFromUpdates("receive_message");
   }, []);
+
+  useEffect(() => {
+    if (listingId) {
+      axios.get(`${API_BASE_URL}/listing/${listingId}`)
+        .then(res => setListingDetails(res.data.listing))
+        .catch(err => console.error("Error fetching listing details:", err));
+    } else {
+      setListingDetails(null);
+    }
+  }, [listingId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -142,9 +155,9 @@ const GuestAllMessages = () => {
   const isRTL = useRTL();
 
   return (
-    <RTLWrapper sx={{ 
-      height: { xs: "calc(100dvh - 135px)", md: "calc(100vh - 85px)" }, 
-      display: "flex", 
+    <RTLWrapper sx={{
+      height: { xs: "calc(100dvh - 135px)", md: "calc(100vh - 85px)" },
+      display: "flex",
       bgcolor: "var(--bg-primary)",
       overflow: "hidden",
       position: "fixed",
@@ -184,8 +197,8 @@ const GuestAllMessages = () => {
                 startAdornment: (
                   <SearchIcon sx={{ color: 'text.secondary', mr: 1, fontSize: 20 }} />
                 ),
-                sx: { 
-                  borderRadius: '10px', 
+                sx: {
+                  borderRadius: '10px',
                   bgcolor: 'var(--bg-secondary)',
                   '& fieldset': { border: 'none' }
                 }
@@ -223,8 +236,8 @@ const GuestAllMessages = () => {
                       borderLeft: selectedSenderId === s.id ? '4px solid var(--primary)' : '4px solid transparent',
                     }}
                   >
-                    <Avatar 
-                      src={s.photoProfile} 
+                    <Avatar
+                      src={s.photoProfile}
                       sx={{ width: 48, height: 48, [isRTL ? "ml" : "mr"]: 2, border: '1px solid var(--border-light)' }}
                     >
                       {s.name?.[0]}
@@ -239,10 +252,10 @@ const GuestAllMessages = () => {
                         </Box>
                       }
                       secondary={
-                        <Typography variant="body2" sx={{ 
-                          color: 'text.secondary', 
-                          overflow: 'hidden', 
-                          textOverflow: 'ellipsis', 
+                        <Typography variant="body2" sx={{
+                          color: 'text.secondary',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap',
                           fontSize: '0.8rem',
                           mt: 0.5
@@ -301,7 +314,7 @@ const GuestAllMessages = () => {
                       {senders.find((s) => s.id === selectedSenderId)?.name}
                     </Typography>
                     <Typography variant="caption" sx={{ color: 'success.main', fontWeight: 600 }}>
-                       {t("hosting.chat.online")}
+                      {t("hosting.chat.online")}
                     </Typography>
                   </Box>
                 </Stack>
@@ -310,6 +323,50 @@ const GuestAllMessages = () => {
                   <IconButton size="small"><MoreVertIcon fontSize="small" /></IconButton>
                 </Stack>
               </Box>
+
+              {/* Listing Preview Card */}
+              {listingDetails && (
+                <Box
+                  sx={{
+                    p: 1.5,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 2,
+                    backgroundColor: "#ffffff",
+                    borderBottom: "1px solid var(--border-light)",
+                    animation: "slideDown 0.3s ease-out",
+                    "@keyframes slideDown": {
+                      from: { transform: "translateY(-10px)", opacity: 0 },
+                      to: { transform: "translateY(0)", opacity: 1 },
+                    },
+                  }}
+                >
+                  <Avatar
+                    variant="rounded"
+                    src={listingDetails.photos?.[0]}
+                    sx={{ width: 60, height: 60, borderRadius: 1.5 }}
+                  />
+                  <Box sx={{ flex: 1 }}>
+                    <Typography variant="caption" fontWeight={800} color="primary" sx={{ textTransform: 'uppercase', letterSpacing: 1 }}>
+                      Discussing Listing
+                    </Typography>
+                    <Typography variant="body2" fontWeight={700} noWrap>
+                      {listingDetails.title}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {listingDetails.city}, {listingDetails.country || "Pakistan"}
+                    </Typography>
+                  </Box>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() => navigate(`/hosting/listings/${listingId}`)}
+                    sx={{ borderRadius: '999px', textTransform: 'none', fontWeight: 700 }}
+                  >
+                    Manage
+                  </Button>
+                </Box>
+              )}
 
               <Box
                 sx={{
@@ -403,9 +460,59 @@ const GuestAllMessages = () => {
                                   </Typography>
                                 </Box>
                               )}
-                              <Typography variant="body2" sx={{ wordBreak: 'break-word', whiteSpace: 'pre-wrap', fontSize: '0.9rem' }}>
-                                {m.message}
-                              </Typography>
+                              {m.message?.startsWith("JSON_TYPE_LISTING:") ? (() => {
+                                try {
+                                  const data = JSON.parse(m.message.replace("JSON_TYPE_LISTING:", ""));
+                                  return (
+                                    <Box sx={{ minWidth: { xs: 200, sm: 250 }, my: 1 }}>
+                                      <Box
+                                        component="img"
+                                        src={data.image}
+                                        sx={{
+                                          width: '100%',
+                                          height: 140,
+                                          borderRadius: 2,
+                                          objectFit: 'cover',
+                                          mb: 1
+                                        }}
+                                      />
+                                      <Typography variant="caption" fontWeight={800} color="primary" sx={{ display: 'block', textTransform: 'uppercase' }}>
+                                        Listing Inquiry
+                                      </Typography>
+                                      <Typography variant="subtitle2" fontWeight={800} gutterBottom>
+                                        {data.title}
+                                      </Typography>
+                                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                                        {data.location}
+                                      </Typography>
+                                      <Button
+                                        fullWidth
+                                        variant="contained"
+                                        size="small"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          navigate(`/hosting/listings/${data.listingId}`);
+                                        }}
+                                        sx={{
+                                          textTransform: 'none',
+                                          fontWeight: 800,
+                                          borderRadius: '8px',
+                                          bgcolor: 'primary.main',
+                                          boxShadow: 'none'
+                                        }}
+                                      >
+                                        Manage Listing
+                                      </Button>
+                                    </Box>
+                                  );
+                                } catch (e) {
+                                  return <Typography variant="body2">{m.message}</Typography>;
+                                }
+                              })() : (
+                                <Typography variant="body2" sx={{ wordBreak: 'break-word', whiteSpace: 'pre-wrap', fontSize: '0.9rem' }}>
+                                  {m.message}
+                                </Typography>
+                              )}
                               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', mt: 0.2, gap: 0.5 }}>
                                 <Typography
                                   variant="caption"
@@ -458,10 +565,10 @@ const GuestAllMessages = () => {
                     }
                   }}
                 />
-                <IconButton 
-                  onClick={handleSendMessage} 
+                <IconButton
+                  onClick={handleSendMessage}
                   disabled={!newMessage}
-                  sx={{ 
+                  sx={{
                     color: newMessage ? '#00a884' : '#54656f',
                     transition: 'all 0.2s'
                   }}

@@ -20,7 +20,7 @@ import { useTranslation } from "react-i18next";
 import { RTLWrapper, useRTL } from "../../components/language/Localization";
 import { fetchData, postData } from "../../config/ServiceApi/serviceApi";
 import Card from "../../components/cards/cards";
-import LeafletMap from "../../components/map/map";
+import GoogleMapView from "../../components/map/GoogleMap";
 import { toast } from "react-hot-toast";
 import { useAppContext } from "../../context/context";
 import usePageTitle from "../../hooks/usePageTitle";
@@ -421,14 +421,12 @@ const Home = () => {
               </Stack>
             </Paper>
 
-            <LeafletMap
+            <GoogleMapView
               listings={listings}
               latitude={listings?.[0]?.latitude || 24.8607}
               longitude={listings?.[0]?.longitude || 67.0011}
               searchAsMove={searchAsMove}
               onBoundsChange={handleBoundsChange}
-              onDrawCreated={handleDrawCreated}
-              enableDraw={true}
             />
           </MotionBox>
         )}

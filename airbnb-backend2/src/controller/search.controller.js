@@ -99,7 +99,7 @@ export const searchListings = async (req, res) => {
                 }
 
                 // Convert [lat, lng] to [lng, lat] for GeoJSON if needed
-                // Leaflet often gives [lat, lng]. GeoJSON needs [lng, lat].
+                // Frontend often gives [lat, lng]. GeoJSON needs [lng, lat].
                 // We assume input is likely [lat, lng] from frontend.
                 const geoJsonCoords = polyCoords.map(p => [p[1], p[0]]);
 

@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { useAppContext } from "../../context/context";
-import LeafletMap from "../map/map";
+import GoogleMapView from "../map/GoogleMap";
 import { useTranslation } from "react-i18next";
 
 const AddressForm = () => {
@@ -140,11 +140,10 @@ const AddressForm = () => {
         </Typography>
       </Typography>
 
-      <LeafletMap
+      <GoogleMapView
         steps={true}
         latitude={contextLatitude || 30.3753}
         longitude={contextLongitude || 69.3451}
-      // popupText="Karachi, Pakistan"
       />
     </Box>
   );

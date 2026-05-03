@@ -615,6 +615,39 @@ export const listingController = {
       console.error('Error updating AI settings:', error);
       res.status(500).json({ message: "Internal Server Error", error: error.message });
     }
+  },
+
+  getNearbyListings: async (req, res) => {
+    try {
+      const { lng, lat, radius = 10000 } = req.query; // Default radius 10km
+
+      if (!lng || !lat) {
+        return res.status(400).json({ message: "Longitude and Latitude are required." });
+      }
+
+      const listings = await Listing.find({
+        location: {
+          $near: {
+            $geometry: {
+              type: "Point",
+              coordinates: [parseFloat(lng), parseFloat(lat)]
+            },
+            $maxDistance: parseInt(radius)
+          }
+        },
+        status: { $ne: 'disabled' }
+      })
+      .populate('hostId', 'userName photoProfile')
+      .limit(20);
+
+      res.status(200).json({
+        success: true,
+        results: listings
+      });
+    } catch (error) {
+      console.error('Error fetching nearby listings:', error);
+      res.status(500).json({ message: "Internal Server Error", error: error.message });
+    }
   }
 
 };

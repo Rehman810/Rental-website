@@ -68,7 +68,7 @@ import { useAppContext } from "../../context/context";
 import { postData } from "../../config/ServiceApi/serviceApi";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import LeafletMap from "../map/map2";
+import GoogleMapAddressPicker from "../map/GoogleMapAddressPicker";
 import { useTranslation } from "react-i18next";
 
 const GetStarted = lazy(() => import("../../components/host/getStarted"));
@@ -237,7 +237,7 @@ function ListingSteps() {
       { label: t("step", { number: 4 }), content: <PlaceType /> },
       {
         label: t("step", { number: 5 }),
-        content: <LeafletMap />,
+        content: <GoogleMapAddressPicker />,
       },
       { label: t("step", { number: 6 }), content: <AddressForm /> },
       { label: t("step", { number: 7 }), content: <GuestCounter /> },

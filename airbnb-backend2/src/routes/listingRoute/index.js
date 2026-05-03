@@ -8,6 +8,7 @@ import cacheMiddleware from '../../middlewares/cacheMiddleware.js';
 const listingRoute = (app) => {
     // Cache search results for 5 minutes (300 seconds)
     app.get('/api/listings/search', cacheMiddleware(300), searchListings);
+    app.get('/api/listings/nearby', listingController.getNearbyListings);
     app.post('/api/search/ai', aiSearch);
 
     app.post('/listings', combinedAuthenticate, upload.array('photos', 8), limiter, listingController.createListing);

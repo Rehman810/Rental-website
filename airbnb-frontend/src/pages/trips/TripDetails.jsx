@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -14,6 +13,9 @@ import {
     Button,
     IconButton,
     Tooltip,
+    Fade,
+    useTheme,
+    alpha,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
@@ -36,21 +38,16 @@ import usePageTitle from "../../hooks/usePageTitle";
 import { Dialog, DialogContent } from "@mui/material";
 import Loader from "../../components/loader/loader";
 
-const containerStyle = {
-    width: "100%",
-    height: "100%",
-    borderRadius: "12px",
-};
-
 const TripDetails = () => {
     const { tripId } = useParams();
     const navigate = useNavigate();
+    const theme = useTheme();
     const [trip, setTrip] = useState(null);
     const [loading, setLoading] = useState(true);
     const token = getAuthToken();
 
     const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
-    const [refundQuote, setRefundQuote] = useState({ amount: 0, reason: '' });
+    const [refundQuote, setRefundQuote] = useState({ amount: 0, reason: "" });
 
     usePageTitle(trip ? `Trip to ${trip.listingId?.city || "Destination"}` : "Trip Details");
 
@@ -96,7 +93,6 @@ const TripDetails = () => {
             });
             toast.success("Booking cancelled");
             setCancelDialogOpen(false);
-            // Refresh logic
             const updatedData = await fetchDataById("bookings", tripId);
             setTrip(updatedData.booking || updatedData.data || updatedData);
         } catch (e) {
@@ -106,8 +102,8 @@ const TripDetails = () => {
     };
 
     const handleContactHost = () => {
-        if (trip?.hostData?._id) {
-            navigate(`/user/guestMessages/${trip.hostData._id}`);
+        if (trip?.hostData?._id || trip?.hostId) {
+            navigate(`/user/guestMessages/${trip.hostData?._id || trip.hostId}`);
         } else {
             toast.error("Host information unavailable");
         }
@@ -118,12 +114,11 @@ const TripDetails = () => {
             try {
                 setLoading(true);
                 const data = await fetchDataById("bookings", tripId);
-                // Handle various response structures
                 setTrip(data.booking || data.data || data);
             } catch (error) {
                 console.error("Failed to load trip details:", error);
                 toast.error("Could not load trip details");
-                navigate("/user/trips"); // Fallback
+                navigate("/user/trips");
             } finally {
                 setLoading(false);
             }
@@ -139,25 +134,23 @@ const TripDetails = () => {
     }
 
     if (!trip) {
-        return null; // or empty state handled by navigate
+        return null;
     }
 
     const listing = trip.listingId || {};
-    const host = trip.hostData || {}; // Assuming hostData is populated, based on Trips list
-    // Note: if fetching by ID doesn't populate hostData, we might need to fetch the listing/host separately.
-    // Assuming the backend populates it similarly to the list endpoint.
+    const host = trip.hostData || {};
 
     const startDate = new Date(trip.startDate);
     const endDate = new Date(trip.endDate);
     const nights = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
 
     const statusColors = {
-        Active: "success",
-        Cancelled: "error",
-        Completed: "info",
-        Pending: "warning",
-        "Pending Approval": "warning",
-        "Pending Payment": "warning",
+        Active: theme.palette.success.main,
+        Confirmed: theme.palette.success.main,
+        Cancelled: theme.palette.error.main,
+        CANCELLED: theme.palette.error.main,
+        Completed: theme.palette.info.main,
+        Pending: theme.palette.warning.main,
     };
 
     const copyToClipboard = (text) => {
@@ -166,246 +159,337 @@ const TripDetails = () => {
     };
 
     return (
-        <Box sx={{ pb: 8, pt: { xs: 2, md: 4 }, bgcolor: "var(--bg-color)", minHeight: "100vh" }}>
+        <Box sx={{ pb: 8, pt: { xs: 3, md: 5 }, bgcolor: "var(--bg-secondary)", minHeight: "100vh" }}>
             <Container maxWidth="lg">
-                {/* Navigation Bar */}
-                <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 4 }}>
-                    <IconButton onClick={() => navigate(-1)} sx={{ bgcolor: "white", boxShadow: 1 }}>
-                        <ArrowBackIcon />
-                    </IconButton>
-                    <Typography variant="h5" fontWeight={800}>
-                        Trip Details
-                    </Typography>
-                </Stack>
-
-                <Grid container spacing={3}>
-                    {/* Left Column: Main Info */}
-                    <Grid item xs={12} md={8}>
-                        {/* Hero Section */}
-                        <Paper
-                            elevation={0}
-                            sx={{
-                                p: 0,
-                                borderRadius: 4,
-                                overflow: "hidden",
-                                border: "1px solid",
-                                borderColor: "divider",
-                                mb: 3,
-                            }}
-                        >
-                            <Box sx={{ height: { xs: 200, md: 350 }, position: "relative" }}>
-                                <img
-                                    src={listing.photos?.[0] || "/fallback-image.jpg"}
-                                    alt={listing.title}
-                                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                                />
-                                <Chip
-                                    label={trip.status}
-                                    color={statusColors[trip.status] || "default"}
-                                    sx={{
-                                        position: "absolute",
-                                        top: 20,
-                                        right: 20,
-                                        fontWeight: 900,
-                                        backdropFilter: "blur(10px)",
-                                        boxShadow: 2,
-                                    }}
-                                />
+                <Fade in timeout={800}>
+                    <Box>
+                        {/* Header Navigation */}
+                        <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 4 }}>
+                            <IconButton
+                                onClick={() => navigate(-1)}
+                                sx={{
+                                    // bgcolor: alpha(theme.palette.background.paper, 0.8),
+                                    boxShadow: 2,
+                                    backdropFilter: "blur(10px)",
+                                    "&:hover": { bgcolor: "background.paper" }
+                                }}
+                            >
+                                <ArrowBackIcon />
+                            </IconButton>
+                            <Box>
+                                <Typography variant="h4" fontWeight={900} sx={{ letterSpacing: "-0.02em" }}>
+                                    Trip Details
+                                </Typography>
+                                <Typography variant="body2" color="var(--text-secondary)" fontWeight={500}>
+                                    Reservation details for your upcoming stay
+                                </Typography>
                             </Box>
-
-                            <Box sx={{ p: 4 }}>
-                                <Typography variant="h4" fontWeight={900} gutterBottom>
-                                    {listing.title}
-                                </Typography>
-                                <Stack direction="row" alignItems="center" spacing={1} sx={{ color: "var(--text-color)", mb: 2 }}>
-                                    <LocationOnIcon fontSize="small" />
-                                    <Typography variant="body1">
-                                        {listing.address}, {listing.city}, {listing.country}
-                                    </Typography>
-                                </Stack>
-
-                                <Divider sx={{ my: 3 }} />
-
-                                {/* Timeline */}
-                                <Box>
-                                    <Typography variant="h6" fontWeight={800} gutterBottom>
-                                        Your Itinerary
-                                    </Typography>
-                                    <Grid container spacing={2} sx={{ mt: 1 }}>
-                                        <Grid item xs={12} sm={6}>
-                                            <Paper variant="outlined" sx={{ p: 2, borderRadius: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
-                                                <Avatar sx={{ bgcolor: 'primary.light', color: 'primary.main' }}>
-                                                    <CheckCircleIcon />
-                                                </Avatar>
-                                                <Box>
-                                                    <Typography variant="caption" color="var(--text-color)" fontWeight={700}>CHECK-IN</Typography>
-                                                    <Typography variant="subtitle1" fontWeight={800}>{startDate.toLocaleDateString()}</Typography>
-                                                    <Typography variant="body2" color="var(--text-color)">After 3:00 PM</Typography>
-                                                </Box>
-                                            </Paper>
-                                        </Grid>
-                                        <Grid item xs={12} sm={6}>
-                                            <Paper variant="outlined" sx={{ p: 2, borderRadius: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
-                                                <Avatar sx={{ bgcolor: 'error.light', color: 'error.main' }}>
-                                                    <AccessTimeIcon />
-                                                </Avatar>
-                                                <Box>
-                                                    <Typography variant="caption" color="var(--text-color)" fontWeight={700}>CHECK-OUT</Typography>
-                                                    <Typography variant="subtitle1" fontWeight={800}>{endDate.toLocaleDateString()}</Typography>
-                                                    <Typography variant="body2" color="var(--text-color)">Before 11:00 AM</Typography>
-                                                </Box>
-                                            </Paper>
-                                        </Grid>
-                                    </Grid>
-                                </Box>
-                            </Box>
-                        </Paper>
-
-                        {/* Location Map Placeholder */}
-                        {listing.latitude && listing.longitude && (
-                            <Paper elevation={0} sx={{ p: 3, borderRadius: 4, mb: 3, border: "1px solid", borderColor: "divider" }}>
-                                <Typography variant="h6" fontWeight={800} gutterBottom>
-                                    Location
-                                </Typography>
-                                <Box sx={{ height: 300, bgcolor: "#eee", borderRadius: 3, mt: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    {/* If you have Google Maps key handled, insert map here. For now, text fallback or static image */}
-                                    <Typography color="var(--text-color)">Map View (Coordinates: {listing.latitude}, {listing.longitude})</Typography>
-                                </Box>
-                            </Paper>
-                        )}
-
-                        {/* Rules & Policy */}
-                        <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: "1px solid", borderColor: "divider" }}>
-                            <Typography variant="h6" fontWeight={800} gutterBottom>
-                                House Rules
-                            </Typography>
-                            <Typography variant="body2" color="var(--text-color)" paragraph>
-                                {listing.houseRules || "No specific rules provided by host."}
-                            </Typography>
-                        </Paper>
-                    </Grid>
-
-                    {/* Right Column: Reservation Details */}
-                    <Grid item xs={12} md={4}>
-                        <Stack spacing={3}>
-                            {/* Booking Reference */}
-                            <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: "1px solid", borderColor: "divider" }}>
-                                <Typography variant="subtitle2" color="var(--text-color)" fontWeight={700} gutterBottom>
-                                    CONFIRMATION CODE
-                                </Typography>
-                                <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ bgcolor: "rgba(0,0,0,0.03)", p: 1.5, borderRadius: 2 }}>
-                                    <Typography variant="h6" fontWeight={900} sx={{ letterSpacing: 1 }}>
-                                        {trip._id.substring(0, 8).toUpperCase()}
-                                    </Typography>
-                                    <IconButton size="small" onClick={() => copyToClipboard(trip._id)}>
-                                        <ContentCopyIcon fontSize="small" />
-                                    </IconButton>
-                                </Stack>
-                            </Paper>
-
-                            {/* Price Breakdown */}
-                            <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: "1px solid", borderColor: "divider" }}>
-                                <Typography variant="h6" fontWeight={800} gutterBottom>
-                                    Payment Details
-                                </Typography>
-
-                                <Stack spacing={1.5} sx={{ mt: 2 }}>
-                                    <Stack direction="row" justifyContent="space-between">
-                                        <Typography variant="body2" color="var(--text-color)">Rs {listing.price} x {nights} nights</Typography>
-                                        <Typography variant="body2" fontWeight={600}>Rs {listing.price * nights}</Typography>
-                                    </Stack>
-                                    <Stack direction="row" justifyContent="space-between">
-                                        <Typography variant="body2" color="var(--text-color)">Service Fee</Typography>
-                                        <Typography variant="body2" fontWeight={600}>Rs 0</Typography>
-                                        {/* Assuming service fee logic is handled elsewhere or included */}
-                                    </Stack>
-                                    <Divider sx={{ borderStyle: "dashed" }} />
-                                    <Stack direction="row" justifyContent="space-between">
-                                        <Typography variant="body1" fontWeight={800}>Total (PKR)</Typography>
-                                        <Typography variant="body1" fontWeight={900}>Rs {trip.totalPrice}</Typography>
-                                    </Stack>
-                                </Stack>
-
-                                <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 3, color: "success.main" }}>
-                                    <PaymentsIcon />
-                                    <Typography variant="subtitle2" fontWeight={700}>
-                                        Paid with Credit Card
-                                    </Typography>
-                                </Stack>
-                            </Paper>
-
-                            {trip.status !== 'Cancelled' && trip.status !== 'CANCELLED' && new Date(trip.startDate) > new Date() && (
-                                <Paper elevation={0} sx={{ p: 2, borderRadius: 4, border: "1px solid", borderColor: "divider" }}>
-                                    <Button
-                                        fullWidth
-                                        variant="text"
-                                        color="error"
-                                        onClick={handleOpenCancel}
-                                        startIcon={<CancelIcon />}
-                                        sx={{ borderRadius: 999, fontWeight: 900, textTransform: 'none' }}
-                                    >
-                                        Cancel Booking
-                                    </Button>
-                                </Paper>
-                            )}
-
-                            {/* Host Info */}
-                            {trip.hostId && ( // Assuming hostId or hostData exists
-                                <Paper elevation={0} sx={{ p: 3, borderRadius: 4, border: "1px solid", borderColor: "divider" }}>
-                                    <Stack direction="row" spacing={2} alignItems="center">
-                                        <Avatar
-                                            src={host.photoProfile}
-                                            alt={host.userName}
-                                            sx={{ width: 56, height: 56 }}
-                                        />
-                                        <Box>
-                                            <Typography variant="subtitle2" color="var(--text-color)" fontWeight={700}>HOSTED BY</Typography>
-                                            <Typography variant="h6" fontWeight={900}>{host.userName || "Host"}</Typography>
-                                        </Box>
-                                    </Stack>
-                                    <Button
-                                        fullWidth
-                                        variant="outlined"
-                                        startIcon={<SupportAgentIcon />}
-                                        onClick={handleContactHost}
-                                        sx={{ mt: 3, borderRadius: 999, fontWeight: 800, textTransform: 'none' }}
-                                    >
-                                        Contact Host
-                                    </Button>
-                                </Paper>
-                            )}
                         </Stack>
-                    </Grid>
-                </Grid>
+
+                        <Grid container spacing={4}>
+                            {/* Left Column: Property & Itinerary */}
+                            <Grid item xs={12} md={8}>
+                                <Paper
+                                    elevation={0}
+                                    sx={{
+                                        borderRadius: 6,
+                                        overflow: "hidden",
+                                        border: "1px solid",
+                                        borderColor: alpha(theme.palette.divider, 0.1),
+                                        background: alpha(theme.palette.background.paper, 0.6),
+                                        backdropFilter: "blur(20px)",
+                                        mb: 4,
+                                    }}
+                                >
+                                    {/* Hero Image */}
+                                    <Box sx={{ height: { xs: 240, md: 400 }, position: "relative" }}>
+                                        <img
+                                            src={listing.photos?.[0] || "/fallback-image.jpg"}
+                                            alt={listing.title}
+                                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                        />
+                                        <Box sx={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, transparent, rgba(0,0,0,0.4))" }} />
+                                        <Chip
+                                            label={trip.status}
+                                            sx={{
+                                                position: "absolute",
+                                                top: 24,
+                                                right: 24,
+                                                fontWeight: 900,
+                                                bgcolor: alpha(statusColors[trip.status] || theme.palette.grey[500], 0.9),
+                                                color: "#fff",
+                                                backdropFilter: "blur(4px)",
+                                                px: 1,
+                                                borderRadius: 2,
+                                                boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+                                            }}
+                                        />
+                                    </Box>
+
+                                    <Box sx={{ p: { xs: 3, md: 5 } }}>
+                                        <Typography variant="h3" fontWeight={950} sx={{ mb: 1, letterSpacing: "-0.03em" }}>
+                                            {listing.title}
+                                        </Typography>
+                                        <Stack direction="row" alignItems="center" spacing={1} sx={{ color: "var(--text-secondary)", mb: 4 }}>
+                                            <LocationOnIcon fontSize="small" sx={{ color: "var(--primary-color)" }} />
+                                            <Typography variant="h6" fontWeight={500}>
+                                                {listing.address}, {listing.city}, {listing.country}
+                                            </Typography>
+                                        </Stack>
+
+                                        <Divider sx={{ my: 4, opacity: 0.6 }} />
+
+                                        {/* Itinerary Section */}
+                                        <Box>
+                                            <Typography variant="h5" fontWeight={900} gutterBottom sx={{ mb: 3 }}>
+                                                Your Itinerary
+                                            </Typography>
+                                            <Grid container spacing={3}>
+                                                <Grid item xs={12} sm={6}>
+                                                    <Paper
+                                                        variant="outlined"
+                                                        sx={{
+                                                            p: 3,
+                                                            borderRadius: 5,
+                                                            display: "flex",
+                                                            alignItems: "center",
+                                                            gap: 2.5,
+                                                            bgcolor: alpha(theme.palette.success.main, 0.03),
+                                                            borderColor: alpha(theme.palette.success.main, 0.1),
+                                                        }}
+                                                    >
+                                                        <Avatar sx={{ bgcolor: alpha(theme.palette.success.main, 0.1), color: "var(--primary-color)", width: 50, height: 50 }}>
+                                                            <CheckCircleIcon fontSize="medium" />
+                                                        </Avatar>
+                                                        <Box>
+                                                            <Typography variant="caption" color="var(--text-secondary)" fontWeight={800} sx={{ textTransform: "uppercase", letterSpacing: "0.1em" }}>CHECK-IN</Typography>
+                                                            <Typography variant="h6" fontWeight={900}>{startDate.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}</Typography>
+                                                            <Typography variant="body2" color="var(--text-secondary)" fontWeight={600}>After 3:00 PM</Typography>
+                                                        </Box>
+                                                    </Paper>
+                                                </Grid>
+                                                <Grid item xs={12} sm={6}>
+                                                    <Paper
+                                                        variant="outlined"
+                                                        sx={{
+                                                            p: 3,
+                                                            borderRadius: 5,
+                                                            display: "flex",
+                                                            alignItems: "center",
+                                                            gap: 2.5,
+                                                            bgcolor: alpha(theme.palette.error.main, 0.03),
+                                                            borderColor: alpha(theme.palette.error.main, 0.1),
+                                                        }}
+                                                    >
+                                                        <Avatar sx={{ bgcolor: alpha(theme.palette.error.main, 0.1), color: "error.main", width: 50, height: 50 }}>
+                                                            <AccessTimeIcon fontSize="medium" />
+                                                        </Avatar>
+                                                        <Box>
+                                                            <Typography variant="caption" color="var(--text-secondary)" fontWeight={800} sx={{ textTransform: "uppercase", letterSpacing: "0.1em" }}>CHECK-OUT</Typography>
+                                                            <Typography variant="h6" fontWeight={900}>{endDate.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}</Typography>
+                                                            <Typography variant="body2" color="var(--text-secondary)" fontWeight={600}>Before 11:00 AM</Typography>
+                                                        </Box>
+                                                    </Paper>
+                                                </Grid>
+                                            </Grid>
+                                        </Box>
+                                    </Box>
+                                </Paper>
+
+                                {/* Rules Section */}
+                                <Paper
+                                    elevation={0}
+                                    sx={{
+                                        p: 4,
+                                        borderRadius: 6,
+                                        border: "1px solid",
+                                        borderColor: alpha(theme.palette.divider, 0.1),
+                                        background: alpha(theme.palette.background.paper, 0.6),
+                                        backdropFilter: "blur(20px)",
+                                    }}
+                                >
+                                    <Typography variant="h5" fontWeight={900} gutterBottom sx={{ mb: 2 }}>
+                                        House Rules
+                                    </Typography>
+                                    <Typography variant="body1" color="var(--text-secondary)" sx={{ lineHeight: 1.8, whiteSpace: "pre-line" }}>
+                                        {listing.houseRules || "The host hasn't provided specific rules. Please treat the home with respect and enjoy your stay!"}
+                                    </Typography>
+                                </Paper>
+                            </Grid>
+
+                            {/* Right Column: Details & Actions */}
+                            <Grid item xs={12} md={4}>
+                                <Stack spacing={4}>
+                                    {/* Confirmation Box */}
+                                    <Paper
+                                        elevation={0}
+                                        sx={{
+                                            p: 4,
+                                            borderRadius: 6,
+                                            border: "1px solid",
+                                            borderColor: alpha(theme.palette.divider, 0.1),
+                                            background: "linear-gradient(135deg, rgba(255, 90, 95, 0.05), rgba(0,0,0,0.02))",
+                                        }}
+                                    >
+                                        <Typography variant="caption" color="var(--text-secondary)" fontWeight={800} sx={{ mb: 1, display: "block", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                                            CONFIRMATION CODE
+                                        </Typography>
+                                        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ bgcolor: alpha(theme.palette.common.black, 0.05), p: 2, borderRadius: 4 }}>
+                                            <Typography variant="h5" fontWeight={950} sx={{ letterSpacing: 2, fontFamily: "monospace" }}>
+                                                {trip._id.substring(0, 8).toUpperCase()}
+                                            </Typography>
+                                            <IconButton size="medium" onClick={() => copyToClipboard(trip._id)} sx={{ bgcolor: "background.paper", boxShadow: 1 }}>
+                                                <ContentCopyIcon fontSize="small" />
+                                            </IconButton>
+                                        </Stack>
+                                    </Paper>
+
+                                    {/* Price Details */}
+                                    <Paper
+                                        elevation={0}
+                                        sx={{
+                                            p: 4,
+                                            borderRadius: 6,
+                                            border: "1px solid",
+                                            borderColor: alpha(theme.palette.divider, 0.1),
+                                            background: alpha(theme.palette.background.paper, 0.6),
+                                            backdropFilter: "blur(20px)",
+                                        }}
+                                    >
+                                        <Typography variant="h5" fontWeight={900} gutterBottom sx={{ mb: 3 }}>
+                                            Payment Details
+                                        </Typography>
+
+                                        <Stack spacing={2}>
+                                            <Stack direction="row" justifyContent="space-between">
+                                                <Typography color="var(--text-secondary)" fontWeight={600}>Rs {listing.price?.toLocaleString()} x {nights} nights</Typography>
+                                                <Typography fontWeight={800}>Rs {(listing.price * nights).toLocaleString()}</Typography>
+                                            </Stack>
+                                            <Stack direction="row" justifyContent="space-between">
+                                                <Typography color="var(--text-secondary)" fontWeight={600}>Service Fee</Typography>
+                                                <Typography fontWeight={800}>Rs 0</Typography>
+                                            </Stack>
+                                            <Divider sx={{ my: 1, borderStyle: "dashed" }} />
+                                            <Stack direction="row" justifyContent="space-between">
+                                                <Typography variant="h6" fontWeight={950}>Total (PKR)</Typography>
+                                                <Typography variant="h5" fontWeight={950} color="primary.main">Rs {trip.totalPrice?.toLocaleString()}</Typography>
+                                            </Stack>
+                                        </Stack>
+
+                                        <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mt: 4, p: 2, bgcolor: alpha(theme.palette.success.main, 0.05), borderRadius: 3, color: "success.main" }}>
+                                            <PaymentsIcon />
+                                            <Typography variant="body2" fontWeight={800}>
+                                                Payment Confirmed via Card
+                                            </Typography>
+                                        </Stack>
+                                    </Paper>
+
+                                    {/* Host Info */}
+                                    <Paper
+                                        elevation={0}
+                                        sx={{
+                                            p: 4,
+                                            borderRadius: 6,
+                                            border: "1px solid",
+                                            borderColor: alpha(theme.palette.divider, 0.1),
+                                            background: alpha(theme.palette.background.paper, 0.6),
+                                            backdropFilter: "blur(20px)",
+                                        }}
+                                    >
+                                        <Stack direction="row" spacing={2.5} alignItems="center">
+                                            <Box sx={{ position: "relative" }}>
+                                                <Avatar
+                                                    src={host.photoProfile}
+                                                    alt={host.userName}
+                                                    sx={{ width: 64, height: 64, border: `3px solid ${theme.palette.background.paper}`, boxShadow: theme.shadows[4] }}
+                                                />
+                                                <Box sx={{ position: "absolute", bottom: 2, right: 2, width: 14, height: 14, bgcolor: "success.main", borderRadius: "50%", border: `2px solid ${theme.palette.background.paper}` }} />
+                                            </Box>
+                                            <Box>
+                                                <Typography variant="caption" color="var(--text-secondary)" fontWeight={800} sx={{ textTransform: "uppercase" }}>HOSTED BY</Typography>
+                                                <Typography variant="h5" fontWeight={950}>{host.userName || "Host"}</Typography>
+                                            </Box>
+                                        </Stack>
+                                        <Button
+                                            fullWidth
+                                            variant="contained"
+                                            startIcon={<SupportAgentIcon />}
+                                            onClick={handleContactHost}
+                                            sx={{
+                                                mt: 4,
+                                                borderRadius: 4,
+                                                fontWeight: 900,
+                                                textTransform: "none",
+                                                py: 1.5,
+                                                fontSize: "1rem",
+                                                boxShadow: "none",
+                                                "&:hover": { boxShadow: theme.shadows[4] }
+                                            }}
+                                        >
+                                            Contact Host
+                                        </Button>
+                                    </Paper>
+
+                                    {/* Cancel Action */}
+                                    {trip.status !== "Cancelled" && trip.status !== "CANCELLED" && new Date(trip.startDate) > new Date() && (
+                                        <Button
+                                            fullWidth
+                                            variant="text"
+                                            color="error"
+                                            onClick={handleOpenCancel}
+                                            startIcon={<CancelIcon />}
+                                            sx={{ borderRadius: 4, fontWeight: 800, textTransform: "none", py: 1 }}
+                                        >
+                                            Cancel Booking
+                                        </Button>
+                                    )}
+                                </Stack>
+                            </Grid>
+                        </Grid>
+                    </Box>
+                </Fade>
             </Container>
 
             {/* Cancel Dialog */}
-            <Dialog open={cancelDialogOpen} onClose={() => setCancelDialogOpen(false)} maxWidth="xs" fullWidth >
-                <DialogContent sx={{ p: 3, textAlign: 'center' }}>
-                    <Typography variant="h6" fontWeight={800} gutterBottom>Cancel Booking?</Typography>
-                    <Typography color="var(--text-color)" paragraph variant="body2">
-                        Are you sure you want to cancel your stay at <b>{trip?.listingId?.title}</b>?
+            <Dialog
+                open={cancelDialogOpen}
+                onClose={() => setCancelDialogOpen(false)}
+                maxWidth="xs"
+                fullWidth
+                PaperProps={{
+                    sx: { borderRadius: 6, p: 1 }
+                }}
+            >
+                <DialogContent sx={{ p: 4, textAlign: "center" }}>
+                    <Box sx={{ width: 70, height: 70, borderRadius: "50%", bgcolor: alpha(theme.palette.error.main, 0.1), display: "flex", alignItems: "center", justifyContent: "center", color: "error.main", mx: "auto", mb: 3 }}>
+                        <CancelIcon sx={{ fontSize: 40 }} />
+                    </Box>
+                    <Typography variant="h5" fontWeight={900} gutterBottom>Cancel Booking?</Typography>
+                    <Typography color="var(--text-secondary)" sx={{ mb: 4, fontWeight: 500 }}>
+                        Are you sure you want to cancel your stay at <span style={{ fontWeight: 800, color: theme.palette.text.primary }}>{listing.title}</span>?
                     </Typography>
 
-                    <Paper variant="outlined" sx={{ p: 2, mb: 3, bgcolor: 'rgba(0,0,0,0.02)', borderRadius: 3, borderStyle: 'dashed' }}>
-                        <Typography variant="caption" display="block" color="var(--text-color)" fontWeight={700} gutterBottom>ESTIMATED REFUND</Typography>
-                        <Typography variant="h4" fontWeight={900} color={refundQuote && refundQuote.amount > 0 ? "success.main" : "var(--text-color)"}>
-                            Rs {refundQuote?.amount || 0}
+                    <Paper elevation={0} sx={{ p: 3, mb: 4, bgcolor: alpha(theme.palette.error.main, 0.03), borderRadius: 5, border: "1px dashed", borderColor: alpha(theme.palette.error.main, 0.2) }}>
+                        <Typography variant="caption" display="block" color="var(--text-secondary)" fontWeight={800} sx={{ mb: 1, textTransform: "uppercase", letterSpacing: "0.1em" }}>Estimated Refund</Typography>
+                        <Typography variant="h3" fontWeight={950} color={refundQuote && refundQuote.amount > 0 ? "success.main" : "var(--text-secondary)"}>
+                            Rs {refundQuote?.amount?.toLocaleString() || 0}
                         </Typography>
-                        <Typography variant="caption" color="var(--text-color)" sx={{ mt: 1, display: 'block' }}>{refundQuote?.reason}</Typography>
+                        <Typography variant="body2" fontWeight={700} sx={{ mt: 1, opacity: 0.8 }}>{refundQuote?.reason}</Typography>
                     </Paper>
 
-                    <Stack direction="row" spacing={1} justifyContent="center" width="100%">
-                        <Button onClick={() => setCancelDialogOpen(false)} fullWidth sx={{ borderRadius: 999, fontWeight: 800, color: 'text.primary' }}>Keep Booking</Button>
-                        <Button variant="contained" color="error" onClick={handleConfirmCancel} fullWidth sx={{ borderRadius: 999, fontWeight: 800 }}>
-                            Confirm
+                    <Stack direction="column" spacing={2}>
+                        <Button variant="contained" color="error" onClick={handleConfirmCancel} fullWidth sx={{ borderRadius: 4, fontWeight: 900, py: 1.8, textTransform: "none", fontSize: "1rem" }}>
+                            Confirm Cancellation
+                        </Button>
+                        <Button onClick={() => setCancelDialogOpen(false)} fullWidth sx={{ borderRadius: 4, fontWeight: 800, py: 1.5, color: "var(--text-secondary)", textTransform: "none" }}>
+                            Keep My Booking
                         </Button>
                     </Stack>
                 </DialogContent>
             </Dialog>
-
         </Box>
     );
 };
 
 export default TripDetails;
+

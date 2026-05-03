@@ -497,7 +497,7 @@ const HostSettings = () => {
                 </Card>
 
                 {/* Guest Requirements */}
-                <Card sx={cardSx}>
+                {/* <Card sx={cardSx}>
                     <CardContent sx={cardContentSx}>
                         <Box sx={sectionHeaderSx}>
                             <Box>
@@ -571,7 +571,7 @@ const HostSettings = () => {
                             </Grid>
                         </Grid>
                     </CardContent>
-                </Card>
+                </Card> */}
 
                 {/* AI Host Assistant */}
                 <Card sx={cardSx}>

@@ -6,6 +6,7 @@ const wishlistRoute = (app) => {
     app.post('/wishlist', combinedAuthenticate, wishlistController.addItem);
     app.delete('/wishlist/:itemId', combinedAuthenticate, wishlistController.removeItem);
     app.delete('/wishlist', combinedAuthenticate, wishlistController.clearWishlist);
+    app.post('/wishlist/track', combinedAuthenticate, wishlistController.trackInteraction);
 };
 
 export default wishlistRoute;

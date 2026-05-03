@@ -4,6 +4,7 @@ import { EMAIL_TYPES } from './emailTypes.js';
 import { getAuthEmailContent } from './templates/types/authTemplates.js';
 import { getBookingEmailContent } from './templates/types/bookingTemplates.js';
 import { getAdminEmailContent } from './templates/types/adminTemplates.js';
+import { getWishlistEmailContent } from './templates/types/wishlistTemplates.js';
 
 export const sendAppEmail = async ({ to, type, payload }) => {
     if (!to || !type) {
@@ -20,6 +21,8 @@ export const sendAppEmail = async ({ to, type, payload }) => {
             htmlContent = getBookingEmailContent(type, payload);
         } else if (type.startsWith('ADMIN_')) {
             htmlContent = getAdminEmailContent(type, payload);
+        } else if (type.startsWith('WISHLIST_')) {
+            htmlContent = getWishlistEmailContent(type, payload);
         } else {
             console.warn('Unknown email type category:', type);
             return false;

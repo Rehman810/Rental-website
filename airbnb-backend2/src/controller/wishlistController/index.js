@@ -1,5 +1,7 @@
 import Wishlist from '../../model/wishlist/index.js';
 import Listing from '../../model/listingModel/index.js';
+import { publishEvent } from '../../utils/rabbitmq.js';
+import { WishlistEvent } from '../../model/notifications/index.js';
 
 export const wishlistController = {
     getWishlist: async (req, res) => {
@@ -61,6 +63,22 @@ export const wishlistController = {
                     addedAt: new Date()
                 });
                 await wishlist.save();
+
+                // Store event for digest/interaction tracking
+                await WishlistEvent.create({
+                    userId,
+                    eventType: 'added',
+                    itemId
+                });
+
+                // Publish event to RabbitMQ for real-time/reminder processing
+                await publishEvent('wishlist_events', {
+                    userId,
+                    itemId,
+                    eventType: 'wishlist_added',
+                    wishlistCount: wishlist.items.length,
+                    timestamp: new Date()
+                });
             }
 
             // Populate to return full object
@@ -96,6 +114,27 @@ export const wishlistController = {
             const userId = req.user._id;
             await Wishlist.findOneAndUpdate({ userId }, { $set: { items: [] } });
             res.status(200).json({ items: [] });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    },
+
+    trackInteraction: async (req, res) => {
+        try {
+            const userId = req.user._id;
+            const { itemId, eventType } = req.body; // eventType: 'viewed' | 'clicked'
+
+            if (!itemId || !['viewed', 'clicked'].includes(eventType)) {
+                return res.status(400).json({ message: 'Invalid data' });
+            }
+
+            await WishlistEvent.create({
+                userId,
+                itemId,
+                eventType
+            });
+
+            res.status(200).json({ message: 'Interaction tracked' });
         } catch (error) {
             res.status(500).json({ message: error.message });
         }

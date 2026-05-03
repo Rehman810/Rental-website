@@ -9,6 +9,7 @@ import Host from '../../model/hostModel/index.js'
 import { FRONTEND_BASE_URL } from '../../config/appConfig.js';
 import { createNotification, NOTIFICATION_TYPES } from '../../config/notifications/notificationService.js';
 import CancellationPolicy from '../../model/cancellationPolicy/index.js';
+import { wishlistNotificationService } from '../../service/wishlistNotificationService.js';
 
 export const bookingController = {
 
@@ -401,6 +402,34 @@ export const bookingController = {
       });
 
       await TemporaryBooking.findByIdAndDelete(bookingId);
+
+      // Check for Limited Availability (Next 30 days)
+      (async () => {
+        try {
+          const thirtyDaysFromNow = new Date();
+          thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+          
+          const confirmedInWindow = await ConfirmedBooking.find({
+            listingId: booking.listingId._id,
+            startDate: { $lte: thirtyDaysFromNow },
+            endDate: { $gte: new Date() },
+            status: { $ne: 'CANCELLED' }
+          });
+
+          let bookedDays = 0;
+          confirmedInWindow.forEach(b => {
+            const start = b.startDate < new Date() ? new Date() : b.startDate;
+            const end = b.endDate > thirtyDaysFromNow ? thirtyDaysFromNow : b.endDate;
+            bookedDays += Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+          });
+
+          if (bookedDays > 25) { // Less than 5 days free in next 30 days
+            await wishlistNotificationService.triggerAvailabilityAlert(booking.listingId._id, 30 - bookedDays);
+          }
+        } catch (err) {
+          console.error("Availability alert check failed:", err);
+        }
+      })();
 
       return res.status(200).json({ message: "Booking approved and confirmed.", confirmedBooking });
 

@@ -6,7 +6,7 @@ const sendResetEmail = async (email, code) => {
         subject: 'Password Reset',
         html: `<p>You requested a password reset. Your reset code is: <strong>${code}</strong></p>`,
         text: `You requested a password reset. Your reset code is: ${code}`,
-        from: 'Needs and Luxuries <onboarding@resend.dev>'
+        from: 'Mehman <[EMAIL_ADDRESS]>'
     });
 };
 

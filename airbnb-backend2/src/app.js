@@ -14,6 +14,8 @@ import initializeSocket from './socket.io/index.js';
 
 import { startCronJob } from './cron/expirePendingBookings.js';
 import { startReminderCron } from './cron/sendBookingReminders.js';
+import './cron/wishlistNotifications.js';
+import { connectRabbitMQ } from './utils/rabbitmq.js';
 
 import { FRONTEND_BASE_URL } from './config/appConfig.js';
 
@@ -86,7 +88,9 @@ const startServer = async () => {
   try {
     await ConnectDB(config.db, console);
     console.log('Database initialized.');
-    console.log("DB CONFIG =>", config.db);
+    
+    // Initialize RabbitMQ
+    await connectRabbitMQ();
 
     const PORT = process.env.PORT || 5000;
     server.listen(PORT, () => {

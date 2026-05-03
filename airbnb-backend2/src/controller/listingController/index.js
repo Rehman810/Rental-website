@@ -6,6 +6,7 @@ import Review from '../../model/reviewListings/index.js';
 import Notification from '../../model/notification/index.js';
 import CancellationPolicy from '../../model/cancellationPolicy/index.js';
 import { deleteCachePattern } from '../../services/redisService.js';
+import { wishlistNotificationService } from '../../service/wishlistNotificationService.js';
 
 export const listingController = {
 
@@ -242,6 +243,8 @@ export const listingController = {
         }
         listing.photos[imageIndex] = newImage;
       }
+      const oldPrice = listing.weekdayPrice;
+
       if (Object.keys(updateData).length > 0) {
         Object.keys(updateData).forEach((key) => {
           if (listing[key] !== undefined) {
@@ -249,7 +252,14 @@ export const listingController = {
           }
         });
       }
+      
+      const newPrice = listing.weekdayPrice;
       await listing.save();
+
+      // Detect Price Drop
+      if (newPrice < oldPrice) {
+        await wishlistNotificationService.triggerPriceDropAlert(listingId, oldPrice, newPrice);
+      }
 
       // Invalidate relevant caches
       await deleteCachePattern('req:api:listings:search*');

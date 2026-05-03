@@ -1237,7 +1237,7 @@ const ListingPage = () => {
                   sx={{ mt: 2, borderRadius: "999px", fontWeight: 900, textTransform: "none" }}
                   onClick={() => navigate("/listingSteps")}
                 >
-                  {t("hosting.createListing")}
+                  {t("listings:hosting.listings.newListing")}
                 </Button>
               </Paper>
             </Grid>

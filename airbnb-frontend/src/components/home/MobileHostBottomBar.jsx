@@ -11,6 +11,8 @@ import ChatIcon from "@mui/icons-material/Chat";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
 import HomeIcon from "@mui/icons-material/Home";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
+import SwitchAccountIcon from "@mui/icons-material/SwitchAccount";
+import TravelExploreIcon from "@mui/icons-material/TravelExplore";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 
@@ -27,6 +29,12 @@ const MobileHostBottomNav = () => {
   };
 
   const tabs = [
+    {
+      label: t("common:mobileNav.dashboard", "Dashboard"),
+      path: "/hosting/dashboard",
+      icon: (active) => active ? <HomeIcon sx={{ fontSize: 24 }} /> : <HomeOutlinedIcon sx={{ fontSize: 24 }} />,
+      onClick: () => navigate("/hosting/dashboard"),
+    },
     {
       label: t("common:mobileNav.today", "Today"),
       path: "/hosting/today",
@@ -50,12 +58,6 @@ const MobileHostBottomNav = () => {
       path: "/hosting/messages",
       icon: (active) => active ? <ChatIcon sx={{ fontSize: 24 }} /> : <ChatOutlinedIcon sx={{ fontSize: 24 }} />,
       onClick: () => navigate("/hosting/messages"),
-    },
-    {
-      label: t("common:mobileNav.home", "Home"),
-      path: "/",
-      icon: (active) => active ? <HomeIcon sx={{ fontSize: 24 }} /> : <HomeOutlinedIcon sx={{ fontSize: 24 }} />,
-      onClick: () => navigate("/"),
     },
   ];
 

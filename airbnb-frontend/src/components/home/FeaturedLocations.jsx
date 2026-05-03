@@ -59,7 +59,7 @@ const FeaturedLocations = () => {
               <Box
                 sx={{
                   position: "relative",
-                  height: { xs: 240, md: 340 },
+                  height: { xs: 180, md: 340 },
                   borderRadius: "24px",
                   overflow: "hidden",
                   cursor: "pointer",

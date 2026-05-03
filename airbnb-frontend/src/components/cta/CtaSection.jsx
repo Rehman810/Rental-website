@@ -107,8 +107,8 @@ const CtaSection = () => {
   return (
     <Box
       sx={{
-        mt: { xs: 6, md: 16 },
-        mb: { xs: 6, md: 16 },
+        mt: { xs: 4, md: 16 },
+        mb: { xs: 0, md: 16 },
         position: "relative",
         px: { xs: 2, md: 4 },
         perspective: "1200px",
@@ -128,8 +128,8 @@ const CtaSection = () => {
             transformStyle: "preserve-3d",
           }}
           sx={{
-            py: { xs: 6, md: 14 },
-            px: { xs: 3, md: 10 },
+            py: { xs: 5, md: 14 },
+            px: { xs: 2.5, md: 10 },
             textAlign: "center",
             borderRadius: { xs: 8, md: 14 },
             position: "relative",
@@ -211,10 +211,10 @@ const CtaSection = () => {
               sx={{
                 color: "#fff",
                 fontWeight: 950,
-                fontSize: { xs: "2.2rem", sm: "3.5rem", md: "5rem" },
-                mb: 3,
-                letterSpacing: "-0.05em",
-                lineHeight: 1.1,
+                fontSize: { xs: "1.7rem", sm: "3.5rem", md: "5rem" },
+                mb: 2,
+                letterSpacing: { xs: "-0.02em", md: "-0.05em" },
+                lineHeight: { xs: 1.2, md: 1.1 },
                 textShadow: "0 10px 30px rgba(0,0,0,0.5)",
               }}
             >
@@ -234,10 +234,10 @@ const CtaSection = () => {
               sx={{
                 color: "rgba(255, 255, 255, 0.7)",
                 fontWeight: 400,
-                mb: 6,
+                mb: { xs: 4, md: 6 },
                 maxWidth: "750px",
                 mx: "auto",
-                fontSize: { xs: "0.95rem", md: "1.3rem" },
+                fontSize: { xs: "0.85rem", md: "1.3rem" },
                 lineHeight: 1.7,
               }}
             >
@@ -258,8 +258,8 @@ const CtaSection = () => {
                 sx={{
                   bgcolor: "#FF385C",
                   color: "#fff",
-                  px: { xs: 4, md: 10 },
-                  py: { xs: 1.5, md: 3 },
+                  px: { xs: 3.5, md: 10 },
+                  py: { xs: 1.4, md: 3 },
                   borderRadius: "999px",
                   fontSize: { xs: "1rem", md: "1.25rem" },
                   fontWeight: 900,

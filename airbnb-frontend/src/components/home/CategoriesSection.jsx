@@ -52,7 +52,7 @@ const CategoriesSection = () => {
               elevation={0}
               onClick={() => console.log(`Clicked ${cat.key}`)}
               sx={{
-                p: { xs: 3, md: 4 },
+                p: { xs: 2, md: 4 },
                 height: "100%",
                 display: "flex",
                 flexDirection: "column",

@@ -84,7 +84,7 @@ const Home = () => {
   const isMobile = useMediaQuery("(max-width:600px)");
   const navigate = useNavigate();
   const { t, i18n } = useTranslation(["common", "homepage", "translation"]);
-  usePageTitle(t("common:home") || "Home");
+  usePageTitle(t("common:Home") || "Home");
 
   const [searchError, setSearchError] = useState(false);
   const { searchParams } = useAppContext();
@@ -684,7 +684,7 @@ const Home = () => {
                   >
                     {initialLoading
                       ? t("homepage:searchResults.searching")
-                      : filters.q 
+                      : filters.q
                         ? t("homepage:searchResults.foundIn", { count: totalCount, query: filters.q })
                         : t("homepage:searchResults.found", { count: totalCount })}
                   </Typography>
@@ -819,7 +819,7 @@ const Home = () => {
           <CtaSection />
 
           {/* Mobile bottom padding for bottom bar */}
-          <Box sx={{ display: { xs: "block", md: "none" }, height: 80 }} />
+          <Box sx={{ display: { xs: "block", md: "none" }, height: 64 }} />
         </>
       )}
 

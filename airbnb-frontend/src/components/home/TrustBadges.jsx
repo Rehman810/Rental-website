@@ -20,7 +20,7 @@ const badges = [
     icon: <SecurityIcon sx={{ fontSize: 28 }} />,
     key: "securePayments",
     gradient: "linear-gradient(135deg, #11998e 0%, #38ef7d 100%)",
-    stat: "256-bit",
+    stat: "Secure",
     statLabel: "encrypted",
   },
   {
@@ -86,7 +86,7 @@ const TrustBadges = () => {
             fontWeight={900}
             sx={{
               color: "var(--text-primary)",
-              fontSize: { xs: "1.75rem", md: "2.4rem" },
+              fontSize: { xs: "1.5rem", md: "2.4rem" },
               letterSpacing: "-0.03em",
               mb: 1.5,
             }}
@@ -123,7 +123,7 @@ const TrustBadges = () => {
                 whileHover={{ y: -6 }}
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 sx={{
-                  p: { xs: 3, md: 4 },
+                  p: { xs: 2, md: 4 },
                   borderRadius: "24px",
                   border: "1px solid var(--border-light)",
                   bgcolor: "var(--bg-card)",
@@ -139,8 +139,8 @@ const TrustBadges = () => {
                 {/* Icon */}
                 <Box
                   sx={{
-                    width: 68,
-                    height: 68,
+                    width: { xs: 52, md: 68 },
+                    height: { xs: 52, md: 68 },
                     borderRadius: "20px",
                     background: badge.gradient,
                     display: "flex",
@@ -158,7 +158,7 @@ const TrustBadges = () => {
                 {/* Stat */}
                 <Typography
                   sx={{
-                    fontSize: { xs: "2rem", md: "2.4rem" },
+                    fontSize: { xs: "1.5rem", md: "2.4rem" },
                     fontWeight: 900,
                     color: "var(--text-primary)",
                     letterSpacing: "-0.04em",
@@ -188,7 +188,7 @@ const TrustBadges = () => {
                   fontWeight={800}
                   sx={{
                     color: "var(--text-primary)",
-                    fontSize: { xs: "1.05rem", md: "1.15rem" },
+                    fontSize: { xs: "0.95rem", md: "1.15rem" },
                     letterSpacing: "-0.01em",
                     mb: 1,
                   }}

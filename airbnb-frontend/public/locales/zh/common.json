@@ -13,5 +13,15 @@
   "listProperty": "发布房源",
   "appName": "Mehman",
   "languageAndRegion": "语言与地区",
-  "recommended": "推荐"
+  "recommended": "推荐",
+  "mobileNav": {
+    "home": "首页",
+    "map": "地图",
+    "wishlist": "心愿单",
+    "host": "房东",
+    "profile": "个人资料"
+  },
+  "upTo": "最高",
+  "amenity": "设施",
+  "price": "价格"
 }

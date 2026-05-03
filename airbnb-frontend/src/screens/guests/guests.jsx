@@ -1,5 +1,6 @@
 import React, { lazy } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
+import { useMediaQuery, Box } from "@mui/material";
 
 const Home = lazy(() => import("../../pages/home/home"));
 const Rooms = lazy(() => import("../../components/rooms/rooms"));
@@ -8,6 +9,7 @@ const Footer = lazy(() => import("../../components/footer/footer"));
 
 const Protected = lazy(() => import("../../components/protected/protected"));
 const NotificationsPage = lazy(() => import("../../pages/notifications/NotificationsPage"));
+const MobileBottomNav = lazy(() => import("../../components/home/MobileBottomBar"));
 
 const NotFoundPage = lazy(() => import("../../components/notFound/notFound"));
 const HostProfile = lazy(() => import("../../pages/profile/HostProfile"));
@@ -19,6 +21,11 @@ const RentPage = lazy(() => import("../../pages/longTerm/RentPage"));
 const ApplyPage = lazy(() => import("../../pages/longTerm/ApplyPage"));
 
 const Guests = () => {
+  const location = useLocation();
+  const isMobile = useMediaQuery("(max-width:900px)");
+  const isProfile = location.pathname.includes("/profile/");
+  const isNotifications = location.pathname.includes("/notifications");
+
   return (
     <>
       <Navbar />
@@ -47,8 +54,9 @@ const Guests = () => {
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>
-      {/* <Footer /> */}{/* Footer was outside in original, wait, it is closing Fragments */}
-      <Footer />
+      <Box sx={{ display: { xs: "block", md: "none" }, height: "80px" }} />
+      {(!isMobile || (!isProfile && !isNotifications)) && <Footer />}
+      <MobileBottomNav />
     </>
   );
 };

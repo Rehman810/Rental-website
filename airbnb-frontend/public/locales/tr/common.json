@@ -13,5 +13,15 @@
   "listProperty": "Mülkünüzü listeleyin",
   "appName": "Mehman",
   "languageAndRegion": "Dil ve Bölge",
-  "recommended": "Önerilen"
+  "recommended": "Önerilen",
+  "mobileNav": {
+    "home": "Ana Sayfa",
+    "map": "Harita",
+    "wishlist": "Favoriler",
+    "host": "Ev Sahibi",
+    "profile": "Profil"
+  },
+  "upTo": "Kadar",
+  "amenity": "Olanak",
+  "price": "Fiyat"
 }

@@ -35,6 +35,7 @@ import {
   TravelExplore as TravelIcon,
   SettingsOutlined as SettingsIcon,
   BookOnlineOutlined as BookOnlineIcon,
+  Language as GlobalIcon,
 } from "@mui/icons-material";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import handleLogout from "../logout/logout";
@@ -51,6 +52,8 @@ import NotificationBell from "../notifications/NotificationBell";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
 import RoleSwitchLoader from "../loading/RoleSwitchLoader";
 import { useTheme } from "../../context/ThemeContext";
+import LanguageToggle from "../LanguageToggle/LanguageToggle";
+import Language from "../language/Language";
 
 initializeSocket();
 
@@ -64,6 +67,9 @@ const NavbarHost = () => {
   const [avatarMenuAnchorEl, setAvatarMenuAnchorEl] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [switchState, setSwitchState] = useState({ open: false, role: '', path: '' });
+  const [langModalOpen, setLangModalOpen] = useState(false);
+
+  const toggleLangModal = () => setLangModalOpen(!langModalOpen);
 
   const handleRoleSwitch = (role, path) => {
     setSwitchState({ open: true, role, path });
@@ -115,21 +121,22 @@ const NavbarHost = () => {
       position="sticky"
       sx={{
         top: 0,
-        zIndex: 30,
-        backgroundColor: "var(--bg-primary)",
+        zIndex: 1300,
+        backgroundColor: "rgba(var(--bg-primary-rgb), 0.8)",
         color: "var(--text-primary)",
-        backdropFilter: "blur(10px)",
-        borderBottom: "1px solid",
-        borderColor: "var(--border-light)",
-        boxShadow: "none",
+        backdropFilter: "blur(20px)",
+        borderBottom: "1px solid rgba(255,255,255,0.05)",
+        boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
       }}
     >
       <Toolbar
         sx={{
-          px: { xs: 1.5, md: 2.5 },
-          py: 1,
+          px: { xs: 1.5, md: 3 },
+          py: 0.5,
           display: "flex",
           justifyContent: "space-between",
+          minHeight: { xs: "64px", md: "80px" },
           gap: 2,
         }}
       >
@@ -139,15 +146,21 @@ const NavbarHost = () => {
           sx={{
             display: "flex",
             alignItems: "center",
-            gap: 1,
+            gap: 1.2,
             cursor: "pointer",
-            minWidth: 170,
+            minWidth: { xs: 80, sm: 170 },
+            transition: "transform 0.2s ease",
+            "&:hover": { transform: "scale(1.02)" }
           }}
         >
           <img
             src={resolvedTheme === "dark" ? "/Logo-dark.png" : "/Logo-light.png"}
             alt={APP_NAME}
-            style={{ height: 60, objectFit: "contain" }}
+            style={{ 
+              height: isMobile ? 40 : 55, 
+              objectFit: "contain",
+              transition: "height 0.3s ease"
+            }}
           />
 
           <ChipLike label={t("hosting.dashboard.host")} />
@@ -219,8 +232,18 @@ const NavbarHost = () => {
         )}
 
         {/* Right - Actions */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <ThemeToggle />
+        <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 0.5, sm: 1 } }}>
+          <Box sx={{ display: { xs: "none", sm: "flex" }, alignItems: "center", gap: 0.5 }}>
+            <ThemeToggle />
+
+            <IconButton
+              onClick={toggleLangModal}
+              sx={{ color: "var(--text-primary)" }}
+            >
+              <GlobalIcon />
+            </IconButton>
+            <LanguageToggle />
+          </Box>
 
           {token && <NotificationBell />}
 
@@ -436,6 +459,16 @@ const NavbarHost = () => {
 
           <Divider sx={{ my: 2 }} />
 
+          <Typography variant="body2" color="var(--text-secondary)" sx={{ mb: 1 }}>
+            {t("hosting.dashboard.settings")}
+          </Typography>
+          <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
+             <Box sx={{ flex: 1 }}><ThemeToggle /></Box>
+             <Box sx={{ flex: 1 }}><LanguageToggle /></Box>
+          </Stack>
+
+          <Divider sx={{ my: 2 }} />
+
           <Stack spacing={1}>
             <Button
               variant="outlined"
@@ -464,6 +497,7 @@ const NavbarHost = () => {
 
       <Divider />
       {switchState.open && <RoleSwitchLoader open={switchState.open} targetRole={switchState.role} />}
+      <Language open={langModalOpen} toggleModal={toggleLangModal} />
     </AppBar>
     </RTLWrapper>
   );
@@ -473,15 +507,16 @@ const ChipLike = ({ label }) => (
   <Box
     sx={{
       ml: 1,
-      px: 1.1,
-      py: 0.35,
-      borderRadius: 999,
-      fontSize: 12,
+      px: 1.5,
+      py: 0.5,
+      borderRadius: "8px",
+      fontSize: 11,
       fontWeight: 900,
-      border: "1px solid",
-      borderColor: "var(--border-light)",
-      backgroundColor: "var(--bg-secondary)",
-      color: "var(--text-secondary)",
+      textTransform: "uppercase",
+      letterSpacing: "0.5px",
+      border: "1px solid var(--accent-primary)",
+      backgroundColor: "rgba(var(--accent-rgb), 0.1)",
+      color: "var(--accent-primary)",
       display: { xs: "none", sm: "inline-flex" },
     }}
   >

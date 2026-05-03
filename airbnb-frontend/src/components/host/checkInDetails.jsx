@@ -1,8 +1,10 @@
 import React from "react";
 import { Box, Typography, TextField } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { useAppContext } from "../../context/context";
 
 const CheckInDetails = () => {
+  const { t } = useTranslation("listingSteps");
   const {
     wifiPassword,
     setWifiPassword,
@@ -13,20 +15,20 @@ const CheckInDetails = () => {
   return (
     <Box sx={{ width: "600px", margin: "auto", p: 3 }}>
       <Typography variant="h4" fontWeight="bold" gutterBottom>
-        Add check-in details
+        {t("checkIn.title")}
       </Typography>
       <Typography variant="body1" sx={{ color: "#757575", mb: 3 }}>
-        Guests will receive this information one day before they check in.
+        {t("checkIn.subtitle")}
       </Typography>
 
       <Box sx={{ mb: 4 }}>
         <Typography variant="h6" fontWeight="bold" gutterBottom>
-          WiFi Password
+          {t("checkIn.wifi.label")}
         </Typography>
         <TextField
           fullWidth
           variant="outlined"
-          placeholder="Enter WiFi password"
+          placeholder={t("checkIn.wifi.placeholder")}
           value={wifiPassword}
           onChange={(e) => setWifiPassword(e.target.value)}
           sx={{
@@ -39,17 +41,17 @@ const CheckInDetails = () => {
 
       <Box>
         <Typography variant="h6" fontWeight="bold" gutterBottom>
-          Check-in Instructions & Pre-requisites
+          {t("checkIn.instructions.label")}
         </Typography>
         <Typography variant="body2" sx={{ color: "#757575", mb: 1 }}>
-          Tell guests how to get in, any pre-requisites (like providing ID), or other necessary things.
+          {t("checkIn.instructions.subtitle")}
         </Typography>
         <TextField
           multiline
           rows={5}
           fullWidth
           variant="outlined"
-          placeholder="Example: The key is in the lockbox code 1234. Please bring a copy of your CNIC."
+          placeholder={t("checkIn.instructions.placeholder")}
           value={checkInInstructions}
           onChange={(e) => setCheckInInstructions(e.target.value)}
           sx={{

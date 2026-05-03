@@ -64,8 +64,8 @@ const BlockedDatesManagementModal = ({ open, onClose, listing, token, onUpdate }
   }, [listing]);
 
   const handleAddBlock = () => {
-    if (!newBlockStart || !newBlockEnd) return toast.error("Select start and end dates");
-    if (dayjs(newBlockEnd).isBefore(dayjs(newBlockStart))) return toast.error("End date must be after start date");
+    if (!newBlockStart || !newBlockEnd) return toast.error(t("selectStartEnd"));
+    if (dayjs(newBlockEnd).isBefore(dayjs(newBlockStart))) return toast.error(t("endDateAfterStart"));
 
     const newBlock = {
       startDate: dayjs(newBlockStart).toISOString(),
@@ -347,10 +347,10 @@ const AvailabilityModal = ({ open, onClose, listing, token, onUpdate }) => {
                     <MenuItem value="default">
                       <em>{t("useHostDefault")}</em>
                     </MenuItem>
-                    <MenuItem value={0}>Same day</MenuItem>
-                    <MenuItem value={1}>1 day</MenuItem>
-                    <MenuItem value={2}>2 days</MenuItem>
-                    <MenuItem value={7}>7 days</MenuItem>
+                    <MenuItem value={0}>{t("sameDay")}</MenuItem>
+                    <MenuItem value={1}>{t("oneDay")}</MenuItem>
+                    <MenuItem value={2}>{t("twoDays")}</MenuItem>
+                    <MenuItem value={7}>{t("sevenDays")}</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
@@ -368,10 +368,10 @@ const AvailabilityModal = ({ open, onClose, listing, token, onUpdate }) => {
                     <MenuItem value="default">
                       <em>{t("useHostDefault")}</em>
                     </MenuItem>
-                    <MenuItem value={1}>1 month</MenuItem>
-                    <MenuItem value={3}>3 months</MenuItem>
-                    <MenuItem value={6}>6 months</MenuItem>
-                    <MenuItem value={12}>12 months</MenuItem>
+                    <MenuItem value={1}>{t("oneMonth")}</MenuItem>
+                    <MenuItem value={3}>{t("threeMonths")}</MenuItem>
+                    <MenuItem value={6}>{t("sixMonths")}</MenuItem>
+                    <MenuItem value={12}>{t("twelveMonths")}</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
@@ -474,7 +474,7 @@ const CancellationPolicyModal = ({ open, onClose, listing, token, onUpdate }) =>
   };
 
   const handleCreateCustom = async () => {
-    if (!customName) return toast.error("Name required");
+    if (!customName) return toast.error(t("nameRequired"));
     const payload = {
       type: 'CUSTOM',
       name: customName,
@@ -493,8 +493,8 @@ const CancellationPolicyModal = ({ open, onClose, listing, token, onUpdate }) =>
       setPolicies([...policies, res.data]);
       setSelectedPolicyId(res.data._id);
       setCreatingCustom(false);
-      toast.success("Custom policy created");
-    } catch (e) { toast.error("Failed to create policy"); }
+      toast.success(t("customPolicyCreated"));
+    } catch (e) { toast.error(t("failedCreatePolicy")); }
   };
 
   const handleSave = async () => {
@@ -547,7 +547,7 @@ const CancellationPolicyModal = ({ open, onClose, listing, token, onUpdate }) =>
                 </Typography>
 
                 <FormControl fullWidth>
-                  <InputLabel shrink>Policy</InputLabel>
+                  <InputLabel shrink>{t("policy")}</InputLabel>
                   <Select
                     value={selectedPolicyId || ""}
                     onChange={(e) => setSelectedPolicyId(e.target.value)}
@@ -560,7 +560,7 @@ const CancellationPolicyModal = ({ open, onClose, listing, token, onUpdate }) =>
                             <Typography fontWeight={800}>{p.name}</Typography>
                             {p.type === "CUSTOM" && (
                               <Chip
-                                label="Custom"
+                                label={t("custom")}
                                 size="small"
                                 variant="outlined"
                                 color="primary"
@@ -889,7 +889,7 @@ const ListingPage = () => {
           />
 
           <Chip
-            label={isDisabled ? t("hosting.listings.disabled") : (item.status === 'active' ? t("hosting.listings.active") : t("hosting.listings.pending"))}
+            label={isDisabled ? t("listings:hosting.listings.disabled") : (item.status === 'active' ? t("listings:hosting.listings.active") : t("listings:hosting.listings.pending"))}
             size="small"
             sx={{
               position: "absolute",
@@ -1072,7 +1072,7 @@ const ListingPage = () => {
 
           {showIcon && <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mt: 1.5 }} onClick={() => navigate(`/hosting/listings/${item._id}`)}>
             <Typography variant="caption" color="var(--text-secondary)" fontWeight={800}>
-              {t("hosting.listings.view")} →
+              {t("listings:hosting.listings.view")} →
             </Typography>
           </Stack>}
         </CardContent>
@@ -1106,10 +1106,10 @@ const ListingPage = () => {
           {/* Left */}
           <Box sx={{ textAlign: isRTL ? { xs: "center", md: "right" } : { xs: "center", md: "left" } }}>
             <Typography variant="h5" fontWeight={900}>
-              {t("hosting.listings.title")}
+              {t("listings:hosting.listings.title")}
             </Typography>
             <Typography variant="body2" color="var(--text-secondary)">
-              {t("hosting.listings.desc")}
+              {t("listings:hosting.listings.desc")}
             </Typography>
           </Box>
 
@@ -1124,7 +1124,7 @@ const ListingPage = () => {
             }}
           >
             <TextField
-              placeholder={t("hosting.listings.searchPlaceholder")}
+              placeholder={t("listings:hosting.listings.searchPlaceholder")}
               size="small"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -1154,7 +1154,7 @@ const ListingPage = () => {
             <Button
               variant="outlined"
               onClick={async () => {
-                const confirm = window.confirm(t("hosting.listings.resetConfirm"));
+                const confirm = window.confirm(t("listings:hosting.listings.resetConfirm"));
                 if (confirm) {
                   try {
                     await apiClient.post(`${API_BASE_URL}/listings/migrate-modes`, {}, {
@@ -1166,7 +1166,7 @@ const ListingPage = () => {
               }}
               sx={{ borderRadius: "999px", textTransform: "none", fontWeight: 800, color: "var(--text-secondary)" }}
             >
-              {t("hosting.listings.resetAll")}
+              {t("listings:hosting.listings.resetAll")}
             </Button>
 
             <Button
@@ -1183,7 +1183,7 @@ const ListingPage = () => {
                 flexDirection: isRTL ? "row-reverse" : "row"
               }}
             >
-              {t("hosting.listings.newListing")}
+              {t("listings:hosting.listings.newListing")}
             </Button>
           </Stack>
         </Toolbar>
@@ -1195,7 +1195,7 @@ const ListingPage = () => {
         {/* Confirmed */}
         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
           <Typography variant="h6" fontWeight={900}>
-            {t("hosting.listings.confirmed")}
+            {t("listings:hosting.listings.confirmed")}
           </Typography>
           <Chip
             label={`${filteredConfirmed?.length || 0} ${t("items")}`}
@@ -1226,10 +1226,10 @@ const ListingPage = () => {
                 }}
               >
                 <Typography variant="h6" fontWeight={900}>
-                  {t("hosting.listings.noConfirmed")}
+                  {t("listings:hosting.listings.noConfirmed")}
                 </Typography>
                 <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 1 }}>
-                  {t("hosting.listings.noConfirmedDesc")}
+                  {t("listings:hosting.listings.noConfirmedDesc")}
                 </Typography>
 
                 <Button
@@ -1255,7 +1255,7 @@ const ListingPage = () => {
         {/* Pending */}
         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
           <Typography variant="h6" fontWeight={900}>
-            {t("hosting.listings.pendingVerification")}
+            {t("listings:hosting.listings.pendingVerification")}
           </Typography>
           <Chip
             label={`${filteredTemp?.length || 0} ${t("items")}`}

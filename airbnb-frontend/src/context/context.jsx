@@ -10,6 +10,7 @@ export const useAppContext = () => {
 
 export const AppProvider = ({ children }) => {
   const [searchVisible, setSearchVisible] = useState(false);
+  const [globalMapVisible, setGlobalMapVisible] = useState(false);
 
   // Persistence Helpers
   const getSaved = (key, fallback) => {
@@ -178,7 +179,9 @@ export const AppProvider = ({ children }) => {
     langauge,
     setLanguage,
     hostSettings,
-    fetchHostSettings
+    fetchHostSettings,
+    globalMapVisible,
+    setGlobalMapVisible
   };
 
   return (

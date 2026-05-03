@@ -3,8 +3,10 @@ import { Dropzone } from "@files-ui/react";
 import { Box, Typography, Grid, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useAppContext } from "../../context/context";
+import { useTranslation } from "react-i18next";
 
 const ImageUploader = () => {
+  const { t } = useTranslation("listingSteps");
   const { uploadedImages, setUploadedImages } = useAppContext();
   const [files, setFiles] = useState(uploadedImages || []);
 
@@ -21,10 +23,10 @@ const ImageUploader = () => {
   return (
     <Box sx={{ width: "600px", margin: "auto", p: 3 }}>
       <Typography variant="h6" fontWeight="bold" gutterBottom>
-        Choose at least 3 photos
+        {t("images.title")}
       </Typography>
       <Typography variant="body2" sx={{ mb: 2, color: "#757575" }}>
-        Drag to reorder
+        {t("images.subtitle")}
       </Typography>
 
       <Dropzone
@@ -33,8 +35,8 @@ const ImageUploader = () => {
         accept="image/*"
         maxFiles={8}
         minFiles={3}
-        label="Drag and drop your photos here"
-        uploadingMessage="Uploading..."
+        label={t("images.dropzoneLabel")}
+        uploadingMessage={t("images.uploading")}
         footer={false}
       >
         {files.length > 0 ? (
@@ -75,7 +77,7 @@ const ImageUploader = () => {
                       borderRadius: "4px",
                     }}
                   >
-                    Cover Photo
+                    {t("images.coverPhoto")}
                   </Typography>
                   <IconButton
                     onClick={() => removeFile(0)}
@@ -151,7 +153,7 @@ const ImageUploader = () => {
                     fontSize: "14px",
                   }}
                 >
-                  Add more
+                  {t("images.addMore")}
                 </Box>
               </Grid>
             ))}
@@ -166,7 +168,7 @@ const ImageUploader = () => {
               fontSize: "14px",
             }}
           >
-            Drag and drop photos here
+            {t("images.dragDrop")}
           </Box>
         )}
       </Dropzone>

@@ -5,6 +5,7 @@ import HouseIcon from "@mui/icons-material/House";
 import ApartmentIcon from "@mui/icons-material/Apartment";
 import BarnIcon from "@mui/icons-material/StoreMallDirectory";
 import { useAppContext } from "../../context/context";
+import { useTranslation } from "react-i18next";
 
 const StyledPaper = styled(Paper)(({ theme, selected }) => ({
   padding: theme.spacing(2),
@@ -39,6 +40,7 @@ const propertyTypes = [
 ];
 
 const PlaceType = () => {
+  const { t } = useTranslation("listingSteps");
   const { placeType, setPlaceType } = useAppContext();
 
   const select = (type) => {
@@ -48,7 +50,7 @@ const PlaceType = () => {
   return (
     <Box sx={{ py: 5, px: 5 }}>
       <Typography variant="h4" fontWeight="bold" gutterBottom textAlign="center">
-        Which type of place will guests have?
+        {t("placeType.heading")}
       </Typography>
       <Grid container spacing={3} justifyContent="center">
         {propertyTypes.map((property) => (
@@ -60,10 +62,10 @@ const PlaceType = () => {
             >
               <Box>
                 <Typography variant="h6" fontWeight="bold">
-                  {property.name}
+                  {t(`placeType.types.${property.name}.title`)}
                 </Typography>
                 <Typography variant="body2" color="var(--text-secondary)">
-                  {property.text}
+                  {t(`placeType.types.${property.name}.desc`)}
                 </Typography>
               </Box>
               <Box>{property.icon}</Box>

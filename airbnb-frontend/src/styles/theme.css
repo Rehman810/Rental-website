@@ -4,10 +4,13 @@
     --primary-hover: #F55056;
 
     --bg-primary: #FFFFFF;
+    --bg-primary-rgb: 255, 255, 255;
     --bg-secondary: #F7F7F7;
+    --bg-secondary-rgb: 247, 247, 247;
     --bg-tertiary: #FFFFFF;
     --bg-input: #FFFFFF;
     --bg-card: #FFFFFF;
+    --accent-rgb: 255, 90, 95; /* Match primary #FF5A5F */
 
     --text-primary: #222222;
     --text-secondary: #717171;
@@ -43,13 +46,16 @@
     --primary-hover: #FF7074;
 
     --bg-primary: #121212;
+    --bg-primary-rgb: 18, 18, 18;
     /* Material Dark primary buffer */
     --bg-secondary: #1E1E1E;
+    --bg-secondary-rgb: 30, 30, 30;
     /* Elev 1 */
     --bg-tertiary: #2C2C2C;
     /* Elev 2 */
     --bg-input: #2C2C2C;
     --bg-card: #1E1E1E;
+    --accent-rgb: 255, 90, 95;
 
     --text-primary: #EAEAEA;
     --text-secondary: #A0A0A0;

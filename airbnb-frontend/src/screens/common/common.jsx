@@ -2,6 +2,7 @@ import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import React, { lazy } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
+import { useMediaQuery, Box } from "@mui/material";
 
 const Protected = lazy(() => import("../../components/protected/protected"));
 const ProfileSection = lazy(() => import("../../components/profile/profile"));
@@ -20,12 +21,15 @@ const Navbar = lazy(() => import("../../components/navbar/navbar2"));
 const Footer = lazy(() => import("../../components/footer/footer"));
 
 const Reviews = lazy(() => import("../../components/reviews/reviews"));
+const MobileBottomNav = lazy(() => import("../../components/home/MobileBottomBar"));
 
 const CommonRoutes = () => {
   const location = useLocation();
+  const isMobile = useMediaQuery("(max-width:900px)");
 
   const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
   const isMessage = location.pathname.includes("guestAllMessages") || location.pathname.includes("guestMessages");
+  const isProfileOrWishlist = location.pathname.includes("/profile") || location.pathname.includes("/wishlist");
 
   return (
     <>
@@ -86,9 +90,11 @@ const CommonRoutes = () => {
           />
         </Routes>
       </div>
-      {!isMessage && (
+      <Box sx={{ display: { xs: "block", md: "none" }, height: "80px" }} />
+      {!isMessage && (!isMobile || !isProfileOrWishlist) && (
         <Footer />
       )}
+      <MobileBottomNav />
     </>
   );
 };

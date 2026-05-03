@@ -14,6 +14,7 @@ import enLanguages from "../../public/locales/en/languages.json";
 import enListings from "../../public/locales/en/listings.json";
 import enProfile from "../../public/locales/en/profile.json";
 import enLogin from "../../public/locales/en/login.json";
+import enListingSteps from "../../public/locales/en/listingSteps.json";
 
 // Urdu
 import urCommon from "../../public/locales/ur/common.json";
@@ -27,6 +28,7 @@ import urLanguages from "../../public/locales/ur/languages.json";
 import urListings from "../../public/locales/ur/listings.json";
 import urProfile from "../../public/locales/ur/profile.json";
 import urLogin from "../../public/locales/ur/login.json";
+import urListingSteps from "../../public/locales/ur/listingSteps.json";
 
 // Arabic
 import arCommon from "../../public/locales/ar/common.json";
@@ -40,6 +42,7 @@ import arLanguages from "../../public/locales/ar/languages.json";
 import arListings from "../../public/locales/ar/listings.json";
 import arProfile from "../../public/locales/ar/profile.json";
 import arLogin from "../../public/locales/ar/login.json";
+import arListingSteps from "../../public/locales/ar/listingSteps.json";
 
 // German
 import deCommon from "../../public/locales/de/common.json";
@@ -82,9 +85,9 @@ import zhTranslation from "../../public/locales/zh/translation.json";
 import zhLanguages from "../../public/locales/zh/languages.json";
 
 const resources = {
-  en: { common: enCommon, homepage: enHomepage, listing: enListing, booking: enBooking, navbar: enNavbar, footer: enFooter, translation: enTranslation, languages: enLanguages, listings: enListings, profile: enProfile, login: enLogin },
-  ur: { common: urCommon, homepage: urHomepage, listing: urListing, booking: urBooking, navbar: urNavbar, footer: urFooter, translation: urTranslation, languages: urLanguages, listings: urListings, profile: urProfile, login: urLogin },
-  ar: { common: arCommon, homepage: arHomepage, listing: arListing, booking: arBooking, navbar: arNavbar, footer: arFooter, translation: arTranslation, languages: arLanguages, listings: arListings, profile: arProfile, login: arLogin },
+  en: { common: enCommon, homepage: enHomepage, listing: enListing, booking: enBooking, navbar: enNavbar, footer: enFooter, translation: enTranslation, languages: enLanguages, listings: enListings, profile: enProfile, login: enLogin, listingSteps: enListingSteps },
+  ur: { common: urCommon, homepage: urHomepage, listing: urListing, booking: urBooking, navbar: urNavbar, footer: urFooter, translation: urTranslation, languages: urLanguages, listings: urListings, profile: urProfile, login: urLogin, listingSteps: urListingSteps },
+  ar: { common: arCommon, homepage: arHomepage, listing: arListing, booking: arBooking, navbar: arNavbar, footer: arFooter, translation: arTranslation, languages: arLanguages, listings: arListings, profile: arProfile, login: arLogin, listingSteps: arListingSteps },
   de: { common: deCommon, homepage: deHomepage, listing: deListing, booking: deBooking, navbar: deNavbar, footer: deFooter, translation: deTranslation, languages: deLanguages },
   fr: { common: frCommon, homepage: frHomepage, listing: frListing, booking: frBooking, navbar: frNavbar, footer: frFooter, translation: frTranslation, languages: frLanguages },
   tr: { common: trCommon, homepage: trHomepage, listing: trListing, booking: trBooking, navbar: trNavbar, footer: trFooter, translation: trTranslation, languages: trLanguages },
@@ -98,7 +101,7 @@ i18n
     debug: false,
     fallbackLng: "en",
     supportedLngs: ["en", "ur", "ar", "de", "fr", "tr", "zh"],
-    ns: ["common", "homepage", "listing", "booking", "translation", "footer", "navbar", "languages", "listings", "profile", "login"],
+    ns: ["common", "homepage", "listing", "booking", "translation", "footer", "navbar", "languages", "listings", "profile", "login", "listingSteps"],
     defaultNS: "common",
     resources,
     interpolation: {

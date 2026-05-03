@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Box, Typography, Grid, Paper } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useAppContext } from "../../context/context";
+import { useTranslation } from "react-i18next";
 
 const StyledPaper = styled(Paper)(({ theme, selected }) => ({
   padding: theme.spacing(3),
@@ -23,6 +24,7 @@ const StyledPaper = styled(Paper)(({ theme, selected }) => ({
 }));
 
 const PropertyType = ({ type = [], heading, isAmenties }) => {
+  const { t } = useTranslation(["listingSteps", "common"]);
   const { amenties, setAmenties, propertyType, setPropertyType } = useAppContext();
 
   const select = (name) => {
@@ -74,7 +76,9 @@ const PropertyType = ({ type = [], heading, isAmenties }) => {
                 fontWeight="bold"
                 sx={{ marginTop: 1 }}
               >
-                {property.name}
+                {isAmenties 
+                  ? t(`common:amenitiesList.${property.name}`, property.name)
+                  : t(`propertyType.types.${property.name}`, property.name)}
               </Typography>
             </StyledPaper>
           </Grid>

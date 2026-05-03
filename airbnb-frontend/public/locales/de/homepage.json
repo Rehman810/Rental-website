@@ -1,10 +1,29 @@
 {
-  "title": "Finden Sie Ihren nächsten Aufenthalt",
-  "subtitle": "Entdecken Sie die besten Häuser und Orte in ganz Pakistan",
+  "overline": "Pakistans Nr. 1 Immobilienmarktplatz",
+  "titlePart1": "Premium-Aufenthalte finden",
+  "titlePart2": "die auf Sie zugeschnitten sind",
+  "subtitle": "Entdecken Sie verifizierte Immobilien in ganz Pakistan – von Strandvillen bis hin zu Rückzugsorten in den Bergen.",
   "searchPlaceholder": "Wohin soll es gehen?",
   "listProperty": "Inserieren Sie Ihre Immobilie",
   "ctaTitle": "Finden Sie Ihr nächstes Zuhause",
   "ctaTitleRed": "mit Vertrauen",
   "ctaSubtitle": "Ob Küstenrückzugsort oder Loft in der Innenstadt – unsere kuratierte Sammlung sorgt dafür, dass Ihr nächster Aufenthalt außergewöhnlich wird.",
-  "ctaButton": "Jetzt Suche starten"
+  "ctaButton": "Jetzt Suche starten",
+  "sections": {
+    "trending": "Beliebt in {{city}}",
+    "trendingSubtitle": "Am häufigsten gebuchte Aufenthalte in Ihrer Nähe",
+    "topRated": "Top-bewertete Häuser",
+    "topRatedSubtitle": "Gäste lieben diese – mit 4+ Sternen bewertet",
+    "luxury": "Luxus-Kollektion",
+    "luxurySubtitle": "Premium-Immobilien ab PKR 15.000 / Nacht",
+    "recentlyAdded": "Kürzlich hinzugefügt",
+    "recentlyAddedSubtitle": "Frische Angebote – seien Sie der Erste, der bucht"
+  },
+  "suggestions": [
+    { "label": "DHA Lahore", "query": "luxury apartment in DHA Lahore" },
+    { "label": "Strandvilla Karatschi", "query": "beach villa in Karachi" },
+    { "label": "Günstige Apartments", "query": "budget apartments under 20k" },
+    { "label": "Murree Cottage", "query": "cottage in Murree" },
+    { "label": "Hunza Retreat", "query": "retreat in Hunza" }
+  ]
 }

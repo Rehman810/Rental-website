@@ -1,10 +1,22 @@
 {
-  "title": "Bir sonraki konaklamanızı bulun",
-  "subtitle": "Pakistan'daki en iyi evleri ve yerleri keşfedin",
+  "overline": "Pakistan'ın 1 Numaralı Emlak Pazarı",
+  "titlePart1": "Size özel hazırlanmış",
+  "titlePart2": "premium konaklamaları bulun",
+  "subtitle": "Pakistan genelinde doğrulanmış mülkleri keşfedin – sahil villalarından dağ evlerine kadar.",
   "searchPlaceholder": "Nereye gitmeli?",
   "listProperty": "Mülkünüzü listeleyin",
   "ctaTitle": "Bir Sonraki Evinizi Bulun",
   "ctaTitleRed": "Güvenle",
   "ctaSubtitle": "İster kıyıdaki bir dinlenme yeri ister şehir merkezindeki bir çatı katı olsun, koleksiyonumuz bir sonraki konaklamanızın olağanüstü olmasını sağlar.",
-  "ctaButton": "Şimdi Aramaya Başla"
+  "ctaButton": "Şimdi Aramaya Başla",
+  "sections": {
+    "trending": "{{city}} şehrinde popüler",
+    "trendingSubtitle": "Yakınınızdaki en çok rezerve edilen konaklamalar",
+    "topRated": "En İyi Puanlı Evler",
+    "topRatedSubtitle": "Misafirler bunları seviyor – 4+ yıldızlı",
+    "luxury": "Lüks Koleksiyon",
+    "luxurySubtitle": "15.000 PKR / gece üzerindeki premium mülkler",
+    "recentlyAdded": "Son Eklenenler",
+    "recentlyAddedSubtitle": "Yeni ilanlar – ilk rezervasyon yapan siz olun"
+  }
 }

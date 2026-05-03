@@ -1,0 +1,245 @@
+{
+  "createListing": "Create your listing",
+  "exit": "Exit",
+  "next": "Next",
+  "back": "Back",
+  "getStarted": "Get Started",
+  "getStartedPage": {
+    "title": "It’s easy to get started on {{appName}}",
+    "step1": {
+      "title": "1. Tell us about your place",
+      "desc": "Share some basic info, like where it is and how many guests can stay."
+    },
+    "step2": {
+      "title": "2. Make it stand out",
+      "desc": "Add 5 or more photos plus a title and description—we’ll help you out."
+    },
+    "step3": {
+      "title": "3. Finish up and publish",
+      "desc": "Choose a starting price, verify a few details, then publish your listing."
+    }
+  },
+  "finish": "Finish",
+  "basics": {
+    "title": "Let's start with the basics",
+    "subtitle": "How many people can stay here?",
+    "guests": "Guests",
+    "bedrooms": "Bedrooms",
+    "beds": "Beds"
+  },
+  "listingType": {
+    "label": "Listing Type",
+    "title": "What kind of listing is this?",
+    "subtitle": "Choose the model that best fits your needs.",
+    "comingSoon": "Coming Soon",
+    "types": {
+      "SHORT_TERM": {
+        "name": "Short Term Rental",
+        "text": "Host guests for nightly stays."
+      },
+      "LONG_TERM": {
+        "name": "Monthly Lease",
+        "text": "Long-term rentals with leases & deposits."
+      },
+      "FOR_SALE": {
+        "name": "Property Sale",
+        "text": "List your property for sale to buyers."
+      }
+    }
+  },
+  "step": "Step {{number}}",
+  "step1": {
+    "label": "Step 1",
+    "title": "Tell us about your place",
+    "description": "In this step, we'll ask you which type of property you have and if guests will book the entire place or just a room. Then let us know the location and how many guests can stay."
+  },
+  "step2": {
+    "label": "Step 2",
+    "title": "Make your place stand out",
+    "description": "In this step, you’ll add some of the amenities your place offers, plus 5 or more photos. Then you’ll create a title and description."
+  },
+  "step3": {
+    "label": "Step 3",
+    "title": "Finish up and publish",
+    "description": "Finally, you’ll choose booking settings, set up pricing and publish your listing."
+  },
+  "address": {
+    "title": "Confirm your address",
+    "desc": "Your address is only shared with guests after they've made a reservation.",
+    "country": "Country/region",
+    "street": "Street address",
+    "flat": "Flat, floor, bldg",
+    "city": "City",
+    "area": "Town / county / area (if applicable)",
+    "postcode": "Postcode (if applicable)",
+    "showLocation": "Show your specific location",
+    "showLocationDesc": "Make it clear to guests where your place is located. We'll only share your address after they've made a reservation.",
+    "learnMore": "Learn more",
+    "selectCity": "Select City",
+    "cities": {
+      "Karachi": "Karachi",
+      "Islamabad": "Islamabad",
+      "Lahore": "Lahore"
+    }
+  },
+  "propertyType": {
+    "heading": "Which of these best describes your place?",
+    "types": {
+      "House": "House",
+      "Apartment": "Apartment",
+      "Shared Room": "Shared Room",
+      "Bed & breakfast": "Bed & breakfast",
+      "Boat": "Boat",
+      "Cabin": "Cabin",
+      "Campervan/motorhome": "Campervan/motorhome",
+      "Casa particular": "Casa particular",
+      "Castle": "Castle",
+      "Plot": "Plot",
+      "Commercial": "Commercial"
+    }
+  },
+  "images": {
+    "title": "Choose at least 3 photos",
+    "subtitle": "Drag to reorder",
+    "dropzoneLabel": "Drag and drop your photos here",
+    "uploading": "Uploading...",
+    "coverPhoto": "Cover Photo",
+    "addMore": "Add more",
+    "dragDrop": "Drag and drop photos here"
+  },
+  "amenities": {
+    "heading": "Tell guests what your place has to offer"
+  },
+  "placeType": {
+    "heading": "Which type of place will guests have?",
+    "types": {
+      "Entire Place": {
+        "title": "An entire place",
+        "desc": "Guests have the whole place to themselves."
+      },
+      "A Room": {
+        "title": "A room",
+        "desc": "Guests have their own room in a home, plus access to shared spaces."
+      },
+      "A Shared Room": {
+        "title": "A shared room",
+        "desc": "Guests sleep in a room or common area that may be shared with others."
+      }
+    }
+  },
+  "title": {
+    "heading": "Now, let's give your house a title",
+    "para": "Short titles work best. Have fun with it – you can always change it later.",
+    "placeholder": "Your Title"
+  },
+  "description": {
+    "heading": "Create your description",
+    "para": "Share what makes your place special.",
+    "placeholder": "You'll have a great time at this comfortable place to stay"
+  },
+  "pricing": {
+    "weekday": {
+      "label": "Weekday Price",
+      "heading": "Now, set a weekday base price",
+      "para": "Tip: Rs 2000. You’ll set a weekend price next."
+    },
+    "weekend": {
+      "label": "Weekend Price",
+      "heading": "Set a weekend price",
+      "para": "Add a premium for Fridays and Sunday."
+    },
+    "monthlyRent": {
+      "label": "Monthly Rent",
+      "heading": "Set monthly rent",
+      "para": "How much do you want to charge per month?"
+    },
+    "securityDeposit": {
+      "label": "Security Deposit",
+      "heading": "Set security deposit",
+      "para": "Amount to cover potential damages."
+    },
+    "salePrice": {
+      "label": "Sale Price",
+      "heading": "Set sale price",
+      "para": "How much are you selling this property for?"
+    },
+    "guestPriceBeforeTaxes": "Guest price before taxes",
+    "weekdayWeekendExplainer": "Weekdays are from Monday to Thursday, while the weekend includes Friday through Sunday."
+  },
+  "lease": {
+    "title": "Lease Details",
+    "subtitle": "Specify the terms for your long-term rental.",
+    "minDuration": "Minimum Lease Duration (Months)",
+    "utilities": {
+      "label": "Utilities Policy",
+      "options": {
+        "included": "Included",
+        "partial": "Partial",
+        "excluded": "Excluded"
+      }
+    },
+    "furnishing": {
+      "label": "Furnishing Status",
+      "options": {
+        "furnished": "Furnished",
+        "semi-furnished": "Semi-Furnished",
+        "unfurnished": "Unfurnished"
+      }
+    },
+    "availabilityStart": "Availability Start Date"
+  },
+  "sale": {
+    "title": "Property Sale Details",
+    "subtitle": "Fill in the ownership and property type details.",
+    "propertyType": "Property Type",
+    "ownership": {
+      "label": "Ownership Status",
+      "helper": "e.g. Freehold, Leasehold"
+    },
+    "visit": {
+      "label": "Visit Availability",
+      "helper": "e.g. Weekends 10am-4pm"
+    }
+  },
+  "checkIn": {
+    "title": "Add check-in details",
+    "subtitle": "Guests will receive this information one day before they check in.",
+    "wifi": {
+      "label": "WiFi Password",
+      "placeholder": "Enter WiFi password"
+    },
+    "instructions": {
+      "label": "Check-in Instructions & Pre-requisites",
+      "subtitle": "Tell guests how to get in, any pre-requisites (like providing ID), or other necessary things.",
+      "placeholder": "Example: The key is in the lockbox code 1234. Please bring a copy of your CNIC."
+    }
+  },
+  "preview": {
+    "title": "Review your listing",
+    "subtitle": "Here's what we'll show to guests. Make sure everything looks good.",
+    "showPreview": "Show preview",
+    "weekday": "Week Day",
+    "weekend": "Week End",
+    "perNight": "/ night",
+    "new": "New",
+    "whatsNext": "What's next?",
+    "confirmTitle": "Confirm a few details and publish",
+    "confirmSubtitle": "We’ll let you know if you need to verify your identity or register with the local government.",
+    "calendarTitle": "Set up your calendar",
+    "calendarSubtitle": "Choose which dates your listing is available. It will be visible 24 hours after you publish.",
+    "settingsTitle": "Adjust your settings",
+    "settingsSubtitle": "Set house rules, select a cancellation policy, choose how guests book and more.",
+    "fullPreview": "Full preview",
+    "location": "Location",
+    "hostedBy": "Place to stay in a home hosted by {{name}}",
+    "details": "{{guests}} guests · {{bedrooms}} bedroom · {{beds}} bed"
+  },
+  "generateWithAi": "Generate with AI",
+  "generating": "Generating...",
+  "currency": "Rs",
+  "success": {
+    "title": "Success!",
+    "text": "Your listing has been successfully created!",
+    "button": "Go to Listings"
+  }
+}

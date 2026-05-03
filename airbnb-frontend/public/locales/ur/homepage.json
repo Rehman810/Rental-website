@@ -1,6 +1,8 @@
 {
-  "title": "اپنا اگلا قیام تلاش کریں",
-  "subtitle": "پاکستان بھر میں بہترین گھروں اور جگہوں کو دریافت کریں",
+  "overline": "پاکستان کا نمبر 1 پراپرٹی مارکیٹ پلیس",
+  "titlePart1": "پریمیم قیام تلاش کریں",
+  "titlePart2": "جو آپ کے لیے خاص ہوں",
+  "subtitle": "پاکستان بھر میں تصدیق شدہ پراپرٹیز دریافت کریں — ساحلی ولاز سے لے کر پہاڑی تفریح گاہوں تک۔",
   "searchPlaceholder": "کہاں جانا ہے؟",
   "listProperty": "اپنی پراپرٹی لگائیں",
   "ctaTitle": "اپنا اگلا گھر تلاش کریں",
@@ -19,6 +21,14 @@
   "featuredLocationsSubtitle": "ان بہترین مقامات میں پاکستان کی خوبصورتی دریافت کریں",
   "staysCount": "{{count}}+ قیام",
   "trustBadges": {
+    "overline": "ہمیں کیوں منتخب کریں",
+    "title": "ہزاروں کا بھروسہ",
+    "subtitle": "ہر لسٹنگ کی دستی طور پر تصدیق کی جاتی ہے۔ ہر ادائیگی محفوظ ہے۔ ہر قیام کی ضمانت ہے۔",
+    "statLabels": {
+      "verified": "تصدیق شدہ",
+      "encrypted": "انکرپٹڈ",
+      "users": "صارفین"
+    },
     "verifiedHosts": {
       "title": "تصدیق شدہ میزبان",
       "description": "شناختی کارڈ سے تصدیق شدہ مالکان"
@@ -31,5 +41,30 @@
       "title": "24/7 مدد",
       "description": "ہمیشہ آپ کی مدد کے لیے حاضر ہیں"
     }
+  },
+  "sections": {
+    "trending": "{{city}} میں ٹرینڈنگ",
+    "trendingSubtitle": "آپ کے قریب سب سے زیادہ بک ہونے والے قیام",
+    "topRated": "بہترین ریٹنگ والے گھر",
+    "topRatedSubtitle": "مہمانوں کو یہ پسند ہیں — 4+ ستاروں کے ساتھ",
+    "luxury": "لگژری کلیکشن",
+    "luxurySubtitle": "PKR 15,000 / رات سے زیادہ پریمیم پراپرٹیز",
+    "recentlyAdded": "حال ہی میں شامل کیے گئے",
+    "recentlyAddedSubtitle": "تازہ فہرستیں — بک کرنے والے پہلے فرد بنیں"
+  },
+  "suggestions": [
+    { "label": "ڈی ایچ اے لاہور", "query": "luxury apartment in DHA Lahore" },
+    { "label": "کراچی بیچ ولا", "query": "beach villa in Karachi" },
+    { "label": "بجٹ اپارٹمنٹس", "query": "budget apartments under 20k" },
+    { "label": "مری کاٹیج", "query": "cottage in Murree" },
+    { "label": "ہنزہ ریٹریٹ", "query": "retreat in Hunza" }
+  ],
+  "searchResults": {
+    "searching": "تلاش کر رہا ہے...",
+    "found": "{{count}} قیام ملے",
+    "foundIn": "\"{{query}}\" کے لیے {{count}} قیام ملے",
+    "noResults": "کوئی لسٹنگ نہیں ملی",
+    "noResultsSubtitle": "اپنی تلاش کو تبدیل کرنے یا کچھ فلٹرز ہٹانے کی کوشش کریں۔",
+    "clearFilters": "فلٹرز صاف کریں"
   }
 }

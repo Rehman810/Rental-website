@@ -140,7 +140,13 @@ const GuestMessages = () => {
         flex: 1,
         display: "flex",
         flexDirection: "column",
-        height: { xs: "calc(100vh - 65px)", md: "calc(100vh - 85px)" },
+        height: { xs: "calc(100dvh - 135px)", md: "calc(100vh - 85px)" },
+        overflow: "hidden",
+        position: "fixed",
+        top: { xs: "65px", md: "85px" },
+        left: 0,
+        right: 0,
+        bottom: { xs: "70px", md: 0 }
       }}
     >
       {/* Chat Header */}

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography, TextField, Button, CircularProgress } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { useAppContext } from "../../context/context";
 import { postData } from "../../config/ServiceApi/serviceApi";
 
 const DescriptionInput = ({ max, heading, para, placholder, isTitle }) => {
+  const { t } = useTranslation("listingSteps");
   const {
     description: contextDescription,
     title: contextTitle,
@@ -84,7 +86,7 @@ const DescriptionInput = ({ max, heading, para, placholder, isTitle }) => {
               }
             }}
           >
-            {isGenerating ? "Generating..." : "Generate with AI"}
+            {isGenerating ? t("generating") : t("generateWithAi")}
           </Button>
         )}
       </Box>

@@ -69,6 +69,7 @@ import { postData } from "../../config/ServiceApi/serviceApi";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import LeafletMap from "../map/map2";
+import { useTranslation } from "react-i18next";
 
 const GetStarted = lazy(() => import("../../components/host/getStarted"));
 
@@ -76,7 +77,7 @@ const propertyTypes = [
   { name: "House", icon: <HouseIcon fontSize="large" /> },
   { name: "Apartment", icon: <ApartmentIcon fontSize="large" /> },
   { name: "Shared Room", icon: <BarnIcon fontSize="large" /> },
-  { name: "Bed & breakfast'", icon: <BreakfastDiningIcon fontSize="large" /> },
+  { name: "Bed & breakfast", icon: <BreakfastDiningIcon fontSize="large" /> },
   { name: "Boat", icon: <DirectionsBoatIcon fontSize="large" /> },
   { name: "Cabin", icon: <CabinIcon fontSize="large" /> },
   { name: "Campervan/motorhome", icon: <RvHookupIcon fontSize="large" /> },
@@ -87,6 +88,7 @@ const propertyTypes = [
 
 
 function ListingSteps() {
+  const { t } = useTranslation(["listingSteps", "translation"]);
   const {
     placeType,
     propertyType,
@@ -115,7 +117,7 @@ function ListingSteps() {
 
   const token = getAuthToken();
   const navigate = useNavigate();
-  usePageTitle("Create your listing");
+  usePageTitle(t("createListing"));
   const theme = useTheme();
   const [activeStep, setActiveStep] = useState(() => {
     return parseInt(localStorage.getItem("listing_activeStep")) || 0;
@@ -139,23 +141,23 @@ function ListingSteps() {
     if (listingType === 'SHORT_TERM') {
       pricingSteps = [
         {
-          label: "Weekday Price",
+          label: t("pricing.weekday.label"),
           content: (
             <Pricing
               isWeekDay={true}
-              heading={"Now, set a weekday base price"}
-              para={`Tip: Rs 2000. You’ll set a weekend price next.`}
+              heading={t("pricing.weekday.heading")}
+              para={t("pricing.weekday.para")}
               pricing={2000}
             />
           ),
         },
         {
-          label: "Weekend Price",
+          label: t("pricing.weekend.label"),
           content: (
             <Pricing
               isWeekDay={false}
-              heading={"Set a weekend price"}
-              para={`Add a premium for Fridays and Sunday.`}
+              heading={t("pricing.weekend.heading")}
+              para={t("pricing.weekend.para")}
               pricing={3000}
             />
           ),
@@ -164,28 +166,28 @@ function ListingSteps() {
     } else if (listingType === 'LONG_TERM') {
       pricingSteps = [
         {
-          label: "Lease Details",
+          label: t("leaseDetails"),
           content: <LeaseDetails leaseConfig={leaseConfig} setLeaseConfig={setLeaseConfig} />
         },
         {
-          label: "Monthly Rent",
+          label: t("pricing.monthlyRent.label"),
           content: (
             <GenericPricing
               value={leaseConfig?.monthlyRent || 0}
               onChange={setMonthlyRent}
-              heading={"Set monthly rent"}
-              para={"How much do you want to charge per month?"}
+              heading={t("pricing.monthlyRent.heading")}
+              para={t("pricing.monthlyRent.para")}
             />
           ),
         },
         {
-          label: "Security Deposit",
+          label: t("pricing.securityDeposit.label"),
           content: (
             <GenericPricing
               value={leaseConfig?.securityDeposit || 0}
               onChange={setSecurityDeposit}
-              heading={"Set security deposit"}
-              para={"Amount to cover potential damages."}
+              heading={t("pricing.securityDeposit.heading")}
+              para={t("pricing.securityDeposit.para")}
             />
           ),
         }
@@ -193,17 +195,17 @@ function ListingSteps() {
     } else if (listingType === 'FOR_SALE') {
       pricingSteps = [
         {
-          label: "Sale Details",
+          label: t("saleDetails"),
           content: <SaleDetails saleConfig={saleConfig} setSaleConfig={setSaleConfig} />
         },
         {
-          label: "Sale Price",
+          label: t("pricing.salePrice.label"),
           content: (
             <GenericPricing
               value={saleConfig?.salePrice || 0}
               onChange={setSalePrice}
-              heading={"Set sale price"}
-              para={"How much are you selling this property for?"}
+              heading={t("pricing.salePrice.heading")}
+              para={t("pricing.salePrice.para")}
             />
           ),
         }
@@ -211,99 +213,95 @@ function ListingSteps() {
     }
 
     return [
-      { label: "Listing Type", content: <ListingTypeSelection /> },
-      { label: "Step 1", content: <GetStarted /> },
+      { label: t("listingType.label"), content: <ListingTypeSelection /> },
+      { label: t("step", { number: 1 }), content: <GetStarted /> },
       {
-        label: "Step 2",
+        label: t("step", { number: 2 }),
         content: (
           <Step1
             stepNo={1}
-            title={"Tell us about your place"}
-            description={`In this step, we'll ask you which type of property you have and if
-                guests will book the entire place or just a room. Then let us know
-                the location and how many guests can stay.`}
+            title={t("step1.title")}
+            description={t("step1.description")}
           />
         ),
       },
       {
-        label: "Step 3",
+        label: t("step", { number: 3 }),
         content: (
           <PropertyType
             type={propertyTypes}
-            heading={"Which of these best describes your place?"}
+            heading={t("propertyType.heading")}
           />
         ),
       },
-      { label: "Step 4", content: <PlaceType /> },
+      { label: t("step", { number: 4 }), content: <PlaceType /> },
       {
-        label: "Step 5",
+        label: t("step", { number: 5 }),
         content: <LeafletMap />,
       },
-      { label: "Step 6", content: <AddressForm /> },
-      { label: "Step 7", content: <GuestCounter /> },
+      { label: t("step", { number: 6 }), content: <AddressForm /> },
+      { label: t("step", { number: 7 }), content: <GuestCounter /> },
       {
-        label: "Step 8",
+        label: t("step", { number: 8 }),
         content: (
           <Step1
             stepNo={2}
-            title={"Make your place stand out"}
-            description={`In this step, you’ll add some of the amenities your place offers, plus 5 or more photos. Then you’ll create a title and description.`}
+            title={t("step2.title")}
+            description={t("step2.description")}
           />
         ),
       },
       {
-        label: "Step 9",
+        label: t("step", { number: 9 }),
         content: (
           <PropertyType
             type={ALL_AMENITIES}
-            heading={"Tell guests what your place has to offer"}
+            heading={t("amenities.heading")}
             isAmenties={true}
           />
         ),
       },
-      { label: "Step 10", content: <ImageUploader /> },
+      { label: t("step", { number: 10 }), content: <ImageUploader /> },
       {
-        label: "Step 11",
+        label: t("step", { number: 11 }),
         content: (
           <DescriptionInput
             isTitle={true}
-            heading={"Now, let's give your house a title"}
-            para={`Short titles work best. Have fun with it – you can always change it later.`}
+            heading={t("title.heading")}
+            para={t("title.para")}
             max={32}
-            placholder={"Your Title"}
+            placholder={t("title.placeholder")}
           />
         ),
       },
       {
-        label: "Step 12",
+        label: t("step", { number: 12 }),
         content: (
           <DescriptionInput
-            heading={"Create your description"}
-            para={`Share what makes your place special.`}
+            heading={t("description.heading")}
+            para={t("description.para")}
             max={500}
-            placholder={
-              "You'll have a great time at this comfortable place to stay"
-            }
+            placholder={t("description.placeholder")}
           />
         ),
       },
       {
-        label: "Step 13",
+        label: t("step", { number: 13 }),
         content: <CheckInDetails />,
       },
       {
-        label: "Step 14",
+        label: t("step", { number: 14 }),
         content: (
           <Step1
             stepNo={3}
-            title={"Finish up and publish"}
-            description={`Finally, you’ll choose booking settings, set up pricing and publish your listing.`}
+            title={t("step3.title")}
+            description={t("step3.description")}
             animation={animationData}
           />
         ),
       },
       ...pricingSteps,
-      { label: "Step 16", content: <ListingPreview /> },
+      { label: t("step", { number: 16 }), content: <ListingPreview /> },
     ];
   }, [listingType, leaseConfig, saleConfig, address, uploadedImages]); // Add dependencies
 
@@ -361,10 +359,10 @@ function ListingSteps() {
     try {
       const response = await postData("listings", formData, true);
       Swal.fire({
-        title: "Success!",
-        text: "Your listing has been successfully created!",
+        title: t("success.title"),
+        text: t("success.text"),
         icon: "success",
-        confirmButtonText: "Go to Listings",
+        confirmButtonText: t("success.button"),
       }).then(() => {
         // Handle post-creation navigation/reset
         resetListingState();
@@ -413,7 +411,7 @@ function ListingSteps() {
               }}
               onClick={() => navigate(-1)}
             >
-              Exit
+              {t("exit")}
             </Button>
           </Box>
         </Toolbar>
@@ -453,10 +451,10 @@ function ListingSteps() {
               sx={{ color: "var(--text-primary)" }}
             >
               {activeStep === 0
-                ? "Get Started"
+                ? t("getStarted")
                 : activeStep === steps.length - 1
-                  ? "Finish"
-                  : "Next"}
+                  ? t("finish")
+                  : t("next")}
               {theme.direction === "rtl" ? (
                 <KeyboardArrowLeft />
               ) : (
@@ -476,7 +474,7 @@ function ListingSteps() {
               ) : (
                 <KeyboardArrowLeft />
               )}
-              Back
+              {t("back")}
             </Button>
           }
           sx={{

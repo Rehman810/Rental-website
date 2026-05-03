@@ -3,6 +3,7 @@ import { Box, Typography, Grid, Divider, IconButton } from "@mui/material";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
 import { useAppContext } from "../../context/context";
+import { useTranslation } from "react-i18next";
 
 const CounterRow = ({ label, value, onDecrement, onIncrement }) => (
   <Grid
@@ -60,6 +61,7 @@ const CounterRow = ({ label, value, onDecrement, onIncrement }) => (
 );
 
 const GuestCounter = () => {
+  const { t } = useTranslation("listingSteps");
   const { guestCount, setGuestCount } = useAppContext();
   const [guests, setGuests] = useState(guestCount?.guests || 4);
   const [bedrooms, setBedrooms] = useState(guestCount?.bedrooms || 1);
@@ -72,29 +74,29 @@ const GuestCounter = () => {
   return (
     <Box sx={{ p: 4, width: "600px", margin: "auto", backgroundColor: "var(--background-color)" }}>
       <Typography variant="h4" fontWeight="bold" gutterBottom>
-        Let&apos;s start with the basics
+        {t("basics.title")}
       </Typography>
       <Typography variant="body1" sx={{ mb: 3 }}>
-        How many people can stay here?
+        {t("basics.subtitle")}
       </Typography>
 
       <Divider />
       <CounterRow
-        label="Guests"
+        label={t("basics.guests")}
         value={guests}
         onDecrement={() => setGuests((prev) => Math.max(1, prev - 1))}
         onIncrement={() => setGuests((prev) => prev + 1)}
       />
       <Divider />
       <CounterRow
-        label="Bedrooms"
+        label={t("basics.bedrooms")}
         value={bedrooms}
         onDecrement={() => setBedrooms((prev) => Math.max(1, prev - 1))}
         onIncrement={() => setBedrooms((prev) => prev + 1)}
       />
       <Divider />
       <CounterRow
-        label="Beds"
+        label={t("basics.beds")}
         value={beds}
         onDecrement={() => setBeds((prev) => Math.max(1, prev - 1))}
         onIncrement={() => setBeds((prev) => prev + 1)}

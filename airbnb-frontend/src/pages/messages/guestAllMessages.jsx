@@ -130,7 +130,17 @@ const GuestAllMessages = () => {
   };
 
   return (
-    <Box sx={{ height: { xs: "calc(100vh - 65px)", md: "calc(100vh - 85px)" }, display: "flex", bgcolor: "var(--bg-primary)" }}>
+    <Box sx={{ 
+      height: { xs: "calc(100dvh - 135px)", md: "calc(100vh - 85px)" }, 
+      display: "flex", 
+      bgcolor: "var(--bg-primary)",
+      overflow: "hidden",
+      position: "fixed",
+      top: { xs: "65px", md: "85px" },
+      left: 0,
+      right: 0,
+      bottom: { xs: "70px", md: 0 }
+    }}>
       {(!isMobile || !showChat) && (
         <Box
           sx={{

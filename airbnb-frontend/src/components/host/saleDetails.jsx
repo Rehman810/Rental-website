@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography, TextField, MenuItem, Stack } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const propertyTypeOptions = [
     { value: 'House', label: 'House' },
@@ -9,6 +10,7 @@ const propertyTypeOptions = [
 ];
 
 const SaleDetails = ({ saleConfig, setSaleConfig }) => {
+    const { t } = useTranslation("listingSteps");
     const handleChange = (field, value) => {
         setSaleConfig((prev) => ({ ...prev, [field]: value }));
     };
@@ -16,38 +18,38 @@ const SaleDetails = ({ saleConfig, setSaleConfig }) => {
     return (
         <Box sx={{ maxWidth: 600, mx: "auto", p: 3 }}>
             <Typography variant="h5" fontWeight="bold" gutterBottom>
-                Property Sale Details
+                {t("sale.title")}
             </Typography>
             <Typography variant="body1" color="textSecondary" sx={{ mb: 4 }}>
-                Fill in the ownership and property type details.
+                {t("sale.subtitle")}
             </Typography>
 
             <Stack spacing={3}>
                 <TextField
                     select
-                    label="Property Type"
+                    label={t("sale.propertyType")}
                     fullWidth
                     value={saleConfig.propertyType || ''}
                     onChange={(e) => handleChange('propertyType', e.target.value)}
                 >
                     {propertyTypeOptions.map((option) => (
                         <MenuItem key={option.value} value={option.value}>
-                            {option.label}
+                            {t(`propertyType.types.${option.value}`, option.label)}
                         </MenuItem>
                     ))}
                 </TextField>
 
                 <TextField
-                    label="Ownership Status"
-                    helperText="e.g. Freehold, Leasehold"
+                    label={t("sale.ownership.label")}
+                    helperText={t("sale.ownership.helper")}
                     fullWidth
                     value={saleConfig.ownershipStatus || ''}
                     onChange={(e) => handleChange('ownershipStatus', e.target.value)}
                 />
 
                 <TextField
-                    label="Visit Availability"
-                    helperText="e.g. Weekends 10am-4pm"
+                    label={t("sale.visit.label")}
+                    helperText={t("sale.visit.helper")}
                     fullWidth
                     value={saleConfig.visitAvailability || ''}
                     onChange={(e) => handleChange('visitAvailability', e.target.value)}

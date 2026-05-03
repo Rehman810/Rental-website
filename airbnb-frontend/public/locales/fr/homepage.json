@@ -1,10 +1,22 @@
 {
-  "title": "Trouvez votre prochain séjour",
-  "subtitle": "Découvrez les meilleures maisons et lieux à travers le Pakistan",
+  "overline": "N°1 de l'immobilier au Pakistan",
+  "titlePart1": "Trouvez des séjours premium",
+  "titlePart2": "adaptés pour vous",
+  "subtitle": "Découvrez des propriétés vérifiées à travers le Pakistan – des villas en bord de mer aux retraites montagnardes.",
   "searchPlaceholder": "Où aller ?",
   "listProperty": "Inscrire votre propriété",
   "ctaTitle": "Trouvez votre prochaine maison",
   "ctaTitleRed": "en toute confiance",
   "ctaSubtitle": "Qu'il s'agisse d'une retraite côtière ou d'un loft en centre-ville, notre collection garantit que votre prochain séjour sera extraordinaire.",
-  "ctaButton": "Commencer la recherche"
+  "ctaButton": "Commencer la recherche",
+  "sections": {
+    "trending": "Tendance à {{city}}",
+    "trendingSubtitle": "Séjours les plus réservés près de chez vous",
+    "topRated": "Maisons les mieux notées",
+    "topRatedSubtitle": "Les voyageurs les adorent – notées 4+ étoiles",
+    "luxury": "Collection de luxe",
+    "luxurySubtitle": "Propriétés premium au-dessus de 15 000 PKR / nuit",
+    "recentlyAdded": "Récemment ajouté",
+    "recentlyAddedSubtitle": "Nouvelles annonces – soyez le premier à réserver"
+  }
 }

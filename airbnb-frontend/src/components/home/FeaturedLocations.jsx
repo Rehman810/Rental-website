@@ -27,7 +27,7 @@ const locations = [
 ];
 
 const FeaturedLocations = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(["homepage", "translation"]);
 
   return (
     <Container maxWidth="xl" sx={{ mt: { xs: 8, md: 10 }, mb: 6 }}>

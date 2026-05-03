@@ -283,25 +283,26 @@ const Navbar = () => {
   return (
     <RTLWrapper>
     <AppBar
-      position="static"
+      position="fixed"
       sx={{
-        backgroundColor: "var(--bg-primary)",
+        backgroundColor: "rgba(var(--bg-primary-rgb), 0.8)",
         color: "var(--text-primary)",
-        boxShadow: "none",
-        position: "sticky",
+        boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
         top: 0,
-        zIndex: 10,
-        borderBottom: "1px solid var(--border-light)",
-        transition: "background-color 0.2s ease, color 0.2s ease",
-
-        backdropFilter: "none",
+        left: 0,
+        right: 0,
+        zIndex: 1300,
+        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+        backdropFilter: "blur(20px)",
+        borderBottom: "1px solid rgba(255,255,255,0.05)",
       }}
     >
       <Toolbar
         sx={{
           display: "flex",
           justifyContent: "space-between",
-          padding: "0 16px",
+          padding: { xs: "0 12px", sm: "0 24px" },
+          minHeight: { xs: "64px", md: "80px" },
         }}
       >
         <Box
@@ -311,13 +312,19 @@ const Navbar = () => {
             alignItems: "center",
             gap: 1,
             cursor: "pointer",
-            minWidth: 160,
+            minWidth: { xs: 80, sm: 160 },
+            transition: "transform 0.2s ease",
+            "&:hover": { transform: "scale(1.02)" }
           }}
         >
           <img
             src={resolvedTheme === "dark" ? "/Logo-dark.png" : "/Logo-light.png"}
             alt={APP_NAME}
-            style={{ height: 80, objectFit: "contain", paddingTop: "10px" }}
+            style={{ 
+              height: isMobile ? 40 : 70, 
+              objectFit: "contain",
+              transition: "height 0.3s ease"
+            }}
           />
         </Box>
 
@@ -338,7 +345,7 @@ const Navbar = () => {
             sx={{
               display: "flex",
               alignItems: "center",
-              gap: "10px",
+              gap: { xs: "5px", sm: "10px" },
             }}
           >
             <Button
@@ -349,7 +356,7 @@ const Navbar = () => {
                 color: "var(--text-primary)",
                 display: {
                   xs: "none",
-                  sm: "inline-flex",
+                  md: "inline-flex",
                 },
                 fontSize: "14px",
               }}
@@ -358,18 +365,31 @@ const Navbar = () => {
               {t("navbar:switchToHosting")}
             </Button>
             {token && <NotificationBell />}
-            <LanguageToggle />
-
-            <ThemeToggle />
+            
+            <Box sx={{ display: { xs: "none", sm: "flex" }, alignItems: "center", gap: 1 }}>
+              <IconButton
+                onClick={toggleModal}
+                sx={{ color: "var(--text-primary)" }}
+              >
+                <GlobalIcon />
+              </IconButton>
+              <LanguageToggle />
+              <ThemeToggle />
+            </Box>
           </Box>
           <Box
             sx={{
               display: "flex",
               alignItems: "center",
-              border: "1px solid var(--border-light)",
+              border: isMobile ? "none" : "1px solid var(--border-light)",
               borderRadius: "30px",
-              padding: "5px 10px",
-              gap: "10px",
+              padding: isMobile ? "0" : "5px 12px",
+              gap: "8px",
+              transition: "all 0.2s ease",
+              "&:hover": {
+                boxShadow: isMobile ? "none" : "0 4px 12px rgba(0,0,0,0.1)",
+                borderColor: isMobile ? "none" : "var(--text-secondary)"
+              }
             }}
           >
             <Box
@@ -388,17 +408,22 @@ const Navbar = () => {
                 flexDirection: "row",
                 cursor: "pointer",
               }}
-            >{!isMobile &&
-              <IconButton
-              >
-                <MenuIcon />
-              </IconButton>}
+            >
+              {!isMobile && (
+                <IconButton size="small" sx={{ mr: 0.5 }}>
+                  <MenuIcon sx={{ fontSize: 20 }} />
+                </IconButton>
+              )}
               <Avatar
                 sx={{
                   bgcolor: user?.photoProfile ? "transparent" : "var(--bg-secondary)",
                   color: user?.photoProfile ? "inherit" : "var(--text-tertiary)",
-                  width: 32,
-                  height: 32,
+                  width: isMobile ? 36 : 32,
+                  height: isMobile ? 36 : 32,
+                  border: user?.photoProfile ? "2px solid var(--bg-primary)" : "none",
+                  boxShadow: user?.photoProfile ? "0 0 0 1px var(--border-light)" : "none",
+                  fontWeight: 900,
+                  fontSize: "14px"
                 }}
                 src={user?.photoProfile || null}
               >
@@ -427,12 +452,14 @@ const Navbar = () => {
         PaperProps={{
           sx: {
             width: 300,
+            zIndex: 1400,
             [isRTL ? "borderTopRightRadius" : "borderTopLeftRadius"]: 18,
             [isRTL ? "borderBottomRightRadius" : "borderBottomLeftRadius"]: 18,
           },
         }}
+        sx={{ zIndex: 1400 }}
       >
-        <Box sx={{ p: 2 }}>
+        <Box sx={{ p: 2, pb: 12 }}>
           {/* Header */}
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -544,6 +571,18 @@ const Navbar = () => {
 
             <Divider />
 
+            <Box sx={{ py: 1 }}>
+              <Typography variant="caption" sx={{ px: 1, color: "var(--text-secondary)", fontWeight: 700, textTransform: "uppercase" }}>
+                {t("translation:settings")}
+              </Typography>
+              <Stack direction="row" spacing={1} sx={{ mt: 1, px: 1 }}>
+                <Box sx={{ flex: 1 }}><ThemeToggle /></Box>
+                <Box sx={{ flex: 1 }}><LanguageToggle /></Box>
+              </Stack>
+            </Box>
+
+            <Divider />
+
             <Button
               onClick={() => {
                 navigate("/user/help/feature");
@@ -561,7 +600,7 @@ const Navbar = () => {
                 startIcon={<LogoutIcon />}
                 color="error"
                 variant="contained"
-                sx={{ borderRadius: 2, fontWeight: 900 }}
+                sx={{ borderRadius: 2, fontWeight: 900, mt: 2 }}
               >
                 {t("translation:menu.verified.logout")}
               </Button>
@@ -586,6 +625,8 @@ const Navbar = () => {
 
       {switchState.open && <RoleSwitchLoader open={switchState.open} targetRole={switchState.role} />}
     </AppBar>
+    {/* Spacer so page content starts below the fixed navbar */}
+    <Box sx={{ height: { xs: "64px", md: "80px" } }} />
     </RTLWrapper>
   );
 };

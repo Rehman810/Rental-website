@@ -8,8 +8,10 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import { useAppContext } from "../../context/context";
+import { useTranslation } from "react-i18next";
 
 const PriceSection = ({ pricing, heading, para, isWeekDay }) => {
+  const { t } = useTranslation("listingSteps");
   const { weekDayPrice, weekendPrice, setWeekEndPrice, setWeekDayPrice } = useAppContext();
   
   // Use the price from context if it exists, otherwise use the default pricing prop
@@ -81,7 +83,7 @@ const PriceSection = ({ pricing, heading, para, isWeekDay }) => {
             }}
             InputProps={{
               startAdornment: (
-                <InputAdornment position="start">Rs</InputAdornment>
+                <InputAdornment position="start">{t("currency")}</InputAdornment>
               ),
               endAdornment: (
                 <InputAdornment position="end">
@@ -103,7 +105,7 @@ const PriceSection = ({ pricing, heading, para, isWeekDay }) => {
               fontWeight: "bold",
             }}
           >
-            Rs {price}
+            {t("currency")} {price}
             <IconButton sx={{ ml: 1 }} onClick={toggleEditable}>
               <EditIcon />
             </IconButton>
@@ -112,12 +114,11 @@ const PriceSection = ({ pricing, heading, para, isWeekDay }) => {
       </Box>
 
       <Typography variant="body2" sx={{ color: "gray", mt: 1 }}>
-        Guest price before taxes Rs{(price * 1.11).toFixed(2)}
+        {t("pricing.guestPriceBeforeTaxes")} {t("currency")}{(price * 1.11).toFixed(2)}
       </Typography>
 
       <Typography variant="body2" sx={{ color: "var(--text-secondary)", mt: 1 }}>
-        Weekdays are from Monday to Thursday, while the weekend includes Friday
-        through Sunday.
+        {t("pricing.weekdayWeekendExplainer")}
       </Typography>
     </Box>
   );

@@ -30,7 +30,7 @@ const Footer = () => {
         borderColor: "divider",
       }}
     >
-      <Container maxWidth="lg" sx={{ py: { xs: 4, md: 5 } }}>
+      <Container maxWidth="lg" sx={{ pt: { xs: 4, md: 5 }, pb: { xs: 12, md: 5 } }}>
         {/* Top Section */}
         <Grid container spacing={3}>
           {/* Brand / Intro */}

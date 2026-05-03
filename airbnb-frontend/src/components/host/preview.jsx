@@ -11,8 +11,10 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useAppContext } from "../../context/context";
+import { useTranslation } from "react-i18next";
 
 const ListingCard = () => {
+  const { t } = useTranslation("listingSteps");
   const [isModalOpen, setModalOpen] = useState(false);
   const {
     placeType,
@@ -48,10 +50,10 @@ const ListingCard = () => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", p: 2, marginTop: "100px" }}>
       <Typography variant="h4" sx={{ mb: 1 }}>
-        Review your listing
+        {t("preview.title")}
       </Typography>
       <Typography variant="body1" sx={{ color: "var(--text-secondary)", mb: 3 }}>
-        Here's what we'll show to guests. Make sure everything looks good.
+        {t("preview.subtitle")}
       </Typography>
       <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, alignItems: "center", justifyContent: "space-between" }}>
         <Card
@@ -89,7 +91,7 @@ const ListingCard = () => {
               boxShadow: 1,
             }}
           >
-            Show preview
+            {t("preview.showPreview")}
           </Button>
 
           <CardContent sx={{ display: "flex", justifyContent: "space-between", p: 2 }}>
@@ -98,10 +100,10 @@ const ListingCard = () => {
                 {title}
               </Typography>
               <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                <Typography component="span" variant="body1"> Week Day </Typography>Rs {weekDayPrice} <Typography component="span" variant="body2">/ night</Typography>
+                <Typography component="span" variant="body1"> {t("preview.weekday")} </Typography>{t("currency")} {weekDayPrice} <Typography component="span" variant="body2">{t("preview.perNight")}</Typography>
               </Typography>
               <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                <Typography component="span" variant="body1"> Week End </Typography>Rs {weekendPrice} <Typography component="span" variant="body2">/ night</Typography>
+                <Typography component="span" variant="body1"> {t("preview.weekend")} </Typography>{t("currency")} {weekendPrice} <Typography component="span" variant="body2">{t("preview.perNight")}</Typography>
               </Typography>
             </Box>
             <Typography
@@ -114,42 +116,40 @@ const ListingCard = () => {
                 alignSelf: "center",
               }}
             >
-              New
+              {t("preview.new")}
             </Typography>
           </CardContent>
         </Card>
 
         <Box sx={{ mt: 4, width: "100%", maxWidth: 800, textAlign: "left" }}>
           <Typography variant="h5" sx={{ mb: 2 }}>
-            What's next?
+            {t("preview.whatsNext")}
           </Typography>
 
           <Box sx={{ mb: 2 }}>
             <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
-              Confirm a few details and publish
+              {t("preview.confirmTitle")}
             </Typography>
             <Typography variant="body2" sx={{ color: "var(--text-secondary)" }}>
-              We’ll let you know if you need to verify your identity or register with the local
-              government.
+              {t("preview.confirmSubtitle")}
             </Typography>
           </Box>
 
           <Box sx={{ mb: 2 }}>
             <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
-              Set up your calendar
+              {t("preview.calendarTitle")}
             </Typography>
             <Typography variant="body2" sx={{ color: "var(--text-secondary)" }}>
-              Choose which dates your listing is available. It will be visible 24 hours after you
-              publish.
+              {t("preview.calendarSubtitle")}
             </Typography>
           </Box>
 
           <Box>
             <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
-              Adjust your settings
+              {t("preview.settingsTitle")}
             </Typography>
             <Typography variant="body2" sx={{ color: "var(--text-secondary)" }}>
-              Set house rules, select a cancellation policy, choose how guests book and more.
+              {t("preview.settingsSubtitle")}
             </Typography>
           </Box>
         </Box>
@@ -183,7 +183,7 @@ const ListingCard = () => {
             }}
           >
             <Typography id="modal-title" variant="h6" component="h2">
-              Full preview
+              {t("preview.fullPreview")}
             </Typography>
             <IconButton onClick={closeModal}>
               <CloseIcon />
@@ -205,16 +205,16 @@ const ListingCard = () => {
                 {title}
               </Typography>
               <Typography variant="body2" sx={{ color: "var(--text-secondary)", mb: 2 }}>
-                Place to stay in a home hosted by Abdul
+                {t("preview.hostedBy", { name: "Abdul" })}
               </Typography>
               <Typography variant="body2" sx={{ color: "var(--text-secondary)", mb: 2 }}>
-                {`${guestCount.guests} guests · ${guestCount.bedrooms} bedroom · ${guestCount.beds} bed`}
+                {t("preview.details", { guests: guestCount.guests, bedrooms: guestCount.bedrooms, beds: guestCount.beds })}
               </Typography>
               <Typography variant="body2" sx={{ mb: 2 }}>
                 {description}
               </Typography>
               <Typography variant="subtitle2" sx={{ fontWeight: "bold", mb: 1 }}>
-                Location
+                {t("preview.location")}
               </Typography>
               <Typography variant="body2" sx={{ color: "var(--text-secondary)" }}>
                 {formatAddress(address)}

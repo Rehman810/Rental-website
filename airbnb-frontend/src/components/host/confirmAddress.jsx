@@ -14,8 +14,10 @@ import {
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { useAppContext } from "../../context/context";
 import LeafletMap from "../map/map";
+import { useTranslation } from "react-i18next";
 
 const AddressForm = () => {
+  const { t } = useTranslation("listingSteps");
   const [showLocation, setShowLocation] = useState(true);
   const [country, setCountry] = useState("Pakistan - PK");
   const { setAddress, contextLatitude, contextLongitude } = useAppContext();
@@ -50,11 +52,10 @@ const AddressForm = () => {
   return (
     <Box sx={{ p: 4, maxWidth: 600, margin: "auto" }}>
       <Typography variant="h5" fontWeight="bold" gutterBottom>
-        Confirm your address
+        {t("address.title")}
       </Typography>
       <Typography variant="body2" color="var(--text-secondary)" sx={{ mb: 2 }}>
-        Your address is only shared with guests after they've made a
-        reservation.
+        {t("address.desc")}
       </Typography>
 
       <Box
@@ -63,7 +64,7 @@ const AddressForm = () => {
       >
         <TextField
           select
-          label="Country/region"
+          label={t("address.country")}
           value={country}
           onChange={(e) => handleFieldChange("country", e.target.value)}
           variant="outlined"
@@ -73,12 +74,12 @@ const AddressForm = () => {
           <MenuItem value="USA - US">USA - US</MenuItem> */}
         </TextField>
         <TextField
-          label="Street address"
+          label={t("address.street")}
           variant="outlined"
           onChange={(e) => handleFieldChange("streetAddress", e.target.value)}
         />
         <TextField
-          label="Flat, floor, bldg"
+          label={t("address.flat")}
           variant="outlined"
           onChange={(e) => handleFieldChange("flat", e.target.value)}
         />
@@ -90,7 +91,7 @@ const AddressForm = () => {
         /> */}
 
         <FormControl fullWidth variant="outlined">
-          <InputLabel>City</InputLabel>
+          <InputLabel>{t("address.city")}</InputLabel>
           <Select
             value={selectedCity}
             onChange={handleCityChange}
@@ -98,20 +99,20 @@ const AddressForm = () => {
           >
             {cities.map((city) => (
               <MenuItem key={city.name} value={city.name}>
-                {city.label}
+                {t(`address.cities.${city.name}`)}
               </MenuItem>
             ))}
           </Select>
         </FormControl>
 
         <TextField
-          label="Town / county / area (if applicable)"
+          label={t("address.area")}
           defaultValue="Sindh"
           variant="outlined"
           onChange={(e) => handleFieldChange("area", e.target.value)}
         />
         <TextField
-          label="Postcode (if applicable)"
+          label={t("address.postcode")}
           variant="outlined"
           onChange={(e) => handleFieldChange("postcode", e.target.value)}
         />
@@ -126,17 +127,16 @@ const AddressForm = () => {
         }
         label={
           <Typography variant="body2" fontWeight="bold">
-            Show your specific location
+            {t("address.showLocation")}
           </Typography>
         }
         sx={{ mt: 3 }}
       />
-      <Typography variant="body2" color="var(--text-secondary)">
-        Make it clear to guests where your place is located. We'll only share
-        your address after they've made a reservation.
+      <Typography variant="body2" sx={{ color: "var(--text-secondary)" }}>
+        {t("address.showLocationDesc")}
         <Typography component="span" color="primary" sx={{ cursor: "pointer" }}>
           {" "}
-          Learn more
+          {t("address.learnMore")}
         </Typography>
       </Typography>
 

@@ -13,5 +13,15 @@
   "listProperty": "Mettre votre logement",
   "appName": "Mehman",
   "languageAndRegion": "Langue et région",
-  "recommended": "Recommandé"
+  "recommended": "Recommandé",
+  "mobileNav": {
+    "home": "Accueil",
+    "map": "Carte",
+    "wishlist": "Favoris",
+    "host": "Hôte",
+    "profile": "Profil"
+  },
+  "upTo": "Jusqu'à",
+  "amenity": "Équipement",
+  "price": "Prix"
 }

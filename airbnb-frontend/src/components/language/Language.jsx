@@ -11,6 +11,7 @@ import {
   Box,
   Paper,
   Stack,
+  useMediaQuery,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -23,18 +24,19 @@ const Language = ({ open, toggleModal }) => {
   const { setLanguage } = useAppContext();
   const { t } = useTranslation(["common", "languages"]);
   const isRTL = useRTL();
+  const isMobile = useMediaQuery("(max-width:1100px)");
 
   const languages = [
-    { code: "en" },
-    { code: "zh" },
+    { code: "en", name: "English", region: "United States" },
+    { code: "zh", name: "中文", region: "中国" },
   ];
 
   const otherLanguages = [
-    { code: "tr" },
-    { code: "ar" },
-    { code: "ur" },
-    { code: "fr" },
-    { code: "de" },
+    { code: "tr", name: "Türkçe", region: "Türkiye" },
+    { code: "ar", name: "العربية", region: "المملكة العربية السعودية" },
+    { code: "ur", name: "اردو", region: "پاکستان" },
+    { code: "fr", name: "Français", region: "France" },
+    { code: "de", name: "Deutsch", region: "Deutschland" },
   ];
 
   const changeLanguage = (lng) => {
@@ -48,7 +50,7 @@ const Language = ({ open, toggleModal }) => {
       <Paper
         elevation={0}
         onClick={() => {
-          setLanguage({ code: lng.code, lang: t(`languages:${lng.code}.lang`) });
+          setLanguage({ code: lng.code, lang: lng.name });
           changeLanguage(lng.code);
 
           const token = getAuthToken();
@@ -73,25 +75,26 @@ const Language = ({ open, toggleModal }) => {
             boxShadow: "0 18px 45px rgba(0,0,0,0.10)",
             borderColor: "text.primary",
           },
+          width: isMobile ? "100%" : "50%"
         }}
       >
         <RTLWrapper>
           <Stack direction="row" alignItems="center" justifyContent="space-between" >
-          <Box>
-            <Typography sx={{ fontWeight: 900, fontSize: 16 }}>
-              {t(`languages:${lng.code}.lang`)}
-            </Typography>
-            <Typography variant="body2" color="" sx={{ mt: 0.3 }}>
-              {t(`languages:${lng.code}.region`)}
-            </Typography>
-          </Box>
+            <Box>
+              <Typography sx={{ fontWeight: 900, fontSize: 16 }}>
+                {lng.name}
+              </Typography>
+              <Typography variant="body2" color="" sx={{ mt: 0.3 }}>
+                {lng.region}
+              </Typography>
+            </Box>
 
-          {isActive && (
-            <CheckCircleIcon sx={{ fontSize: 20, color: "success.main" }} />
-          )}
-        </Stack>
-      </RTLWrapper>
-    </Paper>
+            {isActive && (
+              <CheckCircleIcon sx={{ fontSize: 20, color: "success.main" }} />
+            )}
+          </Stack>
+        </RTLWrapper>
+      </Paper>
     );
   };
 
@@ -109,79 +112,79 @@ const Language = ({ open, toggleModal }) => {
       }}
     >
       <RTLWrapper>
-      {/* Header */}
-      <DialogTitle
-        sx={{
-          px: 3,
-          py: 2,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          borderBottom: "1px solid",
-          borderColor: "divider",
-          backgroundColor: "var(--bg-card)",
-          backdropFilter: "blur(10px)",
-        }}
-      >
-        <Box>
-          <Typography variant="h6" fontWeight={900}>
-            {t("common:languageAndRegion")}
-          </Typography>
-          <Typography variant="body2" color="" sx={{ mt: 0.3 }}>
-            {t("common:selectPreferredLanguage")}
-          </Typography>
-        </Box>
-
-        <IconButton
-          onClick={toggleModal}
+        {/* Header */}
+        <DialogTitle
           sx={{
-            borderRadius: 2,
-            "&:hover": { backgroundColor: "rgba(0,0,0,0.06)" },
+            px: 3,
+            py: 2,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            borderBottom: "1px solid",
+            borderColor: "divider",
+            backgroundColor: "var(--bg-card)",
+            backdropFilter: "blur(10px)",
           }}
         >
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
+          <Box>
+            <Typography variant="h6" fontWeight={900}>
+              {t("common:languageAndRegion")}
+            </Typography>
+            <Typography variant="body2" color="" sx={{ mt: 0.3 }}>
+              {t("common:selectPreferredLanguage")}
+            </Typography>
+          </Box>
 
-      {/* Body */}
-      <DialogContent
-        sx={{
-          px: 3,
-          py: 3,
-          maxHeight: "65vh",
-        }}
-      >
-        {/* Primary Languages */}
-        <Box sx={{ mb: 2 }}>
-          <Typography fontWeight={900} sx={{ mb: 1 }}>
-            {t("common:recommended")}
-          </Typography>
-          <Grid container spacing={2}>
-            {languages.map((lng) => (
-              <Grid item xs={12} sm={6} md={4} key={lng.code}>
-                <LanguageCard lng={lng} />
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
+          <IconButton
+            onClick={toggleModal}
+            sx={{
+              borderRadius: 2,
+              "&:hover": { backgroundColor: "rgba(0,0,0,0.06)" },
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
 
-        <Divider sx={{ my: 3 }} />
+        {/* Body */}
+        <DialogContent
+          sx={{
+            px: 3,
+            py: 3,
+            maxHeight: "65vh",
+          }}
+        >
+          {/* Primary Languages */}
+          <Box sx={{ mb: 2 }}>
+            <Typography fontWeight={900} sx={{ mb: 1 }}>
+              {t("common:recommended")}
+            </Typography>
+            <Grid container spacing={2}>
+              {languages.map((lng) => (
+                <Grid item xs={12} sm={6} md={4} key={lng.code}>
+                  <LanguageCard lng={lng} />
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
 
-        {/* Other Languages */}
-        <Box>
-          <Typography fontWeight={900} sx={{ mb: 1 }}>
-            {t("common:moreLanguages")}
-          </Typography>
+          <Divider sx={{ my: 3 }} />
 
-          <Grid container spacing={2}>
-            {otherLanguages.map((lng) => (
-              <Grid item xs={12} sm={6} md={4} key={lng.code}>
-                <LanguageCard lng={lng} />
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
-      </DialogContent>
+          {/* Other Languages */}
+          <Box>
+            <Typography fontWeight={900} sx={{ mb: 1 }}>
+              {t("common:moreLanguages")}
+            </Typography>
+
+            <Grid container spacing={2}>
+              {otherLanguages.map((lng) => (
+                <Grid item xs={12} sm={6} md={4} key={lng.code}>
+                  <LanguageCard lng={lng} />
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
+        </DialogContent>
       </RTLWrapper>
     </Dialog>
   );

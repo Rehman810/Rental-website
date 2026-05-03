@@ -1,6 +1,8 @@
 {
-  "title": "ابحث عن إقامتك القادمة",
-  "subtitle": "اكتشف أفضل المنازل والأماكن في جميع أنحاء باكستان",
+  "overline": "سوق العقارات رقم 1 في باكستان",
+  "titlePart1": "اعثر على إقامات فاخرة",
+  "titlePart2": "مخصصة لك",
+  "subtitle": "اكتشف عقارات موثقة في جميع أنحاء باكستان - من فيلات شاطئية إلى ملاذات جبلية.",
   "searchPlaceholder": "إلى أين تذهب؟",
   "listProperty": "أدرج عقارك",
   "ctaTitle": "جد منزلك",
@@ -19,6 +21,14 @@
   "featuredLocationsSubtitle": "اكتشف جمال باكستان في هذه الوجهات المختارة",
   "staysCount": "{{count}}+ إقامة",
   "trustBadges": {
+    "overline": "لماذا تختارنا",
+    "title": "موثوق به من قبل الآلاف",
+    "subtitle": "كل قائمة يتم التحقق منها يدويًا. كل دفعة آمنة. كل إقامة مضمونة.",
+    "statLabels": {
+      "verified": "موثق",
+      "encrypted": "مشفر",
+      "users": "مستخدمين"
+    },
     "verifiedHosts": {
       "title": "مضيفون موثقون",
       "description": "أصحاب العقارات الموثقون ببطاقة الهوية"
@@ -31,5 +41,30 @@
       "title": "دعم 24/7",
       "description": "دائمًا هنا لمساعدتك"
     }
+  },
+  "sections": {
+    "trending": "رائج في {{city}}",
+    "trendingSubtitle": "الإقامات الأكثر حجزاً بالقرب منك",
+    "topRated": "منازل الأعلى تقييماً",
+    "topRatedSubtitle": "الضيوف يحبون هذه - مقيمة بـ 4+ نجوم",
+    "luxury": "مجموعة فاخرة",
+    "luxurySubtitle": "عقارات متميزة فوق 15,000 روبية / ليلة",
+    "recentlyAdded": "أضيفت حديثاً",
+    "recentlyAddedSubtitle": "قوائم جديدة - كن أول من يحجز"
+  },
+  "suggestions": [
+    { "label": "دي إتش إيه لاهور", "query": "luxury apartment in DHA Lahore" },
+    { "label": "فيلا شاطئية كراتشي", "query": "beach villa in Karachi" },
+    { "label": "شقق اقتصادية", "query": "budget apartments under 20k" },
+    { "label": "كوخ مري", "query": "cottage in Murree" },
+    { "label": "ملاذ هنزا", "query": "retreat in Hunza" }
+  ],
+  "searchResults": {
+    "searching": "جاري البحث...",
+    "found": "تم العثور على {{count}} إقامة",
+    "foundIn": "تم العثور على {{count}} إقامة لـ \"{{query}}\"",
+    "noResults": "لم يتم العثور على أي قوائم",
+    "noResultsSubtitle": "حاول تعديل بحثك أو إزالة بعض الفلاتر.",
+    "clearFilters": "مسح الفلاتر"
   }
 }

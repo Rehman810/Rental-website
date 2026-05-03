@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography, TextField, MenuItem, Stack } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const utilitiesOptions = [
     { value: 'included', label: 'Included' },
@@ -14,6 +15,7 @@ const furnishingOptions = [
 ];
 
 const LeaseDetails = ({ leaseConfig, setLeaseConfig }) => {
+    const { t } = useTranslation("listingSteps");
     const handleChange = (field, value) => {
         setLeaseConfig((prev) => ({ ...prev, [field]: value }));
     };
@@ -21,15 +23,15 @@ const LeaseDetails = ({ leaseConfig, setLeaseConfig }) => {
     return (
         <Box sx={{ maxWidth: 600, mx: "auto", p: 3 }}>
             <Typography variant="h5" fontWeight="bold" gutterBottom>
-                Lease Details
+                {t("lease.title")}
             </Typography>
             <Typography variant="body1" color="textSecondary" sx={{ mb: 4 }}>
-                Specify the terms for your long-term rental.
+                {t("lease.subtitle")}
             </Typography>
 
             <Stack spacing={3}>
                 <TextField
-                    label="Minimum Lease Duration (Months)"
+                    label={t("lease.minDuration")}
                     type="number"
                     fullWidth
                     value={leaseConfig.minLeaseDuration || ''}
@@ -38,34 +40,34 @@ const LeaseDetails = ({ leaseConfig, setLeaseConfig }) => {
 
                 <TextField
                     select
-                    label="Utilities Policy"
+                    label={t("lease.utilities.label")}
                     fullWidth
                     value={leaseConfig.utilities || ''}
                     onChange={(e) => handleChange('utilities', e.target.value)}
                 >
                     {utilitiesOptions.map((option) => (
                         <MenuItem key={option.value} value={option.value}>
-                            {option.label}
+                            {t(`lease.utilities.options.${option.value}`)}
                         </MenuItem>
                     ))}
                 </TextField>
 
                 <TextField
                     select
-                    label="Furnishing Status"
+                    label={t("lease.furnishing.label")}
                     fullWidth
                     value={leaseConfig.furnishingStatus || ''}
                     onChange={(e) => handleChange('furnishingStatus', e.target.value)}
                 >
                     {furnishingOptions.map((option) => (
                         <MenuItem key={option.value} value={option.value}>
-                            {option.label}
+                            {t(`lease.furnishing.options.${option.value}`)}
                         </MenuItem>
                     ))}
                 </TextField>
 
                 <TextField
-                    label="Availability Start Date"
+                    label={t("lease.availabilityStart")}
                     type="date"
                     fullWidth
                     InputLabelProps={{ shrink: true }}

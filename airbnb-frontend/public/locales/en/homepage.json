@@ -1,6 +1,8 @@
 {
-  "title": "Find your next stay",
-  "subtitle": "Discover the best homes and places across Pakistan",
+  "overline": "Pakistan's #1 Property Marketplace",
+  "titlePart1": "Find premium stays",
+  "titlePart2": "tailored for you",
+  "subtitle": "Discover verified properties across Pakistan — from beachside villas to mountain retreats.",
   "searchPlaceholder": "Where to go?",
   "listProperty": "List property",
   "ctaTitle": "Find Your Next",
@@ -19,6 +21,14 @@
   "featuredLocationsSubtitle": "Discover the beauty of Pakistan in these top destinations",
   "staysCount": "{{count}}+ stays",
   "trustBadges": {
+    "overline": "WHY CHOOSE US",
+    "title": "Trusted by thousands",
+    "subtitle": "Every listing is hand-verified. Every payment is secure. Every stay is guaranteed.",
+    "statLabels": {
+      "verified": "Verified",
+      "encrypted": "Encrypted",
+      "users": "Users"
+    },
     "verifiedHosts": {
       "title": "Verified Hosts",
       "description": "CNIC verified property owners"
@@ -31,5 +41,30 @@
       "title": "24/7 Support",
       "description": "Always here to help you"
     }
+  },
+  "sections": {
+    "trending": "Trending in {{city}}",
+    "trendingSubtitle": "Most booked stays near you",
+    "topRated": "Top Rated Homes",
+    "topRatedSubtitle": "Guests love these — rated 4+ stars",
+    "luxury": "Luxury Collection",
+    "luxurySubtitle": "Premium properties above PKR 15,000 / night",
+    "recentlyAdded": "Recently Added",
+    "recentlyAddedSubtitle": "Fresh listings — be the first to book"
+  },
+  "suggestions": [
+    { "label": "DHA Lahore", "query": "luxury apartment in DHA Lahore" },
+    { "label": "Beach Villa Karachi", "query": "beach villa in Karachi" },
+    { "label": "Budget Apartments", "query": "budget apartments under 20k" },
+    { "label": "Murree Cottage", "query": "cottage in Murree" },
+    { "label": "Hunza Retreat", "query": "retreat in Hunza" }
+  ],
+  "searchResults": {
+    "searching": "Searching...",
+    "found": "{{count}} stays found",
+    "foundIn": "{{count}} stays found for \"{{query}}\"",
+    "noResults": "No listings found",
+    "noResultsSubtitle": "Try adjusting your search or removing some filters.",
+    "clearFilters": "Clear Filters"
   }
 }

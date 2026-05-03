@@ -5,6 +5,7 @@ import HotelIcon from "@mui/icons-material/Hotel";
 import KeyIcon from "@mui/icons-material/Key";
 import SellIcon from "@mui/icons-material/Sell";
 import { useAppContext } from "../../context/context";
+import { useTranslation } from "react-i18next";
 
 const StyledPaper = styled(Paper)(({ theme, selected, disabled }) => ({
     padding: theme.spacing(3),
@@ -51,6 +52,7 @@ const listingTypes = [
 ];
 
 const ListingTypeSelection = () => {
+    const { t } = useTranslation("listingSteps");
     const { setListingType, listingType } = useAppContext();
     const [selected, setSelected] = useState("SHORT_TERM");
 
@@ -69,10 +71,10 @@ const ListingTypeSelection = () => {
     return (
         <Box sx={{ py: 6, px: 3, maxWidth: 800, mx: "auto" }}>
             <Typography variant="h4" fontWeight="800" gutterBottom textAlign="center" sx={{ mb: 1 }}>
-                What kind of listing is this?
+                {t("listingType.title")}
             </Typography>
             <Typography variant="body1" color="var(--text-secondary)" textAlign="center" sx={{ mb: 5 }}>
-                Choose the model that best fits your needs.
+                {t("listingType.subtitle")}
             </Typography>
 
             <Stack spacing={3} alignItems="center">
@@ -86,15 +88,15 @@ const ListingTypeSelection = () => {
                         >
                             <Box>
                                 <Typography variant="h6" fontWeight="700">
-                                    {type.name}
+                                    {t(`listingType.types.${type.id}.name`)}
                                 </Typography>
                                 <Typography variant="body2" color="var(--text-secondary)" sx={{ mt: 0.5 }}>
-                                    {type.text}
+                                    {t(`listingType.types.${type.id}.text`)}
                                 </Typography>
 
                                 {!type.enabled && (
                                     <Chip
-                                        label="Coming Soon"
+                                        label={t("listingType.comingSoon")}
                                         size="small"
                                         sx={{
                                             mt: 1.5,

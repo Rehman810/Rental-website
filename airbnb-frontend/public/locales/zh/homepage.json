@@ -1,10 +1,22 @@
 {
-  "title": "寻找您的下一次住宿",
-  "subtitle": "探索巴基斯坦境内最好的房屋和景点",
+  "overline": "巴基斯坦排名第一的房地产市场",
+  "titlePart1": "为您量身定制的",
+  "titlePart2": "优质住宿",
+  "subtitle": "发现巴基斯坦全境的认证房产 —— 从海滨别墅到山间小屋。",
   "searchPlaceholder": "去哪儿？",
   "listProperty": "发布您的房源",
   "ctaTitle": "满怀信心地寻找",
   "ctaTitleRed": "您的下一个家",
   "ctaSubtitle": "无论是海滨度假胜地还是市中心公寓，我们精选的房源都能确保您的下一次住宿非同寻常。",
-  "ctaButton": "现在开始搜索"
+  "ctaButton": "现在开始搜索",
+  "sections": {
+    "trending": "{{city}} 的热门住宿",
+    "trendingSubtitle": "您附近预订最多的住宿",
+    "topRated": "高评分房屋",
+    "topRatedSubtitle": "房客最爱 —— 4星以上评分",
+    "luxury": "豪华系列",
+    "luxurySubtitle": "每晚 15,000 PKR 以上的高级房产",
+    "recentlyAdded": "最新发布",
+    "recentlyAddedSubtitle": "新鲜房源 —— 抢先预订"
+  }
 }

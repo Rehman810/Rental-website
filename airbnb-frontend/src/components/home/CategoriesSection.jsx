@@ -16,7 +16,7 @@ const categories = [
 ];
 
 const CategoriesSection = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(["homepage", "translation"]);
 
   const categories = [
     { key: "haveli", icon: <CastleIcon sx={{ fontSize: 32 }} />, color: "#BA7517" },

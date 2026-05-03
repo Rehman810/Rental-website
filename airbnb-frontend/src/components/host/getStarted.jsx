@@ -1,33 +1,38 @@
 import React from 'react';
 import { Box, Typography, Grid, Card, CardContent, CardMedia } from '@mui/material';
 import { APP_NAME } from '../../config/env';
+import { useTranslation } from "react-i18next";
 
 import bed from '../../assets/images/bed.webp'
 import sofa from '../../assets/images/sofa.webp'
 import door from '../../assets/images/door.webp'
 
-const steps = [
-  {
-    id: 1,
-    title: ' 1. Tell us about your place',
-    description: 'Share some basic info, like where it is and how many guests can stay.',
-    image: bed,
-  },
-  {
-    id: 2,
-    title: '2. Make it stand out',
-    description: 'Add 5 or more photos plus a title and description—we’ll help you out.',
-    image: sofa,
-  },
-  {
-    id: 3,
-    title: '3. Finish up and publish',
-    description: 'Choose a starting price, verify a few details, then publish your listing.',
-    image: door,
-  },
-];
+// Steps moved inside component to use t()
 
 const GetStarted = () => {
+  const { t } = useTranslation("listingSteps");
+
+  const steps = [
+    {
+      id: 1,
+      title: t("getStartedPage.step1.title"),
+      description: t("getStartedPage.step1.desc"),
+      image: bed,
+    },
+    {
+      id: 2,
+      title: t("getStartedPage.step2.title"),
+      description: t("getStartedPage.step2.desc"),
+      image: sofa,
+    },
+    {
+      id: 3,
+      title: t("getStartedPage.step3.title"),
+      description: t("getStartedPage.step3.desc"),
+      image: door,
+    },
+  ];
+
   return (
     <Box sx={{ py: 5, px: 5, paddingTop: "100px" }}>
       <Grid container spacing={8} alignItems="center">
@@ -36,7 +41,7 @@ const GetStarted = () => {
             variant="h3"
             sx={{ mb: { xs: 3, md: 0 }, fontWeight: 'bold', color: 'var(--text-primary)', textAlign: { xs: 'center', md: 'left' } }}
           >
-            It’s easy to get started on {APP_NAME}
+            {t("getStartedPage.title", { appName: APP_NAME })}
           </Typography>
         </Grid>
 

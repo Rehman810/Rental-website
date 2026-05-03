@@ -1,5 +1,6 @@
 import React, { lazy } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
+import { Box } from "@mui/material";
 
 const NavbarHost = lazy(() => import("../../components/navbar/navbar2"));
 const HostDashboard = lazy(() => import("../../pages/hostDashboard/HostDashboard"));
@@ -15,6 +16,7 @@ const HostSettings = lazy(() => import("../../pages/hostSettings/HostSettings"))
 const HostBookings = lazy(() => import("../../pages/hostBookings/HostBookings"));
 const HostListingDetails = lazy(() => import("../../pages/hostListingDetails/HostListingDetails"));
 const EditListing = lazy(() => import("../../pages/editListing/EditListing"));
+const MobileHostBottomNav = lazy(() => import("../../components/home/MobileHostBottomBar"));
 
 const Hosts = () => {
   const location = useLocation();
@@ -52,9 +54,8 @@ const Hosts = () => {
           <Route path="/settings" element={<HostSettings />} />
         </Routes>
       </div>
-      {!isMessage && (
-        <Footer />
-      )}
+      <Box sx={{ display: { xs: "block", md: "none" }, height: "80px" }} />
+      <MobileHostBottomNav />
     </>
   );
 };

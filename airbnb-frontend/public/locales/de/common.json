@@ -13,5 +13,15 @@
   "listProperty": "Vermieten",
   "appName": "Mehman",
   "languageAndRegion": "Sprache & Region",
-  "recommended": "Empfohlen"
+  "recommended": "Empfohlen",
+  "mobileNav": {
+    "home": "Startseite",
+    "map": "Karte",
+    "wishlist": "Wunschliste",
+    "host": "Gastgeber",
+    "profile": "Profil"
+  },
+  "upTo": "Bis zu",
+  "amenity": "Ausstattung",
+  "price": "Preis"
 }

@@ -14,6 +14,7 @@ import {
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import StarIcon from "@mui/icons-material/Star";
+import VerifiedIcon from "@mui/icons-material/Verified";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useNavigate } from "react-router-dom";
@@ -27,6 +28,8 @@ const CardItem = React.memo(({ data }) => {
   const { t } = useTranslation();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [signUp, isSignUp] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [activeSlide, setActiveSlide] = useState(0);
 
   const navigate = useNavigate();
   const { wishlist, addToWishlist, removeFromWishlist } = useWishlist();
@@ -35,19 +38,15 @@ const CardItem = React.memo(({ data }) => {
     () => wishlist.some((item) => item._id === data._id),
     [wishlist, data._id]
   );
-  const [showSlider, setShowSlider] = useState(false);
-
-  const [activeSlide, setActiveSlide] = useState(0);
 
   const settings = useMemo(
     () => ({
       dots: false,
       infinite: true,
-      speed: 450,
+      speed: 400,
       slidesToShow: 1,
       slidesToScroll: 1,
       autoplay: false,
-      autoplaySpeed: 4500,
       arrows: false,
       beforeChange: (_, next) => setActiveSlide(next),
     }),
@@ -75,142 +74,202 @@ const CardItem = React.memo(({ data }) => {
 
   const VerifiedComponent = () =>
     isWishlisted ? (
-      <FavoriteIcon sx={{ color: "#e11d48" }} />
+      <FavoriteIcon sx={{ color: "#FF385C", fontSize: 18 }} />
     ) : (
-      <FavoriteBorderIcon />
+      <FavoriteBorderIcon sx={{ fontSize: 18, color: "#fff" }} />
     );
 
   const UnverifiedComponent = ({ handleLoginModalOpen }) => (
     <span onClick={handleLoginModalOpen}>
-      <FavoriteBorderIcon />
+      <FavoriteBorderIcon sx={{ fontSize: 18, color: "#fff" }} />
     </span>
   );
 
   const totalPhotos = data?.photos?.length || 0;
-
-  const hoverTimeout = React.useRef(null);
-
-  const handleMouseEnter = () => {
-    setShowSlider(true);
-  };
-
-  const handleMouseLeave = () => {
-    clearTimeout(hoverTimeout.current);
-    setShowSlider(false);
-  };
-
   const isMobile = useMediaQuery("(max-width:1100px)");
   const isRTL = useRTL();
+  const imgHeight = isMobile ? 180 : 220;
 
   return (
     <>
       <Card
         onClick={() => navigate(`/rooms/${data._id}`)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
         sx={{
-          borderRadius: 4,
+          borderRadius: "20px",
           overflow: "hidden",
           border: "1px solid",
-          borderColor: "divider",
+          borderColor: isHovered ? "rgba(255,56,92,0.2)" : "var(--border-light)",
           cursor: "pointer",
-          transition: "all 0.18s ease",
+          transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
           backgroundColor: "var(--bg-card)",
-          "&:hover": {
-            // transform: "translateY(-3px)",
-            boxShadow: "var(--shadow-lg)",
-          },
+          boxShadow: isHovered
+            ? "0 20px 50px rgba(0,0,0,0.14)"
+            : "0 2px 12px rgba(0,0,0,0.06)",
+          transform: isHovered ? "translateY(-5px)" : "translateY(0)",
         }}
       >
         {/* Image Area */}
-        <Box sx={{ position: "relative" }} >
-          <Box sx={{ height: isMobile ? 150 : 240 }} onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-            onMouseDown={(e) => e.stopPropagation()} >
-            {/* {showSlider ? ( */}
+        <Box sx={{ position: "relative", overflow: "hidden" }}>
+          <Box
+            sx={{
+              height: imgHeight,
+              overflow: "hidden",
+              "& .slick-slider, & .slick-list, & .slick-track": {
+                height: "100%",
+              },
+              "& .slick-slide > div": { height: "100%" },
+            }}
+            onMouseDown={(e) => e.stopPropagation()}
+          >
             <Slider {...settings}>
               {(data?.photos || []).map((img, index) => (
-                <Box key={index} sx={{ height: isMobile ? 150 : 240 }}>
-                  <img
+                <Box key={index} sx={{ height: imgHeight }}>
+                  <Box
+                    component="img"
                     src={img}
                     alt={`Photo ${index + 1}`}
-                    style={{
+                    loading="lazy"
+                    onError={(e) => (e.currentTarget.src = "/fallback-image.jpg")}
+                    sx={{
                       width: "100%",
                       height: "100%",
                       objectFit: "cover",
                       display: "block",
+                      transform: isHovered ? "scale(1.06)" : "scale(1)",
+                      transition: "transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
                     }}
-                    loading="lazy"
-                    onError={(e) => (e.currentTarget.src = "/fallback-image.jpg")}
                   />
                 </Box>
               ))}
             </Slider>
-            {/* ) : (
-              <img
-                src={data.photos?.[0]}
-                style={{ width: "100%", height: 240, objectFit: "cover" }}
-                loading="lazy"
-              />
-            )} */}
           </Box>
 
-          {/* Wishlist Button */}
-          <IconButton
-            onClick={handleWishlistClick}
+          {/* Gradient Overlay */}
+          <Box
             sx={{
               position: "absolute",
-              top: 12,
-              [isRTL ? "left" : "right"]: 12,
-              zIndex: 5,
-              width: 42,
-              height: 42,
-              borderRadius: 3,
-              backgroundColor: "var(--bg-input)",
-              border: "1px solid var(--border-light)",
-              boxShadow: "var(--shadow-sm)",
-              "&:hover": {
-                backgroundColor: "var(--bg-secondary)",
-              },
+              inset: 0,
+              background:
+                "linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, transparent 40%, transparent 55%, rgba(0,0,0,0.55) 100%)",
+              pointerEvents: "none",
+              zIndex: 1,
+            }}
+          />
+
+          {/* Top Overlay: Rating + Location */}
+          <Box
+            sx={{
+              position: "absolute",
+              bottom: 12,
+              [isRTL ? "right" : "left"]: 12,
+              zIndex: 3,
+              display: "flex",
+              flexDirection: "column",
+              gap: 0.4,
             }}
           >
-            <VerifyToken
-              VerifiedComponent={VerifiedComponent}
-              UnverifiedComponent={UnverifiedComponent}
-              handleLoginModalOpen={handleLoginModalOpen}
-            />
-          </IconButton>
-          {/* Guest favourite */}
+            <Stack direction="row" spacing={0.5} alignItems="center">
+              <StarIcon sx={{ fontSize: 13, color: "#FFD700" }} />
+              <Typography
+                variant="caption"
+                fontWeight={800}
+                sx={{ color: "#fff", fontSize: "0.78rem", lineHeight: 1 }}
+              >
+                {data?.averageRating || t("listing:new")}
+                {data?.reviewCount ? (
+                  <span style={{ fontWeight: 500, opacity: 0.85 }}>
+                    {" "}({data.reviewCount})
+                  </span>
+                ) : null}
+              </Typography>
+            </Stack>
+            {data?.city && (
+              <Typography
+                variant="caption"
+                sx={{
+                  color: "rgba(255,255,255,0.85)",
+                  fontSize: "0.72rem",
+                  fontWeight: 600,
+                  lineHeight: 1,
+                }}
+              >
+                📍 {data.city}, PK
+              </Typography>
+            )}
+          </Box>
+
+          {/* Wishlist Button — Top Right */}
+          <Box
+            sx={{
+              position: "absolute",
+              top: 10,
+              [isRTL ? "left" : "right"]: 10,
+              zIndex: 5,
+            }}
+          >
+            <IconButton
+              onClick={handleWishlistClick}
+              sx={{
+                width: 36,
+                height: 36,
+                bgcolor: "rgba(0,0,0,0.35)",
+                backdropFilter: "blur(6px)",
+                border: "1px solid rgba(255,255,255,0.2)",
+                transition: "all 0.25s ease",
+                "&:hover": {
+                  bgcolor: "rgba(0,0,0,0.55)",
+                  transform: "scale(1.12)",
+                },
+                "&:active": { transform: "scale(0.92)" },
+              }}
+            >
+              <VerifyToken
+                VerifiedComponent={VerifiedComponent}
+                UnverifiedComponent={UnverifiedComponent}
+                handleLoginModalOpen={handleLoginModalOpen}
+              />
+            </IconButton>
+          </Box>
+
+          {/* Guest Favourite Badge — Top Left */}
           {data?.guestFavourite && (
             <Chip
               label={t("listing:guestFavourite")}
               size="small"
               sx={{
                 position: "absolute",
-                top: 12,
-                [isRTL ? "right" : "left"]: 12,
+                top: 10,
+                [isRTL ? "right" : "left"]: 10,
                 zIndex: 5,
-                borderRadius: 999,
-                fontWeight: 900,
-                color: "var(--text-primary)",
-                backgroundColor: "var(--bg-input)",
-                border: "1px solid var(--border-light)",
+                borderRadius: "999px",
+                fontWeight: 800,
+                fontSize: "0.7rem",
+                color: "#222",
+                bgcolor: "#fff",
+                border: "none",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.18)",
+                "& .MuiChip-label": { px: 1.2 },
               }}
             />
           )}
 
-          {/* 360 Available Badge */}
+          {/* 360 Badge */}
           {data?.image360 && (
             <Chip
               label={t("listing:available360")}
               size="small"
               sx={{
                 position: "absolute",
-                top: data?.guestFavourite ? 44 : 12,
-                [isRTL ? "right" : "left"]: 12,
+                top: data?.guestFavourite ? 44 : 10,
+                [isRTL ? "right" : "left"]: 10,
                 zIndex: 5,
-                borderRadius: 999,
-                fontWeight: 900,
+                borderRadius: "999px",
+                fontWeight: 800,
+                fontSize: "0.7rem",
                 color: "white",
-                backgroundColor: "rgba(0,0,0,0.65)",
+                backgroundColor: "rgba(0,0,0,0.6)",
                 border: "1px solid rgba(255,255,255,0.2)",
                 backdropFilter: "blur(4px)",
               }}
@@ -218,21 +277,22 @@ const CardItem = React.memo(({ data }) => {
           )}
 
           {/* Photo Counter */}
-          {totalPhotos > 0 && (
+          {totalPhotos > 1 && (
             <Box
               sx={{
                 position: "absolute",
-                bottom: 12,
-                [isRTL ? "left" : "right"]: 12,
+                bottom: 10,
+                [isRTL ? "left" : "right"]: 10,
                 zIndex: 5,
-                px: 1.2,
-                py: 0.6,
-                borderRadius: 999,
-                fontSize: "12px",
-                fontWeight: 900,
+                px: 1,
+                py: 0.4,
+                borderRadius: "999px",
+                fontSize: "11px",
+                fontWeight: 800,
                 color: "#fff",
-                backgroundColor: "rgba(0,0,0,0.55)",
-                backdropFilter: "blur(8px)",
+                backgroundColor: "rgba(0,0,0,0.5)",
+                backdropFilter: "blur(6px)",
+                border: "1px solid rgba(255,255,255,0.15)",
               }}
             >
               {activeSlide + 1}/{totalPhotos}
@@ -250,89 +310,109 @@ const CardItem = React.memo(({ data }) => {
               }}
               sx={{
                 position: "absolute",
-                bottom: 10,
+                bottom: 38,
                 [isRTL ? "right" : "left"]: 10,
+                zIndex: 4,
                 display: "flex",
                 alignItems: "center",
-                gap: 1,
-                backgroundColor: "var(--bg-card)",
+                gap: 0.5,
+                backgroundColor: "rgba(0,0,0,0.45)",
+                backdropFilter: "blur(6px)",
                 borderRadius: "8px",
-                px: 1.5,
-                py: 2.5,
-                boxShadow: 1,
+                px: 1,
+                py: 0.5,
                 cursor: "pointer",
-                transform: "perspective(600px) rotateY(0deg)",
-                transformOrigin: "left center",
-                transition: "transform 0.5s ease",
-                "&:hover": {
-                  transform: "perspective(200px) rotateY(-20deg)",
-                },
+                border: "1px solid rgba(255,255,255,0.15)",
+                transition: "all 0.2s ease",
+                "&:hover": { bgcolor: "rgba(0,0,0,0.65)" },
               }}
             >
               <Avatar
                 src={data?.hostData.photoProfile}
                 alt="Host"
-                sx={{ width: 40, height: 40 }}
+                sx={{ width: 26, height: 26 }}
               />
             </Box>
           )}
         </Box>
 
-        {/* Content */}
-        <RTLWrapper sx={{ p: 2 }}>
-          {/* Title + Rating */}
-          <Stack direction="row" justifyContent="space-between" spacing={1}>
+        {/* Card Content */}
+        <RTLWrapper sx={{ p: { xs: 1.5, md: 2 } }}>
+          {/* Title Row */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              gap: 1,
+              mb: 0.5,
+            }}
+          >
             <Typography
-              variant="subtitle1"
-              fontWeight={900}
+              variant="subtitle2"
+              fontWeight={800}
               sx={{
                 display: "-webkit-box",
                 WebkitLineClamp: 1,
                 WebkitBoxOrient: "vertical",
                 overflow: "hidden",
+                color: "var(--text-primary)",
+                fontSize: { xs: "0.85rem", md: "0.95rem" },
+                letterSpacing: "-0.01em",
+                lineHeight: 1.3,
               }}
             >
               {data?.title}
             </Typography>
 
-            <Stack direction="row" spacing={0.5} alignItems="center">
-              <StarIcon sx={{ fontSize: 16 }} />
-              <Typography variant="body2" fontWeight={900}>
-                {data?.averageRating || t("listing:new")}
-              </Typography>
-            </Stack>
-          </Stack>
+            {/* Verified badge */}
+            {data?.verified && (
+              <VerifiedIcon
+                sx={{ fontSize: 18, color: "#0066FF", flexShrink: 0, mt: 0.2 }}
+              />
+            )}
+          </Box>
 
-          {/* Location / small meta */}
+          {/* Description */}
           <Typography
             variant="body2"
             sx={{
               color: "var(--text-secondary)",
-              mt: 0.4,
+              fontSize: "0.78rem",
               display: "-webkit-box",
               WebkitLineClamp: 1,
               WebkitBoxOrient: "vertical",
               overflow: "hidden",
-            }}
-          >
-            {data?.city ? `${data.city}, Pakistan` : "Pakistan"}
-          </Typography>
-
-          {/* Description (truncate) */}
-          <Typography
-            variant="body2"
-            sx={{
-              color: "var(--text-secondary)",
-              mt: 0.6,
-              display: "-webkit-box",
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: "vertical",
-              overflow: "hidden",
-              minHeight: 40,
+              mb: 1,
+              lineHeight: 1.4,
             }}
           >
             {data?.description || "Comfortable stay with great amenities."}
           </Typography>
+
+          {/* Price Row */}
+          <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.5 }}>
+            {data?.pricePerNight ? (
+              <>
+                <Typography
+                  sx={{
+                    fontWeight: 900,
+                    fontSize: { xs: "0.95rem", md: "1.05rem" },
+                    color: "var(--text-primary)",
+                    letterSpacing: "-0.01em",
+                  }}
+                >
+                  PKR {Number(data.pricePerNight).toLocaleString()}
+                </Typography>
+                <Typography
+                  variant="caption"
+                  sx={{ color: "var(--text-secondary)", fontWeight: 500, fontSize: "0.75rem" }}
+                >
+                  / night
+                </Typography>
+              </>
+            ) : null}
+          </Box>
         </RTLWrapper>
       </Card>
 

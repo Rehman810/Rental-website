@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, Typography, Grid } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import Lottie from "react-lottie";
 import animationData from "../../animations/step1animation.json";
 
@@ -29,11 +30,12 @@ const WebLottieAnimation = ({ animation }) => {
 };
 
 const Step1 = ({ stepNo, title, description, animation }) => {
+  const { t } = useTranslation("listingSteps");
   return (
     <Box sx={{ py: 5, px: 5 }}>
       <Grid container spacing={8} alignItems="center" >
         <Grid item xs={12} md={6}>
-          <Typography fontWeight={"bold"}>Step {stepNo}</Typography>
+          <Typography fontWeight={"bold"}>{t("step", { number: stepNo })}</Typography>
           <Typography
             variant="h3"
             sx={{

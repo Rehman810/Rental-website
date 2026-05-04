@@ -13,6 +13,7 @@ import {
   useTheme,
   useMediaQuery,
   CircularProgress,
+  Button
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SendIcon from "@mui/icons-material/Send";
@@ -360,10 +361,10 @@ const GuestAllMessages = () => {
                   <Button
                     variant="outlined"
                     size="small"
-                    onClick={() => navigate(`/hosting/listings/${listingId}`)}
+                    onClick={() => navigate(`/rooms/${listingId}`)}
                     sx={{ borderRadius: '999px', textTransform: 'none', fontWeight: 700 }}
                   >
-                    Manage
+                    View
                   </Button>
                 </Box>
               )}
@@ -491,7 +492,7 @@ const GuestAllMessages = () => {
                                         size="small"
                                         onClick={(e) => {
                                           e.stopPropagation();
-                                          navigate(`/hosting/listings/${data.listingId}`);
+                                          navigate(`/rooms/${data.listingId}`);
                                         }}
                                         sx={{
                                           textTransform: 'none',
@@ -501,7 +502,7 @@ const GuestAllMessages = () => {
                                           boxShadow: 'none'
                                         }}
                                       >
-                                        Manage Listing
+                                        View
                                       </Button>
                                     </Box>
                                   );

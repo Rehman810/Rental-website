@@ -13,7 +13,8 @@ import {
   useTheme,
   useMediaQuery,
   CircularProgress,
-  Stack
+  Stack,
+  Button
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -130,9 +131,9 @@ const GuestAllMessages = () => {
   };
 
   return (
-    <Box sx={{ 
-      height: { xs: "calc(100dvh - 135px)", md: "calc(100vh - 85px)" }, 
-      display: "flex", 
+    <Box sx={{
+      height: { xs: "calc(100dvh - 135px)", md: "calc(100vh - 85px)" },
+      display: "flex",
       bgcolor: "var(--bg-primary)",
       overflow: "hidden",
       position: "fixed",

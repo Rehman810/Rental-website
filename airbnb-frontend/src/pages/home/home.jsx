@@ -98,6 +98,7 @@ const Home = () => {
 
   // Section-specific states
   const [trendingCity, setTrendingCity] = useState("Karachi");
+  const [parentCity, setParentCity] = useState("Karachi");
   const [trendingListings, setTrendingListings] = useState([]);
   const [trendingLoading, setTrendingLoading] = useState(true);
   const [topRatedListings, setTopRatedListings] = useState([]);
@@ -227,17 +228,34 @@ const Home = () => {
               `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
             );
             const geo = await res.json();
-            const city =
-              geo?.address?.city ||
-              geo?.address?.town ||
-              geo?.address?.state_district ||
-              "Karachi";
-            setTrendingCity(city);
+            const address = geo?.address;
+            
+            // Extract suburb/neighbourhood
+            let suburb = address?.suburb || address?.neighbourhood || "";
+            suburb = suburb.replace(/Defence Housing Authority/gi, "DHA").trim();
+            
+            // Extract city/town
+            let city = address?.city || address?.town || address?.city_district || "";
+            city = city.replace(/ (Division|District|Tehsil|Cantonment|Cantt)/gi, "").trim();
+
+            // Extract state district as last resort
+            let district = address?.state_district || "";
+            district = district.replace(/ (Division|District|Tehsil|Cantonment|Cantt)/gi, "").trim();
+
+            const finalCity = city || district || "Karachi";
+            const finalTrending = suburb || finalCity;
+
+            setTrendingCity(finalTrending);
+            setParentCity(finalCity);
           } catch {
             setTrendingCity("Karachi");
+            setParentCity("Karachi");
           }
         },
-        () => setTrendingCity("Karachi")
+        () => {
+          setTrendingCity("Karachi");
+          setParentCity("Karachi");
+        }
       );
     }
   }, []);
@@ -249,29 +267,45 @@ const Home = () => {
     (async () => {
       try {
         const user = getAuthUser();
-        const q = new URLSearchParams();
-        q.append("q", trendingCity);
-        q.append("sortBy", "recommended");
-        q.append("limit", "10");
-        q.append("page", "1");
-        if (user?._id) q.append("excludeHostId", user._id);
-        const data = await fetchData(`api/listings/search?${q.toString()}`);
+        const fetchListings = async (queryCity) => {
+          const q = new URLSearchParams();
+          q.append("q", queryCity);
+          q.append("sortBy", "recommended");
+          q.append("limit", "10");
+          q.append("page", "1");
+          if (user?._id) q.append("excludeHostId", user._id);
+          return await fetchData(`api/listings/search?${q.toString()}`);
+        };
+
+        const data = await fetchListings(trendingCity);
         if (cancelled) return;
-        const results = data.results || [];
-        if (results.length > 0) {
-          setTrendingListings(results);
+
+        if (data.results && data.results.length > 0) {
+          setTrendingListings(data.results);
+        } else if (trendingCity !== parentCity) {
+          // Suburb/Area empty, try parent city
+          const cityData = await fetchListings(parentCity);
+          if (cancelled) return;
+          
+          if (cityData.results && cityData.results.length > 0) {
+            setTrendingListings(cityData.results);
+            setTrendingCity(parentCity); // Update heading to match results
+          } else if (parentCity !== "Karachi") {
+            // City also empty, try Karachi
+            const fallback = await fetchListings("Karachi");
+            if (!cancelled) {
+              setTrendingListings(fallback.results || []);
+              setTrendingCity("Karachi");
+            }
+          }
         } else if (trendingCity !== "Karachi") {
-          // Detected city has no listings — fall back to Karachi
-          const fallbackQ = new URLSearchParams();
-          fallbackQ.append("q", "Karachi");
-          fallbackQ.append("sortBy", "recommended");
-          fallbackQ.append("limit", "10");
-          fallbackQ.append("page", "1");
-          if (user?._id) fallbackQ.append("excludeHostId", user._id);
-          const fallback = await fetchData(`api/listings/search?${fallbackQ.toString()}`);
-          if (!cancelled) setTrendingListings(fallback.results || []);
+          // Already tried city/district and it's empty, try Karachi
+          const fallback = await fetchListings("Karachi");
+          if (!cancelled) {
+            setTrendingListings(fallback.results || []);
+            setTrendingCity("Karachi");
+          }
         }
-        // If Karachi also empty, listings stay as whatever they were (skeleton → nothing shown)
       } catch {
         // keep previous listings on error
       } finally {

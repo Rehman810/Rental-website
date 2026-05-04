@@ -29,7 +29,7 @@ import ArrowForwardIcon2 from "@mui/icons-material/ArrowForward";
 import { DatePicker } from "antd";
 import "antd/dist/reset.css";
 import CheckIcon from '@mui/icons-material/Check';
-import GoogleMapView from "../map/GoogleMap";
+import MapView from "../map/MapView";
 import HostSection from "../hostSection/hostSection";
 import { useNavigate, useParams } from "react-router-dom";
 import { fetchDataById } from "../../config/ServiceApi/serviceApi";
@@ -90,7 +90,6 @@ import BackButton from "../backButton/backButton";
 const { RangePicker } = DatePicker;
 
 const MemoizedHostSection = React.memo(HostSection);
-const MemoizedGoogleMap = React.memo(GoogleMapView);
 
 const RoomSkeleton = () => (
   <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1200, mx: "auto" }}>
@@ -1394,16 +1393,18 @@ const RoomPage = () => {
           borderRadius: 3,
           border: "1px solid",
           borderColor: "divider",
+          height: 550,
+          overflow: "hidden",
         }}
       >
         <Typography variant="h6" fontWeight={900} sx={{ mb: 1 }}>
           Location
         </Typography>
 
-        <MemoizedGoogleMap
-          latitude={place.latitude ? place.latitude : 24.8607}
-          longitude={place.longitude ? place.longitude : 67.0011}
-          listings={place.latitude ? [place] : []}
+        <MapView
+          listings={[place]}
+          latitude={place.latitude}
+          longitude={place.longitude}
         />
       </Box>
 

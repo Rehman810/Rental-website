@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.jsx";
 import "./App.css";
+import "leaflet/dist/leaflet.css";
 import { AppProvider } from "./context/context.jsx";
 import { WishlistProvider } from "./context/wishlistProvider.jsx";
 import { BookingProvider } from "./context/booking.jsx";

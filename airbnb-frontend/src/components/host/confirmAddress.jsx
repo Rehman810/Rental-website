@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { useAppContext } from "../../context/context";
-import GoogleMapView from "../map/GoogleMap";
+import MapView from "../map/MapView";
 import { useTranslation } from "react-i18next";
 
 const AddressForm = () => {
@@ -140,7 +140,7 @@ const AddressForm = () => {
         </Typography>
       </Typography>
 
-      <GoogleMapView
+      <MapView
         steps={true}
         latitude={contextLatitude || 30.3753}
         longitude={contextLongitude || 69.3451}

@@ -20,7 +20,7 @@ import { useTranslation } from "react-i18next";
 import { RTLWrapper, useRTL } from "../../components/language/Localization";
 import { fetchData, postData } from "../../config/ServiceApi/serviceApi";
 import Card from "../../components/cards/cards";
-import GoogleMapView from "../../components/map/GoogleMap";
+import MapView from "../../components/map/MapView";
 import { toast } from "react-hot-toast";
 import { useAppContext } from "../../context/context";
 import usePageTitle from "../../hooks/usePageTitle";
@@ -171,8 +171,9 @@ const Home = () => {
       setLoading(true);
       try {
         const queryString = buildQuery(currentFilters);
+        const searchLimit = mapVisible ? 100 : 12;
         const data = await fetchData(
-          `api/listings/search?${queryString}&page=${pageNumber}&limit=12`
+          `api/listings/search?${queryString}&page=${pageNumber}&limit=${searchLimit}`
         );
         setTotalCount(data.totalCount || 0);
         const isMasterPageEnd = pageNumber % 3 === 0;
@@ -189,7 +190,7 @@ const Home = () => {
         setInitialLoading(false);
       }
     },
-    [buildQuery]
+    [buildQuery, mapVisible]
   );
 
   // Fetch a section independently
@@ -337,7 +338,16 @@ const Home = () => {
     toast.success("Searching within drawn area");
   };
 
-  const toggleMapVisibility = () => setMapVisible((prev) => !prev);
+  const toggleMapVisibility = () => {
+    setMapVisible((prev) => {
+      const next = !prev;
+      // Re-trigger search with new limit when opening map
+      if (next) {
+        performSearch(filters, 1, false);
+      }
+      return next;
+    });
+  };
 
   const observerRef = useRef(null);
 
@@ -421,7 +431,7 @@ const Home = () => {
               </Stack>
             </Paper>
 
-            <GoogleMapView
+            <MapView
               listings={listings}
               latitude={listings?.[0]?.latitude || 24.8607}
               longitude={listings?.[0]?.longitude || 67.0011}
@@ -431,6 +441,7 @@ const Home = () => {
           </MotionBox>
         )}
       </AnimatePresence>
+
 
       {!mapVisible && (
         <>
